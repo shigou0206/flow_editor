@@ -12,78 +12,144 @@ class EdgeController {
   EdgeController({
     required ProviderContainer container,
     required this.behavior,
-  }) {
-    this.read = container.read;
-  }
+    required this.workflowId,
+  }) : _read = container.read;
 
   final EdgeBehavior behavior;
-  late final T Function<T>(ProviderListenable<T>) read;
+  final String workflowId;
+
+  /// 用于读/写状态的函数
+  final T Function<T>(ProviderListenable<T>) _read;
+
+  // region =========== Edge 基础操作 (增删改) ===========
 
   /// 创建一条新的 Edge
-  /// [workflowId]: 多工作流场景标识
-  /// [newEdge]: 新的 EdgeModel
-  void createEdge(String workflowId, EdgeModel newEdge) {
+  void createEdge(EdgeModel newEdge) {
     behavior.onEdgeCreated(newEdge);
-    read(edgeStateProvider.notifier).upsertEdge(workflowId, newEdge);
+    _read(edgeStateProvider(workflowId).notifier).upsertEdge(newEdge);
   }
 
-  /// 更新一条现有 Edge，仅当数据有变化时才执行
-  void updateEdge(String workflowId, EdgeModel oldEdge, EdgeModel updatedEdge) {
+  /// 更新一条现有 Edge
+  void updateEdge(EdgeModel oldEdge, EdgeModel updatedEdge) {
     if (oldEdge != updatedEdge) {
       behavior.onEdgeUpdated(oldEdge, updatedEdge);
-      read(edgeStateProvider.notifier).upsertEdge(workflowId, updatedEdge);
+      _read(edgeStateProvider(workflowId).notifier).upsertEdge(updatedEdge);
     } else {
-      debugPrint("No changes detected for edge ${oldEdge.id}, skipping update");
+      debugPrint("[EdgeController] No changes for edge ${oldEdge.id}, skip");
     }
   }
 
-  /// 删除一条 Edge，locked 时不执行删除
-  void deleteEdge(String workflowId, EdgeModel edge) {
+  /// 删除一条 Edge，若 locked 则跳过
+  void deleteEdge(EdgeModel edge) {
     if (edge.locked) {
-      debugPrint("Edge ${edge.id} is locked, skipping delete");
+      debugPrint("[EdgeController] Edge ${edge.id} locked, skip delete");
       return;
     }
-
     behavior.onEdgeDelete(edge);
-    read(edgeStateProvider.notifier).removeEdge(workflowId, edge.id);
+    _read(edgeStateProvider(workflowId).notifier).removeEdge(edge.id);
   }
+
+  /// 批量删除 (跳过 locked)
+  void deleteEdges(List<EdgeModel> edges) {
+    final deletable = edges.where((e) => !e.locked).toList();
+    for (final edge in deletable) {
+      behavior.onEdgeDelete(edge);
+    }
+    final ids = deletable.map((e) => e.id).toList();
+    _read(edgeStateProvider(workflowId).notifier).removeEdges(ids);
+  }
+
+  // endregion
+
+  // region =========== 选中 / 取消选中相关 ===========
 
   /// 选中一条 Edge
   void selectEdge(String edgeId, {bool multiSelect = false}) {
-    final state = read(edgeStateProvider);
+    final state = _read(edgeStateProvider(workflowId));
     final edge = _findEdgeInState(edgeId, state);
-
     if (edge == null) {
-      debugPrint("Attempted to select non-existing edge $edgeId");
+      debugPrint("[EdgeController] selectEdge: Edge $edgeId not found");
       return;
     }
 
     behavior.onEdgeSelected(edge);
-    read(edgeStateProvider.notifier)
+    _read(edgeStateProvider(workflowId).notifier)
         .selectEdge(edgeId, multiSelect: multiSelect);
   }
 
   /// 取消选中一条 Edge
   void deselectEdge(String edgeId) {
-    final state = read(edgeStateProvider);
+    final state = _read(edgeStateProvider(workflowId));
     final edge = _findEdgeInState(edgeId, state);
-
     if (edge == null) {
-      debugPrint("Attempted to deselect non-existing edge $edgeId");
+      debugPrint("[EdgeController] deselectEdge: Edge $edgeId not found");
       return;
     }
 
     behavior.onEdgeDeselected(edge);
-    read(edgeStateProvider.notifier).deselectEdge(edgeId);
+    _read(edgeStateProvider(workflowId).notifier).deselectEdge(edgeId);
   }
 
-  /// 辅助函数：在 state 中查找 edge
-  EdgeModel? _findEdgeInState(String edgeId, EdgeState state) {
-    for (final workflowEdges in state.edgesByWorkflow.values) {
-      if (workflowEdges.containsKey(edgeId)) {
-        return workflowEdges[edgeId];
+  /// 批量选中
+  void selectEdges(List<String> edgeIds) {
+    final notifier = _read(edgeStateProvider(workflowId).notifier);
+    final state = _read(edgeStateProvider(workflowId));
+
+    for (final eId in edgeIds) {
+      final edge = _findEdgeInState(eId, state);
+      if (edge != null) {
+        behavior.onEdgeSelected(edge);
+        // 用 multiSelect=true，避免覆盖已有选中
+        notifier.selectEdge(eId, multiSelect: true);
+      } else {
+        debugPrint("[EdgeController] selectEdges: Edge $eId not found");
       }
     }
-    return null;
   }
+
+  /// 清空所有已选
+  void clearSelectedEdges() {
+    _read(edgeStateProvider(workflowId).notifier).clearSelection();
+  }
+
+  // endregion
+
+  // region =========== Ghost Edge 拖拽相关 ===========
+
+  /// 开始拖拽（创建一个临时Edge + 记录拖拽状态）
+  void startEdgeDrag(EdgeModel tempEdge, Offset startPos) {
+    // 也可区分 onEdgeDragStart(...)，视需求而定
+    behavior.onEdgeCreated(tempEdge);
+    _read(edgeStateProvider(workflowId).notifier)
+        .startEdgeDrag(tempEdge, startPos);
+  }
+
+  /// 更新 Ghost Edge 的终点位置
+  void updateEdgeDrag(Offset currentPos) {
+    _read(edgeStateProvider(workflowId).notifier).updateEdgeDrag(currentPos);
+  }
+
+  /// 结束拖拽：若 canceled 或没 target => remove edge；否则 finalize
+  void endEdgeDrag({
+    required bool canceled,
+    String? targetNodeId,
+    String? targetAnchorId,
+  }) {
+    // 这里也可做：behavior.onEdgeDragEnd(...)
+    _read(edgeStateProvider(workflowId).notifier).endEdgeDrag(
+      canceled: canceled,
+      targetNodeId: targetNodeId,
+      targetAnchorId: targetAnchorId,
+    );
+  }
+
+  // endregion
+
+  // region =========== 内部辅助 ===========
+
+  EdgeModel? _findEdgeInState(String edgeId, EdgeState state) {
+    return state.edgesOf(workflowId)[edgeId];
+  }
+
+  // endregion
 }

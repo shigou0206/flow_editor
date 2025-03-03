@@ -16,9 +16,13 @@ class AnchorWidget extends StatefulWidget {
   final MouseCursor cursor;
   final AnchorBehavior? anchorBehavior;
 
+  /// 新增参数：用于获取Canvas的坐标转换
+  final GlobalKey canvasGlobalKey;
+
   const AnchorWidget({
     Key? key,
     required this.anchor,
+    required this.canvasGlobalKey, // ← 新增参数
     this.isHover = false,
     this.isSelected = false,
     this.baseSize = 24.0,
@@ -39,9 +43,25 @@ class _AnchorWidgetState extends State<AnchorWidget> {
   Offset? _dragStartPos;
   Offset? _currentDragPos;
 
-  /// 如果需要做 “逆变换”，这里可扩展
+  /// 🌟 修正后的方法：从局部坐标转换到Canvas世界坐标
   Offset _toWorldPosition(Offset localPos) {
-    return localPos;
+    final anchorBox = context.findRenderObject() as RenderBox;
+    final globalPos = anchorBox.localToGlobal(localPos);
+
+    final canvasBox =
+        widget.canvasGlobalKey.currentContext?.findRenderObject() as RenderBox?;
+
+    if (canvasBox == null) {
+      debugPrint('❌ canvasBox is null! globalPos=$globalPos');
+      return globalPos;
+    }
+
+    final worldPos = canvasBox.globalToLocal(globalPos);
+
+    debugPrint('✅ AnchorWidget _toWorldPosition: localPos=$localPos, '
+        'globalPos=$globalPos, worldPos=$worldPos');
+
+    return worldPos;
   }
 
   @override

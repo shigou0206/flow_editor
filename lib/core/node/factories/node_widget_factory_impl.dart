@@ -7,7 +7,13 @@ import 'node_widget_factory.dart';
 class NodeWidgetFactoryImpl implements NodeWidgetFactory {
   final NodeWidgetRegistry registry;
 
-  NodeWidgetFactoryImpl({required this.registry});
+  /// 🌟新增 canvasGlobalKey，用于坐标转换
+  final GlobalKey canvasGlobalKey;
+
+  NodeWidgetFactoryImpl({
+    required this.registry,
+    required this.canvasGlobalKey, // ← 新增参数
+  });
 
   @override
   Widget createNodeWidget(NodeModel node, {Key? key}) {
@@ -15,7 +21,11 @@ class NodeWidgetFactoryImpl implements NodeWidgetFactory {
     if (config != null) {
       final widget = config.builder(node);
       return config.useDefaultContainer
-          ? NodeWidget(node: node, child: widget)
+          ? NodeWidget(
+              node: node,
+              child: widget,
+              canvasGlobalKey: canvasGlobalKey, // ← 向下传递
+            )
           : widget;
     }
     throw Exception('Unsupported node type: ${node.type}');

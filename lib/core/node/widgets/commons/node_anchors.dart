@@ -4,22 +4,19 @@ import '../../../anchor/widgets/anchor_widget.dart';
 import '../../../anchor/utils/anchor_position_utils.dart';
 import '../../../anchor/behaviors/anchor_behavior.dart';
 
-/// NodeAnchors：负责在节点内部（或外扩）安放所有 anchorWidget。
 class NodeAnchors extends StatelessWidget {
   final NodeModel node;
-
-  /// 控制锚点点击/拖拽等交互的行为
   final AnchorBehavior? anchorBehavior;
-
-  /// 锚点的基础尺寸(不缩放时)
   final double anchorWidgetSize;
-
-  /// 若需要让锚点随画布一起缩放，可在外部传入 scale
   final double scale;
+
+  /// 🌟 新增: canvasGlobalKey，用于坐标变换
+  final GlobalKey canvasGlobalKey;
 
   const NodeAnchors({
     Key? key,
     required this.node,
+    required this.canvasGlobalKey, // ← 传入canvas的全局Key
     this.anchorBehavior,
     this.anchorWidgetSize = 24.0,
     this.scale = 1.0,
@@ -27,14 +24,11 @@ class NodeAnchors extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // 1) 计算外扩 (outside)
     final padding = computeAnchorPadding(
       node.anchors,
       anchorWidgetSize: anchorWidgetSize,
     );
 
-    // 2) 父容器最终大小 = 节点尺寸 + 外扩
-    //    若需要随画布缩放，也可在这里乘以 scale
     final totalWidth = node.width + padding.left + padding.right;
     final totalHeight = node.height + padding.top + padding.bottom;
     final scaledWidth = totalWidth * scale;
@@ -46,15 +40,12 @@ class NodeAnchors extends StatelessWidget {
       child: Stack(
         clipBehavior: Clip.none,
         children: node.anchors.map((anchor) {
-          // 3) 先算 anchor 在节点 (0,0)~(width,height) 内的局部中心 (不含外扩)
           final localPos = computeAnchorLocalPosition(
             anchor,
             Size(node.width, node.height),
             anchorWidgetSize: anchorWidgetSize,
           );
 
-          // 4) 让锚点中心点位于 (localPos + padding)，再减去半个锚点大小
-          //    若需要随画布缩放 => 整体乘 scale
           final dx =
               (localPos.dx - anchorWidgetSize / 2 + padding.left) * scale;
           final dy = (localPos.dy - anchorWidgetSize / 2 + padding.top) * scale;
@@ -66,6 +57,7 @@ class NodeAnchors extends StatelessWidget {
               anchor: anchor,
               baseSize: anchorWidgetSize,
               anchorBehavior: anchorBehavior,
+              canvasGlobalKey: canvasGlobalKey, // ← 🌟 传入canvasGlobalKey
             ),
           );
         }).toList(),

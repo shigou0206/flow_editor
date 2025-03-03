@@ -4,33 +4,33 @@ import 'package:flow_editor/core/node/models/node_model.dart';
 import 'package:flow_editor/core/edge/models/edge_model.dart';
 import 'package:flow_editor/core/edge/models/edge_enums.dart';
 import 'package:flow_editor/core/edge/models/edge_animation_config.dart';
-import 'package:flow_editor/core/edge/edge_utils.dart'; // buildEdgePaint, dashPath, drawArrowHead, getBezierPath
+import 'package:flow_editor/core/edge/edge_utils.dart'; // 包含 buildEdgePaint、dashPath、drawArrowHead、getBezierPath
 import 'package:flow_editor/core/types/position_enum.dart';
 import 'package:flow_editor/core/anchor/utils/anchor_position_utils.dart';
 
 class EdgeRenderer extends CustomPainter {
-  /// 当前画布内的所有节点（世界坐标）
+  /// 当前画布内所有节点（世界坐标）
   final List<NodeModel> nodes;
 
-  /// 当前画布内的所有连线
+  /// 当前画布内所有连线
   final List<EdgeModel> edges;
 
-  /// 选中的边ID集合，用于高亮或其它效果
+  /// 选中的边ID集合，用于高亮等效果
   final Set<String> selectedEdgeIds;
 
-  /// 拖拽中的边ID
+  /// 拖拽中的边ID（ghost edge）
   final String? draggingEdgeId;
 
-  /// 拖拽结束点（鼠标所在画布坐标）
+  /// 拖拽结束点（世界坐标下，由外层 Listener 提供）
   final Offset? draggingEnd;
 
-  /// 是否绘制半连接（source连接了，target未连）
+  /// 是否绘制半连接（即目标未连的情况）
   final bool showHalfConnectedEdges;
 
-  /// 默认是否使用贝塞尔曲线
+  /// 默认是否使用贝塞尔曲线绘制边
   final bool defaultUseBezier;
 
-  /// 用于与 NodeWidget 保持一致的锚点尺寸（影响 outside padding 计算）
+  /// 与 NodeWidget 中使用的锚点尺寸保持一致（用于计算 outside padding）
   final double anchorWidgetSize;
 
   const EdgeRenderer({
@@ -47,12 +47,10 @@ class EdgeRenderer extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     debugPrint('[EdgeRenderer] start paint => size=$size');
-
-    // 遍历所有边绘制
     for (final edge in edges) {
-      debugPrint('[EdgeRenderer] Checking edge: ${edge.id} '
-          'isConnected=${edge.isConnected} '
-          'source=${edge.sourceNodeId}:${edge.sourceAnchorId} '
+      debugPrint(
+          '[EdgeRenderer] Checking edge: ${edge.id}, isConnected=${edge.isConnected}, '
+          'source=${edge.sourceNodeId}:${edge.sourceAnchorId}, '
           'target=${edge.targetNodeId}:${edge.targetAnchorId}');
       if (edge.isConnected &&
           edge.targetNodeId != null &&
@@ -62,8 +60,6 @@ class EdgeRenderer extends CustomPainter {
         _drawHalfConnectedEdge(canvas, edge);
       }
     }
-
-    // 绘制拖拽中的 ghost line
     _drawDraggingEdge(canvas);
     debugPrint('[EdgeRenderer] end paint.');
   }
@@ -77,23 +73,27 @@ class EdgeRenderer extends CustomPainter {
       edge.targetNodeId!,
       edge.targetAnchorId!,
     );
-    debugPrint('[EdgeRenderer] _drawEdge: '
-        'sourceWorld=$sourceWorld, targetWorld=$targetWorld');
+
+    debugPrint(
+        '[EdgeRenderer] _drawEdge: sourceWorld=$sourceWorld, targetWorld=$targetWorld');
     if (sourceWorld == null || targetWorld == null) {
       debugPrint(
           '[EdgeRenderer] _drawEdge: Missing anchor info, skipping edge ${edge.id}');
       return;
     }
 
+    // 直接使用计算出的世界坐标
     final p1 = sourceWorld;
     final p2 = targetWorld;
     debugPrint('[EdgeRenderer] _drawEdge: p1=$p1, p2=$p2');
 
+    // 构建边的路径
     Path path = _buildEdgePath(p1, p2, sourcePos, targetPos, edge);
     final isSelected = selectedEdgeIds.contains(edge.id);
     final paint = buildEdgePaint(edge.lineStyle, edge.animConfig, isSelected);
     debugPrint(
         '[EdgeRenderer] _drawEdge: paint: color=${paint.color}, strokeWidth=${paint.strokeWidth}');
+
     if (edge.lineStyle.dashPattern.isNotEmpty) {
       path = dashPath(
         path,
@@ -122,11 +122,11 @@ class EdgeRenderer extends CustomPainter {
     );
     if (sourceWorld == null) {
       debugPrint(
-          '[EdgeRenderer] _drawHalfConnectedEdge: source anchor not found for edge ${edge.id}');
+          '[EdgeRenderer] _drawHalfConnectedEdge: Source anchor not found for edge ${edge.id}');
       return;
     }
     final p1 = sourceWorld;
-    final p2 = p1 + const Offset(50, 0);
+    final p2 = p1 + const Offset(50, 0); // fallback: 假设水平向右延伸50像素
     final isSelected = selectedEdgeIds.contains(edge.id);
     final paint = buildEdgePaint(edge.lineStyle, edge.animConfig, isSelected);
     final path = _buildEdgePath(p1, p2, null, null, edge);
@@ -177,7 +177,7 @@ class EdgeRenderer extends CustomPainter {
     if (edge.waypoints != null && edge.waypoints!.isNotEmpty) {
       final path = Path()..moveTo(p1.dx, p1.dy);
       for (final w in edge.waypoints!) {
-        path.lineTo(w[0], w[1]); // 这里假设是世界坐标
+        path.lineTo(w[0], w[1]); // 这里假设 waypoints 是世界坐标
       }
       path.lineTo(p2.dx, p2.dy);
       return path;
@@ -209,6 +209,7 @@ class EdgeRenderer extends CustomPainter {
     return 0;
   }
 
+  /// 核心：获取锚点的世界坐标和其位置（Position）
   (Offset?, Position?) _getAnchorWorldInfo(String nodeId, String anchorId) {
     final node = nodes.firstWhereOrNull((n) => n.id == nodeId);
     if (node == null) {
@@ -221,6 +222,7 @@ class EdgeRenderer extends CustomPainter {
           '[EdgeRenderer] _getAnchorWorldInfo: Anchor $anchorId not found in node $nodeId');
       return (null, null);
     }
+    // 计算 outside padding（需与 NodeWidget/NodeAnchors 保持一致）
     final padding = computeAnchorPadding(
       node.anchors,
       anchorWidgetSize: anchorWidgetSize,
@@ -232,8 +234,9 @@ class EdgeRenderer extends CustomPainter {
       anchorWidgetSize: anchorWidgetSize,
     );
     final worldPos = containerPos + localPos;
-    debugPrint('[EdgeRenderer] _getAnchorWorldInfo: '
-        'node=$nodeId, anchor=$anchorId, containerPos=$containerPos, localPos=$localPos, worldPos=$worldPos');
+    debugPrint(
+        '[EdgeRenderer] _getAnchorWorldInfo: node=$nodeId, anchor=$anchorId, '
+        'containerPos=$containerPos, localPos=$localPos, worldPos=$worldPos');
     return (worldPos, anchor.position);
   }
 

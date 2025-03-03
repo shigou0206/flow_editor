@@ -6,8 +6,6 @@ import '../../../anchor/utils/anchor_position_utils.dart';
 import 'node_block.dart';
 import 'node_anchors.dart';
 
-/// NodeWidget：负责 (节点主体 + 锚点) 的内部布局
-/// 不再乘scale, 让最外层 Transform 统一处理
 class NodeWidget extends StatelessWidget {
   final NodeModel node;
   final Widget child;
@@ -17,10 +15,14 @@ class NodeWidget extends StatelessWidget {
   static const double defaultAnchorSize = 24.0;
   final double anchorSize;
 
+  /// 🌟新增canvasGlobalKey用于坐标转换
+  final GlobalKey canvasGlobalKey;
+
   const NodeWidget({
     Key? key,
     required this.node,
     required this.child,
+    required this.canvasGlobalKey, // ← 新增参数
     this.behavior,
     this.anchorBehavior,
     this.anchorSize = defaultAnchorSize,
@@ -28,7 +30,6 @@ class NodeWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // 1) 计算 outside 时的外扩
     final padding = computeAnchorPadding(
       node.anchors,
       anchorWidgetSize: anchorSize,
@@ -52,7 +53,7 @@ class NodeWidget extends StatelessWidget {
               child: child,
             ),
           ),
-          // 节点锚点
+          // 节点锚点（🌟传入canvasGlobalKey）
           Positioned(
             left: padding.left,
             top: padding.top,
@@ -60,6 +61,7 @@ class NodeWidget extends StatelessWidget {
               node: node,
               anchorBehavior: anchorBehavior,
               anchorWidgetSize: anchorSize,
+              canvasGlobalKey: canvasGlobalKey, // ← 传入canvasGlobalKey
             ),
           ),
         ],

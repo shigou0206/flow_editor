@@ -1,161 +1,166 @@
-// lib/graph_editor.dart
 import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flow_editor/core/canvas/controllers/canvas_controller.dart';
-import 'package:flow_editor/core/canvas/models/canvas_visual_config.dart';
-import 'package:flow_editor/core/node/models/node_model.dart';
-import 'package:flow_editor/core/node/behaviors/default_node_behavior.dart';
-import 'package:flow_editor/core/anchor/models/anchor_model.dart';
-import 'package:flow_editor/core/anchor/models/anchor_enums.dart';
-import 'package:flow_editor/core/edge/models/edge_model.dart';
-import 'package:flow_editor/core/edge/models/edge_line_style.dart';
-import 'package:flow_editor/core/edge/models/edge_enums.dart';
-import 'package:flow_editor/core/types/position_enum.dart';
-import 'package:flow_editor/core/state_management/node_state/node_state.dart';
-import 'package:flow_editor/core/state_management/edge_state/edge_state.dart';
-import 'package:flow_editor/core/anchor/behaviors/default_anchor_behavior.dart';
-import 'package:flow_editor/core/canvas/controllers/canvas_mode_controller.dart';
-import 'package:flow_editor/core/canvas/controllers/canvas_viewport_controller.dart';
+
+// 你的现有 Controller/State
+import '../node/controllers/node_controller.dart'; // 你已有的 NodeController
+import '../edge/controllers/edge_controller.dart'; // 假设也有个 EdgeController                 // NodeEventCallback, etc. if needed
+import '../node/models/node_model.dart';
+import '../anchor/models/anchor_model.dart';
+import '../types/position_enum.dart';
+
+// 画布
+import '../canvas/controllers/canvas_controller.dart';
+import '../canvas/models/canvas_visual_config.dart';
+
+// 你可以再导入 nodeBehavior, anchorBehavior, edgeBehavior 等
 
 class GraphEditor extends ConsumerStatefulWidget {
-  const GraphEditor({Key? key}) : super(key: key);
+  /// 唯一工作流 ID
+  final String workflowId;
+
+  /// Node/Edge 控制器
+  final NodeController nodeController;
+  final EdgeController? edgeController; // 如果需要
+
+  /// 可视化配置
+  final CanvasVisualConfig visualConfig;
+
+  /// 初始平移/缩放
+  final Offset initialOffset;
+  final double initialScale;
+
+  const GraphEditor({
+    Key? key,
+    required this.workflowId,
+    required this.nodeController,
+    this.edgeController,
+    required this.visualConfig,
+    this.initialOffset = Offset.zero,
+    this.initialScale = 1.0,
+  }) : super(key: key);
 
   @override
   ConsumerState<GraphEditor> createState() => _GraphEditorState();
 }
 
 class _GraphEditorState extends ConsumerState<GraphEditor> {
-  // --- Node/Edge State (world coordinates) ---
-  late NodeState _nodeState;
-  late EdgeState _edgeState;
+  /// 画布全局Key (给 CanvasController / CanvasRenderer 用)
+  final _canvasGlobalKey = GlobalKey();
 
-  // --- Canvas Transformation Parameters ---
+  // 画布的平移/缩放
   Offset _canvasOffset = Offset.zero;
   double _canvasScale = 1.0;
 
-  // --- Variables for node dragging (screen coordinates) ---
+  // 拖拽节点中间状态
   String? _draggingNodeId;
   Offset? _lastPointerPos;
-
-  // --- Default behaviors ---
-  final _nodeBehavior = DefaultNodeBehavior();
-  late DefaultAnchorBehavior _anchorBehavior;
-
-  // --- Canvas Visual Configuration ---
-  final CanvasVisualConfig _visualConfig = const CanvasVisualConfig(
-    backgroundColor: Colors.white,
-    showGrid: true,
-    gridColor: Colors.grey,
-    gridSpacing: 20,
-  );
 
   @override
   void initState() {
     super.initState();
-    _nodeState = _buildInitialNodeState();
-    _edgeState = _buildInitialEdgeState();
 
-    // 使用 ConsumerState 中的 ref 传递给 DefaultAnchorBehavior
-    _anchorBehavior = DefaultAnchorBehavior(ref: ref, workflowId: 'workflow1');
+    // 用外部传进来的初始值
+    _canvasOffset = widget.initialOffset;
+    _canvasScale = widget.initialScale;
+
+    // 如果你给 NodeController 传了 onNodeAdded / onNodeRemoved，也会在此生效
+    // widget.nodeController.onNodeAdded = (node) => ...
   }
 
-  NodeState _buildInitialNodeState() {
-    // 创建两个示例节点，每个节点含有输入和输出锚点
-    final nodeA = NodeModel(
-      id: 'nodeA',
-      x: 100,
-      y: 120,
-      width: 100,
-      height: 60,
-      title: 'Node A',
-      anchors: [
-        AnchorModel(
-          id: 'outA',
-          nodeId: 'nodeA',
-          position: Position.right,
-          placement: AnchorPlacement.outside,
-          offsetDistance: 10,
-          ratio: 0.5,
-        ),
-        AnchorModel(
-          id: 'inA',
-          nodeId: 'nodeA',
-          position: Position.left,
-          placement: AnchorPlacement.inside,
-          offsetDistance: 10,
-          ratio: 0.5,
-        ),
-      ],
-    );
+  @override
+  Widget build(BuildContext context) {
+    // 1) 读 Node/Edge State: watch => 当节点/边变化时重绘
+    // final nodeState = ref.watch(nodeStateProvider(widget.workflowId));
+    // final edgeState = ref.watch(edgeStateProvider(widget.workflowId));
 
-    final nodeB = NodeModel(
-      id: 'nodeB',
-      x: 300,
-      y: 120,
-      width: 100,
-      height: 60,
-      title: 'Node B',
-      anchors: [
-        AnchorModel(
-          id: 'outB',
-          nodeId: 'nodeB',
-          position: Position.right,
-          placement: AnchorPlacement.outside,
-          offsetDistance: 10,
-          ratio: 0.5,
-        ),
-        AnchorModel(
-          id: 'inB',
-          nodeId: 'nodeB',
-          position: Position.left,
-          placement: AnchorPlacement.inside,
-          offsetDistance: 10,
-          ratio: 0.5,
-        ),
-      ],
-    );
-
-    return NodeState(nodesByWorkflow: {
-      'workflow1': {nodeA.id: nodeA, nodeB.id: nodeB},
-    });
-  }
-
-  EdgeState _buildInitialEdgeState() {
-    // 创建一个示例边，从 Node A 的输出连接到 Node B 的输入
-    final edgeAB = EdgeModel(
-      id: 'edgeAB',
-      sourceNodeId: 'nodeA',
-      sourceAnchorId: 'outA',
-      targetNodeId: 'nodeB',
-      targetAnchorId: 'inB',
-      isConnected: true,
-      lineStyle: const EdgeLineStyle(
-        colorHex: '#FF0000',
-        strokeWidth: 3,
-        useBezier: false,
-        arrowEnd: ArrowType.normal,
-        arrowStart: ArrowType.none,
-        dashPattern: [],
+    return Scaffold(
+      appBar: AppBar(
+        title: Text("GraphEditor (workflow = ${widget.workflowId})"),
+        actions: [
+          IconButton(onPressed: _fitView, icon: const Icon(Icons.fit_screen)),
+        ],
+      ),
+      body: Stack(
+        children: [
+          // ----- 拖拽/指针事件
+          Listener(
+            onPointerDown: _onPointerDown,
+            onPointerMove: _onPointerMove,
+            onPointerUp: _onPointerUp,
+            child: ClipRect(
+              child: Transform(
+                transform: Matrix4.identity()
+                  ..translate(-_canvasOffset.dx * _canvasScale,
+                      -_canvasOffset.dy * _canvasScale)
+                  ..scale(_canvasScale),
+                alignment: Alignment.topLeft,
+                child: Stack(
+                  children: [
+                    // 2) CanvasController 绘制节点/边 (可选看你架构)
+                    CanvasController(
+                      workflowId: widget.workflowId,
+                      visualConfig: widget.visualConfig,
+                      canvasGlobalKey: _canvasGlobalKey,
+                      offset: Offset.zero, // transform已经在外面处理
+                      scale: 1.0,
+                    ),
+                    // ... 也可以加别的 Widget, selectionBox, overlay, etc.
+                  ],
+                ),
+              ),
+            ),
+          ),
+          // ----- 左下角的操作面板
+          Positioned(
+            left: 10,
+            bottom: 10,
+            child: Column(
+              children: [
+                ElevatedButton(
+                  onPressed: _addNodeExample,
+                  child: const Text("Add Node"),
+                ),
+                const SizedBox(height: 8),
+                ElevatedButton(
+                  onPressed: _removeLastNodeExample,
+                  child: const Text("Remove Last Node"),
+                ),
+                const SizedBox(height: 8),
+                ElevatedButton(
+                  onPressed: _panRight,
+                  child: const Text("Pan Right"),
+                ),
+                const SizedBox(height: 8),
+                ElevatedButton(
+                  onPressed: _zoomIn,
+                  child: const Text("Zoom In"),
+                ),
+                const SizedBox(height: 8),
+                ElevatedButton(
+                  onPressed: _zoomOut,
+                  child: const Text("Zoom Out"),
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
     );
-    return EdgeState(edgesByWorkflow: {
-      'workflow1': {edgeAB.id: edgeAB},
-    });
   }
 
-  /// 将屏幕坐标转换为世界坐标（用于拖拽时的命中检测）
-  Offset screenToWorld(Offset screen) {
-    return screen / _canvasScale + _canvasOffset;
+  // ========== 拖拽节点逻辑: 改成用 NodeController? ==========
+
+  Offset screenToWorld(Offset screenPos) {
+    return screenPos / _canvasScale + _canvasOffset;
   }
 
-  // --- 节点拖拽逻辑 ---
   void _onPointerDown(PointerDownEvent event) {
     final worldPos = screenToWorld(event.localPosition);
+    // 根据 NodeController or nodeStateProvider hitTest
     final node = _hitTestNode(worldPos);
     if (node != null) {
       _draggingNodeId = node.id;
-      debugPrint('PointerDown: Node ${node.id} start drag');
     } else {
       _draggingNodeId = null;
     }
@@ -166,46 +171,76 @@ class _GraphEditorState extends ConsumerState<GraphEditor> {
     if (_draggingNodeId != null && _lastPointerPos != null) {
       final deltaScreen = event.localPosition - _lastPointerPos!;
       final deltaWorld = deltaScreen / _canvasScale;
-      _moveNode(_draggingNodeId!, deltaWorld);
+      // 用 NodeController 移动节点
+      final node = widget.nodeController.getNode(_draggingNodeId!);
+      if (node != null) {
+        final updated = node.copyWith(
+          x: node.x + deltaWorld.dx,
+          y: node.y + deltaWorld.dy,
+        );
+        widget.nodeController.upsertNode(updated);
+      }
     }
     _lastPointerPos = event.localPosition;
   }
 
   void _onPointerUp(PointerUpEvent event) {
-    if (_draggingNodeId != null) {
-      debugPrint('PointerUp: Node $_draggingNodeId end drag');
-    }
     _draggingNodeId = null;
     _lastPointerPos = null;
   }
 
-  void _moveNode(String nodeId, Offset deltaWorld) {
-    final wf = _nodeState.nodesByWorkflow['workflow1'];
-    if (wf == null) return;
-    final node = wf[nodeId];
-    if (node == null) return;
-    wf[nodeId] = node.copyWith(
-      x: node.x + deltaWorld.dx,
-      y: node.y + deltaWorld.dy,
-    );
-    setState(() {
-      _nodeState = _nodeState.copyWith(
-        nodesByWorkflow: {..._nodeState.nodesByWorkflow, 'workflow1': wf},
-      );
-    });
-  }
-
   NodeModel? _hitTestNode(Offset worldPos) {
-    final wf = _nodeState.nodesByWorkflow['workflow1'];
-    if (wf == null) return null;
-    for (final node in wf.values) {
+    // 你可以直接从 NodeController 里获取所有节点, 做碰撞检测
+    final nodes = widget.nodeController.getAllNodes();
+    for (final node in nodes) {
       final rect = Rect.fromLTWH(node.x, node.y, node.width, node.height);
-      if (rect.contains(worldPos)) return node;
+      if (rect.contains(worldPos)) {
+        return node;
+      }
     }
     return null;
   }
 
-  // --- 控制面板按钮处理 ---
+  // ========== 示例: 使用 NodeController 新增/删除节点 ==========
+
+  void _addNodeExample() {
+    final newId = 'new_${DateTime.now().millisecondsSinceEpoch}';
+    final node = NodeModel(
+      id: newId,
+      x: 200,
+      y: 200,
+      width: 80,
+      height: 40,
+      title: newId,
+      anchors: [
+        AnchorModel(
+          id: 'out_$newId',
+          nodeId: newId,
+          position: Position.right,
+          offsetDistance: 10,
+          ratio: 0.5,
+        ),
+        AnchorModel(
+          id: 'in_$newId',
+          nodeId: newId,
+          position: Position.left,
+          offsetDistance: 10,
+          ratio: 0.5,
+        ),
+      ],
+    );
+    widget.nodeController.upsertNode(node);
+  }
+
+  void _removeLastNodeExample() {
+    final allNodes = widget.nodeController.getAllNodes();
+    if (allNodes.isEmpty) return;
+    final lastNode = allNodes.last;
+    widget.nodeController.removeNode(lastNode.id);
+  }
+
+  // ========== 平移/缩放 ==========
+
   void _panRight() {
     setState(() {
       _canvasOffset += const Offset(10, 0);
@@ -225,11 +260,12 @@ class _GraphEditorState extends ConsumerState<GraphEditor> {
   }
 
   void _fitView() {
-    final wf = _nodeState.nodesByWorkflow['workflow1'];
-    if (wf == null || wf.isEmpty) return;
+    final allNodes = widget.nodeController.getAllNodes();
+    if (allNodes.isEmpty) return;
+
     double minX = double.infinity, minY = double.infinity;
     double maxX = -double.infinity, maxY = -double.infinity;
-    for (final node in wf.values) {
+    for (final node in allNodes) {
       minX = min(minX, node.x);
       minY = min(minY, node.y);
       maxX = max(maxX, node.x + node.width);
@@ -237,8 +273,10 @@ class _GraphEditorState extends ConsumerState<GraphEditor> {
     }
     final nodesWidth = maxX - minX;
     final nodesHeight = maxY - minY;
-    const double margin = 20;
+    if (nodesWidth <= 0 || nodesHeight <= 0) return;
+
     final size = MediaQuery.of(context).size;
+    const margin = 20.0;
     final scaleX = (size.width - margin * 2) / nodesWidth;
     final scaleY = (size.height - margin * 2) / nodesHeight;
     final newScale = min(scaleX, scaleY);
@@ -246,135 +284,10 @@ class _GraphEditorState extends ConsumerState<GraphEditor> {
     final centerY = (minY + maxY) / 2;
     final offsetX = (size.width / newScale) / 2 - centerX;
     final offsetY = (size.height / newScale) / 2 - centerY;
+
     setState(() {
       _canvasScale = newScale;
       _canvasOffset = Offset(offsetX, offsetY);
     });
-  }
-
-  // --- 新增/删除节点 (测试用) ---
-  int _newNodeCount = 0;
-  void _addNewNode() {
-    setState(() {
-      final wf = _nodeState.nodesByWorkflow['workflow1']!;
-      final newId = 'newNode_${DateTime.now().millisecondsSinceEpoch}';
-      final newNode = NodeModel(
-        id: newId,
-        x: 200.0,
-        y: 200.0,
-        width: 80,
-        height: 40,
-        title: newId,
-        anchors: [
-          // 输出锚点：右侧（outside）
-          AnchorModel(
-            id: 'out_$newId',
-            nodeId: newId,
-            position: Position.right,
-            placement: AnchorPlacement.outside,
-            offsetDistance: 10,
-            ratio: 0.5,
-          ),
-          // 输入锚点：左侧（inside）
-          AnchorModel(
-            id: 'in_$newId',
-            nodeId: newId,
-            position: Position.left,
-            placement: AnchorPlacement.inside,
-            offsetDistance: 10,
-            ratio: 0.5,
-          ),
-        ],
-      );
-      wf[newId] = newNode;
-      _nodeState = _nodeState.copyWith(
-        nodesByWorkflow: {..._nodeState.nodesByWorkflow, 'workflow1': wf},
-      );
-      debugPrint('Added new Node $newId');
-    });
-  }
-
-  void _removeLastNode() {
-    setState(() {
-      final wf = _nodeState.nodesByWorkflow['workflow1']!;
-      if (wf.isEmpty) return;
-      final lastKey = wf.keys.last;
-      wf.remove(lastKey);
-      _nodeState = _nodeState.copyWith(
-        nodesByWorkflow: {..._nodeState.nodesByWorkflow, 'workflow1': wf},
-      );
-      debugPrint('Removed node $lastKey');
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    // 外层 Transform 将世界坐标转换为屏幕坐标
-    return Stack(
-      children: [
-        Listener(
-          onPointerDown: _onPointerDown,
-          onPointerMove: _onPointerMove,
-          onPointerUp: _onPointerUp,
-          child: ClipRect(
-            child: Transform(
-              transform: Matrix4.identity()
-                ..translate(-_canvasOffset.dx * _canvasScale,
-                    -_canvasOffset.dy * _canvasScale)
-                ..scale(_canvasScale),
-              alignment: Alignment.topLeft,
-              child: CanvasController(
-                nodeState: _nodeState,
-                edgeState: _edgeState,
-                visualConfig: _visualConfig,
-                nodeBehavior: _nodeBehavior,
-                anchorBehavior:
-                    DefaultAnchorBehavior(ref: ref, workflowId: 'workflow1'),
-                offset: Offset.zero,
-                scale: 1.0,
-              ),
-            ),
-          ),
-        ),
-        Positioned(
-          left: 10,
-          bottom: 10,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              ElevatedButton(
-                onPressed: _addNewNode,
-                child: const Text('Add Node'),
-              ),
-              const SizedBox(height: 8),
-              ElevatedButton(
-                onPressed: _removeLastNode,
-                child: const Text('Remove Last Node'),
-              ),
-              const SizedBox(height: 8),
-              ElevatedButton(
-                onPressed: _panRight,
-                child: const Text('Pan Right'),
-              ),
-              const SizedBox(height: 8),
-              ElevatedButton(
-                onPressed: _zoomIn,
-                child: const Text('Zoom In'),
-              ),
-              const SizedBox(height: 8),
-              ElevatedButton(
-                onPressed: _zoomOut,
-                child: const Text('Zoom Out'),
-              ),
-              const SizedBox(height: 8),
-              ElevatedButton(
-                onPressed: _fitView,
-                child: const Text('Fit View'),
-              ),
-            ],
-          ),
-        ),
-      ],
-    );
   }
 }

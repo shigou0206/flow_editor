@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'node_state.dart';
 import '../../node/models/node_model.dart';
+import 'package:flutter/material.dart';
 
 class NodeStateNotifier extends StateNotifier<NodeState> {
   final String workflowId;
@@ -12,6 +13,16 @@ class NodeStateNotifier extends StateNotifier<NodeState> {
     final updatedNodes = Map<String, NodeModel>.from(workflowNodes);
     updatedNodes[node.id] = node;
     state = state.updateWorkflowNodes(workflowId, updatedNodes);
+  }
+
+  void moveNode(String nodeId, Offset delta) {
+    final workflowNodes = state.nodesOf(workflowId);
+    final node = workflowNodes[nodeId];
+    if (node == null) return;
+    final updatedNode =
+        node.copyWith(x: node.x + delta.dx, y: node.y + delta.dy);
+    final updatedMap = {...workflowNodes, nodeId: updatedNode};
+    state = state.updateWorkflowNodes(workflowId, updatedMap);
   }
 
   void upsertNodes(List<NodeModel> nodes) {
