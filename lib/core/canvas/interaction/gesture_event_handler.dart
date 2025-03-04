@@ -1,18 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+// 根据你项目实际的相对路径，引入 multiCanvasStateProvider
 import '../../state_management/canvas_state/canvas_state_provider.dart';
-import '../../canvas/models/canvas_interaction_mode.dart';
-import '../behaviors/canvas_behavior.dart';
 
+/// CanvasGestureHandler
+/// 
+/// - 在整个画布区域用 [Listener] 监听指针事件：
+///    [onPointerDown], [onPointerMove], [onPointerUp]
+/// - 将这些事件转发给 [multiCanvasStateProvider.notifier]，
+///   由内部的 [MultiCanvasStateNotifier] 根据当前模式
+///   (createEdge、editNode、panCanvas) 进行处理。
 class CanvasGestureHandler extends ConsumerStatefulWidget {
   final Widget child;
-  final CanvasBehavior canvasBehavior;
 
   const CanvasGestureHandler({
     Key? key,
     required this.child,
-    required this.canvasBehavior,
   }) : super(key: key);
 
   @override
@@ -21,9 +25,6 @@ class CanvasGestureHandler extends ConsumerStatefulWidget {
 }
 
 class _CanvasGestureHandlerState extends ConsumerState<CanvasGestureHandler> {
-  bool _isCreatingEdge = false;
-  String? _creatingEdgeId;
-
   @override
   Widget build(BuildContext context) {
     return Listener(
@@ -34,87 +35,19 @@ class _CanvasGestureHandlerState extends ConsumerState<CanvasGestureHandler> {
     );
   }
 
+  /// 当指针按下时 => startDrag
   void _onPointerDown(PointerDownEvent event) {
-    final mode = ref.read(multiCanvasStateProvider).activeState.mode;
-
-    switch (mode) {
-      case CanvasInteractionMode.createEdge:
-        _startEdgeCreation(event.position);
-        break;
-      case CanvasInteractionMode.editNode:
-        ref.read(multiCanvasStateProvider.notifier).startDrag(event.position);
-        break;
-      case CanvasInteractionMode.panCanvas:
-        widget.canvasBehavior.startPan(event.position);
-        break;
-      default:
-        break;
-    }
+    ref.read(multiCanvasStateProvider.notifier).startDrag(event.position);
   }
 
+  /// 指针移动时 => updateDrag
+  /// 注意，这里把 [event.delta] 传下去即可
   void _onPointerMove(PointerMoveEvent event) {
-    final mode = ref.read(multiCanvasStateProvider).activeState.mode;
-
-    switch (mode) {
-      case CanvasInteractionMode.createEdge:
-        if (_isCreatingEdge) {
-          _updateEdgeDrag(event.position);
-        }
-        break;
-      case CanvasInteractionMode.editNode:
-        ref.read(multiCanvasStateProvider.notifier).updateDrag(event.delta);
-        break;
-      case CanvasInteractionMode.panCanvas:
-        widget.canvasBehavior.updatePan(event.position);
-        break;
-      default:
-        break;
-    }
+    ref.read(multiCanvasStateProvider.notifier).updateDrag(event.delta);
   }
 
+  /// 指针抬起时 => endDrag
   void _onPointerUp(PointerUpEvent event) {
-    final mode = ref.read(multiCanvasStateProvider).activeState.mode;
-
-    switch (mode) {
-      case CanvasInteractionMode.createEdge:
-        if (_isCreatingEdge) {
-          _endEdgeCreation(event.position);
-        }
-        break;
-      case CanvasInteractionMode.editNode:
-        ref.read(multiCanvasStateProvider.notifier).endDrag();
-        break;
-      case CanvasInteractionMode.panCanvas:
-        widget.canvasBehavior.endPan();
-        break;
-      default:
-        break;
-    }
-  }
-
-  void _startEdgeCreation(Offset globalPos) {
-    setState(() {
-      _isCreatingEdge = true;
-    });
-    final multiCanvas = ref.read(multiCanvasStateProvider.notifier);
-    _creatingEdgeId = multiCanvas.startEdgeDrag(globalPos);
-  }
-
-  void _updateEdgeDrag(Offset globalPos) {
-    if (_creatingEdgeId == null) return;
-
-    final multiCanvas = ref.read(multiCanvasStateProvider.notifier);
-    multiCanvas.updateEdgeDrag(_creatingEdgeId!, globalPos);
-  }
-
-  void _endEdgeCreation(Offset globalPos) {
-    setState(() {
-      _isCreatingEdge = false;
-    });
-    if (_creatingEdgeId == null) return;
-
-    final multiCanvas = ref.read(multiCanvasStateProvider.notifier);
-    multiCanvas.endEdgeDrag(_creatingEdgeId!, globalPos);
-    _creatingEdgeId = null;
+    ref.read(multiCanvasStateProvider.notifier).endDrag();
   }
 }
