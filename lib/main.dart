@@ -22,7 +22,7 @@ class MyApp extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final workflowId = 'workflow1';
+    final workflowId = 'default';
 
     final nodeController = NodeController(
       container: ProviderScope.containerOf(context),

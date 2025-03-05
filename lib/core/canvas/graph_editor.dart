@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-// 你项目的引用，略...
 import '../node/controllers/node_controller.dart';
 import '../edge/controllers/edge_controller.dart';
 import '../node/models/node_model.dart';
@@ -14,14 +13,13 @@ import '../canvas/interaction/gesture_event_handler.dart';
 import '../state_management/canvas_state/canvas_state_provider.dart';
 import '../canvas/models/canvas_interaction_mode.dart';
 
-class GraphEditor extends ConsumerWidget {
+class GraphEditor extends ConsumerStatefulWidget {
   final String workflowId;
   final NodeController nodeController;
   final EdgeController? edgeController;
   final CanvasVisualConfig visualConfig;
   final CanvasBehavior canvasBehavior;
 
-  // 1) 在这定义一个 key（全局或静态都行，这里用静态示例）
   static final GlobalKey canvasStackKey = GlobalKey();
 
   const GraphEditor({
@@ -34,43 +32,55 @@ class GraphEditor extends ConsumerWidget {
   }) : super(key: key);
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    // 拿到当前画布状态
+  ConsumerState<GraphEditor> createState() => _GraphEditorState();
+}
+
+class _GraphEditorState extends ConsumerState<GraphEditor> {
+  @override
+  void initState() {
+    super.initState();
+    // 在挂载完成后，再异步调用 switchWorkflow
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ref
+          .read(multiCanvasStateProvider.notifier)
+          .switchWorkflow(widget.workflowId);
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    // 下面就不会在build时同步更改 provider
+    // 先 watch 当前 workflow 状态
     final canvasState = ref.watch(multiCanvasStateProvider).activeState;
-    // 拿到 Notifier
     final multiCanvasNotifier = ref.read(multiCanvasStateProvider.notifier);
 
-    // 2) 把 key 注入给 Notifier，让它能用 stackKey 做 globalToLocal
-    multiCanvasNotifier.stackKey = canvasStackKey;
+    // 注入 key
+    multiCanvasNotifier.stackKey = GraphEditor.canvasStackKey;
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('GraphEditor (workflow = $workflowId)'),
+        title: Text('GraphEditor (workflow = ${widget.workflowId})'),
         actions: [
           IconButton(
-            onPressed: canvasBehavior.resetView, // 如果你在 canvasBehavior 里有自定义逻辑
+            onPressed: widget.canvasBehavior.resetView,
             icon: const Icon(Icons.fit_screen),
           ),
         ],
       ),
       body: CanvasGestureHandler(
-        // CanvasGestureHandler 中捕获指针事件，调用 startDrag / updateDrag / endDrag
         child: CanvasController(
-          workflowId: workflowId,
-          visualConfig: visualConfig,
-          // 3) 用同一个 key
-          canvasGlobalKey: canvasStackKey,
-
-          // offset 和 scale 来自全局状态
+          workflowId: widget.workflowId,
+          visualConfig: widget.visualConfig,
+          canvasGlobalKey: GraphEditor.canvasStackKey,
           offset: canvasState.offset,
           scale: canvasState.scale,
         ),
       ),
-      floatingActionButton: _buildFloatingActions(ref),
+      floatingActionButton: _buildFloatingActions(),
     );
   }
 
-  Widget _buildFloatingActions(WidgetRef ref) {
+  Widget _buildFloatingActions() {
     final multiCanvasNotifier = ref.read(multiCanvasStateProvider.notifier);
     final currentMode = ref.watch(multiCanvasStateProvider).activeState.mode;
 
@@ -78,7 +88,6 @@ class GraphEditor extends ConsumerWidget {
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.end,
       children: [
-        // 新增一个节点
         FloatingActionButton(
           onPressed: _addNodeExample,
           heroTag: 'addNode',
@@ -86,7 +95,6 @@ class GraphEditor extends ConsumerWidget {
         ),
         const SizedBox(height: 8),
 
-        // 删除最后一个节点
         FloatingActionButton(
           onPressed: _removeLastNodeExample,
           heroTag: 'removeNode',
@@ -94,10 +102,11 @@ class GraphEditor extends ConsumerWidget {
         ),
         const SizedBox(height: 8),
 
-        // 切换到 "editNode" 模式
+        // 切换到 editNode
         FloatingActionButton(
           onPressed: () {
-            multiCanvasNotifier.setInteractionMode(CanvasInteractionMode.editNode);
+            multiCanvasNotifier
+                .setInteractionMode(CanvasInteractionMode.editNode);
           },
           heroTag: 'forceEditNode',
           backgroundColor: Colors.orange,
@@ -109,9 +118,11 @@ class GraphEditor extends ConsumerWidget {
         FloatingActionButton(
           onPressed: () {
             if (currentMode == CanvasInteractionMode.editNode) {
-              multiCanvasNotifier.setInteractionMode(CanvasInteractionMode.panCanvas);
+              multiCanvasNotifier
+                  .setInteractionMode(CanvasInteractionMode.panCanvas);
             } else {
-              multiCanvasNotifier.setInteractionMode(CanvasInteractionMode.editNode);
+              multiCanvasNotifier
+                  .setInteractionMode(CanvasInteractionMode.editNode);
             }
           },
           heroTag: 'toggleMode',
@@ -119,7 +130,7 @@ class GraphEditor extends ConsumerWidget {
         ),
         const SizedBox(height: 8),
 
-        // 平移画布 (向右移动10px)
+        // 平移画布
         FloatingActionButton(
           onPressed: () => multiCanvasNotifier.panBy(10, 0),
           heroTag: 'panRight',
@@ -127,7 +138,6 @@ class GraphEditor extends ConsumerWidget {
         ),
         const SizedBox(height: 8),
 
-        // 放大
         FloatingActionButton(
           onPressed: () => multiCanvasNotifier.zoomAtPoint(1.1, Offset.zero),
           heroTag: 'zoomIn',
@@ -135,7 +145,6 @@ class GraphEditor extends ConsumerWidget {
         ),
         const SizedBox(height: 8),
 
-        // 缩小
         FloatingActionButton(
           onPressed: () => multiCanvasNotifier.zoomAtPoint(0.9, Offset.zero),
           heroTag: 'zoomOut',
@@ -143,7 +152,6 @@ class GraphEditor extends ConsumerWidget {
         ),
         const SizedBox(height: 8),
 
-        // 重置画布
         FloatingActionButton(
           onPressed: () => multiCanvasNotifier.resetCanvas(),
           heroTag: 'resetCanvas',
@@ -153,7 +161,6 @@ class GraphEditor extends ConsumerWidget {
     );
   }
 
-  /// 示例: 添加一个新的节点
   void _addNodeExample() {
     final newId = 'new_${DateTime.now().millisecondsSinceEpoch}';
     final node = NodeModel(
@@ -164,30 +171,27 @@ class GraphEditor extends ConsumerWidget {
       height: 40,
       title: newId,
       anchors: [
-        AnchorModel(
-          id: 'out_$newId',
-          nodeId: newId,
-          position: Position.right,
-          offsetDistance: 10,
-          ratio: 0.5,
-        ),
-        AnchorModel(
-          id: 'in_$newId',
-          nodeId: newId,
-          position: Position.left,
-          offsetDistance: 10,
-          ratio: 0.5,
-        ),
+        // AnchorModel(
+        //     id: 'out_$newId',
+        //     nodeId: newId,
+        //     position: Position.right,
+        //     offsetDistance: 0,
+        //     ratio: 0.5),
+        // AnchorModel(
+        //     id: 'in_$newId',
+        //     nodeId: newId,
+        //     position: Position.left,
+        //     offsetDistance: 10,
+        //     ratio: 0.5),
       ],
     );
-    nodeController.upsertNode(node);
+    widget.nodeController.upsertNode(node);
   }
 
-  /// 示例: 移除最后一个节点
   void _removeLastNodeExample() {
-    final allNodes = nodeController.getAllNodes();
+    final allNodes = widget.nodeController.getAllNodes();
     if (allNodes.isEmpty) return;
     final lastNode = allNodes.last;
-    nodeController.removeNode(lastNode.id);
+    widget.nodeController.removeNode(lastNode.id);
   }
 }
