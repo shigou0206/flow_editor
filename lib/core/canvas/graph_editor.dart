@@ -5,6 +5,7 @@ import '../node/controllers/node_controller.dart';
 import '../edge/controllers/edge_controller.dart';
 import '../node/models/node_model.dart';
 import '../anchor/models/anchor_model.dart';
+import '../anchor/models/anchor_enums.dart';
 import '../types/position_enum.dart';
 import '../canvas/controllers/canvas_controller.dart';
 import '../canvas/models/canvas_visual_config.dart';
@@ -19,8 +20,6 @@ class GraphEditor extends ConsumerStatefulWidget {
   final EdgeController? edgeController;
   final CanvasVisualConfig visualConfig;
   final CanvasBehavior canvasBehavior;
-
-  static final GlobalKey canvasStackKey = GlobalKey();
 
   const GraphEditor({
     Key? key,
@@ -52,10 +51,6 @@ class _GraphEditorState extends ConsumerState<GraphEditor> {
     // 下面就不会在build时同步更改 provider
     // 先 watch 当前 workflow 状态
     final canvasState = ref.watch(multiCanvasStateProvider).activeState;
-    final multiCanvasNotifier = ref.read(multiCanvasStateProvider.notifier);
-
-    // 注入 key
-    multiCanvasNotifier.stackKey = GraphEditor.canvasStackKey;
 
     return Scaffold(
       appBar: AppBar(
@@ -71,7 +66,6 @@ class _GraphEditorState extends ConsumerState<GraphEditor> {
         child: CanvasController(
           workflowId: widget.workflowId,
           visualConfig: widget.visualConfig,
-          canvasGlobalKey: GraphEditor.canvasStackKey,
           offset: canvasState.offset,
           scale: canvasState.scale,
         ),
@@ -171,18 +165,20 @@ class _GraphEditorState extends ConsumerState<GraphEditor> {
       height: 40,
       title: newId,
       anchors: [
-        // AnchorModel(
-        //     id: 'out_$newId',
-        //     nodeId: newId,
-        //     position: Position.right,
-        //     offsetDistance: 0,
-        //     ratio: 0.5),
-        // AnchorModel(
-        //     id: 'in_$newId',
-        //     nodeId: newId,
-        //     position: Position.left,
-        //     offsetDistance: 10,
-        //     ratio: 0.5),
+        AnchorModel(
+            id: 'out_$newId',
+            nodeId: newId,
+            position: Position.right,
+            placement: AnchorPlacement.outside,
+            offsetDistance: 0,
+            ratio: 0.5),
+        AnchorModel(
+            id: 'in_$newId',
+            nodeId: newId,
+            position: Position.left,
+            placement: AnchorPlacement.outside,
+            offsetDistance: 0,
+            ratio: 0.5),
       ],
     );
     widget.nodeController.upsertNode(node);

@@ -24,7 +24,6 @@ class NodeWidgetFactoryImpl implements NodeWidgetFactory {
           ? NodeWidget(
               node: node,
               child: widget,
-              canvasGlobalKey: canvasGlobalKey, // ← 向下传递
             )
           : widget;
     }

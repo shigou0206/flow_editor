@@ -32,19 +32,15 @@ class CanvasController extends ConsumerWidget {
   /// 可选：锚点行为
   final AnchorBehavior? anchorBehavior;
 
-  /// 画布的 GlobalKey，供子组件获取全局坐标等
-  final GlobalKey canvasGlobalKey;
-
   const CanvasController({
-    Key? key,
+    super.key,
     required this.workflowId,
     required this.visualConfig,
-    required this.canvasGlobalKey,
     this.offset = Offset.zero,
     this.scale = 1.0,
     this.nodeBehavior,
     this.anchorBehavior,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -65,7 +61,6 @@ class CanvasController extends ConsumerWidget {
           visualConfig: visualConfig,
           nodeBehavior: nodeBehavior,
           anchorBehavior: anchorBehavior,
-          canvasGlobalKey: canvasGlobalKey,
         ),
       ),
     );

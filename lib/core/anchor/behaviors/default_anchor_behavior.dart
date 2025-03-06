@@ -164,23 +164,18 @@ class DefaultAnchorBehavior implements AnchorBehavior {
         // 跳过当前正在拖拽的 anchor
         if (anchor.id == excludeAnchorId) continue;
 
-        // 如果你对 anchor 有边缘偏移，需要在计算时加上
-        final padding = computeAnchorPadding(
-          node.anchors,
-          anchorWidgetSize: 24.0,
-        );
+        // 计算anchor的本地偏移
 
         // 计算anchor的本地偏移
         final anchorLocalPos = computeAnchorLocalPosition(
           anchor,
           Size(node.width, node.height),
-          anchorWidgetSize: 24.0,
         );
 
         // 将 anchor 的本地坐标转换为世界坐标
         final anchorWorldPos = Offset(
-          node.x - padding.left + anchorLocalPos.dx,
-          node.y - padding.top + anchorLocalPos.dy,
+          node.x + anchorLocalPos.dx,
+          node.y + anchorLocalPos.dy,
         );
 
         // 计算与鼠标落点的距离

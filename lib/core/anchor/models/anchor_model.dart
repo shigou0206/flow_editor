@@ -6,6 +6,9 @@ class AnchorModel {
   final Position position;
   final double ratio;
 
+  final double width;
+  final double height;
+
   final AnchorDirection direction;
   final int? maxConnections;
   final List<String>? acceptedEdgeTypes;
@@ -30,6 +33,8 @@ class AnchorModel {
     required this.id,
     required this.position,
     double ratio = 0.5,
+    this.width = 24.0,
+    this.height = 24.0,
     this.direction = AnchorDirection.inout,
     this.maxConnections,
     this.acceptedEdgeTypes,
@@ -58,6 +63,8 @@ class AnchorModel {
     String? id,
     Position? position,
     double? ratio,
+    double? width,
+    double? height,
     AnchorDirection? direction,
     int? maxConnections,
     List<String>? acceptedEdgeTypes,
@@ -79,6 +86,8 @@ class AnchorModel {
       id: id ?? this.id,
       position: position ?? this.position,
       ratio: ratio ?? this.ratio,
+      width: width ?? this.width,
+      height: height ?? this.height,
       direction: direction ?? this.direction,
       maxConnections: maxConnections ?? this.maxConnections,
       acceptedEdgeTypes: acceptedEdgeTypes ?? this.acceptedEdgeTypes,
@@ -104,6 +113,8 @@ class AnchorModel {
       'id': id,
       'position': position.toString().split('.').last,
       'ratio': ratio,
+      'width': width,
+      'height': height,
       'direction': direction.toString().split('.').last,
       'maxConnections': maxConnections,
       'acceptedEdgeTypes': acceptedEdgeTypes,
@@ -130,6 +141,8 @@ class AnchorModel {
       id: json['id']?.toString() ?? '',
       position: _parsePosition(json['position']),
       ratio: _parseRatio(json['ratio']),
+      width: json['width'] is num ? (json['width'] as num).toDouble() : 24.0,
+      height: json['height'] is num ? (json['height'] as num).toDouble() : 24.0,
       direction: _parseAnchorDirection(json['direction']),
       maxConnections: json['maxConnections'] is num
           ? (json['maxConnections'] as num).toInt()

@@ -52,31 +52,30 @@ class _NodeBlockState extends State<NodeBlock> {
 
   @override
   Widget build(BuildContext context) {
-    // 不再乘scale, 只根据父容器(传入 SizedBox)的 constraints
     return LayoutBuilder(
       builder: (ctx, constraints) {
-        final w = constraints.hasBoundedWidth
+        final double w = constraints.hasBoundedWidth
             ? constraints.maxWidth
             : widget.node.width;
-        final h = constraints.hasBoundedHeight
+        final double h = constraints.hasBoundedHeight
             ? constraints.maxHeight
             : widget.node.height;
 
         return SizedBox(
           width: w,
           height: h,
-          child: MouseRegion(
-            onEnter: (_) => widget.behavior?.onHover(widget.node, true),
-            onExit: (_) => widget.behavior?.onHover(widget.node, false),
-            child: Stack(
-              clipBehavior: Clip.none,
-              children: [
-                GestureDetector(
-                  behavior: HitTestBehavior.opaque,
-                  onTapUp: _onTapUp,
-                  onSecondaryTapDown: (details) => widget.behavior
-                      ?.onContextMenu(widget.node, details.localPosition),
-                  child: Container(
+          child: GestureDetector(
+            behavior: HitTestBehavior.opaque,
+            onTapUp: _onTapUp,
+            onSecondaryTapDown: (details) => widget.behavior
+                ?.onContextMenu(widget.node, details.localPosition),
+            child: MouseRegion(
+              onEnter: (_) => widget.behavior?.onHover(widget.node, true),
+              onExit: (_) => widget.behavior?.onHover(widget.node, false),
+              child: Stack(
+                clipBehavior: Clip.none,
+                children: [
+                  Container(
                     width: w,
                     height: h,
                     decoration: BoxDecoration(
@@ -93,24 +92,25 @@ class _NodeBlockState extends State<NodeBlock> {
                     alignment: Alignment.center,
                     child: widget.child,
                   ),
-                ),
-                Positioned(
-                  top: -10,
-                  right: -10,
-                  width: 24,
-                  height: 24,
-                  child: IconButton(
-                    padding: EdgeInsets.zero,
-                    constraints: const BoxConstraints(
-                      maxWidth: 24,
-                      maxHeight: 24,
+                  // 删除按钮，使用 Positioned 放置于右上角（可溢出显示）
+                  Positioned(
+                    top: -10,
+                    right: -10,
+                    width: 24,
+                    height: 24,
+                    child: IconButton(
+                      padding: EdgeInsets.zero,
+                      constraints: const BoxConstraints(
+                        maxWidth: 24,
+                        maxHeight: 24,
+                      ),
+                      iconSize: 18,
+                      icon: const Icon(Icons.delete),
+                      onPressed: () => widget.behavior?.onDelete(widget.node),
                     ),
-                    iconSize: 18,
-                    icon: const Icon(Icons.delete),
-                    onPressed: () => widget.behavior?.onDelete(widget.node),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         );

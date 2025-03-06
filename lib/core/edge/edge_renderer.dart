@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'dart:math' show pi;
 import 'package:flow_editor/core/node/models/node_model.dart';
 import 'package:flow_editor/core/edge/models/edge_model.dart';
 import 'package:flow_editor/core/edge/models/edge_enums.dart';
@@ -223,16 +222,9 @@ class EdgeRenderer extends CustomPainter {
       return (null, null);
     }
     // 计算 outside padding（需与 NodeWidget/NodeAnchors 保持一致）
-    final padding = computeAnchorPadding(
-      node.anchors,
-      anchorWidgetSize: anchorWidgetSize,
-    );
-    final containerPos = Offset(node.x - padding.left, node.y - padding.top);
-    final localPos = computeAnchorLocalPosition(
-      anchor,
-      Size(node.width, node.height),
-      anchorWidgetSize: anchorWidgetSize,
-    );
+    final containerPos = Offset(node.x, node.y);
+    final localPos =
+        computeAnchorLocalPosition(anchor, Size(node.width, node.height));
     final worldPos = containerPos + localPos;
     debugPrint(
         '[EdgeRenderer] _getAnchorWorldInfo: node=$nodeId, anchor=$anchorId, '
