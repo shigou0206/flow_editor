@@ -12,9 +12,6 @@ Offset computeAnchorLocalPosition(AnchorModel anchor, Size nodeSize) {
   final double w = nodeSize.width;
   final double h = nodeSize.height;
 
-  // 锚点尺寸假设为正方形或者以宽度作为统一标量
-  final double anchorDimension = anchor.width;
-
   // 1) 计算基准点（基于 anchor 的位置和比例）
   final (baseX, baseY) = switch (anchor.position) {
     Position.left => (0.0, h * anchor.ratio),
@@ -33,10 +30,10 @@ Offset computeAnchorLocalPosition(AnchorModel anchor, Size nodeSize) {
   double effectiveDistance;
   switch (anchor.placement) {
     case AnchorPlacement.outside:
-      effectiveDistance = anchor.offsetDistance + anchorDimension * 0.5;
+      effectiveDistance = anchor.offsetDistance;
       break;
     case AnchorPlacement.inside:
-      effectiveDistance = -(anchor.offsetDistance + anchorDimension * 0.5);
+      effectiveDistance = -anchor.offsetDistance;
       break;
     case AnchorPlacement.border:
       effectiveDistance = 0;
@@ -46,8 +43,8 @@ Offset computeAnchorLocalPosition(AnchorModel anchor, Size nodeSize) {
   // 5) position
 
   // 6) 最终局部坐标 = 基准点 + (rotatedNormal * effectiveDistance)
-  final dx = baseX + rotatedNormal.dx * effectiveDistance;
-  final dy = baseY + rotatedNormal.dy * effectiveDistance;
+  final dx = baseX + rotatedNormal.dx * effectiveDistance - anchor.width / 2;
+  final dy = baseY + rotatedNormal.dy * effectiveDistance - anchor.height / 2;
   return Offset(dx, dy);
 }
 
@@ -75,9 +72,9 @@ AnchorPadding computeAnchorPadding(
   for (final anchor in anchors) {
     final localPos =
         computeAnchorLocalPosition(anchor, Size(node.width, node.height));
-    expandLeft = max(expandLeft, node.width - localPos.dx);
+    expandLeft = max(expandLeft, -localPos.dx);
     expandRight = max(expandRight, localPos.dx + anchor.width - node.width);
-    expandTop = max(expandTop, node.height - localPos.dy);
+    expandTop = max(expandTop, -localPos.dy);
     expandBottom = max(expandBottom, localPos.dy + anchor.height - node.height);
   }
 

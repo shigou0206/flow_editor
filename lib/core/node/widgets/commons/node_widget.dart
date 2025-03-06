@@ -51,9 +51,13 @@ class NodeWidget extends StatelessWidget {
             ),
             // 锚点层，同样放在 (padding.left, padding.top)
             Positioned(
-              left: padding.left,
-              top: padding.top,
-              child: NodeAnchors(node: node, anchorBehavior: anchorBehavior),
+              left: 0,
+              top: 0,
+              child: NodeAnchors(
+                node: node,
+                anchorBehavior: anchorBehavior,
+                padding: padding,
+              ),
             ),
           ],
         ),

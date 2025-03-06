@@ -7,20 +7,21 @@ import '../../../anchor/behaviors/anchor_behavior.dart';
 class NodeAnchors extends StatelessWidget {
   final NodeModel node;
   final AnchorBehavior? anchorBehavior;
-  final double scale;
+
+  final AnchorPadding padding;
 
   const NodeAnchors({
     Key? key,
     required this.node,
     this.anchorBehavior,
-    this.scale = 1.0,
+    required this.padding,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      width: node.width,
-      height: node.height,
+      width: node.width + padding.left + padding.right,
+      height: node.height + padding.top + padding.bottom,
       child: Stack(
         clipBehavior: Clip.none,
         children: node.anchors.map((anchor) {
@@ -28,8 +29,8 @@ class NodeAnchors extends StatelessWidget {
               computeAnchorLocalPosition(anchor, Size(node.width, node.height));
 
           return Positioned(
-            left: localPos.dx - anchor.width / 2,
-            top: localPos.dy - anchor.height / 2,
+            left: localPos.dx + padding.left,
+            top: localPos.dy + padding.top,
             child: AnchorWidget(
               anchor: anchor,
               width: anchor.width,

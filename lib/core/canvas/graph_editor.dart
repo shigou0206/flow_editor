@@ -170,14 +170,14 @@ class _GraphEditorState extends ConsumerState<GraphEditor> {
             nodeId: newId,
             position: Position.right,
             placement: AnchorPlacement.outside,
-            offsetDistance: 0,
+            offsetDistance: 10,
             ratio: 0.5),
         AnchorModel(
             id: 'in_$newId',
             nodeId: newId,
             position: Position.left,
             placement: AnchorPlacement.outside,
-            offsetDistance: 0,
+            offsetDistance: 10,
             ratio: 0.5),
       ],
     );
