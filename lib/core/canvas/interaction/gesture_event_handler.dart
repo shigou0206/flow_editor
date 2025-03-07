@@ -1,13 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-// 根据你项目实际的相对路径，引入 multiCanvasStateProvider
 import '../../state_management/canvas_state/canvas_state_provider.dart';
 
 /// CanvasGestureHandler
 ///
-/// - 在整个画布区域用 [Listener] 监听指针事件：
-///    [onPointerDown], [onPointerMove], [onPointerUp]
+/// - 在整个画布区域使用 [Listener] 监听指针事件：
+///    [onPointerDown], [onPointerMove], [onPointerUp] 和 [onPointerCancel]
 /// - 将这些事件转发给 [multiCanvasStateProvider.notifier]，
 ///   由内部的 [MultiCanvasStateNotifier] 根据当前模式
 ///   (createEdge、editNode、panCanvas) 进行处理。
@@ -31,29 +30,34 @@ class _CanvasGestureHandlerState extends ConsumerState<CanvasGestureHandler> {
       onPointerDown: _onPointerDown,
       onPointerMove: _onPointerMove,
       onPointerUp: _onPointerUp,
+      onPointerCancel: _onPointerCancel,
       child: widget.child,
     );
   }
 
-  /// 当指针按下时 => startDrag
+  /// 当指针按下时，转换全局坐标到局部坐标，并通知拖拽开始
   void _onPointerDown(PointerDownEvent event) {
-    // 打印全局坐标（屏幕坐标）
     debugPrint('[PointerDown] globalPos=${event.position}');
-    // 或者在这里还可以获取 localPosition （如果 CanvasGestureHandler 只包裹了一个局部）
-    final localPos =
-        (context.findRenderObject() as RenderBox).globalToLocal(event.position);
-    debugPrint('[PointerDown] localPos=$localPos');
+    final renderBox = context.findRenderObject() as RenderBox?;
+    if (renderBox != null) {
+      final localPos = renderBox.globalToLocal(event.position);
+      debugPrint('[PointerDown] localPos=$localPos');
+    }
     ref.read(multiCanvasStateProvider.notifier).startDrag(event.position);
   }
 
-  /// 指针移动时 => updateDrag
-  /// 注意，这里把 [event.delta] 传下去即可
+  /// 指针移动时，将 [event.delta] 传递给拖拽更新
   void _onPointerMove(PointerMoveEvent event) {
     ref.read(multiCanvasStateProvider.notifier).updateDrag(event.delta);
   }
 
-  /// 指针抬起时 => endDrag
+  /// 指针抬起时，通知拖拽结束
   void _onPointerUp(PointerUpEvent event) {
+    ref.read(multiCanvasStateProvider.notifier).endDrag();
+  }
+
+  /// 指针取消时，也通知拖拽结束
+  void _onPointerCancel(PointerCancelEvent event) {
     ref.read(multiCanvasStateProvider.notifier).endDrag();
   }
 }

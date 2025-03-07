@@ -1,4 +1,5 @@
 import 'package:flutter/foundation.dart'; // for debugPrint
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../state_management/node_state/node_state_provider.dart';
 import '../../state_management/node_state/node_state.dart';
@@ -98,5 +99,28 @@ class NodeController implements INodeController {
     } catch (_) {
       return null;
     }
+  }
+
+  /// 拖拽开始时调用
+  @override
+  void onNodeDragStart(NodeModel node, DragStartDetails details) {
+    debugPrint('Node drag started: ${node.id}');
+    // 可根据需要在拖拽开始时执行其他逻辑
+  }
+
+  /// 拖拽过程中调用，更新节点位置并同步状态
+  @override
+  void onNodeDragUpdate(NodeModel node, DragUpdateDetails details) {
+    node.x += details.delta.dx;
+    node.y += details.delta.dy;
+    upsertNode(node);
+    debugPrint('Node drag updated: ${node.id}');
+  }
+
+  /// 拖拽结束时调用
+  @override
+  void onNodeDragEnd(NodeModel node, DragEndDetails details) {
+    debugPrint('Node drag ended: ${node.id}');
+    // 可根据需要在拖拽结束时执行其他逻辑
   }
 }

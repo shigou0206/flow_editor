@@ -62,13 +62,11 @@ class _GraphEditorState extends ConsumerState<GraphEditor> {
           ),
         ],
       ),
-      body: CanvasGestureHandler(
-        child: CanvasController(
-          workflowId: widget.workflowId,
-          visualConfig: widget.visualConfig,
-          offset: canvasState.offset,
-          scale: canvasState.scale,
-        ),
+      body: CanvasController(
+        workflowId: widget.workflowId,
+        visualConfig: widget.visualConfig,
+        offset: canvasState.offset,
+        scale: canvasState.scale,
       ),
       floatingActionButton: _buildFloatingActions(),
     );

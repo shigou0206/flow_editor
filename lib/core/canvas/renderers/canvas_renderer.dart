@@ -1,4 +1,3 @@
-// file: canvas_renderer.dart
 import 'package:flutter/material.dart';
 
 import '../../node/behaviors/node_behavior.dart';
@@ -11,7 +10,7 @@ import '../../edge/edge_renderer.dart';
 import '../../node/widgets/commons/node_widget.dart';
 
 /// CanvasRenderer:
-/// 根据传入的 nodeState、edgeState、visualConfig 等进行绘制。
+/// 根据传入的 nodeState、edgeState、visualConfig 等进行绘制，同时背景层支持手势操作。
 class CanvasRenderer extends StatelessWidget {
   final NodeState nodeState;
   final EdgeState edgeState;
@@ -20,6 +19,10 @@ class CanvasRenderer extends StatelessWidget {
   final NodeBehavior? nodeBehavior;
   final AnchorBehavior? anchorBehavior;
 
+  /// 可选：背景层手势回调，例如点击背景、拖动背景等
+  final VoidCallback? onBackgroundTap;
+  final GestureDragUpdateCallback? onBackgroundDragUpdate;
+
   const CanvasRenderer({
     super.key,
     required this.nodeState,
@@ -27,6 +30,8 @@ class CanvasRenderer extends StatelessWidget {
     required this.visualConfig,
     this.nodeBehavior,
     this.anchorBehavior,
+    this.onBackgroundTap,
+    this.onBackgroundDragUpdate,
   });
 
   @override
@@ -43,13 +48,18 @@ class CanvasRenderer extends StatelessWidget {
     return Stack(
       fit: StackFit.expand,
       children: [
-        // 背景绘制
-        CustomPaint(
-          size: Size.infinite,
-          painter: BackgroundRenderer(
-            config: visualConfig,
-            offset: Offset.zero,
-            scale: 1.0,
+        // 背景层，增加手势处理
+        GestureDetector(
+          behavior: HitTestBehavior.opaque,
+          onTap: onBackgroundTap,
+          onPanUpdate: onBackgroundDragUpdate,
+          child: CustomPaint(
+            size: Size.infinite,
+            painter: BackgroundRenderer(
+              config: visualConfig,
+              offset: Offset.zero,
+              scale: 1.0,
+            ),
           ),
         ),
         // 边绘制
@@ -62,7 +72,7 @@ class CanvasRenderer extends StatelessWidget {
             draggingEnd: draggingEnd,
           ),
         ),
-        // 节点绘制：直接使用 NodeWidget（内部会根据锚点计算 padding 并调整全局位置）
+        // 节点绘制
         ...nodeList.map((node) => NodeWidget(
               key: ValueKey(node.id),
               node: node,
