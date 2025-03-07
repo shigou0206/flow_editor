@@ -1,6 +1,7 @@
 // default_node_behavior.dart
 
 import 'dart:ui';
+import 'package:flutter/material.dart';
 import '../models/node_model.dart';
 import 'node_behavior.dart';
 
@@ -31,5 +32,23 @@ class DefaultNodeBehavior implements NodeBehavior {
   @override
   void onContextMenu(NodeModel node, Offset position) {
     // debugPrint('Default onContextMenu: ${node.id} at $position');
+  }
+
+  /// 拖拽开始
+  @override
+  void onDragStart(NodeModel node, DragStartDetails details) {
+    // debugPrint('Default onDragStart: ${node.id}');
+  }
+
+  /// 拖拽更新
+  @override
+  void onDragUpdate(NodeModel node, DragUpdateDetails details) {
+    // debugPrint('Default onDragUpdate: ${node.id}, delta=${details.delta}');
+  }
+
+  /// 拖拽结束
+  @override
+  void onDragEnd(NodeModel node, DragEndDetails details) {
+    // debugPrint('Default onDragEnd: ${node.id}');
   }
 }

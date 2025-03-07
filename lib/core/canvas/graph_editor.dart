@@ -10,25 +10,28 @@ import '../types/position_enum.dart';
 import '../canvas/controllers/canvas_controller.dart';
 import '../canvas/models/canvas_visual_config.dart';
 import '../canvas/behaviors/canvas_behavior.dart';
-import '../canvas/interaction/gesture_event_handler.dart';
 import '../state_management/canvas_state/canvas_state_provider.dart';
 import '../canvas/models/canvas_interaction_mode.dart';
+import '../node/behaviors/node_behavior.dart';
+import '../anchor/behaviors/anchor_behavior.dart';
 
 class GraphEditor extends ConsumerStatefulWidget {
   final String workflowId;
-  final NodeController nodeController;
   final EdgeController? edgeController;
   final CanvasVisualConfig visualConfig;
   final CanvasBehavior canvasBehavior;
+  final NodeBehavior? nodeBehavior;
+  final AnchorBehavior? anchorBehavior;
 
   const GraphEditor({
-    Key? key,
+    super.key,
     required this.workflowId,
-    required this.nodeController,
     this.edgeController,
     required this.visualConfig,
     required this.canvasBehavior,
-  }) : super(key: key);
+    this.nodeBehavior,
+    this.anchorBehavior,
+  });
 
   @override
   ConsumerState<GraphEditor> createState() => _GraphEditorState();
@@ -65,6 +68,8 @@ class _GraphEditorState extends ConsumerState<GraphEditor> {
       body: CanvasController(
         workflowId: widget.workflowId,
         visualConfig: widget.visualConfig,
+        nodeBehavior: widget.nodeBehavior,
+        anchorBehavior: widget.anchorBehavior,
         offset: canvasState.offset,
         scale: canvasState.scale,
       ),

@@ -14,12 +14,12 @@ class NodeWidget extends StatefulWidget {
   final AnchorBehavior? anchorBehavior;
 
   const NodeWidget({
-    Key? key,
+    super.key,
     required this.node,
     required this.child,
     this.behavior,
     this.anchorBehavior,
-  }) : super(key: key);
+  });
 
   @override
   _NodeWidgetState createState() => _NodeWidgetState();
@@ -40,7 +40,7 @@ class _NodeWidgetState extends State<NodeWidget> {
     widget.behavior?.onDoubleTap(widget.node);
   }
 
-  /// TapUp 用来区分单击或双击
+  /// 用来区分单击或双击
   void _onTapUp(TapUpDetails details) {
     if (_waitingForDoubleTap) {
       // 如果正在等待双击，则取消定时器并视为双击
@@ -59,6 +59,25 @@ class _NodeWidgetState extends State<NodeWidget> {
     }
   }
 
+  /// 拖拽开始，取消单击/双击等待，并调用 NodeBehavior.onDragStart
+  void _onPanStart(DragStartDetails details) {
+    // 如果用户开始拖动，则不再触发单/双击
+    _tapTimer?.cancel();
+    _waitingForDoubleTap = false;
+
+    widget.behavior?.onDragStart(widget.node, details);
+  }
+
+  /// 拖拽更新，调用 NodeBehavior.onDragUpdate
+  void _onPanUpdate(DragUpdateDetails details) {
+    widget.behavior?.onDragUpdate(widget.node, details);
+  }
+
+  /// 拖拽结束，调用 NodeBehavior.onDragEnd
+  void _onPanEnd(DragEndDetails details) {
+    widget.behavior?.onDragEnd(widget.node, details);
+  }
+
   @override
   void dispose() {
     _tapTimer?.cancel();
@@ -67,10 +86,10 @@ class _NodeWidgetState extends State<NodeWidget> {
 
   @override
   Widget build(BuildContext context) {
-    // 计算锚点外扩的边距
+    // 计算锚点外扩边距
     final AnchorPadding padding =
         computeAnchorPadding(widget.node.anchors, widget.node);
-    // 总宽高：节点尺寸 + 锚点外扩尺寸
+    // 总宽高：节点尺寸 + 锚点外扩
     final double totalWidth = widget.node.width + padding.left + padding.right;
     final double totalHeight =
         widget.node.height + padding.top + padding.bottom;
@@ -94,6 +113,10 @@ class _NodeWidgetState extends State<NodeWidget> {
                 details.localPosition,
               );
             },
+            // 以下三个回调用来处理拖拽
+            onPanStart: _onPanStart,
+            onPanUpdate: _onPanUpdate,
+            onPanEnd: _onPanEnd,
             child: Stack(
               clipBehavior: Clip.none,
               children: [
@@ -103,10 +126,8 @@ class _NodeWidgetState extends State<NodeWidget> {
                   top: padding.top,
                   child: NodeBlock(
                     node: widget.node,
-                    child: widget.child,
-                    // 删除事件依然可以在 NodeBlock 中调用 behavior
-                    // 或者你也可以把删除逻辑也挪到 NodeWidget 中
                     behavior: widget.behavior,
+                    child: widget.child,
                   ),
                 ),
                 // 锚点层

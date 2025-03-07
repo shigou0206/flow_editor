@@ -1,6 +1,7 @@
 // node_behavior.dart
 
 import 'dart:ui';
+import 'package:flutter/material.dart';
 import '../models/node_model.dart';
 
 /// NodeBehavior: 定义节点事件的抽象接口或基类
@@ -20,4 +21,13 @@ abstract class NodeBehavior {
 
   /// 右键菜单
   void onContextMenu(NodeModel node, Offset position) {}
+
+  /// 拖拽开始
+  void onDragStart(NodeModel node, DragStartDetails details) {}
+
+  /// 拖拽更新
+  void onDragUpdate(NodeModel node, DragUpdateDetails details) {}
+
+  /// 拖拽结束
+  void onDragEnd(NodeModel node, DragEndDetails details) {}
 }
