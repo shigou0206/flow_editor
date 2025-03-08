@@ -97,10 +97,10 @@ class CanvasState {
       mode: mode,
       visualConfig: json['visualConfig'] is Map
           ? CanvasVisualConfig.fromJson(json['visualConfig'])
-          : CanvasVisualConfig(),
+          : const CanvasVisualConfig(),
       interactionConfig: json['interactionConfig'] is Map
           ? CanvasInteractionConfig.fromJson(json['interactionConfig'])
-          : CanvasInteractionConfig(),
+          : const CanvasInteractionConfig(),
       version: version,
       focusItemId: json['focusItemId'] as String?,
     );

@@ -13,12 +13,11 @@ class NodeWidget extends StatelessWidget {
   final AnchorBehavior? anchorBehavior;
 
   const NodeWidget(
-      {Key? key,
+      {super.key,
       required this.node,
       required this.child,
       this.behavior,
-      this.anchorBehavior})
-      : super(key: key);
+      this.anchorBehavior});
 
   @override
   Widget build(BuildContext context) {
