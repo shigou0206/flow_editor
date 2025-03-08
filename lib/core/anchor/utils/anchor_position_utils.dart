@@ -8,15 +8,11 @@ import '../../types/position_enum.dart';
 /// ---------------------
 /// 1) 计算锚点在节点内部的局部坐标
 /// ---------------------
-Offset computeAnchorLocalPosition(
-  AnchorModel anchor,
-  Size nodeSize, {
-  double anchorWidgetSize = 24.0,
-}) {
+Offset computeAnchorLocalPosition(AnchorModel anchor, Size nodeSize) {
   final double w = nodeSize.width;
   final double h = nodeSize.height;
 
-  // 1) 基准点：根据 anchor 的位置和 ratio 计算
+  // 1) 计算基准点（基于 anchor 的位置和比例）
   final (baseX, baseY) = switch (anchor.position) {
     Position.left => (0.0, h * anchor.ratio),
     Position.right => (w, h * anchor.ratio),
@@ -24,85 +20,65 @@ Offset computeAnchorLocalPosition(
     Position.bottom => (w * anchor.ratio, h),
   };
 
-  // 2) 获取法线方向向量（节点外侧为正方向）
+  // 2) 获取法线向量（指向节点外侧）
   final normal = _getNormalVector(anchor.position);
-  // 3) 旋转该向量，根据 anchor.angle 调整
+  // 3) 根据 anchor.angle 对法线进行旋转
   final rotatedNormal = _rotateVector(normal, anchor.angle);
 
-  // 4) 根据 anchor.placement 调整 offsetDistance
-  double distance = anchor.offsetDistance;
+  // 4) 计算统一的偏移距离 effectiveDistance
+  //    外侧：正值；内侧：负值；边界：0
+  double effectiveDistance;
   switch (anchor.placement) {
     case AnchorPlacement.outside:
-      // outside：向外延伸，额外加上半个锚点尺寸
-      distance += anchorWidgetSize * 0.5;
+      effectiveDistance = anchor.offsetDistance;
       break;
     case AnchorPlacement.inside:
-      // inside：向内缩进，取负值
-      distance = -(distance + anchorWidgetSize * 0.5);
+      effectiveDistance = -anchor.offsetDistance;
       break;
     case AnchorPlacement.border:
-      distance = 0;
+      effectiveDistance = 0;
       break;
   }
 
-  // 5) 最终局部坐标 = 基准点 + 旋转后的法线向量 * distance
-  final dx = baseX + rotatedNormal.dx * distance;
-  final dy = baseY + rotatedNormal.dy * distance;
+  // 5) position
+
+  // 6) 最终局部坐标 = 基准点 + (rotatedNormal * effectiveDistance)
+  final dx = baseX + rotatedNormal.dx * effectiveDistance - anchor.width / 2;
+  final dy = baseY + rotatedNormal.dy * effectiveDistance - anchor.height / 2;
   return Offset(dx, dy);
 }
 
 /// ---------------------
 /// 2) 计算锚点在画布(世界)上的坐标
 /// ---------------------
-Offset computeAnchorWorldPosition(
-  NodeModel node,
-  AnchorModel anchor, {
-  double anchorWidgetSize = 24.0,
-}) {
+Offset computeAnchorWorldPosition(NodeModel node, AnchorModel anchor) {
   final nodePos = Offset(node.x, node.y);
-  final localAnchorPos = computeAnchorLocalPosition(
-    anchor,
-    Size(node.width, node.height),
-    anchorWidgetSize: anchorWidgetSize,
-  );
+  final localAnchorPos =
+      computeAnchorLocalPosition(anchor, Size(node.width, node.height));
   return nodePos + localAnchorPos;
 }
 
 /// ---------------------
 /// 3) 计算外扩: 用于确定父容器(BoundingBox)需要多大
-///    当 anchor.placement == outside 时，需要额外空间来包含整个锚点圆
-/// ---------------------
-_AnchorPadding computeAnchorPadding(
-  List<AnchorModel> anchors, {
-  double anchorWidgetSize = 24.0,
-}) {
+AnchorPadding computeAnchorPadding(
+  List<AnchorModel> anchors,
+  NodeModel node,
+) {
   double expandLeft = 0;
   double expandRight = 0;
   double expandTop = 0;
   double expandBottom = 0;
 
   for (final anchor in anchors) {
-    if (anchor.placement == AnchorPlacement.outside) {
-      // 需要的扩展距离 = offsetDistance + 整个锚点尺寸 (确保整颗锚点圆都能显示)
-      final double needed = anchor.offsetDistance + anchorWidgetSize;
-      switch (anchor.position) {
-        case Position.left:
-          if (needed > expandLeft) expandLeft = needed;
-          break;
-        case Position.right:
-          if (needed > expandRight) expandRight = needed;
-          break;
-        case Position.top:
-          if (needed > expandTop) expandTop = needed;
-          break;
-        case Position.bottom:
-          if (needed > expandBottom) expandBottom = needed;
-          break;
-      }
-    }
+    final localPos =
+        computeAnchorLocalPosition(anchor, Size(node.width, node.height));
+    expandLeft = max(expandLeft, -localPos.dx);
+    expandRight = max(expandRight, localPos.dx + anchor.width - node.width);
+    expandTop = max(expandTop, -localPos.dy);
+    expandBottom = max(expandBottom, localPos.dy + anchor.height - node.height);
   }
 
-  return _AnchorPadding(
+  return AnchorPadding(
     left: expandLeft,
     right: expandRight,
     top: expandTop,
@@ -110,16 +86,16 @@ _AnchorPadding computeAnchorPadding(
   );
 }
 
-/// ---------------------
-/// 用于存储上下左右的外扩距离
-/// ---------------------
-class _AnchorPadding {
+// /// ---------------------
+// /// 用于存储上下左右的外扩距离
+// /// ---------------------
+class AnchorPadding {
   final double left;
   final double right;
   final double top;
   final double bottom;
 
-  const _AnchorPadding({
+  const AnchorPadding({
     required this.left,
     required this.right,
     required this.top,

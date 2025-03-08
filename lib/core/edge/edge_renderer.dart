@@ -225,13 +225,12 @@ class EdgeRenderer extends CustomPainter {
     // 计算 outside padding（需与 NodeWidget/NodeAnchors 保持一致）
     final padding = computeAnchorPadding(
       node.anchors,
-      anchorWidgetSize: anchorWidgetSize,
+      node,
     );
     final containerPos = Offset(node.x - padding.left, node.y - padding.top);
     final localPos = computeAnchorLocalPosition(
       anchor,
       Size(node.width, node.height),
-      anchorWidgetSize: anchorWidgetSize,
     );
     final worldPos = containerPos + localPos;
     debugPrint(

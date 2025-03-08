@@ -167,14 +167,13 @@ class DefaultAnchorBehavior implements AnchorBehavior {
         // 如果你对 anchor 有边缘偏移，需要在计算时加上
         final padding = computeAnchorPadding(
           node.anchors,
-          anchorWidgetSize: 24.0,
+          node,
         );
 
         // 计算anchor的本地偏移
         final anchorLocalPos = computeAnchorLocalPosition(
           anchor,
           Size(node.width, node.height),
-          anchorWidgetSize: 24.0,
         );
 
         // 将 anchor 的本地坐标转换为世界坐标

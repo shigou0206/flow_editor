@@ -4,6 +4,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../node/controllers/node_controller.dart';
 import '../edge/controllers/edge_controller.dart';
 import '../node/models/node_model.dart';
+import '../anchor/models/anchor_model.dart';
+import '../anchor/models/anchor_enums.dart';
+import '../types/position_enum.dart';
 import '../canvas/controllers/canvas_controller.dart';
 import '../canvas/models/canvas_visual_config.dart';
 import '../canvas/behaviors/canvas_behavior.dart';
@@ -165,18 +168,24 @@ class _GraphEditorState extends ConsumerState<GraphEditor> {
       height: 40,
       title: newId,
       anchors: [
-        // AnchorModel(
-        //     id: 'out_$newId',
-        //     nodeId: newId,
-        //     position: Position.right,
-        //     offsetDistance: 0,
-        //     ratio: 0.5),
-        // AnchorModel(
-        //     id: 'in_$newId',
-        //     nodeId: newId,
-        //     position: Position.left,
-        //     offsetDistance: 10,
-        //     ratio: 0.5),
+        AnchorModel(
+            id: 'out_$newId',
+            nodeId: newId,
+            position: Position.right,
+            placement: AnchorPlacement.outside,
+            offsetDistance: 10,
+            ratio: 0.5,
+            width: 24,
+            height: 24),
+        AnchorModel(
+            id: 'in_$newId',
+            nodeId: newId,
+            position: Position.left,
+            placement: AnchorPlacement.outside,
+            offsetDistance: 10,
+            ratio: 0.5,
+            width: 24,
+            height: 24),
       ],
     );
     widget.nodeController.upsertNode(node);

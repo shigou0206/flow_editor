@@ -12,7 +12,7 @@ import '../canvas_state/canvas_state_provider.dart';
 class CanvasMouseHandler extends ConsumerStatefulWidget {
   final Widget child;
 
-  const CanvasMouseHandler({Key? key, required this.child}) : super(key: key);
+  const CanvasMouseHandler({super.key, required this.child});
 
   @override
   ConsumerState<CanvasMouseHandler> createState() => _CanvasMouseHandlerState();

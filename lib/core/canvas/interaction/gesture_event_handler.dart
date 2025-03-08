@@ -15,9 +15,9 @@ class CanvasGestureHandler extends ConsumerStatefulWidget {
   final Widget child;
 
   const CanvasGestureHandler({
-    Key? key,
+    super.key,
     required this.child,
-  }) : super(key: key);
+  });
 
   @override
   ConsumerState<CanvasGestureHandler> createState() =>

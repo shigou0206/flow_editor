@@ -3,6 +3,8 @@ import 'anchor_enums.dart';
 
 class AnchorModel {
   final String id;
+  final double width;
+  final double height;
   final Position position;
   final double ratio;
 
@@ -28,6 +30,8 @@ class AnchorModel {
 
   AnchorModel({
     required this.id,
+    required this.width,
+    required this.height,
     required this.position,
     double ratio = 0.5,
     this.direction = AnchorDirection.inout,
@@ -56,6 +60,8 @@ class AnchorModel {
   // copyWith
   AnchorModel copyWith({
     String? id,
+    double? width,
+    double? height,
     Position? position,
     double? ratio,
     AnchorDirection? direction,
@@ -77,6 +83,8 @@ class AnchorModel {
   }) {
     return AnchorModel(
       id: id ?? this.id,
+      width: width ?? this.width,
+      height: height ?? this.height,
       position: position ?? this.position,
       ratio: ratio ?? this.ratio,
       direction: direction ?? this.direction,
@@ -128,6 +136,8 @@ class AnchorModel {
   factory AnchorModel.fromJson(Map<String, dynamic> json) {
     return AnchorModel(
       id: json['id']?.toString() ?? '',
+      width: json['width'] is num ? (json['width'] as num).toDouble() : 24.0,
+      height: json['height'] is num ? (json['height'] as num).toDouble() : 24.0,
       position: _parsePosition(json['position']),
       ratio: _parseRatio(json['ratio']),
       direction: _parseAnchorDirection(json['direction']),
