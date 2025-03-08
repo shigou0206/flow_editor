@@ -24,7 +24,7 @@ class AnchorPainter extends CustomPainter {
 
     // 2) 大小(半径/边长)
     // 根据 anchor.data 或 shape 设定，暂时用固定大小
-    final double radius = 8;
+    const double radius = 8;
 
     // 3) 颜色(如果 locked => 灰色，否则 from anchor.plusButtonColorHex / default)
     Color color;

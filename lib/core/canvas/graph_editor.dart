@@ -34,13 +34,13 @@ class GraphEditor extends ConsumerStatefulWidget {
   static final GlobalKey canvasStackKey = GlobalKey();
 
   const GraphEditor({
-    Key? key,
+    super.key,
     required this.workflowId,
     required this.nodeController,
     this.edgeController,
     required this.visualConfig,
     required this.canvasBehavior,
-  }) : super(key: key);
+  });
 
   @override
   ConsumerState<GraphEditor> createState() => _GraphEditorState();
@@ -127,7 +127,7 @@ class _GraphEditorState extends ConsumerState<GraphEditor> {
     // 4. 若存在 edgeController，则创建一条边 AB
     if (widget.edgeController != null) {
       const edgeId = 'edgeAB';
-      final edge = EdgeModel(
+      const edge = EdgeModel(
         id: edgeId,
         // 注意 EdgeModel 构造器字段是 sourceNodeId / sourceAnchorId / targetNodeId / targetAnchorId
         sourceNodeId: nodeAId,

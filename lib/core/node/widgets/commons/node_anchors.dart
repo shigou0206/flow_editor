@@ -11,11 +11,11 @@ class NodeAnchors extends StatelessWidget {
   final AnchorPadding padding;
 
   const NodeAnchors({
-    Key? key,
+    super.key,
     required this.node,
     this.anchorBehavior,
     required this.padding,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

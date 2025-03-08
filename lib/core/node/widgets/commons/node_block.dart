@@ -10,13 +10,14 @@ class NodeBlock extends StatefulWidget {
   final NodeBehavior? behavior;
 
   const NodeBlock({
-    Key? key,
+    super.key,
     required this.node,
     required this.child,
     this.behavior,
-  }) : super(key: key);
+  });
 
   @override
+  // ignore: library_private_types_in_public_api
   _NodeBlockState createState() => _NodeBlockState();
 }
 

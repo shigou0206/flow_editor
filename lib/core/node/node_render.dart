@@ -35,7 +35,7 @@ class NodeRenderer extends CustomPainter {
     );
 
     canvas.drawRRect(
-      RRect.fromRectAndRadius(rect, Radius.circular(8.0)),
+      RRect.fromRectAndRadius(rect, const Radius.circular(8.0)),
       paint,
     );
 
@@ -46,7 +46,7 @@ class NodeRenderer extends CustomPainter {
       ..strokeWidth = 1;
 
     canvas.drawRRect(
-      RRect.fromRectAndRadius(rect, Radius.circular(8.0)),
+      RRect.fromRectAndRadius(rect, const Radius.circular(8.0)),
       borderPaint,
     );
 

@@ -36,7 +36,7 @@ class CanvasController extends ConsumerWidget {
   final GlobalKey canvasGlobalKey;
 
   const CanvasController({
-    Key? key,
+    super.key,
     required this.workflowId,
     required this.visualConfig,
     required this.canvasGlobalKey,
@@ -44,7 +44,7 @@ class CanvasController extends ConsumerWidget {
     this.scale = 1.0,
     this.nodeBehavior,
     this.anchorBehavior,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
