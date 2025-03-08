@@ -5,12 +5,16 @@ class CanvasVisualConfig {
   final bool showGrid;
   final Color gridColor;
   final double gridSpacing;
+  final double width;
+  final double height;
 
   const CanvasVisualConfig({
     this.backgroundColor = Colors.white,
     this.showGrid = false,
     this.gridColor = const Color(0xffe0e0e0),
     this.gridSpacing = 20.0,
+    this.width = 1000,
+    this.height = 1000,
   });
 
   /// 不可变更新
@@ -19,12 +23,16 @@ class CanvasVisualConfig {
     double? gridSpacing,
     Color? backgroundColor,
     Color? gridColor,
+    double? width,
+    double? height,
   }) {
     return CanvasVisualConfig(
       showGrid: showGrid ?? this.showGrid,
       gridSpacing: gridSpacing ?? this.gridSpacing,
       backgroundColor: backgroundColor ?? this.backgroundColor,
       gridColor: gridColor ?? this.gridColor,
+      width: width ?? this.width,
+      height: height ?? this.height,
     );
   }
 
@@ -35,6 +43,8 @@ class CanvasVisualConfig {
         'backgroundColor':
             '#${backgroundColor.value.toRadixString(16).padLeft(8, '0')}',
         'gridColor': '#${gridColor.value.toRadixString(16).padLeft(8, '0')}',
+        'width': width,
+        'height': height,
       };
 
   factory CanvasVisualConfig.fromJson(Map<String, dynamic> json) {
@@ -43,6 +53,8 @@ class CanvasVisualConfig {
       gridSpacing: (json['gridSpacing'] as num?)?.toDouble() ?? 20.0,
       backgroundColor: _parseColor(json['backgroundColor'], Colors.white),
       gridColor: _parseColor(json['gridColor'], const Color(0xffe0e0e0)),
+      width: (json['width'] as num?)?.toDouble() ?? 1000,
+      height: (json['height'] as num?)?.toDouble() ?? 1000,
     );
   }
 }

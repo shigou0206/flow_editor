@@ -95,6 +95,15 @@ class _GraphEditorState extends ConsumerState<GraphEditor> {
           width: 24,
           height: 24,
         ),
+        AnchorModel(
+          id: 'in_$nodeAId',
+          nodeId: nodeAId,
+          position: Position.left,
+          placement: AnchorPlacement.outside,
+          offsetDistance: 10,
+          width: 24,
+          height: 24,
+        ),
       ],
     );
 

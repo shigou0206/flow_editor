@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart'; // for Rect, Offset
-import '../../types/position_enum.dart';
 import '../../anchor/models/anchor_model.dart';
+import '../../anchor/utils/anchor_position_utils.dart';
 import 'node_enums.dart';
 
 /// NodeStyle: 记录节点的纯数据外观, 避免依赖 Flutter Color
@@ -101,20 +101,11 @@ class NodeModel {
   // 逻辑坐标Rect, 便于渲染或碰撞检测
   Rect get rect => Rect.fromLTWH(x, y, width, height);
 
-  /// 获取某个Anchor的"绝对坐标"
-  Offset getAnchorOffset(AnchorModel anchor) {
-    final ratio = anchor.ratio.clamp(0.0, 1.0);
-    switch (anchor.position) {
-      case Position.left:
-        return Offset(x, y + height * ratio);
-      case Position.right:
-        return Offset(x + width, y + height * ratio);
-      case Position.top:
-        return Offset(x + width * ratio, y);
-      case Position.bottom:
-        return Offset(x + width * ratio, y + height);
-    }
-  }
+  AnchorPadding get anchorPadding =>
+      computeAnchorPadding(anchors, Size(width, height));
+
+  double get totalWidth => width + anchorPadding.left + anchorPadding.right;
+  double get totalHeight => height + anchorPadding.top + anchorPadding.bottom;
 
   /// 不可变更新: 返回新的 NodeModel 实例
   NodeModel copyWith({
@@ -127,6 +118,7 @@ class NodeModel {
     NodeRole? role,
     String? title,
     List<AnchorModel>? anchors,
+    AnchorPadding? anchorPadding,
     NodeStatus? status,
     String? parentId,
     int? zIndex,
@@ -183,6 +175,7 @@ class NodeModel {
       'role': role.toString(), // e.g. "NodeRole.middle"
       'title': title,
       'anchors': anchors.map((a) => a.toJson()).toList(),
+      'anchorPadding': anchorPadding.toJson(),
       'status': status.toString(), // e.g. "NodeStatus.running"
       'parentId': parentId,
       'zIndex': zIndex,

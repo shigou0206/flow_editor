@@ -72,22 +72,17 @@ class NodeInteractionManager {
     bool multiSelect = false,
   }) {
     selectNode(node, multiSelect: multiSelect);
-    debugPrint('[NodeInteractionManager] Node tapped: ${node.id}');
     behavior.onTap(node);
   }
 
   /// 双击事件：默认单选 + 调用 behavior.onDoubleTap
   void onNodeDoubleTap(NodeModel node, NodeBehavior behavior) {
     selectNode(node, multiSelect: false);
-    debugPrint('[NodeInteractionManager] Node double tapped: ${node.id}');
     behavior.onDoubleTap(node);
   }
 
   /// 悬停事件：调用 behavior.onHover
   void onNodeHover(NodeModel node, NodeBehavior behavior, bool isHover) {
-    debugPrint(
-      '[NodeInteractionManager] Node hover ${isHover ? 'enter' : 'exit'}: ${node.id}',
-    );
     behavior.onHover(node, isHover);
   }
 
@@ -97,9 +92,6 @@ class NodeInteractionManager {
     NodeBehavior behavior,
     Offset position,
   ) {
-    debugPrint(
-      '[NodeInteractionManager] Node context menu at $position for: ${node.id}',
-    );
     behavior.onContextMenu(node, position);
   }
 
@@ -109,7 +101,6 @@ class NodeInteractionManager {
   void onNodeDelete(NodeModel node, NodeBehavior behavior) {
     allNodes.remove(node);
     _selectedNodes.remove(node);
-    debugPrint('[NodeInteractionManager] Node delete: ${node.id}');
     behavior.onDelete(node);
   }
 
@@ -120,7 +111,6 @@ class NodeInteractionManager {
       behavior.onDelete(node);
     }
     _selectedNodes.clear();
-    debugPrint('[NodeInteractionManager] Deleted selected nodes');
   }
 
   // =================== 拖拽/移动逻辑 ===================
@@ -130,9 +120,6 @@ class NodeInteractionManager {
     // 确保 node.x / node.y 可变
     node.x = newPosition.dx;
     node.y = newPosition.dy;
-    debugPrint(
-      '[NodeInteractionManager] Node ${node.id} moved to $newPosition',
-    );
   }
 
   // =================== 置顶/置底操作 ===================

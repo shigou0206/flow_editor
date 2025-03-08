@@ -64,10 +64,6 @@ class MultiCanvasStateNotifier extends StateNotifier<MultiWorkflowCanvasState> {
       );
     }
 
-    debugPrint(
-      'workflowId=${state.activeWorkflowId}, '
-      '[MultiCanvasStateNotifier] switchWorkflow => $workflowId',
-    );
     state = state.copyWith(activeWorkflowId: workflowId);
   }
 
@@ -75,10 +71,6 @@ class MultiCanvasStateNotifier extends StateNotifier<MultiWorkflowCanvasState> {
     if (workflowId == state.activeWorkflowId) return;
 
     final updated = {...state.workflows}..remove(workflowId);
-    debugPrint(
-      'workflowId=${state.activeWorkflowId}, '
-      '[MultiCanvasStateNotifier] removeWorkflow => $workflowId',
-    );
     state = state.copyWith(workflows: updated);
   }
 
@@ -94,42 +86,17 @@ class MultiCanvasStateNotifier extends StateNotifier<MultiWorkflowCanvasState> {
     final canvasSt = state.activeState;
     final mode = canvasSt.mode;
 
-    debugPrint(
-      'workflowId=${state.activeWorkflowId}, '
-      '[startDrag] mode=$mode, globalPos=$globalPos',
-    );
-    debugPrint(
-      'workflowId=${state.activeWorkflowId}, '
-      '[startDrag] canvasState.offset=${canvasSt.offset}, scale=${canvasSt.scale}',
-    );
-
     if (mode == CanvasInteractionMode.createEdge) {
-      debugPrint(
-        'workflowId=${state.activeWorkflowId}, '
-        '[startDrag] => createEdge mode, go _startEdgeDrag',
-      );
       _startEdgeDrag(context, globalPos);
     } else {
       // 普通节点拖拽
       final canvasPoint = _globalToCanvas(context, globalPos, canvasSt);
-      debugPrint(
-        'workflowId=${state.activeWorkflowId}, '
-        '[startDrag] => canvasPoint=$canvasPoint (after transform)',
-      );
 
       final node = _hitTestNode(canvasPoint);
       if (node != null) {
-        debugPrint(
-          'workflowId=${state.activeWorkflowId}, '
-          '[startDrag] => HIT NODE: ${node.id}',
-        );
         _isDraggingNode = true;
         _draggingNodeId = node.id;
       } else {
-        debugPrint(
-          'workflowId=${state.activeWorkflowId}, '
-          '[startDrag] => NO node hit, default to drag canvas',
-        );
         _isDraggingNode = false;
         _draggingNodeId = null;
       }
@@ -142,29 +109,12 @@ class MultiCanvasStateNotifier extends StateNotifier<MultiWorkflowCanvasState> {
     final canvasSt = state.activeState;
     final mode = canvasSt.mode;
 
-    debugPrint(
-      'workflowId=${state.activeWorkflowId}, '
-      '[updateDrag] mode=$mode, deltaGlobal=$deltaGlobal',
-    );
-
     if (mode == CanvasInteractionMode.createEdge && _isCreatingEdge) {
-      debugPrint(
-        'workflowId=${state.activeWorkflowId}, '
-        '[updateDrag] => updating edge drag...',
-      );
       _updateEdgeDrag(deltaGlobal);
     } else {
       if (_isDraggingNode && _draggingNodeId != null) {
-        debugPrint(
-          'workflowId=${state.activeWorkflowId}, '
-          '[updateDrag] => dragging node: $_draggingNodeId',
-        );
         _dragNodeBy(deltaGlobal);
       } else {
-        debugPrint(
-          'workflowId=${state.activeWorkflowId}, '
-          '[updateDrag] => panning canvas',
-        );
         _panCanvas(deltaGlobal);
       }
     }
@@ -173,23 +123,10 @@ class MultiCanvasStateNotifier extends StateNotifier<MultiWorkflowCanvasState> {
   /// 当 pointerUp: 如果 createEdge => _endEdgeDrag; 否则 endNodeDrag
   void endDrag() {
     final mode = state.activeState.mode;
-    debugPrint(
-      'workflowId=${state.activeWorkflowId}, '
-      '[endDrag] mode=$mode, _isCreatingEdge=$_isCreatingEdge, '
-      '_isDraggingNode=$_isDraggingNode',
-    );
 
     if (mode == CanvasInteractionMode.createEdge && _isCreatingEdge) {
-      debugPrint(
-        'workflowId=${state.activeWorkflowId}, '
-        '[endDrag] => endEdgeDrag',
-      );
       _endEdgeDrag();
     } else {
-      debugPrint(
-        'workflowId=${state.activeWorkflowId}, '
-        '[endDrag] => stop dragging node',
-      );
       _isDraggingNode = false;
       _draggingNodeId = null;
     }
@@ -205,17 +142,11 @@ class MultiCanvasStateNotifier extends StateNotifier<MultiWorkflowCanvasState> {
 
     final nid = _draggingNodeId;
     if (nid == null) {
-      debugPrint(
-        'workflowId=$wfId, [_dragNodeBy] => no draggingNodeId, return',
-      );
       return;
     }
 
     final node = nodeNotifier.getNode(nid);
     if (node == null) {
-      debugPrint(
-        'workflowId=$wfId, [_dragNodeBy] => node $nid not found in nodeNotifier, return',
-      );
       return;
     }
 
@@ -226,12 +157,6 @@ class MultiCanvasStateNotifier extends StateNotifier<MultiWorkflowCanvasState> {
     final updatedX = node.x + dx;
     final updatedY = node.y + dy;
 
-    debugPrint(
-      'workflowId=${state.activeWorkflowId}, '
-      '[_dragNodeBy] nodeId=$nid, old=(${node.x}, ${node.y}), '
-      'delta=($dx, $dy), new=($updatedX, $updatedY)',
-    );
-
     final updated = node.copyWith(x: updatedX, y: updatedY);
     nodeNotifier.upsertNode(updated);
   }
@@ -241,21 +166,11 @@ class MultiCanvasStateNotifier extends StateNotifier<MultiWorkflowCanvasState> {
   void _panCanvas(Offset deltaGlobal) {
     final canvasSt = state.activeState;
     if (!canvasSt.interactionConfig.allowPan) {
-      debugPrint(
-        'workflowId=${state.activeWorkflowId}, '
-        '[_panCanvas] => pan not allowed, return',
-      );
       return;
     }
 
     final oldOffset = canvasSt.offset;
-    final newOffset = oldOffset - (deltaGlobal / canvasSt.scale);
-
-    debugPrint(
-      'workflowId=${state.activeWorkflowId}, '
-      '[_panCanvas] oldOffset=$oldOffset, '
-      'deltaGlobal=$deltaGlobal => newOffset=$newOffset',
-    );
+    final newOffset = oldOffset + (deltaGlobal / canvasSt.scale);
 
     _updateActiveCanvas((c) => c.copyWith(offset: newOffset));
   }
@@ -265,60 +180,32 @@ class MultiCanvasStateNotifier extends StateNotifier<MultiWorkflowCanvasState> {
   /// 开始边缘拖拽 - 供外部调用
   /// 【增加 context 参数】
   String? startEdgeDrag(BuildContext context, Offset globalPos) {
-    debugPrint(
-      'workflowId=${state.activeWorkflowId}, '
-      '[Public] startEdgeDrag => globalPos=$globalPos',
-    );
     _startEdgeDrag(context, globalPos);
     return _creatingEdgeId;
   }
 
   /// 更新边缘拖拽 - 供外部调用
   void updateEdgeDrag(String edgeId, Offset globalPos, BuildContext context) {
-    debugPrint(
-      'workflowId=${state.activeWorkflowId}, '
-      '[Public] updateEdgeDrag => edgeId=$edgeId, globalPos=$globalPos',
-    );
     if (_creatingEdgeId != edgeId || !_isCreatingEdge) {
-      debugPrint(
-        'workflowId=${state.activeWorkflowId}, '
-        '[Public] updateEdgeDrag => mismatch edgeId or not creating edge',
-      );
       return;
     }
 
     final canvasSt = state.activeState;
     final canvasPos = _globalToCanvas(context, globalPos, canvasSt);
     _edgeDragCurrentCanvas = canvasPos;
-    debugPrint(
-      'workflowId=${state.activeWorkflowId}, '
-      '[Public] updateEdgeDrag => canvasPos=$canvasPos, '
-      '_edgeDragCurrentCanvas=$_edgeDragCurrentCanvas',
-    );
 
     // 这里可以添加更新半连接边的逻辑
   }
 
   /// 结束边缘拖拽 - 供外部调用
   void endEdgeDrag(String edgeId, Offset globalPos, BuildContext context) {
-    debugPrint(
-      '[Public] endEdgeDrag => edgeId=$edgeId, globalPos=$globalPos',
-    );
     if (_creatingEdgeId != edgeId || !_isCreatingEdge) {
-      debugPrint(
-        '[Public] endEdgeDrag => mismatch edgeId or not creating edge',
-      );
       return;
     }
 
     final canvasSt = state.activeState;
     final canvasPos = _globalToCanvas(context, globalPos, canvasSt);
     _edgeDragCurrentCanvas = canvasPos;
-    debugPrint(
-      'workflowId=${state.activeWorkflowId}, '
-      '[Public] endEdgeDrag => canvasPos=$canvasPos',
-    );
-
     _endEdgeDrag();
   }
 
@@ -331,22 +218,12 @@ class MultiCanvasStateNotifier extends StateNotifier<MultiWorkflowCanvasState> {
     final canvasPos = _globalToCanvas(context, globalPos, canvasSt);
     _edgeDragCurrentCanvas = canvasPos;
 
-    debugPrint(
-      'workflowId=${state.activeWorkflowId}, '
-      '[_startEdgeDrag] => _isCreatingEdge=$_isCreatingEdge, '
-      '_creatingEdgeId=$_creatingEdgeId, start=$canvasPos',
-    );
-
     // 可选：插入半连接EdgeModel到edgeNotifier...
   }
 
   /// 2) updateEdgeDrag
   void _updateEdgeDrag(Offset deltaGlobal) {
     if (!_isCreatingEdge || _edgeDragCurrentCanvas == null) {
-      debugPrint(
-        'workflowId=${state.activeWorkflowId}, '
-        '[_updateEdgeDrag] => not creating edge or currentCanvas null',
-      );
       return;
     }
 
@@ -354,20 +231,10 @@ class MultiCanvasStateNotifier extends StateNotifier<MultiWorkflowCanvasState> {
     final dx = deltaGlobal.dx / canvasSt.scale;
     final dy = deltaGlobal.dy / canvasSt.scale;
     _edgeDragCurrentCanvas = _edgeDragCurrentCanvas!.translate(dx, dy);
-
-    debugPrint(
-      'workflowId=${state.activeWorkflowId}, '
-      '[_updateEdgeDrag] => dx=$dx, dy=$dy, '
-      '_edgeDragCurrentCanvas=$_edgeDragCurrentCanvas',
-    );
   }
 
   /// 3) endEdgeDrag
   void _endEdgeDrag() {
-    debugPrint(
-      'workflowId=${state.activeWorkflowId}, '
-      '[_endEdgeDrag] => finishing edge creation',
-    );
     _isCreatingEdge = false;
     _edgeDragCurrentCanvas = null;
     // _creatingEdgeId = null; // 如果你想重置ID
@@ -385,18 +252,12 @@ class MultiCanvasStateNotifier extends StateNotifier<MultiWorkflowCanvasState> {
     NodeModel? found;
     for (final n in nodeSt.nodesOf(wfId).values) {
       final rect = Rect.fromLTWH(n.x, n.y, n.width, n.height);
-      debugPrint(
-        'workflowId=$wfId, [_hitTestNode] check node:${n.id}, rect=$rect',
-      );
       if (rect.contains(canvasPt)) {
         found = n;
         break;
       }
     }
 
-    debugPrint(
-      'workflowId=$wfId,  [_hitTestNode] => canvasPt=$canvasPt, foundNode=${found?.id}',
-    );
     return found;
   }
 
@@ -410,9 +271,6 @@ class MultiCanvasStateNotifier extends StateNotifier<MultiWorkflowCanvasState> {
     final box = context.findRenderObject() as RenderBox?;
     if (box == null) {
       // 如果还没渲染完成 or context不对，这里返回 (0,0) 或自行处理
-      debugPrint(
-        '[_globalToCanvas] => box == null, return Offset.zero',
-      );
       return Offset.zero;
     }
 
@@ -422,9 +280,6 @@ class MultiCanvasStateNotifier extends StateNotifier<MultiWorkflowCanvasState> {
     // 3. 最终再做 "减 offset，再除以 scale"
     final result = (localPos - cst.offset) / cst.scale;
 
-    debugPrint(
-      '[_globalToCanvas] => globalPos=$globalPos => localPos=$localPos => result=$result',
-    );
     return result;
   }
 
@@ -446,7 +301,6 @@ class MultiCanvasStateNotifier extends StateNotifier<MultiWorkflowCanvasState> {
   //================== 其它基础操作 (平移/缩放/模式/配置等) ==================//
 
   void setOffset(Offset offset) {
-    debugPrint('[setOffset] => $offset');
     _updateActiveCanvas(
       (canvas) => canvas.interactionConfig.allowPan
           ? canvas.copyWith(offset: offset)
@@ -455,7 +309,6 @@ class MultiCanvasStateNotifier extends StateNotifier<MultiWorkflowCanvasState> {
   }
 
   void panBy(double dx, double dy) {
-    debugPrint('[panBy] => dx=$dx, dy=$dy');
     _updateActiveCanvas(
       (canvas) => canvas.interactionConfig.allowPan
           ? canvas.copyWith(offset: canvas.offset.translate(dx, dy))
@@ -464,7 +317,6 @@ class MultiCanvasStateNotifier extends StateNotifier<MultiWorkflowCanvasState> {
   }
 
   void setScale(double scale) {
-    debugPrint('[setScale] => scale=$scale');
     _updateActiveCanvas((canvas) {
       if (!canvas.interactionConfig.allowZoom) return canvas;
       final clamped = scale.clamp(
@@ -476,7 +328,6 @@ class MultiCanvasStateNotifier extends StateNotifier<MultiWorkflowCanvasState> {
   }
 
   void zoomAtPoint(double scaleFactor, Offset focalPoint) {
-    debugPrint('[zoomAtPoint] => factor=$scaleFactor, focal=$focalPoint');
     _updateActiveCanvas((canvas) {
       if (!canvas.interactionConfig.allowZoom) return canvas;
 
@@ -492,7 +343,6 @@ class MultiCanvasStateNotifier extends StateNotifier<MultiWorkflowCanvasState> {
   }
 
   void setInteractionMode(CanvasInteractionMode mode) {
-    debugPrint('[setInteractionMode] => $mode');
     _updateActiveCanvas((canvas) => canvas.copyWith(mode: mode));
   }
 
@@ -503,7 +353,6 @@ class MultiCanvasStateNotifier extends StateNotifier<MultiWorkflowCanvasState> {
   }
 
   void toggleGrid() {
-    debugPrint('[toggleGrid]');
     _updateActiveCanvas(
       (canvas) => canvas.copyWith(
         visualConfig: canvas.visualConfig.copyWith(
@@ -516,7 +365,6 @@ class MultiCanvasStateNotifier extends StateNotifier<MultiWorkflowCanvasState> {
   void updateInteractionConfig(
     CanvasInteractionConfig Function(CanvasInteractionConfig) fn,
   ) {
-    debugPrint('[updateInteractionConfig]');
     _updateActiveCanvas(
       (canvas) =>
           canvas.copyWith(interactionConfig: fn(canvas.interactionConfig)),
@@ -524,7 +372,6 @@ class MultiCanvasStateNotifier extends StateNotifier<MultiWorkflowCanvasState> {
   }
 
   void resetCanvas() {
-    debugPrint('[resetCanvas]');
     _updateActiveCanvas(
       (canvas) => CanvasState(
         interactionConfig: canvas.interactionConfig,

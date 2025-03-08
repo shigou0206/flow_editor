@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart'; // for debugPrint
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../node_state/node_state_provider.dart';
 import '../node_state/node_state.dart';
@@ -27,7 +26,6 @@ class NodeController implements INodeController {
   void upsertNode(NodeModel node) {
     _notifier.upsertNode(node);
     onNodeAdded?.call(node);
-    debugPrint('Node upserted: ${node.id}');
   }
 
   @override
@@ -36,7 +34,6 @@ class NodeController implements INodeController {
     _notifier.upsertNodes(nodes);
     for (final node in nodes) {
       onNodeAdded?.call(node);
-      debugPrint('Node batch upserted: ${node.id}');
     }
   }
 
@@ -46,7 +43,6 @@ class NodeController implements INodeController {
     if (node != null) {
       _notifier.removeNode(nodeId);
       onNodeRemoved?.call(node);
-      debugPrint('Node removed: ${node.id}');
     }
   }
 
@@ -64,7 +60,6 @@ class NodeController implements INodeController {
     _notifier.clearWorkflow();
     for (final node in nodes) {
       onNodeRemoved?.call(node);
-      debugPrint('Node cleared: ${node.id}');
     }
   }
 

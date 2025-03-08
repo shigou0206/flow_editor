@@ -9,34 +9,22 @@ import '../renderers/canvas_renderer.dart';
 import '../../node/behaviors/node_behavior.dart';
 import '../../anchor/behaviors/anchor_behavior.dart';
 
-/// CanvasController：
-/// - 监听给定 workflowId 的 nodeState、edgeState
-/// - 通过 Transform 对画布做平移(offset) + 缩放(scale)
-/// - 将数据传给 CanvasRenderer 做真正的绘制
+/// CanvasController(改造版):
+/// - 不再用 ClipRect + Transform 包裹子树
+/// - 仅布局一个容器来承载 CanvasRenderer
 class CanvasController extends ConsumerWidget {
-  /// 标识一个独立的 workflow
-  final String workflowId;
+  final String workflowId; // 唯一标识某个工作流
 
-  /// 画布视觉配置，例如背景颜色、网格相关
-  final CanvasVisualConfig visualConfig;
+  final CanvasVisualConfig visualConfig; // 画布视觉配置
+  final GlobalKey canvasGlobalKey; // 若需要 globalToLocal，可供外部使用
+  final Offset offset; // 当前平移量
+  final double scale; // 当前缩放因子
 
-  /// 画布平移量（在世界坐标中的偏移）
-  final Offset offset;
-
-  /// 画布缩放因子
-  final double scale;
-
-  /// 可选：节点行为
   final NodeBehavior? nodeBehavior;
-
-  /// 可选：锚点行为
   final AnchorBehavior? anchorBehavior;
 
-  /// 画布的 GlobalKey，供子组件获取全局坐标等
-  final GlobalKey canvasGlobalKey;
-
   const CanvasController({
-    super.key,
+    Key? key,
     required this.workflowId,
     required this.visualConfig,
     required this.canvasGlobalKey,
@@ -44,30 +32,30 @@ class CanvasController extends ConsumerWidget {
     this.scale = 1.0,
     this.nodeBehavior,
     this.anchorBehavior,
-  });
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    // 1. watch 当前 workflowId 的 nodeState / edgeState
+    // 1. 获取当前 workflow 的 nodeState / edgeState
     final nodeState = ref.watch(nodeStateProvider(workflowId));
     final edgeState = ref.watch(edgeStateProvider(workflowId));
 
-    // 2. 使用 ClipRect + Transform 来平移 & 缩放画布
-    return ClipRect(
-      child: Transform(
-        transform: Matrix4.identity()
-          ..translate(offset.dx, offset.dy)
-          ..scale(scale),
-        alignment: Alignment.topLeft,
-        child: CanvasRenderer(
-          offset: offset,
-          scale: scale,
-          nodeState: nodeState,
-          edgeState: edgeState,
-          visualConfig: visualConfig,
-          nodeBehavior: nodeBehavior,
-          anchorBehavior: anchorBehavior,
-        ),
+    // 2. 用一个容器(或 SizedBox.expand)承载 CanvasRenderer
+    //    不再在这里做 父级 Transform / ClipRect
+    return SizedBox(
+      // 或 SizedBox.expand() if you want full screen
+      key: canvasGlobalKey,
+      // 也可根据你需求定尺寸,比如 config.canvasConfig.viewportWidth/Height
+      width: MediaQuery.of(context).size.width,
+      height: MediaQuery.of(context).size.height,
+      child: CanvasRenderer(
+        offset: offset,
+        scale: scale,
+        nodeState: nodeState,
+        edgeState: edgeState,
+        visualConfig: visualConfig,
+        nodeBehavior: nodeBehavior,
+        anchorBehavior: anchorBehavior,
       ),
     );
   }

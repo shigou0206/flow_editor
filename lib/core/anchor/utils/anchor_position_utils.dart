@@ -62,7 +62,7 @@ Offset computeAnchorWorldPosition(NodeModel node, AnchorModel anchor) {
 /// 3) 计算外扩: 用于确定父容器(BoundingBox)需要多大
 AnchorPadding computeAnchorPadding(
   List<AnchorModel> anchors,
-  NodeModel node,
+  Size nodeSize,
 ) {
   double expandLeft = 0;
   double expandRight = 0;
@@ -70,12 +70,12 @@ AnchorPadding computeAnchorPadding(
   double expandBottom = 0;
 
   for (final anchor in anchors) {
-    final localPos =
-        computeAnchorLocalPosition(anchor, Size(node.width, node.height));
+    final localPos = computeAnchorLocalPosition(anchor, nodeSize);
     expandLeft = max(expandLeft, -localPos.dx);
-    expandRight = max(expandRight, localPos.dx + anchor.width - node.width);
+    expandRight = max(expandRight, localPos.dx + anchor.width - nodeSize.width);
     expandTop = max(expandTop, -localPos.dy);
-    expandBottom = max(expandBottom, localPos.dy + anchor.height - node.height);
+    expandBottom =
+        max(expandBottom, localPos.dy + anchor.height - nodeSize.height);
   }
 
   return AnchorPadding(
@@ -101,6 +101,24 @@ class AnchorPadding {
     required this.top,
     required this.bottom,
   });
+
+  factory AnchorPadding.fromJson(Map<String, dynamic> json) {
+    return AnchorPadding(
+      left: json['left'],
+      right: json['right'],
+      top: json['top'],
+      bottom: json['bottom'],
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'left': left,
+      'right': right,
+      'top': top,
+      'bottom': bottom,
+    };
+  }
 }
 
 /// ---------------------

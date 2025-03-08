@@ -39,25 +39,9 @@ class _CanvasMouseHandlerState extends ConsumerState<CanvasMouseHandler> {
         }
       },
       child: MouseRegion(
-        onEnter: (enterEvent) {
-          // 鼠标进入画布区域
-          debugPrint('Mouse entered canvas area: ${enterEvent.position}');
-        },
-        onHover: (hoverEvent) {
-          // 鼠标在画布上悬停移动
-          setState(() {
-            _hoverPosition = hoverEvent.position;
-          });
-          // 若您想在状态中存或给 multiCanvasStateNotifier,也可以
-          // e.g. ref.read(multiCanvasStateProvider.notifier).setHoverPos(hoverEvent.position);
-        },
-        onExit: (exitEvent) {
-          // 鼠标离开画布区域
-          debugPrint('Mouse exited canvas area.');
-          setState(() {
-            _hoverPosition = null;
-          });
-        },
+        onEnter: (enterEvent) {},
+        onHover: (hoverEvent) {},
+        onExit: (exitEvent) {},
         child: widget.child,
       ),
     );

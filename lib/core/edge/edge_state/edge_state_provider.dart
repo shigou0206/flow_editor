@@ -14,8 +14,6 @@ class EdgeStateNotifier extends StateNotifier<EdgeState> {
     final oldMap = state.edgesOf(workflowId);
     final updatedMap = {...oldMap, edge.id: edge};
     state = state.updateWorkflowEdges(workflowId, updatedMap);
-    debugPrint(
-        '[EdgeStateNotifier] upsertEdge: ${edge.id} in workflow $workflowId');
   }
 
   void removeEdge(String edgeId) {
@@ -23,8 +21,6 @@ class EdgeStateNotifier extends StateNotifier<EdgeState> {
     if (!oldMap.containsKey(edgeId)) return;
     final updatedMap = {...oldMap}..remove(edgeId);
     state = state.updateWorkflowEdges(workflowId, updatedMap);
-    debugPrint(
-        '[EdgeStateNotifier] removeEdge: $edgeId from workflow $workflowId');
   }
 
   void removeEdgesOfNode(String nodeId) {
@@ -33,19 +29,15 @@ class EdgeStateNotifier extends StateNotifier<EdgeState> {
         edge.sourceNodeId == nodeId || edge.targetNodeId == nodeId);
     if (updatedMap.length != oldMap.length) {
       state = state.updateWorkflowEdges(workflowId, updatedMap);
-      debugPrint(
-          '[EdgeStateNotifier] removeEdgesOfNode: node $nodeId in workflow $workflowId');
     }
   }
 
   void setWorkflowEdges(Map<String, EdgeModel> edges) {
     state = state.updateWorkflowEdges(workflowId, edges);
-    debugPrint('[EdgeStateNotifier] setWorkflowEdges for workflow $workflowId');
   }
 
   void removeWorkflow() {
     state = state.removeWorkflow(workflowId);
-    debugPrint('[EdgeStateNotifier] removeWorkflow: $workflowId');
   }
 
   // --- Edge 选中相关 ---
@@ -58,27 +50,22 @@ class EdgeStateNotifier extends StateNotifier<EdgeState> {
       newSet.add(edgeId);
     }
     state = state.copyWith(selectedEdgeIds: newSet);
-    debugPrint('[EdgeStateNotifier] toggleSelectEdge: $edgeId');
   }
 
   void selectEdge(String edgeId, {bool multiSelect = false}) {
     final newSet = multiSelect ? Set.of(state.selectedEdgeIds) : <String>{};
     newSet.add(edgeId);
     state = state.copyWith(selectedEdgeIds: newSet);
-    debugPrint(
-        '[EdgeStateNotifier] selectEdge: $edgeId, multiSelect=$multiSelect');
   }
 
   void deselectEdge(String edgeId) {
     final newSet = Set.of(state.selectedEdgeIds);
     newSet.remove(edgeId);
     state = state.copyWith(selectedEdgeIds: newSet);
-    debugPrint('[EdgeStateNotifier] deselectEdge: $edgeId');
   }
 
   void clearSelection() {
     state = state.copyWith(selectedEdgeIds: {});
-    debugPrint('[EdgeStateNotifier] clearSelection');
   }
 
   // --- 拖拽交互 (Ghost Edge) ---
@@ -89,18 +76,13 @@ class EdgeStateNotifier extends StateNotifier<EdgeState> {
       draggingEdgeId: tempEdge.id,
       draggingEnd: startPos,
     );
-    debugPrint(
-        '[EdgeStateNotifier] startEdgeDrag: ${tempEdge.id} at $startPos');
   }
 
   void updateEdgeDrag(Offset currentPos) {
     if (state.draggingEdgeId == null) {
-      debugPrint('[EdgeStateNotifier] updateEdgeDrag: No draggingEdgeId found');
       return;
     }
     state = state.copyWith(draggingEnd: currentPos);
-    debugPrint(
-        '[EdgeStateNotifier] updateEdgeDrag: ${state.draggingEdgeId} updated to $currentPos');
   }
 
   void endEdgeDrag({
@@ -113,7 +95,6 @@ class EdgeStateNotifier extends StateNotifier<EdgeState> {
 
     if (canceled || targetNodeId == null || targetAnchorId == null) {
       removeEdge(edgeId);
-      debugPrint('[EdgeStateNotifier] endEdgeDrag: removed ghost edge $edgeId');
     } else {
       finalizeEdge(
         edgeId: edgeId,
@@ -141,8 +122,6 @@ class EdgeStateNotifier extends StateNotifier<EdgeState> {
         isConnected: true,
       );
       upsertEdge(newEdge);
-      debugPrint(
-          '[EdgeStateNotifier] finalizeEdge: finalized edge $edgeId with target $targetNodeId/$targetAnchorId');
     }
 
     state = state.copyWith(
@@ -158,8 +137,6 @@ class EdgeStateNotifier extends StateNotifier<EdgeState> {
     final updatedMap = {...oldMap}
       ..removeWhere((id, _) => edgeIds.contains(id));
     state = state.updateWorkflowEdges(workflowId, updatedMap);
-    debugPrint(
-        '[EdgeStateNotifier] removeEdges: $edgeIds from workflow $workflowId');
   }
 }
 

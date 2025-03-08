@@ -37,7 +37,6 @@ class NodeDeleteButton extends StatelessWidget {
             iconSize: 18,
             icon: const Icon(Icons.delete),
             onPressed: () {
-              debugPrint('NodeDeleteButton: delete button pressed');
               behavior?.onDelete(node);
             },
           ),

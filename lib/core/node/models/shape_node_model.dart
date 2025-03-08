@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'node_model.dart';
 import '../../anchor/models/anchor_model.dart';
+import '../../anchor/utils/anchor_position_utils.dart';
 import 'node_enums.dart';
 
 enum ShapeType { rectangle, circle, diamond, ellipse }
@@ -51,6 +52,7 @@ class ShapeNodeModel extends NodeModel {
     double? width,
     double? height,
     List<AnchorModel>? anchors,
+    AnchorPadding? anchorPadding,
     DragMode? dragMode,
     NodeRole? role,
     NodeStatus? status,

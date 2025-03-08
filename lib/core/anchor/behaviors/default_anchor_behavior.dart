@@ -167,7 +167,7 @@ class DefaultAnchorBehavior implements AnchorBehavior {
         // 如果你对 anchor 有边缘偏移，需要在计算时加上
         final padding = computeAnchorPadding(
           node.anchors,
-          node,
+          Size(node.width, node.height),
         );
 
         // 计算anchor的本地偏移
