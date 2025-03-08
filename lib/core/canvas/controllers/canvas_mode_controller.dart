@@ -1,7 +1,7 @@
 // core/canvas/controllers/canvas_mode_controller.dart
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../canvas/models/canvas_interaction_mode.dart';
-import '../../state_management/canvas_state/canvas_state_provider.dart';
+import '../canvas_state/canvas_state_provider.dart';
 
 /// CanvasModeController: 管理或切换画布的交互模式
 class CanvasModeController {

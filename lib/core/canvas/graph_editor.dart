@@ -4,13 +4,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../node/controllers/node_controller.dart';
 import '../edge/controllers/edge_controller.dart';
 import '../node/models/node_model.dart';
-import '../anchor/models/anchor_model.dart';
-import '../types/position_enum.dart';
 import '../canvas/controllers/canvas_controller.dart';
 import '../canvas/models/canvas_visual_config.dart';
 import '../canvas/behaviors/canvas_behavior.dart';
 import '../canvas/interaction/gesture_event_handler.dart';
-import '../state_management/canvas_state/canvas_state_provider.dart';
+import 'canvas_state/canvas_state_provider.dart';
 import '../canvas/models/canvas_interaction_mode.dart';
 
 class GraphEditor extends ConsumerStatefulWidget {
@@ -52,10 +50,6 @@ class _GraphEditorState extends ConsumerState<GraphEditor> {
     // 下面就不会在build时同步更改 provider
     // 先 watch 当前 workflow 状态
     final canvasState = ref.watch(multiCanvasStateProvider).activeState;
-    final multiCanvasNotifier = ref.read(multiCanvasStateProvider.notifier);
-
-    // 注入 key
-    multiCanvasNotifier.stackKey = GraphEditor.canvasStackKey;
 
     return Scaffold(
       appBar: AppBar(

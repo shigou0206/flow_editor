@@ -3,18 +3,19 @@ import 'package:flutter/material.dart';
 
 import '../../node/behaviors/node_behavior.dart';
 import '../../anchor/behaviors/anchor_behavior.dart';
-import '../../state_management/node_state/node_state.dart';
-import '../../state_management/edge_state/edge_state.dart';
+import '../../node/node_state/node_state.dart';
+import '../../edge/edge_state/edge_state.dart';
 import '../models/canvas_visual_config.dart';
 import '../renderers/background_renderer.dart';
 import '../../edge/edge_renderer.dart';
 import '../../node/widgets/commons/node_widget.dart';
-import '../../anchor/utils/anchor_position_utils.dart';
 
 /// CanvasRenderer:
 /// - 一个普通Widget，不再 watch Provider，
 /// - 只根据传入的 nodeState、edgeState、visualConfig 等进行绘制。
 class CanvasRenderer extends StatelessWidget {
+  final Offset offset;
+  final double scale;
   final NodeState nodeState;
   final EdgeState edgeState;
   final CanvasVisualConfig visualConfig;
@@ -22,15 +23,13 @@ class CanvasRenderer extends StatelessWidget {
   final NodeBehavior? nodeBehavior;
   final AnchorBehavior? anchorBehavior;
 
-  /// 画布本身的 globalKey（用于锚点坐标计算等）
-  final GlobalKey canvasGlobalKey;
-
   const CanvasRenderer({
     super.key,
+    required this.offset,
+    required this.scale,
     required this.nodeState,
     required this.edgeState,
     required this.visualConfig,
-    required this.canvasGlobalKey,
     this.nodeBehavior,
     this.anchorBehavior,
   });
@@ -53,7 +52,6 @@ class CanvasRenderer extends StatelessWidget {
     final draggingEnd = edgeState.draggingEnd;
 
     return Stack(
-      key: canvasGlobalKey,
       fit: StackFit.expand,
       children: [
         // 2. 背景绘制
@@ -61,8 +59,8 @@ class CanvasRenderer extends StatelessWidget {
           size: Size.infinite,
           painter: BackgroundRenderer(
             config: visualConfig,
-            offset: Offset.zero, // 如果想让背景跟随canvas平移/缩放，可再传参
-            scale: 1.0,
+            offset: offset,
+            scale: scale,
           ),
         ),
         // 3. 边绘制
@@ -73,31 +71,23 @@ class CanvasRenderer extends StatelessWidget {
             edges: edgeList,
             draggingEdgeId: draggingEdgeId,
             draggingEnd: draggingEnd,
-            // 其他可选: selectedEdgeIds, defaultUseBezier, ...
           ),
         ),
         // 4. 节点绘制
         ...nodeList.map((node) {
-          final padding = computeAnchorPadding(
-            node.anchors,
-            anchorWidgetSize: NodeWidget.defaultAnchorSize,
-          );
-          final totalWidth = node.width + padding.left + padding.right;
-          final totalHeight = node.height + padding.top + padding.bottom;
-          final left = node.x - padding.left;
-          final top = node.y - padding.top;
+          final left = node.x;
+          final top = node.y;
 
           return Positioned(
             key: ValueKey(node.id),
             left: left,
             top: top,
-            width: totalWidth,
-            height: totalHeight,
+            width: node.width,
+            height: node.height,
             child: NodeWidget(
               node: node,
               behavior: nodeBehavior,
               anchorBehavior: anchorBehavior,
-              canvasGlobalKey: canvasGlobalKey,
               child: Container(
                 decoration: BoxDecoration(
                   color: Colors.white,

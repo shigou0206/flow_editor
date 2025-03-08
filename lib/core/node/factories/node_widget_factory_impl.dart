@@ -7,12 +7,8 @@ import 'node_widget_factory.dart';
 class NodeWidgetFactoryImpl implements NodeWidgetFactory {
   final NodeWidgetRegistry registry;
 
-  /// 🌟新增 canvasGlobalKey，用于坐标转换
-  final GlobalKey canvasGlobalKey;
-
   NodeWidgetFactoryImpl({
     required this.registry,
-    required this.canvasGlobalKey, // ← 新增参数
   });
 
   @override
@@ -24,7 +20,6 @@ class NodeWidgetFactoryImpl implements NodeWidgetFactory {
           ? NodeWidget(
               node: node,
               child: widget,
-              canvasGlobalKey: canvasGlobalKey, // ← 向下传递
             )
           : widget;
     }

@@ -10,13 +10,9 @@ class NodeAnchors extends StatelessWidget {
   final double anchorWidgetSize;
   final double scale;
 
-  /// 🌟 新增: canvasGlobalKey，用于坐标变换
-  final GlobalKey canvasGlobalKey;
-
   const NodeAnchors({
     Key? key,
     required this.node,
-    required this.canvasGlobalKey, // ← 传入canvas的全局Key
     this.anchorBehavior,
     this.anchorWidgetSize = 24.0,
     this.scale = 1.0,
@@ -57,7 +53,6 @@ class NodeAnchors extends StatelessWidget {
               anchor: anchor,
               baseSize: anchorWidgetSize,
               anchorBehavior: anchorBehavior,
-              canvasGlobalKey: canvasGlobalKey, // ← 🌟 传入canvasGlobalKey
             ),
           );
         }).toList(),

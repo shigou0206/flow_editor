@@ -2,8 +2,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../state_management/node_state/node_state_provider.dart';
-import '../../state_management/edge_state/edge_state_provider.dart';
+import '../../node/node_state/node_state_provider.dart';
+import '../../edge/edge_state/edge_state_provider.dart';
 import '../models/canvas_visual_config.dart';
 import '../renderers/canvas_renderer.dart';
 import '../../node/behaviors/node_behavior.dart';
@@ -60,12 +60,13 @@ class CanvasController extends ConsumerWidget {
           ..scale(scale),
         alignment: Alignment.topLeft,
         child: CanvasRenderer(
+          offset: offset,
+          scale: scale,
           nodeState: nodeState,
           edgeState: edgeState,
           visualConfig: visualConfig,
           nodeBehavior: nodeBehavior,
           anchorBehavior: anchorBehavior,
-          canvasGlobalKey: canvasGlobalKey,
         ),
       ),
     );

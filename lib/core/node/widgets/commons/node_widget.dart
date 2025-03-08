@@ -15,14 +15,10 @@ class NodeWidget extends StatelessWidget {
   static const double defaultAnchorSize = 24.0;
   final double anchorSize;
 
-  /// 🌟新增canvasGlobalKey用于坐标转换
-  final GlobalKey canvasGlobalKey;
-
   const NodeWidget({
     Key? key,
     required this.node,
     required this.child,
-    required this.canvasGlobalKey, // ← 新增参数
     this.behavior,
     this.anchorBehavior,
     this.anchorSize = defaultAnchorSize,
@@ -61,7 +57,6 @@ class NodeWidget extends StatelessWidget {
               node: node,
               anchorBehavior: anchorBehavior,
               anchorWidgetSize: anchorSize,
-              canvasGlobalKey: canvasGlobalKey, // ← 传入canvasGlobalKey
             ),
           ),
         ],

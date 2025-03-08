@@ -6,8 +6,8 @@ import '../models/anchor_model.dart';
 import '../../edge/models/edge_model.dart';
 import '../../edge/models/edge_line_style.dart';
 import '../../edge/models/edge_enums.dart';
-import '../../state_management/edge_state/edge_state_provider.dart';
-import '../../state_management/node_state/node_state_provider.dart';
+import '../../edge/edge_state/edge_state_provider.dart';
+import '../../node/node_state/node_state_provider.dart';
 import '../utils/anchor_position_utils.dart';
 
 /// DefaultAnchorBehavior 实现：支持拖拽连线（ghost edge 创建、更新、结束）

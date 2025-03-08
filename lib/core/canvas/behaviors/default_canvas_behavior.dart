@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../state_management/canvas_state/canvas_state_provider.dart';
+import '../canvas_state/canvas_state_provider.dart';
 import 'canvas_behavior.dart';
 
 class DefaultCanvasBehavior implements CanvasBehavior {

@@ -1,7 +1,7 @@
 import 'package:flutter/foundation.dart'; // for debugPrint
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../state_management/node_state/node_state_provider.dart';
-import '../../state_management/node_state/node_state.dart';
+import '../node_state/node_state_provider.dart';
+import '../node_state/node_state.dart';
 import '../models/node_model.dart';
 import 'node_controller_interface.dart';
 import 'events.dart';
