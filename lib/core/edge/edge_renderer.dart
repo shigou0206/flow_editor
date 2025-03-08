@@ -30,9 +30,6 @@ class EdgeRenderer extends CustomPainter {
   /// 默认是否使用贝塞尔曲线绘制边
   final bool defaultUseBezier;
 
-  /// 与 NodeWidget 中使用的锚点尺寸保持一致（用于计算 outside padding）
-  final double anchorWidgetSize;
-
   const EdgeRenderer({
     required this.nodes,
     required this.edges,
@@ -41,7 +38,6 @@ class EdgeRenderer extends CustomPainter {
     this.draggingEnd,
     this.showHalfConnectedEdges = false,
     this.defaultUseBezier = false,
-    this.anchorWidgetSize = 24.0,
   });
 
   @override
@@ -222,20 +218,14 @@ class EdgeRenderer extends CustomPainter {
           '[EdgeRenderer] _getAnchorWorldInfo: Anchor $anchorId not found in node $nodeId');
       return (null, null);
     }
-    // 计算 outside padding（需与 NodeWidget/NodeAnchors 保持一致）
-    final padding = computeAnchorPadding(
-      node.anchors,
-      node,
-    );
-    final containerPos = Offset(node.x - padding.left, node.y - padding.top);
-    final localPos = computeAnchorLocalPosition(
-      anchor,
-      Size(node.width, node.height),
-    );
-    final worldPos = containerPos + localPos;
+
+    // 计算锚点在世界坐标系中的位置
+    final worldPos = computeAnchorWorldPosition(node, anchor) +
+        Offset(anchor.width / 2, anchor.height / 2);
     debugPrint(
         '[EdgeRenderer] _getAnchorWorldInfo: node=$nodeId, anchor=$anchorId, '
-        'containerPos=$containerPos, localPos=$localPos, worldPos=$worldPos');
+        'worldPos=$worldPos');
+
     return (worldPos, anchor.position);
   }
 
