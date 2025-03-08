@@ -41,12 +41,7 @@ class EdgeRenderer extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    debugPrint('[EdgeRenderer] start paint => size=$size');
     for (final edge in edges) {
-      debugPrint(
-          '[EdgeRenderer] Checking edge: ${edge.id}, isConnected=${edge.isConnected}, '
-          'source=${edge.sourceNodeId}:${edge.sourceAnchorId}, '
-          'target=${edge.targetNodeId}:${edge.targetAnchorId}');
       if (edge.isConnected &&
           edge.targetNodeId != null &&
           edge.targetAnchorId != null) {
@@ -56,7 +51,6 @@ class EdgeRenderer extends CustomPainter {
       }
     }
     _drawDraggingEdge(canvas);
-    debugPrint('[EdgeRenderer] end paint.');
   }
 
   void _drawEdge(Canvas canvas, EdgeModel edge) {
@@ -69,25 +63,18 @@ class EdgeRenderer extends CustomPainter {
       edge.targetAnchorId!,
     );
 
-    debugPrint(
-        '[EdgeRenderer] _drawEdge: sourceWorld=$sourceWorld, targetWorld=$targetWorld');
     if (sourceWorld == null || targetWorld == null) {
-      debugPrint(
-          '[EdgeRenderer] _drawEdge: Missing anchor info, skipping edge ${edge.id}');
       return;
     }
 
     // 直接使用计算出的世界坐标
     final p1 = sourceWorld;
     final p2 = targetWorld;
-    debugPrint('[EdgeRenderer] _drawEdge: p1=$p1, p2=$p2');
 
     // 构建边的路径
     Path path = _buildEdgePath(p1, p2, sourcePos, targetPos, edge);
     final isSelected = selectedEdgeIds.contains(edge.id);
     final paint = buildEdgePaint(edge.lineStyle, edge.animConfig, isSelected);
-    debugPrint(
-        '[EdgeRenderer] _drawEdge: paint: color=${paint.color}, strokeWidth=${paint.strokeWidth}');
 
     if (edge.lineStyle.dashPattern.isNotEmpty) {
       path = dashPath(
@@ -95,18 +82,14 @@ class EdgeRenderer extends CustomPainter {
         edge.lineStyle.dashPattern,
         phase: _computeDashFlowPhase(edge.animConfig),
       );
-      debugPrint('[EdgeRenderer] _drawEdge: applied dash pattern');
     }
     canvas.drawPath(path, paint);
-    debugPrint('[EdgeRenderer] _drawEdge: Path drawn for edge ${edge.id}');
 
     if (edge.lineStyle.arrowEnd != ArrowType.none) {
       drawArrowHead(canvas, path, paint, edge.lineStyle, atStart: false);
-      debugPrint('[EdgeRenderer] _drawEdge: Arrow drawn at end');
     }
     if (edge.lineStyle.arrowStart != ArrowType.none) {
       drawArrowHead(canvas, path, paint, edge.lineStyle, atStart: true);
-      debugPrint('[EdgeRenderer] _drawEdge: Arrow drawn at start');
     }
   }
 
@@ -116,8 +99,6 @@ class EdgeRenderer extends CustomPainter {
       edge.sourceAnchorId,
     );
     if (sourceWorld == null) {
-      debugPrint(
-          '[EdgeRenderer] _drawHalfConnectedEdge: Source anchor not found for edge ${edge.id}');
       return;
     }
     final p1 = sourceWorld;
@@ -125,14 +106,11 @@ class EdgeRenderer extends CustomPainter {
     final isSelected = selectedEdgeIds.contains(edge.id);
     final paint = buildEdgePaint(edge.lineStyle, edge.animConfig, isSelected);
     final path = _buildEdgePath(p1, p2, null, null, edge);
-    debugPrint(
-        '[EdgeRenderer] _drawHalfConnectedEdge: drawing half edge for ${edge.id}');
     canvas.drawPath(path, paint);
   }
 
   void _drawDraggingEdge(Canvas canvas) {
     if (draggingEdgeId == null || draggingEnd == null) {
-      debugPrint('[EdgeRenderer] _drawDraggingEdge: No ghost edge to draw');
       return;
     }
     final edge = edges.firstWhere(
@@ -148,12 +126,10 @@ class EdgeRenderer extends CustomPainter {
       edge.sourceAnchorId,
     );
     if (sourceWorld == null) {
-      debugPrint('[EdgeRenderer] _drawDraggingEdge: Source anchor not found');
       return;
     }
     final p1 = sourceWorld;
     final p2 = draggingEnd!;
-    debugPrint('[EdgeRenderer] _drawDraggingEdge: ghost line from $p1 to $p2');
     final paint = Paint()
       ..color = Colors.orange
       ..strokeWidth = 3
@@ -188,10 +164,8 @@ class EdgeRenderer extends CustomPainter {
         targetPosition: targetPos,
         curvature: 0.25,
       );
-      debugPrint('[EdgeRenderer] _buildEdgePath: Using bezier curve');
       return result[0] as Path;
     }
-    debugPrint('[EdgeRenderer] _buildEdgePath: Using straight line');
     return Path()
       ..moveTo(p1.dx, p1.dy)
       ..lineTo(p2.dx, p2.dy);
@@ -208,22 +182,16 @@ class EdgeRenderer extends CustomPainter {
   (Offset?, Position?) _getAnchorWorldInfo(String nodeId, String anchorId) {
     final node = nodes.firstWhereOrNull((n) => n.id == nodeId);
     if (node == null) {
-      debugPrint('[EdgeRenderer] _getAnchorWorldInfo: Node $nodeId not found');
       return (null, null);
     }
     final anchor = node.anchors.firstWhereOrNull((a) => a.id == anchorId);
     if (anchor == null) {
-      debugPrint(
-          '[EdgeRenderer] _getAnchorWorldInfo: Anchor $anchorId not found in node $nodeId');
       return (null, null);
     }
 
     // 计算锚点在世界坐标系中的位置
     final worldPos = computeAnchorWorldPosition(node, anchor) +
         Offset(anchor.width / 2, anchor.height / 2);
-    debugPrint(
-        '[EdgeRenderer] _getAnchorWorldInfo: node=$nodeId, anchor=$anchorId, '
-        'worldPos=$worldPos');
 
     return (worldPos, anchor.position);
   }

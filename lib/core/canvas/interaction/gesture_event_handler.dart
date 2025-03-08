@@ -40,13 +40,6 @@ class _CanvasGestureHandlerState extends ConsumerState<CanvasGestureHandler> {
 
   /// 指针按下 => 调用 startDrag(BuildContext, globalPos)
   void _onPointerDown(PointerDownEvent event) {
-    debugPrint('[PointerDown] globalPos=${event.position}');
-    // 如果需要调试 localPos （相对于本 Widget 的坐标），可打印:
-    final localPos =
-        (context.findRenderObject() as RenderBox).globalToLocal(event.position);
-    debugPrint('[PointerDown] localPos=$localPos');
-
-    // 调用 StateNotifier
     ref
         .read(multiCanvasStateProvider.notifier)
         .startDrag(context, event.position);

@@ -29,28 +29,16 @@ class DefaultAnchorBehavior implements AnchorBehavior {
   });
 
   @override
-  void onAnchorTap(AnchorModel anchor) {
-    debugPrint('[DefaultAnchorBehavior] onAnchorTap: ${anchor.id}');
-  }
+  void onAnchorTap(AnchorModel anchor) {}
 
   @override
-  void onAnchorDoubleTap(AnchorModel anchor) {
-    debugPrint('[DefaultAnchorBehavior] onAnchorDoubleTap: ${anchor.id}');
-  }
+  void onAnchorDoubleTap(AnchorModel anchor) {}
 
   @override
-  void onAnchorHover(AnchorModel anchor, bool isHover) {
-    debugPrint(
-      '[DefaultAnchorBehavior] onAnchorHover: ${anchor.id}, isHover=$isHover',
-    );
-  }
+  void onAnchorHover(AnchorModel anchor, bool isHover) {}
 
   @override
-  void onAnchorContextMenu(AnchorModel anchor, Offset localPos) {
-    debugPrint(
-      '[DefaultAnchorBehavior] onAnchorContextMenu: ${anchor.id} at $localPos',
-    );
-  }
+  void onAnchorContextMenu(AnchorModel anchor, Offset localPos) {}
 
   @override
   void onAnchorDragStart(AnchorModel anchor, Offset startPos) {

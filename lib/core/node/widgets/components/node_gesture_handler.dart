@@ -47,14 +47,12 @@ class _NodeGestureHandlerState extends State<NodeGestureHandler> {
       // 如果已经等待双击，则取消定时器，触发双击
       _tapTimer?.cancel();
       _waitingForDoubleTap = false;
-      debugPrint('NodeGestureHandler: onDoubleTap triggered');
       _handleDoubleTap();
     } else {
       // 首次点击，启动定时器等待是否有第二次点击
       _waitingForDoubleTap = true;
       _tapTimer = Timer(widget.doubleTapDelay, () {
         if (_waitingForDoubleTap) {
-          debugPrint('NodeGestureHandler: onTap triggered');
           _handleTap();
           _waitingForDoubleTap = false;
         }
@@ -75,7 +73,6 @@ class _NodeGestureHandlerState extends State<NodeGestureHandler> {
       behavior: HitTestBehavior.opaque,
       onTapUp: _onTapUp,
       onSecondaryTapDown: (details) {
-        debugPrint('NodeGestureHandler: onContextMenu triggered');
         widget.behavior?.onContextMenu(widget.node, details.localPosition);
       },
       child: widget.child,

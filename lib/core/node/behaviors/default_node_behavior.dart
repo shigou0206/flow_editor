@@ -9,27 +9,17 @@ import 'node_behavior.dart';
 /// 供测试或无特殊逻辑时使用
 class DefaultNodeBehavior implements NodeBehavior {
   @override
-  void onTap(NodeModel node) {
-    // debugPrint('Default onTap: ${node.id}');
-  }
+  void onTap(NodeModel node) {}
 
   @override
-  void onDoubleTap(NodeModel node) {
-    // debugPrint('Default onDoubleTap: ${node.id}');
-  }
+  void onDoubleTap(NodeModel node) {}
 
   @override
-  void onDelete(NodeModel node) {
-    // debugPrint('Default onDelete: ${node.id}');
-  }
+  void onDelete(NodeModel node) {}
 
   @override
-  void onHover(NodeModel node, bool isHover) {
-    // debugPrint('Default onHover: ${node.id} => $isHover');
-  }
+  void onHover(NodeModel node, bool isHover) {}
 
   @override
-  void onContextMenu(NodeModel node, Offset position) {
-    // debugPrint('Default onContextMenu: ${node.id} at $position');
-  }
+  void onContextMenu(NodeModel node, Offset position) {}
 }
