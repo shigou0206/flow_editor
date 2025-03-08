@@ -3,7 +3,8 @@ import '../models/anchor_model.dart';
 import '../painter/anchor_painter.dart';
 import '../behaviors/anchor_behavior.dart';
 
-/// AnchorWidget：展示单个锚点的 UI & 交互
+/// AnchorWidget：展示单个锚点的 UI 和 hover 效果
+/// 修改后删除了拖拽相关的手势事件，避免与父层的 ghost edge 拖拽逻辑冲突
 class AnchorWidget extends StatefulWidget {
   final AnchorModel anchor;
   final bool isHover;
@@ -17,7 +18,7 @@ class AnchorWidget extends StatefulWidget {
   final AnchorBehavior? anchorBehavior;
 
   const AnchorWidget({
-    super.key,
+    Key? key,
     required this.anchor,
     this.isHover = false,
     this.isSelected = false,
@@ -28,7 +29,7 @@ class AnchorWidget extends StatefulWidget {
     this.onHoverExit,
     this.cursor = SystemMouseCursors.precise,
     this.anchorBehavior,
-  });
+  }) : super(key: key);
 
   @override
   State<AnchorWidget> createState() => _AnchorWidgetState();
@@ -36,8 +37,6 @@ class AnchorWidget extends StatefulWidget {
 
 class _AnchorWidgetState extends State<AnchorWidget> {
   bool _hovering = false;
-  Offset? _dragStartPos;
-  Offset? _currentDragPos;
 
   @override
   Widget build(BuildContext context) {
@@ -57,30 +56,7 @@ class _AnchorWidgetState extends State<AnchorWidget> {
         child: GestureDetector(
           behavior: HitTestBehavior.opaque,
           onTap: widget.onTap,
-          onPanStart: (details) {
-            widget.anchorBehavior
-                ?.onAnchorDragStart(widget.anchor, details.localPosition);
-            _dragStartPos = details.localPosition;
-            _currentDragPos = details.localPosition;
-          },
-          onPanUpdate: (details) {
-            widget.anchorBehavior
-                ?.onAnchorDragUpdate(widget.anchor, details.localPosition);
-            _currentDragPos = details.localPosition;
-          },
-          onPanEnd: (details) {
-            final endPos = _currentDragPos ?? _dragStartPos ?? Offset.zero;
-            widget.anchorBehavior
-                ?.onAnchorDragEnd(widget.anchor, endPos, canceled: false);
-            _dragStartPos = null;
-            _currentDragPos = null;
-          },
-          onPanCancel: () {
-            widget.anchorBehavior
-                ?.onAnchorDragEnd(widget.anchor, Offset.zero, canceled: true);
-            _dragStartPos = null;
-            _currentDragPos = null;
-          },
+          // 拖拽事件去掉，统一由父级（例如 CanvasGestureHandler）处理 ghost edge 拖拽逻辑
           child: CustomPaint(
             painter: AnchorPainter(
               anchor: widget.anchor,

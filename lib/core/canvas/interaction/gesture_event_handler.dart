@@ -1,23 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-// 这里的导入路径根据你实际项目结构调整
+// 根据你的项目结构，调整以下导入路径
 import '../canvas_state/canvas_state_provider.dart';
 
 /// CanvasGestureHandler
 ///
-/// - 在整个画布区域用 [Listener] 监听指针事件：
-///   [onPointerDown], [onPointerMove], [onPointerUp]
-/// - 将这些事件转发给 [multiCanvasStateProvider.notifier]，
-///   由内部的 [MultiCanvasStateNotifier] 根据当前模式
-///   (createEdge、editNode、panCanvas) 进行处理。
+/// - 使用 GestureDetector 监听手势事件：
+///   onTapDown、onPanStart、onPanUpdate、onPanEnd
+/// - 将这些事件转发给 multiCanvasStateProvider.notifier，由内部的
+///   MultiCanvasStateNotifier 根据当前模式（createEdge、editNode、panCanvas）处理。
 class CanvasGestureHandler extends ConsumerStatefulWidget {
   final Widget child;
 
   const CanvasGestureHandler({
-    super.key,
+    Key? key,
     required this.child,
-  });
+  }) : super(key: key);
 
   @override
   ConsumerState<CanvasGestureHandler> createState() =>
@@ -27,33 +26,44 @@ class CanvasGestureHandler extends ConsumerStatefulWidget {
 class _CanvasGestureHandlerState extends ConsumerState<CanvasGestureHandler> {
   @override
   Widget build(BuildContext context) {
-    return Listener(
-      // PointerDown => 通知 StateNotifier 的 startDrag(context, globalPos)
-      onPointerDown: _onPointerDown,
-      // PointerMove => 通知 StateNotifier 的 updateDrag( delta )
-      onPointerMove: _onPointerMove,
-      // PointerUp   => 通知 StateNotifier 的 endDrag()
-      onPointerUp: _onPointerUp,
+    return GestureDetector(
+      // 设置 HitTestBehavior.deferToChild 以便子组件也能接收手势
+      behavior: HitTestBehavior.deferToChild,
+      // 当按下时调用 onTapDown
+      onTapDown: _onTapDown,
+      // 拖拽开始时调用 onPanStart
+      onPanStart: _onPanStart,
+      // 拖拽更新时调用 onPanUpdate
+      onPanUpdate: _onPanUpdate,
+      // 拖拽结束时调用 onPanEnd
+      onPanEnd: _onPanEnd,
       child: widget.child,
     );
   }
 
-  /// 指针按下 => 调用 startDrag(BuildContext, globalPos)
-  void _onPointerDown(PointerDownEvent event) {
+  void _onTapDown(TapDownDetails details) {
+    // 此处以 onTapDown 作为拖拽起点触发，也可根据需求决定是否使用
     ref
         .read(multiCanvasStateProvider.notifier)
-        .startDrag(context, event.position);
+        .startDrag(context, details.globalPosition);
   }
 
-  /// 指针移动 => 调用 updateDrag( delta )
-  /// 注意: 在你的 MultiCanvasStateNotifier 里,
-  ///       _updateEdgeDrag / _dragNodeBy / _panCanvas 均基于“增量”处理
-  void _onPointerMove(PointerMoveEvent event) {
-    ref.read(multiCanvasStateProvider.notifier).updateDrag(event.delta);
+  void _onPanStart(DragStartDetails details) {
+    print("onPanStart: ${details.globalPosition}");
+    // 拖拽开始时调用，传入全局坐标
+    ref
+        .read(multiCanvasStateProvider.notifier)
+        .startDrag(context, details.globalPosition);
   }
 
-  /// 指针抬起 => 调用 endDrag()
-  void _onPointerUp(PointerUpEvent event) {
+  void _onPanUpdate(DragUpdateDetails details) {
+    print("onPanUpdate: ${details.delta}");
+    // 拖拽更新时传递 delta
+    ref.read(multiCanvasStateProvider.notifier).updateDrag(details.delta);
+  }
+
+  void _onPanEnd(DragEndDetails details) {
+    // 拖拽结束时通知结束拖拽
     ref.read(multiCanvasStateProvider.notifier).endDrag();
   }
 }

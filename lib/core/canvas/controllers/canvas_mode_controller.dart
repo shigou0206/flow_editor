@@ -9,11 +9,6 @@ class CanvasModeController {
 
   CanvasModeController(this.ref);
 
-  /// 切换画布模式
-  void setMode(CanvasInteractionMode mode) {
-    ref.read(multiCanvasStateProvider.notifier).setInteractionMode(mode);
-  }
-
   /// 获取当前模式
   CanvasInteractionMode getMode() {
     final st = ref.read(multiCanvasStateProvider);

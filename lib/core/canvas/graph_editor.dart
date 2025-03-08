@@ -200,30 +200,6 @@ class _GraphEditorState extends ConsumerState<GraphEditor> {
         ),
         const SizedBox(height: 8),
         FloatingActionButton(
-          onPressed: () {
-            multiCanvasNotifier
-                .setInteractionMode(CanvasInteractionMode.editNode);
-          },
-          heroTag: 'forceEditNode',
-          backgroundColor: Colors.orange,
-          child: const Icon(Icons.edit),
-        ),
-        const SizedBox(height: 8),
-        FloatingActionButton(
-          onPressed: () {
-            if (currentMode == CanvasInteractionMode.editNode) {
-              multiCanvasNotifier
-                  .setInteractionMode(CanvasInteractionMode.panCanvas);
-            } else {
-              multiCanvasNotifier
-                  .setInteractionMode(CanvasInteractionMode.editNode);
-            }
-          },
-          heroTag: 'toggleMode',
-          child: const Icon(Icons.swap_horiz),
-        ),
-        const SizedBox(height: 8),
-        FloatingActionButton(
           onPressed: () => multiCanvasNotifier.panBy(10, 0),
           heroTag: 'panRight',
           child: const Icon(Icons.arrow_right),
