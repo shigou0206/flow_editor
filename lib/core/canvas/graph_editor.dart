@@ -14,7 +14,6 @@ import '../canvas/models/canvas_visual_config.dart';
 import '../canvas/behaviors/canvas_behavior.dart';
 import '../canvas/interaction/gesture_event_handler.dart';
 import 'canvas_state/canvas_state_provider.dart';
-import '../canvas/models/canvas_interaction_mode.dart';
 
 // ============== 示例：GraphEditor ==============
 class GraphEditor extends ConsumerStatefulWidget {
@@ -181,7 +180,6 @@ class _GraphEditorState extends ConsumerState<GraphEditor> {
   /// 示例：一些简单的 FAB 按钮操作
   Widget _buildFloatingActions() {
     final multiCanvasNotifier = ref.read(multiCanvasStateProvider.notifier);
-    final currentMode = ref.watch(multiCanvasStateProvider).activeState.mode;
 
     return Column(
       mainAxisSize: MainAxisSize.min,

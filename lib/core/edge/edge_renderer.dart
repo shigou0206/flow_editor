@@ -3,30 +3,17 @@ import 'package:flow_editor/core/node/models/node_model.dart';
 import 'package:flow_editor/core/edge/models/edge_model.dart';
 import 'package:flow_editor/core/edge/models/edge_enums.dart';
 import 'package:flow_editor/core/edge/models/edge_animation_config.dart';
-import 'package:flow_editor/core/edge/edge_utils.dart'; // 包含 buildEdgePaint、dashPath、drawArrowHead、getBezierPath
+import 'package:flow_editor/core/edge/edge_utils.dart';
 import 'package:flow_editor/core/types/position_enum.dart';
 import 'package:flow_editor/core/anchor/utils/anchor_position_utils.dart';
 
 class EdgeRenderer extends CustomPainter {
-  /// 当前画布内所有节点（世界坐标）
   final List<NodeModel> nodes;
-
-  /// 当前画布内所有连线
   final List<EdgeModel> edges;
-
-  /// 选中的边ID集合，用于高亮等效果
   final Set<String> selectedEdgeIds;
-
-  /// 拖拽中的边ID（ghost edge）
   final String? draggingEdgeId;
-
-  /// 拖拽结束点（世界坐标下，由外层 Listener 提供）
   final Offset? draggingEnd;
-
-  /// 是否绘制半连接（即目标未连的情况）
   final bool showHalfConnectedEdges;
-
-  /// 默认是否使用贝塞尔曲线绘制边
   final bool defaultUseBezier;
 
   const EdgeRenderer({
@@ -41,7 +28,10 @@ class EdgeRenderer extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
+    debugPrint('EdgeRenderer.paint called, edges count: ${edges.length}');
+
     for (final edge in edges) {
+      debugPrint('Drawing edge: ${edge.id}, connected: ${edge.isConnected}');
       if (edge.isConnected &&
           edge.targetNodeId != null &&
           edge.targetAnchorId != null) {
@@ -54,35 +44,28 @@ class EdgeRenderer extends CustomPainter {
   }
 
   void _drawEdge(Canvas canvas, EdgeModel edge) {
-    final (sourceWorld, sourcePos) = _getAnchorWorldInfo(
-      edge.sourceNodeId,
-      edge.sourceAnchorId,
-    );
-    final (targetWorld, targetPos) = _getAnchorWorldInfo(
-      edge.targetNodeId!,
-      edge.targetAnchorId!,
-    );
+    debugPrint('[_drawEdge] edgeId=${edge.id}');
+    final (sourceWorld, sourcePos) =
+        _getAnchorWorldInfo(edge.sourceNodeId, edge.sourceAnchorId);
+    final (targetWorld, targetPos) =
+        _getAnchorWorldInfo(edge.targetNodeId!, edge.targetAnchorId!);
 
     if (sourceWorld == null || targetWorld == null) {
+      debugPrint(
+          '[_drawEdge] Missing source or target anchor for edgeId=${edge.id}');
       return;
     }
 
-    // 直接使用计算出的世界坐标
-    final p1 = sourceWorld;
-    final p2 = targetWorld;
-
-    // 构建边的路径
-    Path path = _buildEdgePath(p1, p2, sourcePos, targetPos, edge);
+    Path path =
+        _buildEdgePath(sourceWorld, targetWorld, sourcePos, targetPos, edge);
     final isSelected = selectedEdgeIds.contains(edge.id);
     final paint = buildEdgePaint(edge.lineStyle, edge.animConfig, isSelected);
 
     if (edge.lineStyle.dashPattern.isNotEmpty) {
-      path = dashPath(
-        path,
-        edge.lineStyle.dashPattern,
-        phase: _computeDashFlowPhase(edge.animConfig),
-      );
+      path = dashPath(path, edge.lineStyle.dashPattern,
+          phase: _computeDashFlowPhase(edge.animConfig));
     }
+
     canvas.drawPath(path, paint);
 
     if (edge.lineStyle.arrowEnd != ArrowType.none) {
@@ -94,68 +77,67 @@ class EdgeRenderer extends CustomPainter {
   }
 
   void _drawHalfConnectedEdge(Canvas canvas, EdgeModel edge) {
-    final (sourceWorld, _) = _getAnchorWorldInfo(
-      edge.sourceNodeId,
-      edge.sourceAnchorId,
-    );
+    debugPrint('[_drawHalfConnectedEdge] edgeId=${edge.id}');
+    final (sourceWorld, _) =
+        _getAnchorWorldInfo(edge.sourceNodeId, edge.sourceAnchorId);
     if (sourceWorld == null) {
+      debugPrint(
+          '[_drawHalfConnectedEdge] Missing source anchor for edgeId=${edge.id}');
       return;
     }
-    final p1 = sourceWorld;
-    final p2 = p1 + const Offset(50, 0); // fallback: 假设水平向右延伸50像素
-    final isSelected = selectedEdgeIds.contains(edge.id);
-    final paint = buildEdgePaint(edge.lineStyle, edge.animConfig, isSelected);
-    final path = _buildEdgePath(p1, p2, null, null, edge);
+
+    final fallbackEnd = sourceWorld + const Offset(50, 0);
+    final paint = buildEdgePaint(
+        edge.lineStyle, edge.animConfig, selectedEdgeIds.contains(edge.id));
+    final path = _buildEdgePath(sourceWorld, fallbackEnd, null, null, edge);
     canvas.drawPath(path, paint);
   }
 
   void _drawDraggingEdge(Canvas canvas) {
     if (draggingEdgeId == null || draggingEnd == null) {
+      debugPrint('[_drawDraggingEdge] No dragging edge to draw.');
       return;
     }
-    final edge = edges.firstWhere(
-      (e) => e.id == draggingEdgeId,
-      orElse: () => const EdgeModel(
-        id: 'tempDrag',
-        sourceNodeId: 'tempSource',
-        sourceAnchorId: 'tempAnchor',
-      ),
-    );
-    final (sourceWorld, _) = _getAnchorWorldInfo(
-      edge.sourceNodeId,
-      edge.sourceAnchorId,
-    );
+
+    final edge = edges.firstWhereOrNull((e) => e.id == draggingEdgeId);
+
+    if (edge == null) {
+      debugPrint('[_drawDraggingEdge] Edge not found: $draggingEdgeId');
+      return;
+    }
+
+    if (edge.isConnected) {
+      debugPrint(
+          '[_drawDraggingEdge] Edge already connected, skipping ghost edge drawing: $draggingEdgeId');
+      return;
+    }
+
+    debugPrint(
+        '[_drawDraggingEdge] draggingEdgeId=$draggingEdgeId, draggingEnd=$draggingEnd');
+
+    final (sourceWorld, _) =
+        _getAnchorWorldInfo(edge.sourceNodeId, edge.sourceAnchorId);
     if (sourceWorld == null) {
+      debugPrint(
+          '[_drawDraggingEdge] Missing source anchor for draggingEdgeId=$draggingEdgeId');
       return;
     }
-    final p1 = sourceWorld;
-    final p2 = draggingEnd!;
+
     final paint = Paint()
       ..color = Colors.orange
       ..strokeWidth = 3
       ..style = PaintingStyle.stroke;
-    final path = _buildEdgePath(p1, p2, null, null, edge);
+
+    final path = _buildEdgePath(sourceWorld, draggingEnd!, null, null, edge);
     canvas.drawPath(path, paint);
   }
 
-  Path _buildEdgePath(
-    Offset p1,
-    Offset p2,
-    Position? sourcePos,
-    Position? targetPos,
-    EdgeModel edge,
-  ) {
-    if (edge.waypoints != null && edge.waypoints!.isNotEmpty) {
-      final path = Path()..moveTo(p1.dx, p1.dy);
-      for (final w in edge.waypoints!) {
-        path.lineTo(w[0], w[1]); // 这里假设 waypoints 是世界坐标
-      }
-      path.lineTo(p2.dx, p2.dy);
-      return path;
-    }
+  Path _buildEdgePath(Offset p1, Offset p2, Position? sourcePos,
+      Position? targetPos, EdgeModel edge) {
+    debugPrint('[_buildEdgePath] p1=$p1, p2=$p2');
     final useBezier = edge.lineStyle.useBezier || defaultUseBezier;
     if (useBezier && sourcePos != null && targetPos != null) {
-      final result = getBezierPath(
+      return getBezierPath(
         sourceX: p1.dx,
         sourceY: p1.dy,
         sourcePosition: sourcePos,
@@ -163,36 +145,30 @@ class EdgeRenderer extends CustomPainter {
         targetY: p2.dy,
         targetPosition: targetPos,
         curvature: 0.25,
-      );
-      return result[0] as Path;
+      )[0] as Path;
     }
     return Path()
       ..moveTo(p1.dx, p1.dy)
       ..lineTo(p2.dx, p2.dy);
   }
 
-  double _computeDashFlowPhase(EdgeAnimationConfig anim) {
-    if (anim.animateDash == true && anim.dashFlowPhase != null) {
-      return anim.dashFlowPhase!;
-    }
-    return 0;
-  }
+  double _computeDashFlowPhase(EdgeAnimationConfig anim) =>
+      anim.animateDash == true ? anim.dashFlowPhase ?? 0 : 0;
 
-  /// 核心：获取锚点的世界坐标和其位置（Position）
   (Offset?, Position?) _getAnchorWorldInfo(String nodeId, String anchorId) {
     final node = nodes.firstWhereOrNull((n) => n.id == nodeId);
-    if (node == null) {
-      return (null, null);
-    }
-    final anchor = node.anchors.firstWhereOrNull((a) => a.id == anchorId);
-    if (anchor == null) {
+    final anchor = node?.anchors.firstWhereOrNull((a) => a.id == anchorId);
+
+    if (node == null || anchor == null) {
+      debugPrint(
+          '[_getAnchorWorldInfo] Missing node or anchor, nodeId=$nodeId, anchorId=$anchorId');
       return (null, null);
     }
 
-    // 计算锚点在世界坐标系中的位置
     final worldPos = computeAnchorWorldPosition(node, anchor) +
         Offset(anchor.width / 2, anchor.height / 2);
-
+    debugPrint(
+        '[_getAnchorWorldInfo] nodeId=$nodeId, anchorId=$anchorId, worldPos=$worldPos');
     return (worldPos, anchor.position);
   }
 
@@ -201,10 +177,6 @@ class EdgeRenderer extends CustomPainter {
 }
 
 extension FirstWhereOrNull<E> on Iterable<E> {
-  E? firstWhereOrNull(bool Function(E e) test) {
-    for (final x in this) {
-      if (test(x)) return x;
-    }
-    return null;
-  }
+  E? firstWhereOrNull(bool Function(E e) test) =>
+      cast<E?>().firstWhere((x) => x != null && test(x!), orElse: () => null);
 }

@@ -39,6 +39,7 @@ class CanvasController extends ConsumerWidget {
     // 1. 获取当前 workflow 的 nodeState / edgeState
     final nodeState = ref.watch(nodeStateProvider(workflowId));
     final edgeState = ref.watch(edgeStateProvider(workflowId));
+    debugPrint('CanvasController rebuilt: draggingEdgeId=${edgeState.draggingEdgeId}, draggingEnd=${edgeState.draggingEnd}');
 
     // 2. 用一个容器(或 SizedBox.expand)承载 CanvasRenderer
     //    不再在这里做 父级 Transform / ClipRect
