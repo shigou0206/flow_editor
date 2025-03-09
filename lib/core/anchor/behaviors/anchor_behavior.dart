@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../models/anchor_model.dart';
+import 'package:flow_editor/core/anchor/models/anchor_model.dart';
 
 /// AnchorBehavior：定义锚点(Anchor)的各类交互回调。
 /// 当用户与锚点进行点击/拖拽/右键/悬停等操作时，外部逻辑(如EdgeState/NodeState)可在这里进行处理。

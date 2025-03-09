@@ -1,5 +1,5 @@
-import '../../types/position_enum.dart';
-import 'anchor_enums.dart';
+import 'package:flow_editor/core/types/position_enum.dart';
+import 'package:flow_editor/core/anchor/models/anchor_enums.dart';
 
 class AnchorModel {
   final String id;

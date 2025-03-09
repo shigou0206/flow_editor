@@ -1,6 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'node_state.dart';
-import '../models/node_model.dart';
+import 'package:flow_editor/core/node/node_state/node_state.dart';
+import 'package:flow_editor/core/node/models/node_model.dart';
 import 'package:flutter/material.dart';
 
 class NodeStateNotifier extends StateNotifier<NodeState> {

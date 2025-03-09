@@ -2,12 +2,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../node/node_state/node_state_provider.dart';
-import '../../edge/edge_state/edge_state_provider.dart';
-import '../models/canvas_visual_config.dart';
-import '../renderers/canvas_renderer.dart';
-import '../../node/behaviors/node_behavior.dart';
-import '../../anchor/behaviors/anchor_behavior.dart';
+import 'package:flow_editor/core/node/node_state/node_state_provider.dart';
+import 'package:flow_editor/core/edge/edge_state/edge_state_provider.dart';
+import 'package:flow_editor/core/canvas/models/canvas_visual_config.dart';
+import 'package:flow_editor/core/canvas/renderers/canvas_renderer.dart';
+import 'package:flow_editor/core/node/behaviors/node_behavior.dart';
+import 'package:flow_editor/core/anchor/behaviors/anchor_behavior.dart';
 
 /// CanvasController(改造版):
 /// - 不再用 ClipRect + Transform 包裹子树

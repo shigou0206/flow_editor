@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:riverpod/riverpod.dart';
 
-import '../edge_state/edge_state_provider.dart';
-import '../behaviors/edge_behavior.dart';
-import 'edge_controller.dart';
-import '../models/edge_model.dart';
+import 'package:flow_editor/core/edge/edge_state/edge_state_provider.dart';
+import 'package:flow_editor/core/edge/behaviors/edge_behavior.dart';
+import 'package:flow_editor/core/edge/controllers/edge_controller.dart';
+import 'package:flow_editor/core/edge/models/edge_model.dart';
 
 /// EdgeInteractionManager: 专门处理「画布层面检测到的事件」：
 /// 点击/双击/右键/拖拽端点/悬停等；

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../models/node_model.dart';
+import 'package:flow_editor/core/node/models/node_model.dart';
 
 /// BaseNode 组件仅负责根据 [NodeModel] 中的位置信息和尺寸信息对其 [child] 进行定位。
 ///

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'edge_state.dart';
+import 'package:flow_editor/core/edge/edge_state/edge_state.dart';
 import 'package:flow_editor/core/edge/models/edge_model.dart';
 
 class EdgeStateNotifier extends StateNotifier<EdgeState> {

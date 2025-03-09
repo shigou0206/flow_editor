@@ -1,5 +1,5 @@
-import 'edge_animation_config.dart';
-import 'edge_line_style.dart';
+import 'package:flow_editor/core/edge/models/edge_animation_config.dart';
+import 'package:flow_editor/core/edge/models/edge_line_style.dart';
 
 class EdgeModel {
   // ===== 基本连接信息 =====

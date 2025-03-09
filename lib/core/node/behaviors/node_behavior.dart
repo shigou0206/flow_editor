@@ -1,7 +1,5 @@
-// node_behavior.dart
-
 import 'dart:ui';
-import '../models/node_model.dart';
+import 'package:flow_editor/core/node/models/node_model.dart';
 
 /// NodeBehavior: 定义节点事件的抽象接口或基类
 /// 让具体业务逻辑在外部实现

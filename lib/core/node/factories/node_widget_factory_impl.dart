@@ -1,8 +1,8 @@
 import 'package:flutter/widgets.dart';
-import '../models/node_model.dart';
-import '../widgets/commons/node_widget.dart';
-import '../node_widget_registry.dart';
-import 'node_widget_factory.dart';
+import 'package:flow_editor/core/node/models/node_model.dart';
+import 'package:flow_editor/core/node/widgets/commons/node_widget.dart';
+import 'package:flow_editor/core/node/node_widget_registry.dart';
+import 'package:flow_editor/core/node/factories/node_widget_factory.dart';
 
 class NodeWidgetFactoryImpl implements NodeWidgetFactory {
   final NodeWidgetRegistry registry;

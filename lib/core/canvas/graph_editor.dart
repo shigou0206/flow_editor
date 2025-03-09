@@ -2,18 +2,18 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 // ======= 你项目中的导入，需根据实际修改 =======
-import '../node/controllers/node_controller.dart';
-import '../edge/controllers/edge_controller.dart';
-import '../node/models/node_model.dart';
-import '../edge/models/edge_model.dart';
-import '../anchor/models/anchor_model.dart';
-import '../anchor/models/anchor_enums.dart';
-import '../types/position_enum.dart';
-import '../canvas/controllers/canvas_controller.dart';
-import '../canvas/models/canvas_visual_config.dart';
-import '../canvas/behaviors/canvas_behavior.dart';
-import '../canvas/interaction/gesture_event_handler.dart';
-import 'canvas_state/canvas_state_provider.dart';
+import 'package:flow_editor/core/node/controllers/node_controller.dart';
+import 'package:flow_editor/core/edge/controllers/edge_controller.dart';
+import 'package:flow_editor/core/node/models/node_model.dart';
+import 'package:flow_editor/core/edge/models/edge_model.dart';
+import 'package:flow_editor/core/anchor/models/anchor_model.dart';
+import 'package:flow_editor/core/anchor/models/anchor_enums.dart';
+import 'package:flow_editor/core/types/position_enum.dart';
+import 'package:flow_editor/core/canvas/controllers/canvas_controller.dart';
+import 'package:flow_editor/core/canvas/models/canvas_visual_config.dart';
+import 'package:flow_editor/core/canvas/behaviors/canvas_behavior.dart';
+import 'package:flow_editor/core/canvas/interaction/gesture_event_handler.dart';
+import 'package:flow_editor/core/canvas/canvas_state/canvas_state_provider.dart';
 
 // ============== 示例：GraphEditor ==============
 class GraphEditor extends ConsumerStatefulWidget {

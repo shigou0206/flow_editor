@@ -1,5 +1,5 @@
-import 'edge_enums.dart';
 import 'package:equatable/equatable.dart';
+import 'package:flow_editor/core/edge/models/edge_enums.dart';
 
 // ===================== 样式子结构：EdgeLineStyle ===================== //
 class EdgeLineStyle extends Equatable {

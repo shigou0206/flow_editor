@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import '../../models/shape_node_model.dart';
-import 'painters/rectangle_painter.dart';
+import 'package:flow_editor/core/node/models/shape_node_model.dart';
+import 'package:flow_editor/core/node/widgets/shapes/painters/rectangle_painter.dart';
 
 class ShapeNodeWidget extends StatelessWidget {
   final ShapeNodeModel node;

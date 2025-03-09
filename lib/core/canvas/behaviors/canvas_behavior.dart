@@ -1,4 +1,3 @@
-// canvas_behavior.dart
 import 'package:flutter/material.dart';
 
 abstract class CanvasBehavior {

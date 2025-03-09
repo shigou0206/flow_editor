@@ -1,8 +1,6 @@
-// default_node_behavior.dart
-
 import 'dart:ui';
-import '../models/node_model.dart';
-import 'node_behavior.dart';
+import 'package:flow_editor/core/node/models/node_model.dart';
+import 'package:flow_editor/core/node/behaviors/node_behavior.dart';
 
 /// DefaultNodeBehavior
 /// 提供一个空实现或简单的Debug实现

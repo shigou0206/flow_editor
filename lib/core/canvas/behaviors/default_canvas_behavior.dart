@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../canvas_state/canvas_state_provider.dart';
-import 'canvas_behavior.dart';
+import 'package:flow_editor/core/canvas/canvas_state/canvas_state_provider.dart';
+import 'package:flow_editor/core/canvas/behaviors/canvas_behavior.dart';
 
 class DefaultCanvasBehavior implements CanvasBehavior {
   final WidgetRef ref;

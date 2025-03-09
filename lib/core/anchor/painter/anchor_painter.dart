@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import '../models/anchor_model.dart';
-import '../models/anchor_enums.dart';
+import 'package:flow_editor/core/anchor/models/anchor_model.dart';
+import 'package:flow_editor/core/anchor/models/anchor_enums.dart';
 
 /// 用于绘制 Anchor 的 CustomPainter
 /// 根据 anchor.shape / locked / hover 等状态绘制不同外观

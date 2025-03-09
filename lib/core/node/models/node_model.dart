@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart'; // for Rect, Offset
-import '../../anchor/models/anchor_model.dart';
-import '../../anchor/utils/anchor_position_utils.dart';
-import 'node_enums.dart';
+import 'package:flow_editor/core/anchor/models/anchor_model.dart';
+import 'package:flow_editor/core/anchor/utils/anchor_position_utils.dart';
+import 'package:flow_editor/core/node/models/node_enums.dart';
 
 /// NodeStyle: 记录节点的纯数据外观, 避免依赖 Flutter Color
 class NodeStyle {

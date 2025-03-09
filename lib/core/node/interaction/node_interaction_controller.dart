@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../node/models/node_model.dart';
+import 'package:flow_editor/core/node/models/node_model.dart';
 
 /// NodeInteractionController 封装了节点交互的常见回调。
 ///

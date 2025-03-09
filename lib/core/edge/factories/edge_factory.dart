@@ -1,7 +1,7 @@
 // file: edge_factory.dart
-import '../../edge/models/edge_model.dart';
-import '../../edge/models/edge_line_style.dart';
-import '../../edge/models/edge_animation_config.dart';
+import 'package:flow_editor/core/edge/models/edge_model.dart';
+import 'package:flow_editor/core/edge/models/edge_line_style.dart';
+import 'package:flow_editor/core/edge/models/edge_animation_config.dart';
 
 /// 用于存放默认配置或特殊逻辑
 class EdgeTypeConfig {

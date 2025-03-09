@@ -1,10 +1,13 @@
+// ✅ 修复后 NodeWidget: 不再返回 Positioned
+//    仅返回本节点内部布局 (Size+Stack+NodeBlock+NodeAnchors)
+
 import 'package:flutter/material.dart';
 import 'package:flow_editor/core/node/models/node_model.dart';
 import 'package:flow_editor/core/node/behaviors/node_behavior.dart';
 import 'package:flow_editor/core/anchor/behaviors/anchor_behavior.dart';
 import 'package:flow_editor/core/anchor/utils/anchor_position_utils.dart';
-import 'package:flow_editor/core/node/widgets/commons/node_block.dart';
-import 'package:flow_editor/core/node/widgets/commons/node_anchors.dart';
+import 'node_block.dart';
+import 'node_anchors.dart';
 
 class NodeWidget extends StatelessWidget {
   final NodeModel node;

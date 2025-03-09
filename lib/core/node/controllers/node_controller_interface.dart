@@ -1,6 +1,4 @@
-// core/node/controllers/node_controller_interface.dart
-
-import '../models/node_model.dart';
+import 'package:flow_editor/core/node/models/node_model.dart';
 
 abstract class INodeController {
   void upsertNode(NodeModel node);

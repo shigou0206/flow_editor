@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 // 根据你的项目结构，调整以下导入路径
-import '../canvas_state/canvas_state_provider.dart';
+import 'package:flow_editor/core/canvas/canvas_state/canvas_state_provider.dart';
 
 /// CanvasGestureHandler
 ///

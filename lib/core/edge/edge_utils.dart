@@ -1,8 +1,8 @@
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
-import '../types/position_enum.dart';
-import '../edge/models/edge_line_style.dart';
-import '../edge/models/edge_animation_config.dart';
+import 'package:flow_editor/core/types/position_enum.dart';
+import 'package:flow_editor/core/edge/models/edge_line_style.dart';
+import 'package:flow_editor/core/edge/models/edge_animation_config.dart';
 
 /// ===================== Edge Paint & Dash Utils ===================== //
 

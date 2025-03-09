@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../models/canvas_visual_config.dart';
+import 'package:flow_editor/core/canvas/models/canvas_visual_config.dart';
 
 class BackgroundRenderer extends CustomPainter {
   final CanvasVisualConfig config;

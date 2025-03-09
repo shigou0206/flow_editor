@@ -1,14 +1,14 @@
 // file: canvas_renderer.dart
 import 'package:flutter/material.dart';
 
-import '../../node/behaviors/node_behavior.dart';
-import '../../anchor/behaviors/anchor_behavior.dart';
-import '../../node/node_state/node_state.dart';
-import '../../edge/edge_state/edge_state.dart';
-import '../models/canvas_visual_config.dart';
-import '../renderers/background_renderer.dart';
-import '../../edge/edge_renderer.dart';
-import '../../node/widgets/commons/node_widget.dart';
+import 'package:flow_editor/core/node/behaviors/node_behavior.dart';
+import 'package:flow_editor/core/anchor/behaviors/anchor_behavior.dart';
+import 'package:flow_editor/core/node/node_state/node_state.dart';
+import 'package:flow_editor/core/edge/edge_state/edge_state.dart';
+import 'package:flow_editor/core/canvas/models/canvas_visual_config.dart';
+import 'package:flow_editor/core/canvas/renderers/background_renderer.dart';
+import 'package:flow_editor/core/edge/edge_renderer.dart';
+import 'package:flow_editor/core/node/widgets/commons/node_widget.dart';
 
 /// CanvasRenderer(改造版):
 /// - 内部使用 Stack(clipBehavior: Clip.none)，不再父层 Transform

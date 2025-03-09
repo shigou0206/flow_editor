@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:riverpod/riverpod.dart';
 
-import '../edge_state/edge_state_provider.dart';
-import '../behaviors/edge_behavior.dart';
-import '../models/edge_model.dart';
-import '../edge_state/edge_state.dart';
+import 'package:flow_editor/core/edge/edge_state/edge_state_provider.dart';
+import 'package:flow_editor/core/edge/behaviors/edge_behavior.dart';
+import 'package:flow_editor/core/edge/models/edge_model.dart';
+import 'package:flow_editor/core/edge/edge_state/edge_state.dart';
 
 /// EdgeController: 提供对 Edge 的高层操作 (create, update, delete, select等)，
 /// 并调用 [EdgeBehavior] 和 [EdgeStateNotifier] 做实际处理。

@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'canvas_state.dart'; // 包含 CanvasState, MultiWorkflowCanvasState
-import '../models/canvas_interaction_config.dart';
-import '../models/canvas_visual_config.dart';
-import '../../node/node_state/node_state_provider.dart'; // NodeState
-import '../../node/models/node_model.dart';
-import '../../edge/models/edge_model.dart';
-import '../../edge/edge_state/edge_state_provider.dart';
-import '../../anchor/models/anchor_model.dart';
-import '../../anchor/utils/anchor_position_utils.dart';
+import 'package:flow_editor/core/canvas/canvas_state/canvas_state.dart'; // 包含 CanvasState, MultiWorkflowCanvasState
+import 'package:flow_editor/core/canvas/models/canvas_interaction_config.dart';
+import 'package:flow_editor/core/canvas/models/canvas_visual_config.dart';
+import 'package:flow_editor/core/node/node_state/node_state_provider.dart'; // NodeState
+import 'package:flow_editor/core/node/models/node_model.dart';
+import 'package:flow_editor/core/edge/models/edge_model.dart';
+import 'package:flow_editor/core/edge/edge_state/edge_state_provider.dart';
+import 'package:flow_editor/core/anchor/models/anchor_model.dart';
+import 'package:flow_editor/core/anchor/utils/anchor_position_utils.dart';
 
 /// 提供: 多工作流的画布状态（简化版：无模式切换，但支持节点拖拽、画布平移、以及从 anchor 拖出幽灵边）
 /// 拖动过程中不进行自动吸附，仅在拖拽结束时检测目标 anchor 并 finalize。

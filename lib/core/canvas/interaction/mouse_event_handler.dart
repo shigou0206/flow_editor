@@ -2,8 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/gestures.dart'; // 若需要 PointerSignalEvent
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-// 如果您想在滚轮时缩放/平移画布，就要使用 multiCanvasStateProvider
-import '../canvas_state/canvas_state_provider.dart';
+import 'package:flow_editor/core/canvas/canvas_state/canvas_state_provider.dart';
 
 /// CanvasMouseHandler
 /// - 用 MouseRegion 监听鼠标进入/悬停/离开

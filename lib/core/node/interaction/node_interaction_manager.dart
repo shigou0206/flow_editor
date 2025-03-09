@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import '../models/node_model.dart';
-import '../behaviors/node_behavior.dart';
+import 'package:flow_editor/core/node/models/node_model.dart';
+import 'package:flow_editor/core/node/behaviors/node_behavior.dart';
 
 /// NodeInteractionManager 负责集中管理和调度节点交互事件：
 /// - 多选：通过 Set<NodeModel> 追踪当前选中的节点；
