@@ -42,10 +42,6 @@ class DefaultAnchorBehavior implements AnchorBehavior {
 
   @override
   void onAnchorDragStart(AnchorModel anchor, Offset startPos) {
-    debugPrint(
-      '[DefaultAnchorBehavior] onAnchorDragStart: ${anchor.id}, startPos=$startPos',
-    );
-
     // 创建 ghost edge（半连接）
     final ghostEdgeId = 'ghostEdge_${DateTime.now().millisecondsSinceEpoch}';
     final ghostEdge = EdgeModel(

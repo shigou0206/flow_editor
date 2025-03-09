@@ -75,13 +75,9 @@ class MultiCanvasStateNotifier extends StateNotifier<MultiWorkflowCanvasState> {
   //================== 事件入口 ==================//
 
   void startDrag(BuildContext context, Offset globalPos) {
-    debugPrint("startDrag invoked, globalPos: $globalPos");
-
     // 检测 anchor
     final hitAnchor = _hitTestAnchor(context, globalPos);
-    debugPrint("hitAnchor: ${hitAnchor?.id ?? 'none'}");
     if (hitAnchor != null) {
-      debugPrint("Anchor hit detected, starting ghost edge drag");
       _startEdgeDrag(context, globalPos, hitAnchor);
       return;
     }
@@ -89,15 +85,12 @@ class MultiCanvasStateNotifier extends StateNotifier<MultiWorkflowCanvasState> {
     // 否则检测节点
     final canvasSt = state.activeState;
     final canvasPoint = _globalToCanvas(context, globalPos, canvasSt);
-    debugPrint("Converted globalPos to canvasPoint: $canvasPoint");
 
     final node = _hitTestNode(canvasPoint);
     if (node != null) {
-      debugPrint("Node hit detected: ${node.id}");
       _isDraggingNode = true;
       _draggingNodeId = node.id;
     } else {
-      debugPrint("No node hit detected.");
       _isDraggingNode = false;
       _draggingNodeId = null;
     }
@@ -108,9 +101,7 @@ class MultiCanvasStateNotifier extends StateNotifier<MultiWorkflowCanvasState> {
   /// 如果正在拖拽节点，则更新节点位置；
   /// 否则，拖动画布平移。
   void updateDrag(Offset deltaGlobal) {
-    debugPrint("updateDrag invoked, deltaGlobal: $deltaGlobal");
     if (_isCreatingEdge && _edgeDragCurrentCanvas != null) {
-      debugPrint("Updating ghost edge drag");
       _updateEdgeDrag(deltaGlobal);
       //===================== 移除/注释自动吸附调用 =====================
       // _checkAndSnapTargetAnchor(); // <-- 删除或注释此行
@@ -139,7 +130,6 @@ class MultiCanvasStateNotifier extends StateNotifier<MultiWorkflowCanvasState> {
               targetNodeId: targetNodeId,
               targetAnchorId: targetAnchorId,
             );
-        debugPrint("Finalized ghost edge: edgeId=$_creatingEdgeId, targetAnchorId=$targetAnchorId");
       } else {
         _ref
             .read(edgeStateProvider(state.activeWorkflowId).notifier)
@@ -148,7 +138,6 @@ class MultiCanvasStateNotifier extends StateNotifier<MultiWorkflowCanvasState> {
               targetNodeId: null,
               targetAnchorId: null,
             );
-        debugPrint("Cancelled ghost edge: edgeId=$_creatingEdgeId");
       }
       _isCreatingEdge = false;
       _edgeDragCurrentCanvas = null;
@@ -167,14 +156,13 @@ class MultiCanvasStateNotifier extends StateNotifier<MultiWorkflowCanvasState> {
 
   //================== 内部: Ghost Edge 拖拽 ==================//
 
-  void _startEdgeDrag(BuildContext context, Offset globalPos, AnchorModel anchor) {
+  void _startEdgeDrag(
+      BuildContext context, Offset globalPos, AnchorModel anchor) {
     _isCreatingEdge = true;
     _creatingEdgeId = 'tempEdge-${DateTime.now().millisecondsSinceEpoch}';
-    debugPrint('Starting edge drag: anchorId=${anchor.id}, edgeId=$_creatingEdgeId');
 
     final canvasSt = state.activeState;
     final canvasPos = _globalToCanvas(context, globalPos, canvasSt);
-    debugPrint('Edge drag started at: $canvasPos');
     _edgeDragCurrentCanvas = canvasPos;
 
     // 创建 ghost edge
@@ -187,7 +175,6 @@ class MultiCanvasStateNotifier extends StateNotifier<MultiWorkflowCanvasState> {
       isConnected: false,
     );
 
-    debugPrint('workflowId: ${state.activeWorkflowId}, ghostEdge: $ghostEdge');
     _ref
         .read(edgeStateProvider(state.activeWorkflowId).notifier)
         .startEdgeDrag(ghostEdge, canvasPos);
@@ -197,7 +184,6 @@ class MultiCanvasStateNotifier extends StateNotifier<MultiWorkflowCanvasState> {
     final canvasSt = state.activeState;
     final dx = deltaGlobal.dx / canvasSt.scale;
     final dy = deltaGlobal.dy / canvasSt.scale;
-    debugPrint('Updating ghost edge: dx=$dx, dy=$dy');
     _edgeDragCurrentCanvas = _edgeDragCurrentCanvas?.translate(dx, dy);
     if (_edgeDragCurrentCanvas != null) {
       _ref
@@ -270,31 +256,26 @@ class MultiCanvasStateNotifier extends StateNotifier<MultiWorkflowCanvasState> {
     const double threshold = 20.0;
     final wfId = state.activeWorkflowId;
     final nodeSt = _ref.read(nodeStateProvider(wfId));
-    debugPrint('Hit test anchor: workflowId=$wfId, globalPos=$globalPos');
 
     final canvasPt = _globalToCanvas(context, globalPos, state.activeState);
-    debugPrint('Converted globalPos to canvas coordinate: $canvasPt');
 
     for (final node in nodeSt.nodesOf(wfId).values) {
       for (final anchor in node.anchors) {
         final anchorGlobal = computeAnchorWorldPosition(node, anchor);
         final anchorCenter =
             anchorGlobal + Offset(anchor.width / 2, anchor.height / 2);
-        debugPrint(
-            'Checking anchor: nodeId=${node.id}, anchorId=${anchor.id}, anchorCenter=$anchorCenter');
         if ((canvasPt - anchorCenter).distance < threshold) {
-          debugPrint('Anchor hit: nodeId=${node.id}, anchorId=${anchor.id}');
           return anchor;
         }
       }
     }
-    debugPrint('No anchor hit');
     return null;
   }
 
   //================== 工具方法 ==================//
 
-  Offset _globalToCanvas(BuildContext context, Offset globalPos, CanvasState cst) {
+  Offset _globalToCanvas(
+      BuildContext context, Offset globalPos, CanvasState cst) {
     final box = context.findRenderObject() as RenderBox?;
     if (box == null) return Offset.zero;
     final localPos = box.globalToLocal(globalPos);
@@ -317,7 +298,9 @@ class MultiCanvasStateNotifier extends StateNotifier<MultiWorkflowCanvasState> {
 
   void setOffset(Offset offset) {
     _updateActiveCanvas(
-      (canvas) => canvas.interactionConfig.allowPan ? canvas.copyWith(offset: offset) : canvas,
+      (canvas) => canvas.interactionConfig.allowPan
+          ? canvas.copyWith(offset: offset)
+          : canvas,
     );
   }
 

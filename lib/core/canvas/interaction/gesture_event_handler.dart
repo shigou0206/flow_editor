@@ -14,9 +14,9 @@ class CanvasGestureHandler extends ConsumerStatefulWidget {
   final Widget child;
 
   const CanvasGestureHandler({
-    Key? key,
+    super.key,
     required this.child,
-  }) : super(key: key);
+  });
 
   @override
   ConsumerState<CanvasGestureHandler> createState() =>
@@ -49,7 +49,6 @@ class _CanvasGestureHandlerState extends ConsumerState<CanvasGestureHandler> {
   }
 
   void _onPanStart(DragStartDetails details) {
-    print("onPanStart: ${details.globalPosition}");
     // 拖拽开始时调用，传入全局坐标
     ref
         .read(multiCanvasStateProvider.notifier)
@@ -57,7 +56,6 @@ class _CanvasGestureHandlerState extends ConsumerState<CanvasGestureHandler> {
   }
 
   void _onPanUpdate(DragUpdateDetails details) {
-    print("onPanUpdate: ${details.delta}");
     // 拖拽更新时传递 delta
     ref.read(multiCanvasStateProvider.notifier).updateDrag(details.delta);
   }

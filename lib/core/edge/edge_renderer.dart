@@ -28,10 +28,7 @@ class EdgeRenderer extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    debugPrint('EdgeRenderer.paint called, edges count: ${edges.length}');
-
     for (final edge in edges) {
-      debugPrint('Drawing edge: ${edge.id}, connected: ${edge.isConnected}');
       if (edge.isConnected &&
           edge.targetNodeId != null &&
           edge.targetAnchorId != null) {
@@ -44,15 +41,12 @@ class EdgeRenderer extends CustomPainter {
   }
 
   void _drawEdge(Canvas canvas, EdgeModel edge) {
-    debugPrint('[_drawEdge] edgeId=${edge.id}');
     final (sourceWorld, sourcePos) =
         _getAnchorWorldInfo(edge.sourceNodeId, edge.sourceAnchorId);
     final (targetWorld, targetPos) =
         _getAnchorWorldInfo(edge.targetNodeId!, edge.targetAnchorId!);
 
     if (sourceWorld == null || targetWorld == null) {
-      debugPrint(
-          '[_drawEdge] Missing source or target anchor for edgeId=${edge.id}');
       return;
     }
 
@@ -77,12 +71,9 @@ class EdgeRenderer extends CustomPainter {
   }
 
   void _drawHalfConnectedEdge(Canvas canvas, EdgeModel edge) {
-    debugPrint('[_drawHalfConnectedEdge] edgeId=${edge.id}');
     final (sourceWorld, _) =
         _getAnchorWorldInfo(edge.sourceNodeId, edge.sourceAnchorId);
     if (sourceWorld == null) {
-      debugPrint(
-          '[_drawHalfConnectedEdge] Missing source anchor for edgeId=${edge.id}');
       return;
     }
 
@@ -95,31 +86,22 @@ class EdgeRenderer extends CustomPainter {
 
   void _drawDraggingEdge(Canvas canvas) {
     if (draggingEdgeId == null || draggingEnd == null) {
-      debugPrint('[_drawDraggingEdge] No dragging edge to draw.');
       return;
     }
 
     final edge = edges.firstWhereOrNull((e) => e.id == draggingEdgeId);
 
     if (edge == null) {
-      debugPrint('[_drawDraggingEdge] Edge not found: $draggingEdgeId');
       return;
     }
 
     if (edge.isConnected) {
-      debugPrint(
-          '[_drawDraggingEdge] Edge already connected, skipping ghost edge drawing: $draggingEdgeId');
       return;
     }
-
-    debugPrint(
-        '[_drawDraggingEdge] draggingEdgeId=$draggingEdgeId, draggingEnd=$draggingEnd');
 
     final (sourceWorld, _) =
         _getAnchorWorldInfo(edge.sourceNodeId, edge.sourceAnchorId);
     if (sourceWorld == null) {
-      debugPrint(
-          '[_drawDraggingEdge] Missing source anchor for draggingEdgeId=$draggingEdgeId');
       return;
     }
 
@@ -134,7 +116,6 @@ class EdgeRenderer extends CustomPainter {
 
   Path _buildEdgePath(Offset p1, Offset p2, Position? sourcePos,
       Position? targetPos, EdgeModel edge) {
-    debugPrint('[_buildEdgePath] p1=$p1, p2=$p2');
     final useBezier = edge.lineStyle.useBezier || defaultUseBezier;
     if (useBezier && sourcePos != null && targetPos != null) {
       return getBezierPath(
@@ -160,15 +141,11 @@ class EdgeRenderer extends CustomPainter {
     final anchor = node?.anchors.firstWhereOrNull((a) => a.id == anchorId);
 
     if (node == null || anchor == null) {
-      debugPrint(
-          '[_getAnchorWorldInfo] Missing node or anchor, nodeId=$nodeId, anchorId=$anchorId');
       return (null, null);
     }
 
     final worldPos = computeAnchorWorldPosition(node, anchor) +
         Offset(anchor.width / 2, anchor.height / 2);
-    debugPrint(
-        '[_getAnchorWorldInfo] nodeId=$nodeId, anchorId=$anchorId, worldPos=$worldPos');
     return (worldPos, anchor.position);
   }
 
@@ -178,5 +155,5 @@ class EdgeRenderer extends CustomPainter {
 
 extension FirstWhereOrNull<E> on Iterable<E> {
   E? firstWhereOrNull(bool Function(E e) test) =>
-      cast<E?>().firstWhere((x) => x != null && test(x!), orElse: () => null);
+      cast<E?>().firstWhere((x) => x != null && test(x), orElse: () => null);
 }

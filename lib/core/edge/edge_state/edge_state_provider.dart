@@ -116,7 +116,6 @@ class EdgeStateNotifier extends StateNotifier<EdgeState> {
   }) {
     final oldEdge = state.edgesOf(workflowId)[edgeId];
     if (oldEdge == null) {
-      debugPrint('❌ finalizeEdge: Edge not found, edgeId=$edgeId');
       return;
     }
 
@@ -126,8 +125,6 @@ class EdgeStateNotifier extends StateNotifier<EdgeState> {
         edge.isConnected);
 
     if (exists) {
-      debugPrint(
-          '⚠️ finalizeEdge: Edge already exists between these anchors, cancelling.');
       removeEdge(edgeId); // 删除临时边
     } else {
       final newEdge = oldEdge.copyWith(
@@ -144,10 +141,8 @@ class EdgeStateNotifier extends StateNotifier<EdgeState> {
         draggingEdgeId: null,
         draggingEnd: null,
       );
-      debugPrint('✅ finalizeEdge: 强制清空拖拽状态成功');
     }
   }
-
 
   // --- 批量操作 ---
 
