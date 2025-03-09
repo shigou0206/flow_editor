@@ -34,15 +34,12 @@ class EdgeController {
     if (oldEdge != updatedEdge) {
       behavior.onEdgeUpdated(oldEdge, updatedEdge);
       _read(edgeStateProvider(workflowId).notifier).upsertEdge(updatedEdge);
-    } else {
-      debugPrint("[EdgeController] No changes for edge ${oldEdge.id}, skip");
     }
   }
 
   /// 删除一条 Edge，若 locked 则跳过
   void deleteEdge(EdgeModel edge) {
     if (edge.locked) {
-      debugPrint("[EdgeController] Edge ${edge.id} locked, skip delete");
       return;
     }
     behavior.onEdgeDelete(edge);
@@ -68,7 +65,6 @@ class EdgeController {
     final state = _read(edgeStateProvider(workflowId));
     final edge = _findEdgeInState(edgeId, state);
     if (edge == null) {
-      debugPrint("[EdgeController] selectEdge: Edge $edgeId not found");
       return;
     }
 
@@ -82,7 +78,6 @@ class EdgeController {
     final state = _read(edgeStateProvider(workflowId));
     final edge = _findEdgeInState(edgeId, state);
     if (edge == null) {
-      debugPrint("[EdgeController] deselectEdge: Edge $edgeId not found");
       return;
     }
 
@@ -101,8 +96,6 @@ class EdgeController {
         behavior.onEdgeSelected(edge);
         // 用 multiSelect=true，避免覆盖已有选中
         notifier.selectEdge(eId, multiSelect: true);
-      } else {
-        debugPrint("[EdgeController] selectEdges: Edge $eId not found");
       }
     }
   }

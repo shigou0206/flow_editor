@@ -50,7 +50,7 @@ class DefaultAnchorBehavior implements AnchorBehavior {
     final ghostEdgeId = 'ghostEdge_${DateTime.now().millisecondsSinceEpoch}';
     final ghostEdge = EdgeModel(
       id: ghostEdgeId,
-      sourceNodeId: anchor.nodeId, // AnchorModel 中保存了 nodeId
+      sourceNodeId: anchor.nodeId,
       sourceAnchorId: anchor.id,
       isConnected: false,
       lineStyle: const EdgeLineStyle(
@@ -68,28 +68,16 @@ class DefaultAnchorBehavior implements AnchorBehavior {
         .startEdgeDrag(ghostEdge, startPos);
 
     _draggingEdgeId = ghostEdgeId;
-    debugPrint('[DefaultAnchorBehavior] Created ghost edge: $_draggingEdgeId');
   }
 
   @override
   void onAnchorDragUpdate(AnchorModel anchor, Offset currentPos) {
-    debugPrint(
-      '[DefaultAnchorBehavior] onAnchorDragUpdate: ${anchor.id}, currentPos=$currentPos',
-    );
-
     if (_draggingEdgeId == null) {
-      debugPrint(
-        '[DefaultAnchorBehavior] updateEdgeDrag: No draggingEdgeId found',
-      );
       return;
     }
 
     // 更新 ghost edge 的终点位置
     ref.read(edgeStateProvider(workflowId).notifier).updateEdgeDrag(currentPos);
-
-    debugPrint(
-      '[DefaultAnchorBehavior] Updated ghost edge $_draggingEdgeId to $currentPos',
-    );
   }
 
   @override
@@ -98,14 +86,7 @@ class DefaultAnchorBehavior implements AnchorBehavior {
     Offset endPos, {
     bool canceled = false,
   }) {
-    debugPrint(
-      '[DefaultAnchorBehavior] onAnchorDragEnd: ${anchor.id}, endPos=$endPos, canceled=$canceled',
-    );
-
     if (_draggingEdgeId == null) {
-      debugPrint(
-        '[DefaultAnchorBehavior] onAnchorDragEnd: No draggingEdgeId found',
-      );
       return;
     }
 
@@ -115,9 +96,6 @@ class DefaultAnchorBehavior implements AnchorBehavior {
     if (canceled) {
       // 取消拖拽，移除 ghost edge
       ref.read(edgeStateProvider(workflowId).notifier).removeEdge(ghostId);
-      debugPrint(
-        '[DefaultAnchorBehavior] Drag canceled, removed ghost edge: $ghostId',
-      );
       return;
     }
 
@@ -126,9 +104,6 @@ class DefaultAnchorBehavior implements AnchorBehavior {
     if (hitAnchor == null) {
       // 未命中，则移除 ghost edge
       ref.read(edgeStateProvider(workflowId).notifier).removeEdge(ghostId);
-      debugPrint(
-        '[DefaultAnchorBehavior] No target hit, removed ghost edge: $ghostId',
-      );
     } else {
       // 命中后，将 ghost edge finalize 为已连接
       ref.read(edgeStateProvider(workflowId).notifier).endEdgeDrag(
@@ -136,9 +111,6 @@ class DefaultAnchorBehavior implements AnchorBehavior {
             targetNodeId: hitAnchor.nodeId,
             targetAnchorId: hitAnchor.id,
           );
-      debugPrint(
-        '[DefaultAnchorBehavior] Finalized ghost edge: $ghostId with target ${hitAnchor.nodeId}:${hitAnchor.id}',
-      );
     }
   }
 
@@ -174,15 +146,10 @@ class DefaultAnchorBehavior implements AnchorBehavior {
         final distance = (anchorWorldPos - worldPos).distance;
 
         if (distance <= hitTestRadius) {
-          debugPrint(
-            '[DefaultAnchorBehavior] hit anchor: ${anchor.id} at distance: $distance',
-          );
           return anchor;
         }
       }
     }
-
-    debugPrint('[DefaultAnchorBehavior] no anchor hit at: $worldPos');
     return null;
   }
 }

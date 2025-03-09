@@ -18,7 +18,7 @@ class AnchorWidget extends StatefulWidget {
   final AnchorBehavior? anchorBehavior;
 
   const AnchorWidget({
-    Key? key,
+    super.key,
     required this.anchor,
     this.isHover = false,
     this.isSelected = false,
@@ -29,7 +29,7 @@ class AnchorWidget extends StatefulWidget {
     this.onHoverExit,
     this.cursor = SystemMouseCursors.precise,
     this.anchorBehavior,
-  }) : super(key: key);
+  });
 
   @override
   State<AnchorWidget> createState() => _AnchorWidgetState();

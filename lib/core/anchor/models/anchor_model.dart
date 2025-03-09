@@ -48,14 +48,15 @@ class AnchorModel {
     this.data = const {},
     // 新增
     this.placement = AnchorPlacement.border,
-    this.offsetDistance = 0.0,
+    double offsetDistance = 0.0,
     this.angle = 0.0,
     required this.nodeId,
-  }) : ratio = (ratio < 0.0
+  })  : ratio = (ratio < 0.0
             ? 0.0
             : ratio > 1.0
                 ? 1.0
-                : ratio);
+                : ratio),
+        offsetDistance = offsetDistance < 0.0 ? 0.0 : offsetDistance;
 
   // copyWith
   AnchorModel copyWith({
