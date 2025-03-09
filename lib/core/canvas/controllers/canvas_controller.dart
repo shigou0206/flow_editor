@@ -9,6 +9,8 @@ import 'package:flow_editor/core/canvas/renderers/canvas_renderer.dart';
 import 'package:flow_editor/core/node/behaviors/node_behavior.dart';
 import 'package:flow_editor/core/anchor/behaviors/anchor_behavior.dart';
 
+import 'package:flow_editor/core/edge/plugins/edge_overlay_plugin.dart';
+
 /// CanvasController(改造版):
 /// - 不再用 ClipRect + Transform 包裹子树
 /// - 仅布局一个容器来承载 CanvasRenderer
@@ -23,6 +25,8 @@ class CanvasController extends ConsumerWidget {
   final NodeBehavior? nodeBehavior;
   final AnchorBehavior? anchorBehavior;
 
+  final List<EdgeOverlayPlugin>? edgePlugins;
+
   const CanvasController({
     super.key,
     required this.workflowId,
@@ -32,6 +36,7 @@ class CanvasController extends ConsumerWidget {
     this.scale = 1.0,
     this.nodeBehavior,
     this.anchorBehavior,
+    this.edgePlugins,
   });
 
   @override

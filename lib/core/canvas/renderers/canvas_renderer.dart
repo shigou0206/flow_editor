@@ -3,16 +3,21 @@ import 'package:flutter/material.dart';
 
 import 'package:flow_editor/core/node/behaviors/node_behavior.dart';
 import 'package:flow_editor/core/anchor/behaviors/anchor_behavior.dart';
+import 'package:flow_editor/core/anchor/utils/anchor_position_utils.dart';
 import 'package:flow_editor/core/node/node_state/node_state.dart';
 import 'package:flow_editor/core/edge/edge_state/edge_state.dart';
+import 'package:flow_editor/core/edge/widgets/edge_button_overlay.dart';
 import 'package:flow_editor/core/canvas/models/canvas_visual_config.dart';
 import 'package:flow_editor/core/canvas/renderers/background_renderer.dart';
 import 'package:flow_editor/core/edge/edge_renderer.dart';
 import 'package:flow_editor/core/node/widgets/commons/node_widget.dart';
+import 'package:flow_editor/core/edge/utils/edge_utils.dart';
+import 'package:flow_editor/core/edge/models/edge_model.dart';
+import 'package:flow_editor/core/types/position_enum.dart';
 
 /// CanvasRenderer(改造版):
-/// - 内部使用 Stack(clipBehavior: Clip.none)，不再父层 Transform
-/// - 网格/边/节点都自行加 offset, scale 实现平移/缩放
+/// - 内部使用 Stack(clipBehavior: Clip.none)，各层独立处理平移/缩放
+/// - 背景、边、节点的绘制与交互层分离
 class CanvasRenderer extends StatelessWidget {
   final Offset offset; // 画布平移量
   final double scale; // 画布缩放因子
@@ -24,6 +29,9 @@ class CanvasRenderer extends StatelessWidget {
   final NodeBehavior? nodeBehavior;
   final AnchorBehavior? anchorBehavior;
 
+  /// 删除边的回调（由父组件传入）
+  final void Function(String edgeId)? onEdgeDelete;
+
   const CanvasRenderer({
     super.key,
     required this.offset,
@@ -33,11 +41,12 @@ class CanvasRenderer extends StatelessWidget {
     required this.visualConfig,
     this.nodeBehavior,
     this.anchorBehavior,
+    this.onEdgeDelete,
   });
 
   @override
   Widget build(BuildContext context) {
-    // 假设 nodeState/edgeState 只包含1个workflow
+    // 获取当前 workflow 的节点与边数据
     final nodeList =
         nodeState.nodesByWorkflow.values.expand((m) => m.values).toList();
     final edgeList =
@@ -46,12 +55,20 @@ class CanvasRenderer extends StatelessWidget {
     final draggingEdgeId = edgeState.draggingEdgeId;
     final draggingEnd = edgeState.draggingEnd;
 
-    // 用 Stack(clipBehavior: Clip.none) 不剪裁溢出
+    // 构建边上按钮层：遍历每条已连接边，计算中点并生成删除按钮 Overlay
+    final List<Widget> edgeOverlays = [];
+    for (final edge in edgeList) {
+      if (edge.isConnected &&
+          edge.targetNodeId != null &&
+          edge.targetAnchorId != null) {
+        edgeOverlays.addAll(_buildEdgeOverlay(edge));
+      }
+    }
+
     return Stack(
       clipBehavior: Clip.none,
       children: [
-        // 1) 背景绘制(网格)
-        //    这里若你想"无限"网格，可用BackgroundRenderer里自己写( offset, scale ) => 大范围 or 动态
+        // 1) 背景绘制（网格）
         Positioned.fill(
           child: CustomPaint(
             painter: BackgroundRenderer(
@@ -62,11 +79,7 @@ class CanvasRenderer extends StatelessWidget {
           ),
         ),
 
-        // 2) 绘制所有边(EdgeRenderer)
-        //    这里有两种做法:
-        //    A) 先用 Transform(...translate(offset)..scale(scale)) 包裹,再在EdgeRenderer用( x,y )逻辑坐标
-        //    B) 直接 EdgeRenderer 里 强调 ( node.x*scale+offset.x, node.y*scale+offset.y )
-        //    这里示范(A)
+        // 2) 边绘制：使用 Transform 包裹（逻辑坐标转换）
         Positioned.fill(
           child: Transform(
             transform: Matrix4.identity()
@@ -85,8 +98,6 @@ class CanvasRenderer extends StatelessWidget {
         ),
 
         // 3) 节点绘制
-        //    这里在"布局坐标"= offset + node.x*scale
-        //    再包一层 Transform.scale(scale) 让节点自身内容变大
         for (final node in nodeList) ...[
           Positioned(
             left: offset.dx + (node.x - node.anchorPadding.left) * scale,
@@ -128,7 +139,75 @@ class CanvasRenderer extends StatelessWidget {
             ),
           ),
         ],
+
+        // 4) 边交互层：在边上叠加删除按钮（EdgeButtonOverlay）
+        ...edgeOverlays,
       ],
     );
+  }
+
+  /// 根据一条边计算其中点，并返回对应的删除按钮 Overlay 组件列表
+  List<Widget> _buildEdgeOverlay(EdgeModel edge) {
+    // 获取源与目标的世界坐标及方向（已由 _getAnchorWorldInfo 实现）
+    final (sourceWorld, sourcePos) =
+        _getAnchorWorldInfo(edge.sourceNodeId, edge.sourceAnchorId);
+    final (targetWorld, targetPos) =
+        _getAnchorWorldInfo(edge.targetNodeId!, edge.targetAnchorId!);
+    if (sourceWorld == null || targetWorld == null) return [];
+
+    // 将世界坐标转换为屏幕坐标：屏幕坐标 = offset + (world * scale)
+    final sourceScreen = Offset(
+      offset.dx + sourceWorld.dx * scale,
+      offset.dy + sourceWorld.dy * scale,
+    );
+    final targetScreen = Offset(
+      offset.dx + targetWorld.dx * scale,
+      offset.dy + targetWorld.dy * scale,
+    );
+    // 必须有方向信息
+    if (sourcePos == null || targetPos == null) return [];
+
+    // 计算边中点：调用工具函数 buildEdgePathAndCenter
+    final result = buildEdgePathAndCenter(
+      mode: edge.lineStyle.edgeMode,
+      sourceX: sourceScreen.dx,
+      sourceY: sourceScreen.dy,
+      sourcePos: sourcePos,
+      targetX: targetScreen.dx,
+      targetY: targetScreen.dy,
+      targetPos: targetPos,
+      curvature: 0.25,
+      hvOffset: 50.0,
+      orthoDist: 40.0,
+    );
+    final center = result.center;
+
+    return [
+      EdgeButtonOverlay(
+        edgeCenter: center,
+        onDeleteEdge: () {
+          // 点击按钮时调用父组件的 onEdgeDelete, 删除该边
+          if (onEdgeDelete != null) {
+            onEdgeDelete!(edge.id);
+          }
+        },
+        size: 24.0,
+      ),
+    ];
+  }
+
+  /// 该函数返回一个 Tuple：(Offset?, Position?)
+  /// 计算给定节点 anchor 在世界坐标中的位置及其方向
+  (Offset?, Position?) _getAnchorWorldInfo(String nodeId, String anchorId) {
+    // 此处假设 nodeState 中存有完整节点数据
+    final node = nodeState.nodesByWorkflow.values
+        .expand((m) => m.values)
+        .firstWhereOrNull((n) => n.id == nodeId);
+    final anchor = node?.anchors.firstWhereOrNull((a) => a.id == anchorId);
+    if (node == null || anchor == null) return (null, null);
+
+    final worldPos = computeAnchorWorldPosition(node, anchor) +
+        Offset(anchor.width / 2, anchor.height / 2);
+    return (worldPos, anchor.position);
   }
 }

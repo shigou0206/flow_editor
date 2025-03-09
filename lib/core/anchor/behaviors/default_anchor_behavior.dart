@@ -54,7 +54,7 @@ class DefaultAnchorBehavior implements AnchorBehavior {
         strokeWidth: 3,
         arrowEnd: ArrowType.normal,
         arrowStart: ArrowType.none,
-        useBezier: false,
+        edgeMode: EdgeMode.bezier,
       ),
     );
 

@@ -60,6 +60,7 @@ class NodeModel extends BaseNodeModel {
   });
 
   // 逻辑坐标Rect, 便于渲染或碰撞检测
+  @override
   Rect get rect => Rect.fromLTWH(x, y, width, height);
 
   AnchorPadding get anchorPadding =>
@@ -69,6 +70,7 @@ class NodeModel extends BaseNodeModel {
   double get totalHeight => height + anchorPadding.top + anchorPadding.bottom;
 
   /// 不可变更新: 返回新的 NodeModel 实例
+  @override
   NodeModel copyWith({
     double? x,
     double? y,

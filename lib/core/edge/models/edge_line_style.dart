@@ -1,52 +1,59 @@
 import 'package:equatable/equatable.dart';
 import 'package:flow_editor/core/edge/models/edge_enums.dart';
 
-// ===================== 样式子结构：EdgeLineStyle ===================== //
+/// EdgeLineStyle: 线条样式配置
+///
+/// - edgeMode: 指定使用哪种连接模式 (line / orthogonal3 / orthogonal5 / bezier / hvBezier ... )
+/// - colorHex: 线条颜色
+/// - strokeWidth: 线宽
+/// - dashPattern: [5,2] => 5px on,2px off
+/// - lineCap, lineJoin: 拐角样式
+/// - arrowStart,arrowEnd,arrowSize,arrowAngleDeg: 箭头样式
 class EdgeLineStyle extends Equatable {
-  final String colorHex; // "#RRGGBB" / "#AARRGGBB"
-  final double strokeWidth; // 线宽
-  final List<double> dashPattern; // 虚线模式 [5,2] => 5px on,2px off
-  final EdgeLineCap lineCap; // 线端点样式
-  final EdgeLineJoin lineJoin; // 拐角样式
-  final bool useBezier; // 是否使用贝塞尔曲线
-  final ArrowType arrowStart; // 起点箭头类型
-  final ArrowType arrowEnd; // 终点箭头类型
-  final double arrowSize; // 箭头大小
-  final double arrowAngleDeg; // 箭头夹角(角度)
+  final EdgeMode edgeMode; // 现在用枚举 而非 useBezier
+  final String colorHex;
+  final double strokeWidth;
+  final List<double> dashPattern;
+  final EdgeLineCap lineCap;
+  final EdgeLineJoin lineJoin;
+  final ArrowType arrowStart;
+  final ArrowType arrowEnd;
+  final double arrowSize;
+  final double arrowAngleDeg;
 
   const EdgeLineStyle({
+    this.edgeMode = EdgeMode.hvBezier, // 默认直线 or 你喜欢 => EdgeMode.bezier
     this.colorHex = '#000000',
     this.strokeWidth = 1.0,
-    this.dashPattern = const [], // 默认空数组
+    this.dashPattern = const [],
     this.lineCap = EdgeLineCap.butt,
     this.lineJoin = EdgeLineJoin.miter,
-    this.useBezier = false,
     this.arrowStart = ArrowType.none,
     this.arrowEnd = ArrowType.none,
     this.arrowSize = 1.0,
     this.arrowAngleDeg = 30.0,
   });
 
-  // copyWith - 用于不可变更新
+  // copyWith
   EdgeLineStyle copyWith({
+    EdgeMode? edgeMode,
     String? colorHex,
     double? strokeWidth,
     List<double>? dashPattern,
     EdgeLineCap? lineCap,
     EdgeLineJoin? lineJoin,
-    bool? useBezier,
     ArrowType? arrowStart,
     ArrowType? arrowEnd,
     double? arrowSize,
     double? arrowAngleDeg,
   }) {
     return EdgeLineStyle(
+      edgeMode: edgeMode ?? this.edgeMode,
       colorHex: colorHex ?? this.colorHex,
       strokeWidth: strokeWidth ?? this.strokeWidth,
       dashPattern: dashPattern ?? List.from(this.dashPattern),
       lineCap: lineCap ?? this.lineCap,
       lineJoin: lineJoin ?? this.lineJoin,
-      useBezier: useBezier ?? this.useBezier,
       arrowStart: arrowStart ?? this.arrowStart,
       arrowEnd: arrowEnd ?? this.arrowEnd,
       arrowSize: arrowSize ?? this.arrowSize,
@@ -54,15 +61,15 @@ class EdgeLineStyle extends Equatable {
     );
   }
 
-  // 序列化
+  // ============ 序列化 ============
   Map<String, dynamic> toJson() {
     return {
+      'edgeMode': edgeMode.toString().split('.').last,
       'colorHex': colorHex,
       'strokeWidth': strokeWidth,
       'dashPattern': dashPattern,
       'lineCap': lineCap.toString().split('.').last,
       'lineJoin': lineJoin.toString().split('.').last,
-      'useBezier': useBezier,
       'arrowStart': arrowStart.toString().split('.').last,
       'arrowEnd': arrowEnd.toString().split('.').last,
       'arrowSize': arrowSize,
@@ -70,9 +77,10 @@ class EdgeLineStyle extends Equatable {
     };
   }
 
-  // 反序列化
+  // ============ 反序列化 ============
   factory EdgeLineStyle.fromJson(Map<String, dynamic> json) {
     return EdgeLineStyle(
+      edgeMode: _parseEdgeMode(json['edgeMode']),
       colorHex: json['colorHex'] as String? ?? '#000000',
       strokeWidth: (json['strokeWidth'] is num)
           ? (json['strokeWidth'] as num).toDouble()
@@ -80,7 +88,6 @@ class EdgeLineStyle extends Equatable {
       dashPattern: _parseDoubleList(json['dashPattern']),
       lineCap: _parseLineCap(json['lineCap']),
       lineJoin: _parseLineJoin(json['lineJoin']),
-      useBezier: json['useBezier'] as bool? ?? false,
       arrowStart: _parseArrowType(json['arrowStart']),
       arrowEnd: _parseArrowType(json['arrowEnd']),
       arrowSize: (json['arrowSize'] is num)
@@ -93,6 +100,25 @@ class EdgeLineStyle extends Equatable {
   }
 
   // ============ 内部解析函数 ============
+
+  static EdgeMode _parseEdgeMode(dynamic val) {
+    if (val is String) {
+      switch (val) {
+        case 'orthogonal3':
+          return EdgeMode.orthogonal3;
+        case 'orthogonal5':
+          return EdgeMode.orthogonal5;
+        case 'bezier':
+          return EdgeMode.bezier;
+        case 'hvBezier':
+          return EdgeMode.hvBezier;
+        case 'line':
+        default:
+          return EdgeMode.line;
+      }
+    }
+    return EdgeMode.line;
+  }
 
   static EdgeLineCap _parseLineCap(dynamic val) {
     if (val is String) {
@@ -147,12 +173,12 @@ class EdgeLineStyle extends Equatable {
 
   @override
   List<Object?> get props => [
+        edgeMode,
         colorHex,
         strokeWidth,
         dashPattern,
         lineCap,
         lineJoin,
-        useBezier,
         arrowStart,
         arrowEnd,
         arrowSize,

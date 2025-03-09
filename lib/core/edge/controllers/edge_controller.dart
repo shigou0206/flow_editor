@@ -38,12 +38,13 @@ class EdgeController {
   }
 
   /// 删除一条 Edge，若 locked 则跳过
-  void deleteEdge(EdgeModel edge) {
-    if (edge.locked) {
+  void deleteEdge(String edgeId) {
+    final edge = _findEdgeInState(edgeId, _read(edgeStateProvider(workflowId)));
+    if (edge == null || edge.locked) {
       return;
     }
     behavior.onEdgeDelete(edge);
-    _read(edgeStateProvider(workflowId).notifier).removeEdge(edge.id);
+    _read(edgeStateProvider(workflowId).notifier).removeEdge(edgeId);
   }
 
   /// 批量删除 (跳过 locked)

@@ -65,7 +65,7 @@ class EdgeInteractionManager {
     // 回调
     behavior?.onEdgeDelete(edge);
     // 删除
-    edgeController.deleteEdge(edge);
+    edgeController.deleteEdge(edgeId);
   }
 
   /// 当用户拖拽边端点(源 or 目标)以重新连到别的node/anchor

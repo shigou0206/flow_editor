@@ -1,16 +1,15 @@
+// file: edge_utils.dart
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
-import 'package:flow_editor/core/types/position_enum.dart';
-import 'package:flow_editor/core/edge/models/edge_line_style.dart';
-import 'package:flow_editor/core/edge/models/edge_animation_config.dart';
 
-/// ===================== Edge Paint & Dash Utils ===================== //
+// 如果你项目中有以下类或枚举，请改为实际import:
+import '../types/position_enum.dart'; // Position { left, right, top, bottom }
+import '../edge/models/edge_line_style.dart';
+import '../edge/models/edge_animation_config.dart';
 
-/// 构建用于绘制边(Line)的 [Paint]。
-///
-/// - [lineStyle] 提供颜色, 线宽, 虚线参数(dashPattern), 箭头size等；
-/// - [animConfig] 若需要动画(颜色闪烁)可在此处处理；
-/// - [isSelected] => 选中时可加粗/变色。
+/// ======================= Paint & Dash & Arrow ======================= ///
+
+/// 构建Edge画笔
 Paint buildEdgePaint(
   EdgeLineStyle lineStyle,
   EdgeAnimationConfig animConfig,
@@ -22,57 +21,40 @@ Paint buildEdgePaint(
     ..strokeWidth = lineStyle.strokeWidth
     ..style = PaintingStyle.stroke;
 
-  // 如果选中 => 加粗/微调颜色
   if (isSelected) {
     paint.color = paint.color.withOpacity(0.85);
     paint.strokeWidth += 1.5;
   }
-
-  // 可额外根据 animConfig 做闪烁/渐变
+  // 若 animConfig需要闪烁 => 在外部负责刷新
   return paint;
 }
 
-/// 将 [source] Path 转换为虚线 (dash) 形式的 Path。
-///
-/// [pattern] => e.g. [5,3] => 5px 实线,3px 空白重复；
-/// [phase] => dash流动动画起始偏移，可配合 dashFlowPhase。
-Path dashPath(
-  Path source,
-  List<double> pattern, {
-  double phase = 0.0,
-}) {
-  // 你可使用第三方 dash_path/dashed_path，这里手写一个简单实现:
-  final metrics = source.computeMetrics();
+/// 虚线
+Path dashPath(Path source, List<double> pattern, {double phase = 0.0}) {
   final outPath = Path();
-
-  for (final metric in metrics) {
+  for (final metric in source.computeMetrics()) {
     double distance = 0.0;
-    bool draw = true; // 是否画(实线) or 跳过(空白)
+    bool draw = true;
     int patternIndex = 0;
-
     while (distance < metric.length) {
       final lengthToDraw = pattern[patternIndex % pattern.length];
-      final segmentLen = math.min(lengthToDraw, metric.length - distance);
+      final segLen = math.min(lengthToDraw, metric.length - distance);
 
       if (draw) {
         outPath.addPath(
-          metric.extractPath(distance + phase, distance + segmentLen + phase),
+          metric.extractPath(distance + phase, distance + segLen + phase),
           Offset.zero,
         );
       }
-      distance += segmentLen;
+      distance += segLen;
       draw = !draw;
       patternIndex++;
     }
   }
-
   return outPath;
 }
 
-/// 在 Path 的起点或终点绘制三角形箭头。
-///
-/// - [lineStyle] => arrowSize (像素), arrowAngleDeg(三角形张角)，arrowStart/arrowEnd决定是否画；
-/// - [atStart]=true => 在path起点画，否则终点画。
+/// 画箭头(三角形)在 path 起点/终点
 void drawArrowHead(
   Canvas canvas,
   Path path,
@@ -85,48 +67,33 @@ void drawArrowHead(
 
   final metric = atStart ? pathMetrics.first : pathMetrics.last;
   final length = metric.length;
-  // 取 offset=0(起点) 或 offset=length(终点)
   final tangent = metric.getTangentForOffset(atStart ? 0 : length);
   if (tangent == null) return;
 
-  final position = tangent.position; // 箭头所在坐标
-  final direction = tangent.vector; // 切线方向(单位向量)
-
-  // 箭头大小 & 角度
+  final position = tangent.position;
+  final direction = tangent.vector; // (dx,dy)
   final arrowSize = lineStyle.arrowSize;
   final arrowAngle = lineStyle.arrowAngleDeg;
 
-  // 构建三角形顶点
-  // arrowAngleDeg => 半角 => (arrowAngle/2) 往左右旋转
-  final halfRadians = (arrowAngle / 2.0) * math.pi / 180.0;
-
-  // 当 atStart=true => 方向要反转(朝source)
+  // if atStart => 反向
   final dir = atStart ? -direction : direction;
+  final dirNorm = dir / dir.distance;
 
-  // A = position
-  // B = A + dir旋转(halfRadians)*arrowSize
-  // C = A + dir旋转(-halfRadians)*arrowSize
-  // 旋转一个向量: (xcosθ - ysinθ, xsinθ + ycosθ)
-  Offset rotate(Offset v, double rad) {
-    final cosTheta = math.cos(rad), sinTheta = math.sin(rad);
+  final halfRad = (arrowAngle * 0.5) * math.pi / 180.0;
+  Offset rotate(Offset v, double r) {
+    final cosT = math.cos(r), sinT = math.sin(r);
     return Offset(
-      v.dx * cosTheta - v.dy * sinTheta,
-      v.dx * sinTheta + v.dy * cosTheta,
+      v.dx * cosT - v.dy * sinT,
+      v.dx * sinT + v.dy * cosT,
     );
   }
 
-  // dir 要先归一化 => metric.getTangentForOffset()返回的 vector通常已归一
-  // 但最好再次归一, 避免误差
-  final dirNorm = dir / dir.distance;
-
-  final v1 = rotate(dirNorm, halfRadians) * arrowSize;
-  final v2 = rotate(dirNorm, -halfRadians) * arrowSize;
-
+  final v1 = rotate(dirNorm, halfRad) * arrowSize;
+  final v2 = rotate(dirNorm, -halfRad) * arrowSize;
   final p1 = position;
   final p2 = position + v1;
   final p3 = position + v2;
 
-  // 画三角形
   final arrowPath = Path()
     ..moveTo(p1.dx, p1.dy)
     ..lineTo(p2.dx, p2.dy)
@@ -136,11 +103,10 @@ void drawArrowHead(
   canvas.drawPath(arrowPath, paint);
 }
 
-/// 解析颜色 "#RRGGBB" 或 "#AARRGGBB"
 Color _parseColorHex(String hexStr) {
-  String hex = hexStr.replaceAll('#', '');
+  var hex = hexStr.replaceAll('#', '');
   if (hex.length == 6) {
-    hex = 'FF$hex'; // 默认不透明
+    hex = 'FF$hex'; // 不透明
   }
   if (hex.length == 8) {
     final val = int.parse(hex, radix: 16);
@@ -149,21 +115,18 @@ Color _parseColorHex(String hexStr) {
   return Colors.black;
 }
 
-/// ===================== Bézier Curvature Logic ===================== //
+/// ==================== "普通" Bézier(基于distance*curvature) ==================== //
 
-/// 计算控制点偏移量 => 距离 * curvature (无论正负),
-/// 若 distance<0, 用 curvature * 25 * sqrt(-distance) 做放大.
+/// distance<0 => curvature*25*sqrt(-distance)
 double calculateControlOffset(double distance, double curvature) {
   if (distance >= 0) {
-    // 改为 distance * curvature
     return distance * curvature;
   }
-  // distance <0 => curvature*25*sqrt(-distance)
+  // distance<0 => bigger
   return curvature * 25 * math.sqrt(-distance);
 }
 
-/// 根据位置 [pos] (left/right/top/bottom) & (x1,y1->x2,y2) + curvature
-/// 计算三次贝塞尔曲线其中一个控制点
+/// 为 source/target 各自算一个控制点
 List<double> getControlWithCurvature({
   required Position pos,
   required double x1,
@@ -188,34 +151,8 @@ List<double> getControlWithCurvature({
   }
 }
 
-/// 计算三次贝塞尔在 t=0.5 处的中点坐标(用于 label / offset)
-List<double> getBezierEdgeCenter({
-  required double sourceX,
-  required double sourceY,
-  required double sourceControlX,
-  required double sourceControlY,
-  required double targetControlX,
-  required double targetControlY,
-  required double targetX,
-  required double targetY,
-}) {
-  // t=0.5, Bernstein系数(1/8,3/8,3/8,1/8)
-  final centerX = sourceX * 0.125 +
-      sourceControlX * 0.375 +
-      targetControlX * 0.375 +
-      targetX * 0.125;
-  final centerY = sourceY * 0.125 +
-      sourceControlY * 0.375 +
-      targetControlY * 0.375 +
-      targetY * 0.125;
-
-  final offsetX = (centerX - sourceX).abs();
-  final offsetY = (centerY - sourceY).abs();
-  return [centerX, centerY, offsetX, offsetY];
-}
-
-/// 生成三次贝塞尔路径 + 中点信息:
-/// 返回 [Path, labelX, labelY, offsetX, offsetY].
+/// 根据 sourceControl / targetControl => 生成三次贝塞尔 path, 并计算中点
+/// 返回: [Path, labelX, labelY, offsetX, offsetY]
 List<dynamic> getBezierPath({
   required double sourceX,
   required double sourceY,
@@ -225,8 +162,7 @@ List<dynamic> getBezierPath({
   required Position targetPosition,
   double curvature = 0.25,
 }) {
-  // 1) 控制点
-  final sourceCtrl = getControlWithCurvature(
+  final sc = getControlWithCurvature(
     pos: sourcePosition,
     x1: sourceX,
     y1: sourceY,
@@ -234,7 +170,7 @@ List<dynamic> getBezierPath({
     y2: targetY,
     c: curvature,
   );
-  final targetCtrl = getControlWithCurvature(
+  final tc = getControlWithCurvature(
     pos: targetPosition,
     x1: targetX,
     y1: targetY,
@@ -242,32 +178,129 @@ List<dynamic> getBezierPath({
     y2: sourceY,
     c: curvature,
   );
+  final (sxC, syC) = (sc[0], sc[1]);
+  final (txC, tyC) = (tc[0], tc[1]);
 
-  final (sxC, syC) = (sourceCtrl[0], sourceCtrl[1]);
-  final (txC, tyC) = (targetCtrl[0], targetCtrl[1]);
-
-  // 2) 求曲线中点
-  final centerInfo = getBezierEdgeCenter(
-    sourceX: sourceX,
-    sourceY: sourceY,
-    sourceControlX: sxC,
-    sourceControlY: syC,
-    targetControlX: txC,
-    targetControlY: tyC,
-    targetX: targetX,
-    targetY: targetY,
-  );
-
-  // 3) 构建路径
+  // 构建path
   final path = Path()
     ..moveTo(sourceX, sourceY)
     ..cubicTo(sxC, syC, txC, tyC, targetX, targetY);
 
-  return [
-    path,
-    centerInfo[0], // labelX
-    centerInfo[1], // labelY
-    centerInfo[2], // offsetX
-    centerInfo[3], // offsetY
-  ];
+  // 计算中点 => t=0.5
+  final metrics = path.computeMetrics().toList();
+  if (metrics.isEmpty) {
+    return [
+      path,
+      (sourceX + targetX) * 0.5,
+      (sourceY + targetY) * 0.5,
+      0.0,
+      0.0,
+    ];
+  }
+  final metric = metrics.first;
+  final halfLen = metric.length * 0.5;
+  final tangent = metric.getTangentForOffset(halfLen);
+  if (tangent == null) {
+    return [
+      path,
+      (sourceX + targetX) * 0.5,
+      (sourceY + targetY) * 0.5,
+      0.0,
+      0.0,
+    ];
+  }
+  final center = tangent.position;
+  final dx = (center.dx - sourceX).abs();
+  final dy = (center.dy - sourceY).abs();
+  return [path, center.dx, center.dy, dx, dy];
+}
+
+/// ==================== HV Bézier(起点/终点水平/垂直离开) ==================== //
+
+/// 强制让线段在 anchorPos=left/right 时 水平离开/进入,
+/// anchorPos=top/bottom 时 垂直离开/进入.
+/// offset => 偏移量 (比如50)
+List<dynamic> getHVBezierPath({
+  required double sourceX,
+  required double sourceY,
+  required Position sourcePos,
+  required double targetX,
+  required double targetY,
+  required Position targetPos,
+  double offset = 50.0,
+}) {
+  // 1) 起点控制
+  final (sxC, syC) = _getHVControlPoint(
+      x1: sourceX, y1: sourceY, anchorPos: sourcePos, offset: offset);
+  // 2) 终点控制
+  final (txC, tyC) = _getHVControlPoint(
+      x1: targetX, y1: targetY, anchorPos: targetPos, offset: offset);
+
+  // 3) 构建三次贝塞尔
+  final path = Path()
+    ..moveTo(sourceX, sourceY)
+    ..cubicTo(sxC, syC, txC, tyC, targetX, targetY);
+
+  // 4) 算中点 => path metric
+  final metrics = path.computeMetrics().toList();
+  if (metrics.isEmpty) {
+    return [
+      path,
+      (sourceX + targetX) * 0.5,
+      (sourceY + targetY) * 0.5,
+      0.0,
+      0.0,
+    ];
+  }
+  final metric = metrics.first;
+  final halfLen = metric.length * 0.5;
+  final tan = metric.getTangentForOffset(halfLen);
+  if (tan == null) {
+    return [
+      path,
+      (sourceX + targetX) * 0.5,
+      (sourceY + targetY) * 0.5,
+      0.0,
+      0.0,
+    ];
+  }
+  final center = tan.position;
+  final dx = (center.dx - sourceX).abs();
+  final dy = (center.dy - sourceY).abs();
+  return [path, center.dx, center.dy, dx, dy];
+}
+
+/// 内部 => 根据 anchorPos, 固定水平/垂直往外 offset
+(double, double) _getHVControlPoint({
+  required double x1,
+  required double y1,
+  required Position anchorPos,
+  required double offset,
+}) {
+  switch (anchorPos) {
+    case Position.left:
+      return (x1 - offset, y1);
+    case Position.right:
+      return (x1 + offset, y1);
+    case Position.top:
+      return (x1, y1 - offset);
+    case Position.bottom:
+      return (x1, y1 + offset);
+  }
+}
+
+/// ==================== 命中测试(可选) ==================== //
+/// 若想检测鼠标点是否命中edge, 用 path+point+threshold
+bool hitTestEdge(Path path, Offset pointer, double threshold) {
+  final metrics = path.computeMetrics();
+  for (final metric in metrics) {
+    for (double d = 0; d < metric.length; d += 5.0) {
+      final tan = metric.getTangentForOffset(d);
+      if (tan == null) continue;
+      if ((tan.position - pointer).distance <= threshold) {
+        return true;
+      }
+    }
+  }
+  return false;
 }

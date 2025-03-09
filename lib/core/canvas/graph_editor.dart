@@ -1,3 +1,5 @@
+// file: graph_editor.dart
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -61,11 +63,11 @@ class _GraphEditorState extends ConsumerState<GraphEditor> {
       _initSampleData();
 
       // 3. 如果遇到首帧节点位置可能不准的问题，可再加一次刷新：
-      WidgetsBinding.instance.addPostFrameCallback((__) {
-        setState(() {
-          // 触发一次重绘，让新插入的节点位置与画布变换完全同步
-        });
-      });
+      //    WidgetsBinding.instance.addPostFrameCallback((__) {
+      //      setState(() {
+      //        // 触发一次重绘，让新插入的节点位置与画布变换完全同步
+      //      });
+      //    });
     });
   }
 
