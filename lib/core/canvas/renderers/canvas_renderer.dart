@@ -97,6 +97,9 @@ class CanvasRenderer extends StatelessWidget {
           ),
         ),
 
+        // 4) 边交互层：在边上叠加删除按钮（EdgeButtonOverlay）
+        ...edgeOverlays,
+
         // 3) 节点绘制
         for (final node in nodeList) ...[
           Positioned(
@@ -139,9 +142,6 @@ class CanvasRenderer extends StatelessWidget {
             ),
           ),
         ],
-
-        // 4) 边交互层：在边上叠加删除按钮（EdgeButtonOverlay）
-        ...edgeOverlays,
       ],
     );
   }
