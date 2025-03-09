@@ -2,49 +2,10 @@ import 'package:flutter/material.dart'; // for Rect, Offset
 import 'package:flow_editor/core/anchor/models/anchor_model.dart';
 import 'package:flow_editor/core/anchor/utils/anchor_position_utils.dart';
 import 'package:flow_editor/core/node/models/node_enums.dart';
+import 'package:flow_editor/core/node/models/base_node_model.dart';
+import 'package:flow_editor/core/node/models/styles/node_style.dart';
 
-/// NodeStyle: 记录节点的纯数据外观, 避免依赖 Flutter Color
-class NodeStyle {
-  final String? fillColorHex; // e.g. "#RRGGBB" or "#AARRGGBB"
-  final String? borderColorHex; // e.g. "#FF00FF"
-  final double borderWidth;
-  final double borderRadius;
-
-  const NodeStyle({
-    this.fillColorHex,
-    this.borderColorHex,
-    this.borderWidth = 1.0,
-    this.borderRadius = 4.0,
-  });
-
-  factory NodeStyle.fromJson(Map<String, dynamic> json) {
-    return NodeStyle(
-      fillColorHex: json['fillColorHex'] as String?,
-      borderColorHex: json['borderColorHex'] as String?,
-      borderWidth: (json['borderWidth'] as num?)?.toDouble() ?? 1.0,
-      borderRadius: (json['borderRadius'] as num?)?.toDouble() ?? 4.0,
-    );
-  }
-
-  Map<String, dynamic> toJson() {
-    return {
-      'fillColorHex': fillColorHex,
-      'borderColorHex': borderColorHex,
-      'borderWidth': borderWidth,
-      'borderRadius': borderRadius,
-    };
-  }
-}
-
-/// NodeModel: 不可变模型, 并确保与 UI/交互逻辑解耦
-class NodeModel {
-  // ========== 基础字段 ==========
-  final String id; // 节点唯一ID
-  double x; // 左上角X
-  double y; // 左上角Y
-  double width;
-  double height;
-
+class NodeModel extends BaseNodeModel {
   final DragMode dragMode;
   final String type; // 业务自定义类型: e.g. "start", "end"...
   final NodeRole role;
@@ -72,11 +33,11 @@ class NodeModel {
   final Map<String, dynamic> data;
 
   NodeModel({
-    required this.id,
-    required this.x,
-    required this.y,
-    required this.width,
-    required this.height,
+    required super.id,
+    required super.x,
+    required super.y,
+    required super.width,
+    required super.height,
     this.dragMode = DragMode.full,
     this.type = "",
     this.role = NodeRole.middle,

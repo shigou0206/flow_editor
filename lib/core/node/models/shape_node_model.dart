@@ -3,6 +3,7 @@ import 'package:flow_editor/core/node/models/node_model.dart';
 import 'package:flow_editor/core/anchor/models/anchor_model.dart';
 import 'package:flow_editor/core/anchor/utils/anchor_position_utils.dart';
 import 'package:flow_editor/core/node/models/node_enums.dart';
+import 'package:flow_editor/core/node/models/styles/node_style.dart';
 
 enum ShapeType { rectangle, circle, diamond, ellipse }
 
