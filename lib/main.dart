@@ -38,6 +38,7 @@ class MyApp extends ConsumerWidget {
 
     final canvasController = CanvasController(
       ref: ref,
+      context: context,
     );
 
     final nodeBehavior = DefaultNodeBehavior(

@@ -1,12 +1,13 @@
-import 'dart:ui';
+import 'package:flutter/material.dart';
 
-/// ICanvasController：用于对画布进行平移/缩放/视图适配等操作的接口。
+/// ICanvasController：用于对画布进行平移/缩放/视图适配 等操作，
+/// 以及对节点、边的拖拽/删除等交互操作。
 abstract class ICanvasController {
-  void startPan(Offset globalPosition);
-  void updatePan(Offset globalPosition);
-  void endPan();
-  void zoom(double zoomFactor, Offset focalPoint);
-  void resetView();
-  void fitView(Rect contentBounds, Size viewportSize, {double padding = 20});
-  void panBy(double dx, double dy);
+  void onTapDown(BuildContext context, TapDownDetails details);
+
+  void onPanStart(BuildContext context, DragStartDetails details);
+
+  void onPanUpdate(DragUpdateDetails details);
+
+  void onPanEnd(DragEndDetails details);
 }

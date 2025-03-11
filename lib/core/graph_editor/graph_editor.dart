@@ -160,10 +160,10 @@ class _GraphEditorState extends ConsumerState<GraphEditor> {
       appBar: AppBar(
         title: Text('GraphEditor (workflow = ${widget.workflowId})'),
         actions: [
-          IconButton(
-            onPressed: widget.canvasBehavior.resetView,
-            icon: const Icon(Icons.fit_screen),
-          ),
+          // IconButton(
+          //   onPressed: () => widget.canvasBehavior.resetCanvas(),
+          //   icon: const Icon(Icons.fit_screen),
+          // ),
         ],
       ),
       // 在这里使用 CanvasGestureHandler + CanvasController 组合
