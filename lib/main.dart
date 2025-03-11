@@ -2,11 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'core/canvas/models/canvas_visual_config.dart';
-import 'core/canvas/graph_editor.dart';
+import 'core/graph_editor/graph_editor.dart';
 import 'core/node/controllers/node_controller.dart';
 import 'core/edge/controllers/edge_controller.dart';
+import 'core/canvas/controllers/canvas_controller.dart';
 import 'core/canvas/behaviors/default_canvas_behavior.dart';
 import 'core/edge/behaviors/default_edge_behavior.dart';
+import 'core/node/behaviors/default_node_behavior.dart';
+import 'core/anchor/behaviors/default_anchor_behavior.dart';
 
 void main() {
   runApp(
@@ -31,10 +34,29 @@ class MyApp extends ConsumerWidget {
     final edgeController = EdgeController(
       container: ProviderScope.containerOf(context),
       workflowId: workflowId,
-      behavior: DefaultEdgeBehavior(),
     );
 
-    final canvasBehavior = DefaultCanvasBehavior(ref);
+    final canvasController = CanvasController(
+      ref: ref,
+    );
+
+    final nodeBehavior = DefaultNodeBehavior(
+      nodeController: nodeController,
+    );
+
+    final edgeBehavior = DefaultEdgeBehavior(
+      edgeController: edgeController,
+    );
+
+    final anchorBehavior = DefaultAnchorBehavior(
+      workflowId: workflowId,
+      nodeController: nodeController,
+      edgeController: edgeController,
+    );
+
+    final canvasBehavior = DefaultCanvasBehavior(
+      controller: canvasController,
+    );
 
     const canvasConfig = CanvasVisualConfig(
       backgroundColor: Colors.white,
@@ -48,8 +70,9 @@ class MyApp extends ConsumerWidget {
       home: Scaffold(
         body: GraphEditor(
           workflowId: workflowId,
-          nodeController: nodeController,
-          edgeController: edgeController,
+          nodeBehavior: nodeBehavior,
+          edgeBehavior: edgeBehavior,
+          anchorBehavior: anchorBehavior,
           visualConfig: canvasConfig,
           canvasBehavior: canvasBehavior,
         ),

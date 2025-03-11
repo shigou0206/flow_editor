@@ -1,9 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flow_editor/core/edge/models/edge_model.dart';
 import 'package:flow_editor/core/edge/behaviors/edge_behavior.dart';
+import 'package:flow_editor/core/edge/controllers/edge_controller_interface.dart';
 
 /// DefaultEdgeBehavior: 对 EdgeBehavior 所有方法提供默认空实现。
 class DefaultEdgeBehavior implements EdgeBehavior {
+  @override
+  final IEdgeController edgeController;
+
+  DefaultEdgeBehavior({
+    required this.edgeController,
+  });
+
   @override
   void onEdgeTap(EdgeModel edge, {Offset? localPos}) {}
 

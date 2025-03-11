@@ -3,21 +3,36 @@ import 'package:flutter/material.dart';
 import 'package:flow_editor/core/node/models/node_model.dart';
 import 'package:flow_editor/core/node/behaviors/node_behavior.dart';
 
-/// NodeBlock：节点主体 (可带删除按钮, 可双击/右键等交互)
+// 引入我们刚才的三段式容器
+import 'package:flow_editor/core/node/widgets/components/three_parts_layout.dart';
+// 注意：此路径仅作示例，请根据你实际文件结构修改
+
+/// NodeBlock：三段式节点，可响应单击 / 双击 / 右键 / 悬浮 / 删除 等行为
 class NodeBlock extends StatefulWidget {
   final NodeModel node;
-  final Widget child;
+
+  /// 头部（可选）
+  final Widget? header;
+
+  /// 中间主体（必传）
+  final Widget body;
+
+  /// 底部（可选）
+  final Widget? footer;
+
+  /// 节点行为
   final NodeBehavior? behavior;
 
   const NodeBlock({
-    super.key,
+    Key? key,
     required this.node,
-    required this.child,
+    this.header,
+    required this.body,
+    this.footer,
     this.behavior,
-  });
+  }) : super(key: key);
 
   @override
-  // ignore: library_private_types_in_public_api
   _NodeBlockState createState() => _NodeBlockState();
 }
 
@@ -29,12 +44,15 @@ class _NodeBlockState extends State<NodeBlock> {
   void _handleTap() => widget.behavior?.onTap(widget.node);
   void _handleDoubleTap() => widget.behavior?.onDoubleTap(widget.node);
 
+  /// 处理单击 / 双击
   void _onTapUp(TapUpDetails details) {
     if (_waitingForDoubleTap) {
+      // 已在等第二次点击 → 这是一次双击
       _tapTimer?.cancel();
       _waitingForDoubleTap = false;
       _handleDoubleTap();
     } else {
+      // 第一次点击
       _waitingForDoubleTap = true;
       _tapTimer = Timer(_doubleTapDelay, () {
         if (_waitingForDoubleTap) {
@@ -67,7 +85,9 @@ class _NodeBlockState extends State<NodeBlock> {
           height: h,
           child: GestureDetector(
             behavior: HitTestBehavior.opaque,
+            // 单击 / 双击
             onTapUp: _onTapUp,
+            // 右键(或长按)菜单
             onSecondaryTapDown: (details) => widget.behavior
                 ?.onContextMenu(widget.node, details.localPosition),
             child: MouseRegion(
@@ -76,38 +96,14 @@ class _NodeBlockState extends State<NodeBlock> {
               child: Stack(
                 clipBehavior: Clip.none,
                 children: [
+                  // 在下层放三段式布局：header / body / footer
                   Container(
                     width: w,
                     height: h,
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(6),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.1),
-                          blurRadius: 4,
-                          offset: const Offset(2, 2),
-                        ),
-                      ],
-                    ),
-                    alignment: Alignment.center,
-                    child: widget.child,
-                  ),
-                  // 删除按钮，使用 Positioned 放置于右上角（可溢出显示）
-                  Positioned(
-                    top: -10,
-                    right: -10,
-                    width: 24,
-                    height: 24,
-                    child: IconButton(
-                      padding: EdgeInsets.zero,
-                      constraints: const BoxConstraints(
-                        maxWidth: 24,
-                        maxHeight: 24,
-                      ),
-                      iconSize: 18,
-                      icon: const Icon(Icons.delete),
-                      onPressed: () => widget.behavior?.onDelete(widget.node),
+                    child: ThreePartsLayout(
+                      header: widget.header,
+                      body: widget.body,
+                      footer: widget.footer,
                     ),
                   ),
                 ],

@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 
 import 'package:flow_editor/core/node/behaviors/node_behavior.dart';
 import 'package:flow_editor/core/anchor/behaviors/anchor_behavior.dart';
+import 'package:flow_editor/core/canvas/behaviors/canvas_behavior.dart';
+import 'package:flow_editor/core/edge/behaviors/edge_behavior.dart';
 import 'package:flow_editor/core/anchor/utils/anchor_position_utils.dart';
 import 'package:flow_editor/core/node/node_state/node_state.dart';
 import 'package:flow_editor/core/edge/edge_state/edge_state.dart';
@@ -28,9 +30,8 @@ class CanvasRenderer extends StatelessWidget {
 
   final NodeBehavior? nodeBehavior;
   final AnchorBehavior? anchorBehavior;
-
-  /// 删除边的回调（由父组件传入）
-  final void Function(String edgeId)? onEdgeDelete;
+  final EdgeBehavior? edgeBehavior;
+  final CanvasBehavior? canvasBehavior;
 
   const CanvasRenderer({
     super.key,
@@ -41,7 +42,8 @@ class CanvasRenderer extends StatelessWidget {
     required this.visualConfig,
     this.nodeBehavior,
     this.anchorBehavior,
-    this.onEdgeDelete,
+    this.edgeBehavior,
+    this.canvasBehavior,
   });
 
   @override
@@ -187,8 +189,8 @@ class CanvasRenderer extends StatelessWidget {
         edgeCenter: center,
         onDeleteEdge: () {
           // 点击按钮时调用父组件的 onEdgeDelete, 删除该边
-          if (onEdgeDelete != null) {
-            onEdgeDelete!(edge.id);
+          if (edgeBehavior != null) {
+            edgeBehavior!.onEdgeDelete(edge);
           }
         },
         size: 24.0,

@@ -1,9 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:flow_editor/core/anchor/models/anchor_model.dart';
+import 'package:flow_editor/core/edge/controllers/edge_controller_interface.dart';
+import 'package:flow_editor/core/node/controllers/node_controller_interface.dart';
 
 /// AnchorBehavior：定义锚点(Anchor)的各类交互回调。
 /// 当用户与锚点进行点击/拖拽/右键/悬停等操作时，外部逻辑(如EdgeState/NodeState)可在这里进行处理。
 abstract class AnchorBehavior {
+  final INodeController nodeController;
+  final IEdgeController edgeController;
+
+  final String workflowId;
+
+  AnchorBehavior({
+    required this.nodeController,
+    required this.edgeController,
+    required this.workflowId,
+  });
+
   /// 当用户单击锚点
   void onAnchorTap(AnchorModel anchor) {}
 

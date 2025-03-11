@@ -1,12 +1,19 @@
 // file: edge_behavior.dart
 import 'package:flutter/material.dart';
 import 'package:flow_editor/core/edge/models/edge_model.dart';
+import 'package:flow_editor/core/edge/controllers/edge_controller_interface.dart';
 
 /// EdgeBehavior: 定义与「边」(Edge) 相关的业务逻辑或回调接口。
 ///
 /// 当用户对连线进行各种操作(点击/悬停/右键、拖拽端点、双击、创建、选中等)，
 /// [EdgeInteractionController] 会调用这些回调，以便不同的边类型或自定义逻辑能对事件作出特殊处理。
 abstract class EdgeBehavior {
+  final IEdgeController edgeController;
+
+  EdgeBehavior({
+    required this.edgeController,
+  });
+
   /// 用户点击(单击)某条边时触发。
   ///
   /// [edge] 被点击的EdgeModel。

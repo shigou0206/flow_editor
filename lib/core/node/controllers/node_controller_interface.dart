@@ -1,4 +1,6 @@
+import 'package:flutter/material.dart';
 import 'package:flow_editor/core/node/models/node_model.dart';
+import 'package:flow_editor/core/anchor/models/anchor_model.dart';
 
 abstract class INodeController {
   void upsertNode(NodeModel node);
@@ -10,4 +12,9 @@ abstract class INodeController {
   List<NodeModel> getAllNodes();
   List<NodeModel> getNodesByType(String type);
   bool nodeExists(String nodeId);
+  AnchorModel? findAnchorNear(
+    Offset worldPos,
+    String excludeAnchorId, {
+    double hitTestRadius = 20.0,
+  });
 }

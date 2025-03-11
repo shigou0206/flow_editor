@@ -1,9 +1,16 @@
 import 'dart:ui';
 import 'package:flow_editor/core/node/models/node_model.dart';
+import 'package:flow_editor/core/node/controllers/node_controller_interface.dart';
 
 /// NodeBehavior: 定义节点事件的抽象接口或基类
 /// 让具体业务逻辑在外部实现
 abstract class NodeBehavior {
+  final INodeController nodeController;
+
+  NodeBehavior({
+    required this.nodeController,
+  });
+
   /// 单击
   void onTap(NodeModel node) {}
 

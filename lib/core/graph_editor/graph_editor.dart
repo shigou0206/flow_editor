@@ -4,16 +4,17 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 // ======= 你项目中的导入，需根据实际修改 =======
-import 'package:flow_editor/core/node/controllers/node_controller.dart';
-import 'package:flow_editor/core/edge/controllers/edge_controller.dart';
+import 'package:flow_editor/core/node/behaviors/node_behavior.dart';
+import 'package:flow_editor/core/edge/behaviors/edge_behavior.dart';
+import 'package:flow_editor/core/anchor/behaviors/anchor_behavior.dart';
 import 'package:flow_editor/core/node/models/node_model.dart';
 import 'package:flow_editor/core/edge/models/edge_model.dart';
 import 'package:flow_editor/core/anchor/models/anchor_model.dart';
 import 'package:flow_editor/core/anchor/models/anchor_enums.dart';
 import 'package:flow_editor/core/types/position_enum.dart';
-import 'package:flow_editor/core/canvas/controllers/canvas_controller.dart';
-import 'package:flow_editor/core/canvas/models/canvas_visual_config.dart';
 import 'package:flow_editor/core/canvas/behaviors/canvas_behavior.dart';
+import 'package:flow_editor/core/canvas/widgets/canvas_widget.dart';
+import 'package:flow_editor/core/canvas/models/canvas_visual_config.dart';
 import 'package:flow_editor/core/canvas/interaction/gesture_event_handler.dart';
 import 'package:flow_editor/core/canvas/canvas_state/canvas_state_provider.dart';
 
@@ -22,8 +23,9 @@ class GraphEditor extends ConsumerStatefulWidget {
   final String workflowId;
 
   /// Node 与 Edge 的控制器，用于增删改节点、连线等
-  final NodeController nodeController;
-  final EdgeController? edgeController; // 可能为 null
+  final NodeBehavior nodeBehavior;
+  final EdgeBehavior edgeBehavior;
+  final AnchorBehavior anchorBehavior;
 
   /// 画布外观配置
   final CanvasVisualConfig visualConfig;
@@ -37,8 +39,9 @@ class GraphEditor extends ConsumerStatefulWidget {
   const GraphEditor({
     super.key,
     required this.workflowId,
-    required this.nodeController,
-    this.edgeController,
+    required this.nodeBehavior,
+    required this.edgeBehavior,
+    required this.anchorBehavior,
     required this.visualConfig,
     required this.canvasBehavior,
   });
@@ -131,23 +134,21 @@ class _GraphEditorState extends ConsumerState<GraphEditor> {
     );
 
     // 3. 通过 nodeController 插入节点
-    widget.nodeController.upsertNode(nodeA);
-    widget.nodeController.upsertNode(nodeB);
+    widget.nodeBehavior.nodeController.upsertNode(nodeA);
+    widget.nodeBehavior.nodeController.upsertNode(nodeB);
 
     // 4. 若存在 edgeController，则创建一条边 AB
-    if (widget.edgeController != null) {
-      const edgeId = 'edgeAB';
-      const edge = EdgeModel(
-        id: edgeId,
-        // 注意 EdgeModel 构造器字段是 sourceNodeId / sourceAnchorId / targetNodeId / targetAnchorId
-        sourceNodeId: nodeAId,
-        sourceAnchorId: 'out_$nodeAId',
-        targetNodeId: nodeBId,
-        targetAnchorId: 'in_$nodeBId',
-        isConnected: true,
-      );
-      widget.edgeController!.createEdge(edge);
-    }
+    const edgeId = 'edgeAB';
+    const edge = EdgeModel(
+      id: edgeId,
+      // 注意 EdgeModel 构造器字段是 sourceNodeId / sourceAnchorId / targetNodeId / targetAnchorId
+      sourceNodeId: nodeAId,
+      sourceAnchorId: 'out_$nodeAId',
+      targetNodeId: nodeBId,
+      targetAnchorId: 'in_$nodeBId',
+      isConnected: true,
+    );
+    widget.edgeBehavior.edgeController.createEdge(edge);
   }
 
   @override
@@ -167,12 +168,16 @@ class _GraphEditorState extends ConsumerState<GraphEditor> {
       ),
       // 在这里使用 CanvasGestureHandler + CanvasController 组合
       body: CanvasGestureHandler(
-        child: CanvasController(
+        behavior: widget.canvasBehavior,
+        child: CanvasWidget(
           workflowId: widget.workflowId,
           visualConfig: widget.visualConfig,
           canvasGlobalKey: GraphEditor.canvasStackKey,
           offset: canvasState.offset,
           scale: canvasState.scale,
+          nodeBehavior: widget.nodeBehavior,
+          edgeBehavior: widget.edgeBehavior,
+          anchorBehavior: widget.anchorBehavior,
         ),
       ),
       floatingActionButton: _buildFloatingActions(),
@@ -259,14 +264,14 @@ class _GraphEditorState extends ConsumerState<GraphEditor> {
         ),
       ],
     );
-    widget.nodeController.upsertNode(node);
+    widget.nodeBehavior.nodeController.upsertNode(node);
   }
 
   /// 动态删除最后一个节点
   void _removeLastNodeExample() {
-    final allNodes = widget.nodeController.getAllNodes();
+    final allNodes = widget.nodeBehavior.nodeController.getAllNodes();
     if (allNodes.isEmpty) return;
     final lastNode = allNodes.last;
-    widget.nodeController.removeNode(lastNode.id);
+    widget.nodeBehavior.nodeController.removeNode(lastNode.id);
   }
 }
