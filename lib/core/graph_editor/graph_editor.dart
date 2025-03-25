@@ -3,7 +3,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-// ======= 你项目中的导入，需根据实际修改 =======
 import 'package:flow_editor/core/node/behaviors/node_behavior.dart';
 import 'package:flow_editor/core/edge/behaviors/edge_behavior.dart';
 import 'package:flow_editor/core/anchor/behaviors/anchor_behavior.dart';
@@ -13,14 +12,24 @@ import 'package:flow_editor/core/anchor/models/anchor_model.dart';
 import 'package:flow_editor/core/anchor/models/anchor_enums.dart';
 import 'package:flow_editor/core/types/position_enum.dart';
 import 'package:flow_editor/core/canvas/behaviors/canvas_behavior.dart';
-import 'package:flow_editor/core/canvas/widgets/canvas_widget.dart';
 import 'package:flow_editor/core/canvas/models/canvas_visual_config.dart';
 import 'package:flow_editor/core/canvas/interaction/gesture_event_handler.dart';
+import 'package:flow_editor/core/canvas/interaction/mouse_event_handler.dart';
 import 'package:flow_editor/core/canvas/canvas_state/canvas_state_provider.dart';
+import 'package:flow_editor/core/canvas/widgets/canvas_widget.dart';
 
-// ============== 示例：GraphEditor ==============
+// =========== 新增：导入 NodeWidget / NodeWidgetRegistry / NodeWidgetFactory ===========
+import 'package:flow_editor/core/node/widgets/workflows/base/node_widget.dart';
+import 'package:flow_editor/core/node/node_widget_registry.dart';
+import 'package:flow_editor/core/node/factories/node_widget_factory.dart';
+import 'package:flow_editor/core/node/factories/node_widget_factory_impl.dart';
+
+/// GraphEditor(改造版):
+/// - 保留原有逻辑：插入示例节点、示例边
+/// - 使用 CanvasGestureHandler + CanvasWidget
+/// - 新增 NodeWidgetRegistry + NodeWidgetFactory，用来渲染默认节点
 class GraphEditor extends ConsumerStatefulWidget {
-  final String workflowId;
+  final String workflowId; // 唯一标识某个工作流
 
   /// Node 与 Edge 的控制器，用于增删改节点、连线等
   final NodeBehavior nodeBehavior;
@@ -51,26 +60,43 @@ class GraphEditor extends ConsumerStatefulWidget {
 }
 
 class _GraphEditorState extends ConsumerState<GraphEditor> {
+  /// 我们在这里持有一个 nodeWidgetFactory，
+  /// 用于给 CanvasWidget / CanvasRenderer 渲染节点
+  late final NodeWidgetFactory nodeFactory;
+
   @override
   void initState() {
     super.initState();
 
-    // 在首帧渲染后，切换到指定 workflow 并初始化示例数据
+    // 1. 创建并注册一个"默认"节点类型，让它使用 NodeWidget 渲染
+    final registry = NodeWidgetRegistry();
+    registry.register<NodeModel>(
+      type: 'default',
+      // 此处可任意写法，比如把 node.title 作为 body
+      builder: (node) => NodeWidget(
+        node: node,
+        behavior: widget.nodeBehavior,
+        anchorBehavior: widget.anchorBehavior,
+      ),
+      useDefaultContainer: false,
+    );
+
+    // 2. 用这个 registry 构建工厂，并注入 behavior（可选）
+    nodeFactory = NodeWidgetFactoryImpl(
+      registry: registry,
+      nodeBehavior: widget.nodeBehavior,
+      anchorBehavior: widget.anchorBehavior,
+    );
+
+    // 3. 首帧渲染后，切换到对应 workflow 并插入示例数据
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      // 1. 切换到对应 workflow
+      // 切换 workflow
       ref
           .read(multiCanvasStateProvider.notifier)
           .switchWorkflow(widget.workflowId);
 
-      // 2. 插入示例节点 & 边
+      // 插入示例节点 & 边
       _initSampleData();
-
-      // 3. 如果遇到首帧节点位置可能不准的问题，可再加一次刷新：
-      //    WidgetsBinding.instance.addPostFrameCallback((__) {
-      //      setState(() {
-      //        // 触发一次重绘，让新插入的节点位置与画布变换完全同步
-      //      });
-      //    });
     });
   }
 
@@ -83,30 +109,34 @@ class _GraphEditorState extends ConsumerState<GraphEditor> {
     // 1. 创建节点 A
     final nodeA = NodeModel(
       id: nodeAId,
+      type: 'default', // 关键：指定type为"default"
       x: 100,
       y: 100,
-      width: 80,
-      height: 40,
+      width: 100,
+      height: 100,
       title: 'Node A',
       anchors: [
         AnchorModel(
           id: 'out_$nodeAId',
           nodeId: nodeAId,
           position: Position.right,
-          placement: AnchorPlacement.outside,
-          offsetDistance: 10,
-          ratio: 0.5,
-          width: 24,
-          height: 24,
+          placement: AnchorPlacement.border,
+          offsetDistance: 0,
+          ratio: 0.65,
+          width: 12,
+          height: 12,
+          shape: AnchorShape.diamond,
         ),
         AnchorModel(
           id: 'in_$nodeAId',
           nodeId: nodeAId,
           position: Position.left,
-          placement: AnchorPlacement.outside,
-          offsetDistance: 10,
-          width: 24,
-          height: 24,
+          placement: AnchorPlacement.border,
+          offsetDistance: 0,
+          ratio: 0.65,
+          width: 12,
+          height: 12,
+          shape: AnchorShape.square,
         ),
       ],
     );
@@ -114,19 +144,20 @@ class _GraphEditorState extends ConsumerState<GraphEditor> {
     // 2. 创建节点 B
     final nodeB = NodeModel(
       id: nodeBId,
+      type: 'default', // 同样设为"default"
       x: 300,
       y: 120,
-      width: 80,
-      height: 40,
+      width: 100,
+      height: 100,
       title: 'Node B',
       anchors: [
         AnchorModel(
           id: 'in_$nodeBId',
           nodeId: nodeBId,
           position: Position.left,
-          placement: AnchorPlacement.outside,
-          offsetDistance: 10,
-          ratio: 0.5,
+          placement: AnchorPlacement.border,
+          offsetDistance: 0,
+          ratio: 0.65,
           width: 24,
           height: 24,
         ),
@@ -137,11 +168,10 @@ class _GraphEditorState extends ConsumerState<GraphEditor> {
     widget.nodeBehavior.nodeController.upsertNode(nodeA);
     widget.nodeBehavior.nodeController.upsertNode(nodeB);
 
-    // 4. 若存在 edgeController，则创建一条边 AB
+    // 4. 创建一条边 A->B
     const edgeId = 'edgeAB';
     const edge = EdgeModel(
       id: edgeId,
-      // 注意 EdgeModel 构造器字段是 sourceNodeId / sourceAnchorId / targetNodeId / targetAnchorId
       sourceNodeId: nodeAId,
       sourceAnchorId: 'out_$nodeAId',
       targetNodeId: nodeBId,
@@ -160,31 +190,37 @@ class _GraphEditorState extends ConsumerState<GraphEditor> {
       appBar: AppBar(
         title: Text('GraphEditor (workflow = ${widget.workflowId})'),
         actions: [
+          // 你之前注释掉的按钮 (Fit Screen 等)，保持原样
           // IconButton(
           //   onPressed: () => widget.canvasBehavior.resetCanvas(),
           //   icon: const Icon(Icons.fit_screen),
           // ),
         ],
       ),
-      // 在这里使用 CanvasGestureHandler + CanvasController 组合
-      body: CanvasGestureHandler(
-        behavior: widget.canvasBehavior,
-        child: CanvasWidget(
-          workflowId: widget.workflowId,
-          visualConfig: widget.visualConfig,
-          canvasGlobalKey: GraphEditor.canvasStackKey,
-          offset: canvasState.offset,
-          scale: canvasState.scale,
-          nodeBehavior: widget.nodeBehavior,
-          edgeBehavior: widget.edgeBehavior,
-          anchorBehavior: widget.anchorBehavior,
+      // 保持之前的手势处理 & CanvasWidget
+      body: CanvasMouseHandler(
+        child: CanvasGestureHandler(
+          behavior: widget.canvasBehavior,
+          child: CanvasWidget(
+            workflowId: widget.workflowId,
+            visualConfig: widget.visualConfig,
+            canvasGlobalKey: GraphEditor.canvasStackKey,
+            offset: canvasState.offset,
+            scale: canvasState.scale,
+            nodeBehavior: widget.nodeBehavior,
+            edgeBehavior: widget.edgeBehavior,
+            anchorBehavior: widget.anchorBehavior,
+
+            // 重点：把我们在 initState 里构造的 factory 传给 CanvasWidget
+            nodeWidgetFactory: nodeFactory,
+          ),
         ),
       ),
       floatingActionButton: _buildFloatingActions(),
     );
   }
 
-  /// 示例：一些简单的 FAB 按钮操作
+  /// 保留你之前的一些简单FAB操作
   Widget _buildFloatingActions() {
     final multiCanvasNotifier = ref.read(multiCanvasStateProvider.notifier);
 
@@ -231,36 +267,39 @@ class _GraphEditorState extends ConsumerState<GraphEditor> {
     );
   }
 
-  /// 动态添加一个示例节点
+  /// 动态添加一个节点
   void _addNodeExample() {
     final newId = 'new_${DateTime.now().millisecondsSinceEpoch}';
     final node = NodeModel(
       id: newId,
+      type: 'default', // 同样指定为"default"
       x: 200,
       y: 200,
-      width: 80,
-      height: 40,
+      width: 100,
+      height: 100,
       title: newId,
       anchors: [
         AnchorModel(
           id: 'out_$newId',
           nodeId: newId,
           position: Position.right,
-          placement: AnchorPlacement.outside,
-          offsetDistance: 10,
-          ratio: 0.5,
+          placement: AnchorPlacement.border,
+          offsetDistance: 0,
+          ratio: 0.65,
           width: 24,
           height: 24,
+          shape: AnchorShape.diamond,
         ),
         AnchorModel(
           id: 'in_$newId',
           nodeId: newId,
           position: Position.left,
-          placement: AnchorPlacement.outside,
-          offsetDistance: 10,
-          ratio: 0.5,
+          placement: AnchorPlacement.border,
+          offsetDistance: 0,
+          ratio: 0.65,
           width: 24,
           height: 24,
+          shape: AnchorShape.square,
         ),
       ],
     );

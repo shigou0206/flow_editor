@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-/// 用于描述头部按钮的通用数据结构
 class NodeHeaderButton {
   final IconData icon;
   final VoidCallback onTap;
@@ -13,27 +12,43 @@ class NodeHeaderButton {
   });
 }
 
-/// 头部组件：根据“按钮列表”动态生成
 class NodeHeader extends StatelessWidget {
   final List<NodeHeaderButton> buttons;
+  final double width;
+  final double height;
 
-  const NodeHeader({super.key, required this.buttons});
+  const NodeHeader({
+    super.key,
+    required this.buttons,
+    required this.width,
+    this.height = 24, // ✅ 默认高度小一点
+  });
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-      children: buttons.map((btn) {
-        return IconButton(
-          icon: Icon(btn.icon),
-          tooltip: btn.tooltip,
-          onPressed: btn.onTap,
-          style: ButtonStyle(
-            overlayColor: WidgetStateProperty.all(Colors.transparent),
-          ),
-        );
-      }).toList(),
+    return Container(
+      width: width,
+      height: height,
+      padding: const EdgeInsets.symmetric(horizontal: 4),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: buttons.map((btn) {
+          return Expanded(
+            child: Tooltip(
+              message: btn.tooltip,
+              child: InkWell(
+                onTap: btn.onTap,
+                child: Center(
+                  child: Icon(
+                    btn.icon,
+                    size: height * 0.6, // ✅ 图标大小相对 header 高度自适应
+                  ),
+                ),
+              ),
+            ),
+          );
+        }).toList(),
+      ),
     );
   }
 }

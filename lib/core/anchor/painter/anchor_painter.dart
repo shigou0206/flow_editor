@@ -2,14 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flow_editor/core/anchor/models/anchor_model.dart';
 import 'package:flow_editor/core/anchor/models/anchor_enums.dart';
 
-/// 用于绘制 Anchor 的 CustomPainter
-/// 根据 anchor.shape / locked / hover 等状态绘制不同外观
-/// 你可在外部传递 isHover / isSelected，或存储在 anchor.data 里
-/// 这里只示例最基本的绘制
 class AnchorPainter extends CustomPainter {
   final AnchorModel anchor;
-  final bool isHover; // 可选: 用于悬停高亮
-  final bool isSelected; // 可选: 用于选中时的高亮
+  final bool isHover;
+  final bool isSelected;
 
   AnchorPainter({
     required this.anchor,
@@ -19,34 +15,37 @@ class AnchorPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    // 1) 确定锚点中心点(这里以整个widget的中心为锚点)
     final center = Offset(size.width / 2, size.height / 2);
-
-    // 2) 大小(半径/边长)
-    // 根据 anchor.data 或 shape 设定，暂时用固定大小
     const double radius = 8;
 
-    // 3) 颜色(如果 locked => 灰色，否则 from anchor.plusButtonColorHex / default)
-    Color color;
-    if (anchor.locked) {
-      color = Colors.grey;
-    } else {
-      color = _parseColorHex(anchor.plusButtonColorHex) ?? Colors.blue;
-    }
+    // 动态颜色计算
+    final baseColor =
+        _parseColorHex(anchor.plusButtonColorHex) ?? const Color(0xFF252525);
+    final fillColor = anchor.locked
+        ? Colors.grey
+        : baseColor.withOpacity(isHover || isSelected ? 0.9 : 0.7);
 
-    // 如果 hover/selected => 稍微加重
-    if (isSelected || isHover) {
-      color = color.withOpacity(0.8);
-    }
+    final borderColor = isSelected
+        ? Colors.blueAccent
+        : isHover
+            ? Colors.orange
+            : Colors.black12;
 
-    final paint = Paint()
-      ..color = color
+    final borderWidth = isSelected ? 2.5 : 1.0;
+
+    final fillPaint = Paint()
+      ..color = fillColor
       ..style = PaintingStyle.fill;
 
-    // 4) 根据 shape 画不同图形
+    final borderPaint = Paint()
+      ..color = borderColor
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = borderWidth;
+
     switch (anchor.shape) {
       case AnchorShape.circle:
-        canvas.drawCircle(center, radius, paint);
+        canvas.drawCircle(center, radius, fillPaint);
+        canvas.drawCircle(center, radius, borderPaint);
         break;
       case AnchorShape.square:
         final rect = Rect.fromCenter(
@@ -54,45 +53,54 @@ class AnchorPainter extends CustomPainter {
           width: radius * 2,
           height: radius * 2,
         );
-        canvas.drawRect(rect, paint);
+        canvas.drawRect(rect, fillPaint);
+        canvas.drawRect(rect, borderPaint);
         break;
       case AnchorShape.diamond:
-        final path = Path();
-        path.moveTo(center.dx, center.dy - radius); // top
-        path.lineTo(center.dx + radius, center.dy); // right
-        path.lineTo(center.dx, center.dy + radius); // bottom
-        path.lineTo(center.dx - radius, center.dy); // left
-        path.close();
-        canvas.drawPath(path, paint);
+        final path = Path()
+          ..moveTo(center.dx, center.dy - radius)
+          ..lineTo(center.dx + radius, center.dy)
+          ..lineTo(center.dx, center.dy + radius)
+          ..lineTo(center.dx - radius, center.dy)
+          ..close();
+        canvas.drawPath(path, fillPaint);
+        canvas.drawPath(path, borderPaint);
         break;
       case AnchorShape.custom:
-        // 这里可从 anchor.data 里获取自定义路径或 svg
-        // 简单示例 => 画三角
-        final path2 = Path();
-        path2.moveTo(center.dx, center.dy - radius);
-        path2.lineTo(center.dx + radius, center.dy + radius);
-        path2.lineTo(center.dx - radius, center.dy + radius);
-        path2.close();
-        canvas.drawPath(path2, paint);
+        final path2 = Path()
+          ..moveTo(center.dx, center.dy - radius)
+          ..lineTo(center.dx + radius, center.dy + radius)
+          ..lineTo(center.dx - radius, center.dy + radius)
+          ..close();
+        canvas.drawPath(path2, fillPaint);
+        canvas.drawPath(path2, borderPaint);
         break;
     }
 
-    // 5) 若 anchor.plusButtonSize != null => 也可在内部加一个 + 号
-    // ... 视需求自由发挥
+    // 发光效果（可选）
+    if (isHover || isSelected) {
+      final glowPaint = Paint()
+        ..color = borderColor.withOpacity(0.3)
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = 6.0
+        ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 4.0);
+
+      canvas.drawCircle(center, radius + 2, glowPaint);
+    }
   }
 
   @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) {
-    return true; // 简单处理
+  bool shouldRepaint(covariant AnchorPainter oldDelegate) {
+    return anchor != oldDelegate.anchor ||
+        isHover != oldDelegate.isHover ||
+        isSelected != oldDelegate.isSelected;
   }
 }
 
 Color? _parseColorHex(String? hexStr) {
   if (hexStr == null || hexStr.isEmpty) return null;
   var hex = hexStr.replaceAll('#', '');
-  if (hex.length == 6) {
-    hex = 'FF$hex';
-  }
+  if (hex.length == 6) hex = 'FF$hex';
   if (hex.length == 8) {
     final val = int.parse(hex, radix: 16);
     return Color(val);

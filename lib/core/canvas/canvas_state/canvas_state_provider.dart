@@ -10,6 +10,9 @@ import 'package:flow_editor/core/edge/models/edge_model.dart';
 import 'package:flow_editor/core/edge/edge_state/edge_state_provider.dart';
 import 'package:flow_editor/core/anchor/models/anchor_model.dart';
 import 'package:flow_editor/core/anchor/utils/anchor_position_utils.dart';
+import 'package:flow_editor/core/edge/utils/hit_test_utils.dart';
+import 'package:flow_editor/core/edge/style/edge_style_resolver.dart';
+import 'package:flow_editor/core/types/position_enum.dart';
 
 /// 提供: 多工作流的画布状态（简化版：无模式切换，但支持节点拖拽、画布平移、以及从 anchor 拖出幽灵边）
 /// 拖动过程中不进行自动吸附，仅在拖拽结束时检测目标 anchor 并 finalize。
@@ -29,6 +32,12 @@ class MultiCanvasStateNotifier extends StateNotifier<MultiWorkflowCanvasState> {
   bool _isCreatingEdge = false;
   String? _creatingEdgeId; // 临时边的 ID
   Offset? _edgeDragCurrentCanvas; // 当前ghost edge拖拽时的画布坐标
+
+  // 用于存储当前悬停的边ID
+  String? _hoveredEdgeId;
+
+  // 获取当前悬停的边ID
+  String? get hoveredEdgeId => _hoveredEdgeId;
 
   MultiCanvasStateNotifier(
     this._ref, {
@@ -272,6 +281,70 @@ class MultiCanvasStateNotifier extends StateNotifier<MultiWorkflowCanvasState> {
     return null;
   }
 
+  /// 检测点是否接近某条 Edge（用于 Hover）
+  void _checkEdgeHit(Offset pointer) {
+    String? hoveredEdgeId;
+    double minDist = double.infinity;
+
+    // 获取当前工作流的边
+    final wfId = state.activeWorkflowId;
+    final edges =
+        _ref.read(edgeStateProvider(wfId)).edgesOf(wfId).values.toList();
+    final styleResolver = EdgeStyleResolver();
+
+    for (final edge in edges) {
+      // 跳过未完全连接的边
+      if (edge.targetNodeId == null || edge.targetAnchorId == null) continue;
+
+      final (srcWorld, srcPos) =
+          _getAnchorWorldInfo(edge.sourceNodeId, edge.sourceAnchorId);
+      final (tarWorld, tarPos) =
+          _getAnchorWorldInfo(edge.targetNodeId!, edge.targetAnchorId!);
+      if (srcWorld == null || tarWorld == null) continue;
+
+      final path = styleResolver.resolvePath(
+        edge.lineStyle.edgeMode,
+        srcWorld,
+        srcPos,
+        tarWorld,
+        tarPos,
+      );
+
+      // 2) 计算距离
+      final dist = distanceToPath(path, pointer);
+      if (dist < minDist) {
+        minDist = dist;
+        hoveredEdgeId = edge.id;
+      }
+    }
+
+    if (minDist < 6.0) {
+      // 命中了 hoveredEdgeId
+      _hoveredEdgeId = hoveredEdgeId;
+      state = state.copyWith(hoveredEdgeId: hoveredEdgeId);
+    } else {
+      _hoveredEdgeId = null;
+      state = state.copyWith(hoveredEdgeId: null);
+    }
+  }
+
+  //================== 新增: onHover 方法 (鼠标移动时调用) ==================//
+  /// 当鼠标在画布上移动时，可调用此方法进行 edge hover 检测
+  /// （如果正在拖拽节点/边，则不会检测）
+  void onHover(BuildContext context, Offset globalPos) {
+    if (_isDraggingNode || _isCreatingEdge) {
+      // 若正在拖拽，不做 Hover 检测
+      return;
+    }
+    // 转换到画布坐标
+    final pointerCanvasPos =
+        _globalToCanvas(context, globalPos, state.activeState);
+
+    // 调用我们已有的检测方法
+    _checkEdgeHit(pointerCanvasPos);
+  }
+  //=======================================================================
+
   //================== 工具方法 ==================//
 
   Offset _globalToCanvas(
@@ -360,5 +433,28 @@ class MultiCanvasStateNotifier extends StateNotifier<MultiWorkflowCanvasState> {
   void resetCanvas() {
     _updateActiveCanvas(
         (canvas) => CanvasState(interactionConfig: canvas.interactionConfig));
+  }
+
+  (Offset?, Position?) _getAnchorWorldInfo(String nodeId, String anchorId) {
+    final wfId = state.activeWorkflowId;
+    final nodeSt = _ref.read(nodeStateProvider(wfId));
+    final node = nodeSt.nodesOf(wfId)[nodeId];
+    AnchorModel? anchor;
+    try {
+      anchor = node?.anchors.firstWhere((a) => a.id == anchorId);
+    } catch (_) {
+      anchor = null;
+    }
+    if (node == null || anchor == null) return (null, null);
+
+    final worldPos = computeAnchorWorldPosition(node, anchor) +
+        Offset(anchor.width / 2, anchor.height / 2);
+    return (worldPos, anchor.position);
+  }
+
+  void setState(void Function() fn) {
+    fn();
+    // 通知状态更新
+    state = state.copyWith();
   }
 }

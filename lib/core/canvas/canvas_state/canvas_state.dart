@@ -109,24 +109,27 @@ class CanvasState {
 
 /// 支持多workflow的状态管理
 class MultiWorkflowCanvasState {
-  final Map<String, CanvasState> workflows;
   final String activeWorkflowId;
+  final Map<String, CanvasState> workflows;
+  final String? hoveredEdgeId;
 
   const MultiWorkflowCanvasState({
     required this.activeWorkflowId,
-    this.workflows = const {},
+    required this.workflows,
+    this.hoveredEdgeId,
   });
 
-  CanvasState get activeState =>
-      workflows[activeWorkflowId] ?? const CanvasState();
+  CanvasState get activeState => workflows[activeWorkflowId]!;
 
   MultiWorkflowCanvasState copyWith({
-    Map<String, CanvasState>? workflows,
     String? activeWorkflowId,
+    Map<String, CanvasState>? workflows,
+    String? hoveredEdgeId,
   }) {
     return MultiWorkflowCanvasState(
-      workflows: workflows ?? this.workflows,
       activeWorkflowId: activeWorkflowId ?? this.activeWorkflowId,
+      workflows: workflows ?? this.workflows,
+      hoveredEdgeId: hoveredEdgeId ?? this.hoveredEdgeId,
     );
   }
 
@@ -144,6 +147,7 @@ class MultiWorkflowCanvasState {
     return MultiWorkflowCanvasState(
       activeWorkflowId: json['activeWorkflowId'] as String,
       workflows: workflows,
+      hoveredEdgeId: json['hoveredEdgeId'] as String?,
     );
   }
 }

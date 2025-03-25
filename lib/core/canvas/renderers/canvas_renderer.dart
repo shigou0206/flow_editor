@@ -7,12 +7,12 @@ import 'package:flow_editor/core/canvas/behaviors/canvas_behavior.dart';
 import 'package:flow_editor/core/edge/behaviors/edge_behavior.dart';
 import 'package:flow_editor/core/anchor/utils/anchor_position_utils.dart';
 import 'package:flow_editor/core/node/node_state/node_state.dart';
+import 'package:flow_editor/core/node/factories/node_widget_factory.dart';
 import 'package:flow_editor/core/edge/edge_state/edge_state.dart';
 import 'package:flow_editor/core/edge/widgets/edge_button_overlay.dart';
 import 'package:flow_editor/core/canvas/models/canvas_visual_config.dart';
 import 'package:flow_editor/core/canvas/renderers/background_renderer.dart';
-import 'package:flow_editor/core/edge/edge_renderer.dart';
-import 'package:flow_editor/core/node/widgets/commons/node_widget.dart';
+import 'package:flow_editor/core/edge/painter/edge_renderer.dart';
 import 'package:flow_editor/core/edge/utils/edge_utils.dart';
 import 'package:flow_editor/core/edge/models/edge_model.dart';
 import 'package:flow_editor/core/types/position_enum.dart';
@@ -24,6 +24,8 @@ class CanvasRenderer extends StatelessWidget {
   final Offset offset; // 画布平移量
   final double scale; // 画布缩放因子
 
+  final NodeWidgetFactory nodeWidgetFactory;
+
   final NodeState nodeState;
   final EdgeState edgeState;
   final CanvasVisualConfig visualConfig;
@@ -33,10 +35,13 @@ class CanvasRenderer extends StatelessWidget {
   final EdgeBehavior? edgeBehavior;
   final CanvasBehavior? canvasBehavior;
 
+  final String? hoveredEdgeId;
+
   const CanvasRenderer({
     super.key,
     required this.offset,
     required this.scale,
+    required this.nodeWidgetFactory,
     required this.nodeState,
     required this.edgeState,
     required this.visualConfig,
@@ -44,6 +49,7 @@ class CanvasRenderer extends StatelessWidget {
     this.anchorBehavior,
     this.edgeBehavior,
     this.canvasBehavior,
+    this.hoveredEdgeId,
   });
 
   @override
@@ -94,6 +100,7 @@ class CanvasRenderer extends StatelessWidget {
                 edges: edgeList,
                 draggingEdgeId: draggingEdgeId,
                 draggingEnd: draggingEnd,
+                hoveredEdgeId: hoveredEdgeId,
               ),
             ),
           ),
@@ -118,29 +125,7 @@ class CanvasRenderer extends StatelessWidget {
             child: Transform.scale(
               scale: scale,
               alignment: Alignment.topLeft,
-              child: NodeWidget(
-                node: node,
-                behavior: nodeBehavior,
-                anchorBehavior: anchorBehavior,
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(6),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.1),
-                        blurRadius: 4,
-                        offset: const Offset(2, 2),
-                      ),
-                    ],
-                  ),
-                  alignment: Alignment.center,
-                  child: Text(
-                    node.title,
-                    style: const TextStyle(fontSize: 14, color: Colors.black87),
-                  ),
-                ),
-              ),
+              child: nodeWidgetFactory.createNodeWidget(node),
             ),
           ),
         ],

@@ -24,15 +24,16 @@ class NodeBlock extends StatefulWidget {
   final NodeBehavior? behavior;
 
   const NodeBlock({
-    Key? key,
+    super.key,
     required this.node,
     this.header,
     required this.body,
     this.footer,
     this.behavior,
-  }) : super(key: key);
+  });
 
   @override
+  // ignore: library_private_types_in_public_api
   _NodeBlockState createState() => _NodeBlockState();
 }
 
@@ -97,10 +98,12 @@ class _NodeBlockState extends State<NodeBlock> {
                 clipBehavior: Clip.none,
                 children: [
                   // 在下层放三段式布局：header / body / footer
-                  Container(
+                  SizedBox(
                     width: w,
                     height: h,
                     child: ThreePartsLayout(
+                      headerHeight: 30.0,
+                      footerHeight: 10.0,
                       header: widget.header,
                       body: widget.body,
                       footer: widget.footer,

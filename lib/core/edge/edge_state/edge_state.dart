@@ -50,6 +50,7 @@ class EdgeState extends Equatable {
     Set<String>? selectedEdgeIds,
     String? draggingEdgeId,
     Offset? draggingEnd,
+    String? hoveredEdgeId,
   }) {
     return EdgeState(
       edgesByWorkflow: edgesByWorkflow ?? this.edgesByWorkflow,

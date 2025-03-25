@@ -39,7 +39,11 @@ class _CanvasMouseHandlerState extends ConsumerState<CanvasMouseHandler> {
       },
       child: MouseRegion(
         onEnter: (enterEvent) {},
-        onHover: (hoverEvent) {},
+        onHover: (hoverEvent) {
+          ref
+              .read(multiCanvasStateProvider.notifier)
+              .onHover(context, hoverEvent.position);
+        },
         onExit: (exitEvent) {},
         child: widget.child,
       ),

@@ -22,7 +22,7 @@ class EdgeLineStyle extends Equatable {
   final double arrowAngleDeg;
 
   const EdgeLineStyle({
-    this.edgeMode = EdgeMode.hvBezier, // 默认直线 or 你喜欢 => EdgeMode.bezier
+    this.edgeMode = EdgeMode.hvBezier,
     this.colorHex = '#000000',
     this.strokeWidth = 1.0,
     this.dashPattern = const [],

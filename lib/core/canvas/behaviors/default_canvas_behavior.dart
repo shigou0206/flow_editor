@@ -1,9 +1,6 @@
-import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flow_editor/core/canvas/behaviors/canvas_behavior.dart';
 import 'package:flow_editor/core/canvas/controllers/canvas_controller_interface.dart';
-import 'package:flow_editor/core/node/models/node_model.dart';
-import 'package:flow_editor/core/edge/models/edge_model.dart';
 
 /// DefaultCanvasBehavior：同时处理画布 / 节点 / 边 逻辑，
 /// 全部转发给 [ICanvasController].

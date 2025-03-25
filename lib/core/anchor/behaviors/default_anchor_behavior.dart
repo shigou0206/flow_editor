@@ -17,6 +17,7 @@ class DefaultAnchorBehavior implements AnchorBehavior {
   final IEdgeController edgeController;
 
   /// 用于“节点/锚点 数据读取” (如 findAnchorNear)
+  @override
   final INodeController nodeController;
 
   /// 可选，如果 Edge/NodeController 已经有 workflowId，就不一定要放这里
