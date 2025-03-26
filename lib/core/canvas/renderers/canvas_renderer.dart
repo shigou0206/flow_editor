@@ -63,105 +63,104 @@ class CanvasRenderer extends StatelessWidget {
     final draggingEdgeId = edgeState.draggingEdgeId;
     final draggingEnd = edgeState.draggingEnd;
 
-    // 构建边上按钮层：遍历每条已连接边，计算中点并生成删除按钮 Overlay
+    // 优化：先过滤数据完整的边（实际场景中边数据更新频繁）
+    final validEdges = edgeList
+        .where((edge) =>
+            edge.isConnected &&
+            edge.sourceNodeId.isNotEmpty &&
+            edge.sourceAnchorId.isNotEmpty &&
+            edge.targetNodeId != null &&
+            edge.targetAnchorId != null)
+        .toList();
+
+    // 构建边上按钮层
     final List<Widget> edgeOverlays = [];
-    for (final edge in edgeList) {
-      if (edge.isConnected &&
-          edge.targetNodeId != null &&
-          edge.targetAnchorId != null) {
-        edgeOverlays.addAll(_buildEdgeOverlay(edge));
-      }
+    for (final edge in validEdges) {
+      edgeOverlays.addAll(_buildEdgeOverlay(edge));
     }
 
     return Stack(
       clipBehavior: Clip.none,
       children: [
-        // 1) 背景绘制（网格）
-        Positioned.fill(
-          child: CustomPaint(
-            painter: BackgroundRenderer(
-              config: visualConfig,
-              offset: offset,
-              scale: scale,
-            ),
-          ),
-        ),
-
-        // 2) 边绘制：使用 Transform 包裹（逻辑坐标转换）
+        // 整个画布在 Transform 下，包括背景、边、节点、以及 overlay
         Positioned.fill(
           child: Transform(
             transform: Matrix4.identity()
               ..translate(offset.dx, offset.dy)
               ..scale(scale),
             alignment: Alignment.topLeft,
-            child: CustomPaint(
-              painter: EdgeRenderer(
-                nodes: nodeList,
-                edges: edgeList,
-                draggingEdgeId: draggingEdgeId,
-                draggingEnd: draggingEnd,
-                hoveredEdgeId: hoveredEdgeId,
-              ),
+            child: Stack(
+              clipBehavior: Clip.none,
+              children: [
+                // 背景 (基于逻辑坐标)
+                Positioned.fill(
+                  child: CustomPaint(
+                    painter: BackgroundRenderer(
+                      config: visualConfig,
+                      offset: Offset.zero,
+                      scale: 1.0,
+                    ),
+                  ),
+                ),
+
+                // Edge (基于逻辑坐标)
+                Positioned.fill(
+                  child: CustomPaint(
+                    painter: EdgeRenderer(
+                      nodes: nodeList,
+                      edges: edgeList,
+                      draggingEdgeId: draggingEdgeId,
+                      draggingEnd: draggingEnd,
+                      hoveredEdgeId: hoveredEdgeId,
+                    ),
+                  ),
+                ),
+
+                // Node
+                for (final node in nodeList) ...[
+                  // 节点位置由 node.x,y 定位，依赖 Transform 转换
+                  Positioned(
+                    left: node.x - node.anchorPadding.left,
+                    top: node.y - node.anchorPadding.top,
+                    width: node.width +
+                        node.anchorPadding.left +
+                        node.anchorPadding.right,
+                    height: node.height +
+                        node.anchorPadding.top +
+                        node.anchorPadding.bottom,
+                    child: nodeWidgetFactory.createNodeWidget(node),
+                  ),
+                ],
+
+                // Edge Overlay：按钮同样按逻辑坐标定位，由 Transform 统一转换
+                ...edgeOverlays,
+              ],
             ),
           ),
         ),
-
-        // 4) 边交互层：在边上叠加删除按钮（EdgeButtonOverlay）
-        ...edgeOverlays,
-
-        // 3) 节点绘制
-        for (final node in nodeList) ...[
-          Positioned(
-            left: offset.dx + (node.x - node.anchorPadding.left) * scale,
-            top: offset.dy + (node.y - node.anchorPadding.top) * scale,
-            width: (node.width +
-                    node.anchorPadding.left +
-                    node.anchorPadding.right) *
-                scale,
-            height: (node.height +
-                    node.anchorPadding.top +
-                    node.anchorPadding.bottom) *
-                scale,
-            child: Transform.scale(
-              scale: scale,
-              alignment: Alignment.topLeft,
-              child: nodeWidgetFactory.createNodeWidget(node),
-            ),
-          ),
-        ],
       ],
     );
   }
 
   /// 根据一条边计算其中点，并返回对应的删除按钮 Overlay 组件列表
   List<Widget> _buildEdgeOverlay(EdgeModel edge) {
-    // 获取源与目标的世界坐标及方向（已由 _getAnchorWorldInfo 实现）
     final (sourceWorld, sourcePos) =
         _getAnchorWorldInfo(edge.sourceNodeId, edge.sourceAnchorId);
     final (targetWorld, targetPos) =
         _getAnchorWorldInfo(edge.targetNodeId!, edge.targetAnchorId!);
-    if (sourceWorld == null || targetWorld == null) return [];
 
-    // 将世界坐标转换为屏幕坐标：屏幕坐标 = offset + (world * scale)
-    final sourceScreen = Offset(
-      offset.dx + sourceWorld.dx * scale,
-      offset.dy + sourceWorld.dy * scale,
-    );
-    final targetScreen = Offset(
-      offset.dx + targetWorld.dx * scale,
-      offset.dy + targetWorld.dy * scale,
-    );
-    // 必须有方向信息
+    // 数据不完整则跳过
+    if (sourceWorld == null || targetWorld == null) return [];
     if (sourcePos == null || targetPos == null) return [];
 
-    // 计算边中点：调用工具函数 buildEdgePathAndCenter
+    // 使用逻辑坐标构建路径和中心点
     final result = buildEdgePathAndCenter(
       mode: edge.lineStyle.edgeMode,
-      sourceX: sourceScreen.dx,
-      sourceY: sourceScreen.dy,
+      sourceX: sourceWorld.dx,
+      sourceY: sourceWorld.dy,
       sourcePos: sourcePos,
-      targetX: targetScreen.dx,
-      targetY: targetScreen.dy,
+      targetX: targetWorld.dx,
+      targetY: targetWorld.dy,
       targetPos: targetPos,
       curvature: 0.25,
       hvOffset: 50.0,
@@ -169,30 +168,45 @@ class CanvasRenderer extends StatelessWidget {
     );
     final center = result.center;
 
+    // 调试：打印中心点（生产环境可移除）
+    // print('[Overlay] edge ${edge.id} center = $center');
+
+    // 检查中心点是否有效：如果是 NaN、Offset.zero 或者极小值，则跳过 overlay
+    if (center.dx.isNaN ||
+        center.dy.isNaN ||
+        (center.dx == 0 && center.dy == 0)) {
+      return [];
+    }
+
+    const size = 24.0;
     return [
-      EdgeButtonOverlay(
-        edgeCenter: center,
-        onDeleteEdge: () {
-          // 点击按钮时调用父组件的 onEdgeDelete, 删除该边
-          if (edgeBehavior != null) {
-            edgeBehavior!.onEdgeDelete(edge);
-          }
-        },
-        size: 24.0,
+      Positioned(
+        left: center.dx - size / 2,
+        top: center.dy - size / 2,
+        width: size,
+        height: size,
+        child: EdgeButtonOverlay(
+          edgeCenter: const Offset(size / 2, size / 2), // 按钮内部居中
+          onDeleteEdge: () {
+            edgeBehavior?.onEdgeDelete(edge);
+          },
+          size: size,
+        ),
       ),
     ];
   }
 
-  /// 该函数返回一个 Tuple：(Offset?, Position?)
   /// 计算给定节点 anchor 在世界坐标中的位置及其方向
+  /// 返回 Tuple: (Offset?, Position?)
   (Offset?, Position?) _getAnchorWorldInfo(String nodeId, String anchorId) {
-    // 此处假设 nodeState 中存有完整节点数据
+    // 从 nodeState 中查找节点和对应的 anchor
     final node = nodeState.nodesByWorkflow.values
         .expand((m) => m.values)
         .firstWhereOrNull((n) => n.id == nodeId);
     final anchor = node?.anchors.firstWhereOrNull((a) => a.id == anchorId);
     if (node == null || anchor == null) return (null, null);
 
+    // 计算世界坐标：使用节点数据和 anchor 的位置、尺寸计算
     final worldPos = computeAnchorWorldPosition(node, anchor) +
         Offset(anchor.width / 2, anchor.height / 2);
     return (worldPos, anchor.position);
