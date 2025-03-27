@@ -57,8 +57,6 @@ class CanvasWidget extends ConsumerWidget {
 
     return SizedBox(
       key: canvasGlobalKey,
-      width: MediaQuery.of(context).size.width,
-      height: MediaQuery.of(context).size.height,
       child: CanvasRenderer(
         offset: offset,
         scale: scale,

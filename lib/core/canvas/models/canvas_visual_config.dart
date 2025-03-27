@@ -13,8 +13,8 @@ class CanvasVisualConfig {
     this.showGrid = false,
     this.gridColor = const Color(0xffe0e0e0),
     this.gridSpacing = 20.0,
-    this.width = 1000,
-    this.height = 1000,
+    this.width = 1e6,
+    this.height = 1e6,
   });
 
   /// 不可变更新
