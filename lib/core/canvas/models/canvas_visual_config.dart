@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flow_editor/core/canvas/models/canvas_enum.dart';
 
 class CanvasVisualConfig {
   final Color backgroundColor;
@@ -7,6 +8,7 @@ class CanvasVisualConfig {
   final double gridSpacing;
   final double width;
   final double height;
+  final BackgroundStyle backgroundStyle;
 
   const CanvasVisualConfig({
     this.backgroundColor = Colors.white,
@@ -15,6 +17,7 @@ class CanvasVisualConfig {
     this.gridSpacing = 20.0,
     this.width = 1e6,
     this.height = 1e6,
+    this.backgroundStyle = BackgroundStyle.dots,
   });
 
   /// 不可变更新
@@ -25,6 +28,7 @@ class CanvasVisualConfig {
     Color? gridColor,
     double? width,
     double? height,
+    BackgroundStyle? backgroundStyle,
   }) {
     return CanvasVisualConfig(
       showGrid: showGrid ?? this.showGrid,
@@ -33,6 +37,7 @@ class CanvasVisualConfig {
       gridColor: gridColor ?? this.gridColor,
       width: width ?? this.width,
       height: height ?? this.height,
+      backgroundStyle: backgroundStyle ?? this.backgroundStyle,
     );
   }
 
@@ -45,6 +50,7 @@ class CanvasVisualConfig {
         'gridColor': '#${gridColor.value.toRadixString(16).padLeft(8, '0')}',
         'width': width,
         'height': height,
+        'backgroundStyle': backgroundStyle.name,
       };
 
   factory CanvasVisualConfig.fromJson(Map<String, dynamic> json) {
@@ -55,6 +61,7 @@ class CanvasVisualConfig {
       gridColor: _parseColor(json['gridColor'], const Color(0xffe0e0e0)),
       width: (json['width'] as num?)?.toDouble() ?? 1000,
       height: (json['height'] as num?)?.toDouble() ?? 1000,
+      backgroundStyle: BackgroundStyle.values.byName(json['backgroundStyle']),
     );
   }
 }

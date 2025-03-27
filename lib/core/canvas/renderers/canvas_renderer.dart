@@ -9,7 +9,7 @@ import 'package:flow_editor/core/node/factories/node_widget_factory.dart';
 import 'package:flow_editor/core/edge/edge_state/edge_state.dart';
 import 'package:flow_editor/core/edge/widgets/edge_button_overlay.dart';
 import 'package:flow_editor/core/canvas/models/canvas_visual_config.dart';
-import 'package:flow_editor/core/canvas/renderers/background_renderer.dart';
+import 'package:flow_editor/core/canvas/renderers/dotted_grid_painter.dart';
 import 'package:flow_editor/core/edge/painter/edge_renderer.dart';
 import 'package:flow_editor/core/edge/utils/edge_utils.dart';
 import 'package:flow_editor/core/edge/models/edge_model.dart';
@@ -81,12 +81,26 @@ class CanvasRenderer extends StatelessWidget {
             clipBehavior: Clip.none, // 不裁剪
             children: [
               // ======= 1) 背景层 =======
+
+              // Positioned.fill(
+              //   child: CustomPaint(
+              //     painter: BackgroundRenderer(
+              //       config: visualConfig,
+              //       offset: offset,
+              //       scale: scale,
+              //     ),
+              //   ),
+              // ),
               Positioned.fill(
                 child: CustomPaint(
-                  painter: BackgroundRenderer(
+                  painter: DottedGridPainter(
                     config: visualConfig,
                     offset: offset,
                     scale: scale,
+                    style: visualConfig.backgroundStyle,
+                    themeMode: Theme.of(context).brightness == Brightness.dark
+                        ? ThemeMode.dark
+                        : ThemeMode.light,
                   ),
                 ),
               ),
@@ -97,7 +111,6 @@ class CanvasRenderer extends StatelessWidget {
                   ..translate(offset.dx, offset.dy)
                   ..scale(scale),
                 alignment: Alignment.topLeft,
-                transformHitTests: false,
                 child: Positioned.fill(
                   child: CustomPaint(
                     painter: EdgeRenderer(
@@ -111,32 +124,43 @@ class CanvasRenderer extends StatelessWidget {
                 ),
               ),
 
+              ...nodeList.map((node) {
+                return Positioned(
+                  left: offset.dx + (node.x - node.anchorPadding.left) * scale,
+                  top: offset.dy + (node.y - node.anchorPadding.top) * scale,
+                  child: Transform.scale(
+                    scale: scale,
+                    alignment: Alignment.topLeft,
+                    child: nodeWidgetFactory.createNodeWidget(node),
+                  ),
+                );
+              }),
+
               // ======= 3) 节点（Nodes）层 =======
-              Transform(
-                transform: Matrix4.identity()
-                  ..translate(offset.dx, offset.dy)
-                  ..scale(scale),
-                alignment: Alignment.topLeft,
-                transformHitTests: false,
-                child: Stack(
-                  clipBehavior: Clip.none,
-                  children: [
-                    for (final node in nodeList) ...[
-                      Positioned(
-                        left: node.x - node.anchorPadding.left,
-                        top: node.y - node.anchorPadding.top,
-                        width: node.width +
-                            node.anchorPadding.left +
-                            node.anchorPadding.right,
-                        height: node.height +
-                            node.anchorPadding.top +
-                            node.anchorPadding.bottom,
-                        child: nodeWidgetFactory.createNodeWidget(node),
-                      ),
-                    ],
-                  ],
-                ),
-              ),
+              // Transform(
+              //   transform: Matrix4.identity()
+              //     ..translate(offset.dx, offset.dy)
+              //     ..scale(scale),
+              //   alignment: Alignment.topLeft,
+              //   child: Stack(
+              //     clipBehavior: Clip.none,
+              //     children: [
+              //       for (final node in nodeList) ...[
+              //         Positioned(
+              //           left: node.x - node.anchorPadding.left,
+              //           top: node.y - node.anchorPadding.top,
+              //           width: node.width +
+              //               node.anchorPadding.left +
+              //               node.anchorPadding.right,
+              //           height: node.height +
+              //               node.anchorPadding.top +
+              //               node.anchorPadding.bottom,
+              //           child: nodeWidgetFactory.createNodeWidget(node),
+              //         ),
+              //       ],
+              //     ],
+              //   ),
+              // ),
 
               // ======= 4) 边上的 Overlay（删除按钮等） =======
               Transform(
@@ -144,7 +168,6 @@ class CanvasRenderer extends StatelessWidget {
                   ..translate(offset.dx, offset.dy)
                   ..scale(scale),
                 alignment: Alignment.topLeft,
-                transformHitTests: false,
                 child: Stack(
                   clipBehavior: Clip.none,
                   children: edgeOverlays,

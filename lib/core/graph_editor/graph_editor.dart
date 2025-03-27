@@ -16,6 +16,7 @@ import 'package:flow_editor/core/canvas/models/canvas_visual_config.dart';
 import 'package:flow_editor/core/canvas/interaction/gesture_event_handler.dart';
 import 'package:flow_editor/core/canvas/interaction/mouse_event_handler.dart';
 import 'package:flow_editor/core/canvas/canvas_state/canvas_state_provider.dart';
+import 'package:flow_editor/core/canvas/canvas_state/canvas_state.dart';
 import 'package:flow_editor/core/canvas/widgets/canvas_widget.dart';
 
 // =========== 新增：导入 NodeWidget / NodeWidgetRegistry / NodeWidgetFactory ===========
@@ -28,6 +29,7 @@ import 'package:flow_editor/core/node/factories/node_widget_factory_impl.dart';
 /// - 保留原有逻辑：插入示例节点、示例边
 /// - 使用 CanvasGestureHandler + CanvasWidget
 /// - 新增 NodeWidgetRegistry + NodeWidgetFactory，用来渲染默认节点
+/// - 在 body 中用固定大小的视口 (SizedBox+ClipRect) 让画布只在该区域显示
 class GraphEditor extends ConsumerStatefulWidget {
   final String workflowId; // 唯一标识某个工作流
 
@@ -72,7 +74,6 @@ class _GraphEditorState extends ConsumerState<GraphEditor> {
     final registry = NodeWidgetRegistry();
     registry.register<NodeModel>(
       type: 'default',
-      // 此处可任意写法，比如把 node.title 作为 body
       builder: (node) => NodeWidget(
         node: node,
         behavior: widget.nodeBehavior,
@@ -189,34 +190,40 @@ class _GraphEditorState extends ConsumerState<GraphEditor> {
     return Scaffold(
       appBar: AppBar(
         title: Text('GraphEditor (workflow = ${widget.workflowId})'),
-        actions: [
-          // 你之前注释掉的按钮 (Fit Screen 等)，保持原样
-          // IconButton(
-          //   onPressed: () => widget.canvasBehavior.resetCanvas(),
-          //   icon: const Icon(Icons.fit_screen),
-          // ),
-        ],
       ),
-      // 保持之前的手势处理 & CanvasWidget
-      body: CanvasMouseHandler(
-        child: CanvasGestureHandler(
-          behavior: widget.canvasBehavior,
-          child: CanvasWidget(
-            workflowId: widget.workflowId,
-            visualConfig: widget.visualConfig,
-            canvasGlobalKey: GraphEditor.canvasStackKey,
-            offset: canvasState.offset,
-            scale: canvasState.scale,
-            nodeBehavior: widget.nodeBehavior,
-            edgeBehavior: widget.edgeBehavior,
-            anchorBehavior: widget.anchorBehavior,
+      body: _buildViewportArea(canvasState),
+      floatingActionButton: _buildFloatingActions(),
+    );
+  }
 
-            // 重点：把我们在 initState 里构造的 factory 传给 CanvasWidget
-            nodeWidgetFactory: nodeFactory,
+  /// 这里在 Scaffold.body 放置一个固定大小的"视口"容器
+  Widget _buildViewportArea(CanvasState canvasState) {
+    return Center(
+      child: Container(
+        width: 800, // 固定宽度
+        height: 600, // 固定高度，形成视口
+        decoration: BoxDecoration(
+          border: Border.all(color: Colors.blueAccent, width: 2),
+        ),
+        child: ClipRect(
+          child: CanvasMouseHandler(
+            child: CanvasGestureHandler(
+              behavior: widget.canvasBehavior,
+              child: CanvasWidget(
+                workflowId: widget.workflowId,
+                visualConfig: widget.visualConfig,
+                canvasGlobalKey: GraphEditor.canvasStackKey,
+                offset: canvasState.offset,
+                scale: canvasState.scale,
+                nodeBehavior: widget.nodeBehavior,
+                edgeBehavior: widget.edgeBehavior,
+                anchorBehavior: widget.anchorBehavior,
+                nodeWidgetFactory: nodeFactory,
+              ),
+            ),
           ),
         ),
       ),
-      floatingActionButton: _buildFloatingActions(),
     );
   }
 
