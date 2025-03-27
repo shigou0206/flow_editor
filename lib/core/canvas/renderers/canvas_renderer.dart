@@ -95,14 +95,13 @@ class CanvasRenderer extends StatelessWidget {
                 ),
               ),
 
-              // ======= 2) 边（Edges）层 =======
+              // // ======= 2) 边（Edges）层 =======
               Transform(
                 transform: Matrix4.identity()
                   ..translate(offset.dx, offset.dy)
                   ..scale(scale),
                 alignment: Alignment.topLeft,
-                child: Positioned.fill(
-                  child: CustomPaint(
+                child: CustomPaint(
                     painter: EdgeRenderer(
                       nodes: nodeList,
                       edges: edgeList,
@@ -112,7 +111,6 @@ class CanvasRenderer extends StatelessWidget {
                     ),
                   ),
                 ),
-              ),
 
               ...nodeList.map((node) {
                 return Positioned(
