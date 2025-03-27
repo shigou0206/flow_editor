@@ -86,7 +86,7 @@ class CanvasRenderer extends StatelessWidget {
                   ..translate(offset.dx, offset.dy)
                   ..scale(scale),
                 alignment: Alignment.topLeft,
-                transformHitTests: true,
+                transformHitTests: false,
                 child: Positioned.fill(
                   child: CustomPaint(
                     painter: BackgroundRenderer(
@@ -104,7 +104,7 @@ class CanvasRenderer extends StatelessWidget {
                   ..translate(offset.dx, offset.dy)
                   ..scale(scale),
                 alignment: Alignment.topLeft,
-                transformHitTests: true,
+                transformHitTests: false,
                 child: Positioned.fill(
                   child: CustomPaint(
                     painter: EdgeRenderer(
@@ -124,7 +124,7 @@ class CanvasRenderer extends StatelessWidget {
                   ..translate(offset.dx, offset.dy)
                   ..scale(scale),
                 alignment: Alignment.topLeft,
-                transformHitTests: true,
+                transformHitTests: false,
                 child: Stack(
                   clipBehavior: Clip.none,
                   children: [
@@ -151,7 +151,7 @@ class CanvasRenderer extends StatelessWidget {
                   ..translate(offset.dx, offset.dy)
                   ..scale(scale),
                 alignment: Alignment.topLeft,
-                transformHitTests: true,
+                transformHitTests: false,
                 child: Stack(
                   clipBehavior: Clip.none,
                   children: edgeOverlays,
