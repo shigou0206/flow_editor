@@ -81,16 +81,6 @@ class CanvasRenderer extends StatelessWidget {
             clipBehavior: Clip.none, // 不裁剪
             children: [
               // ======= 1) 背景层 =======
-
-              // Positioned.fill(
-              //   child: CustomPaint(
-              //     painter: BackgroundRenderer(
-              //       config: visualConfig,
-              //       offset: offset,
-              //       scale: scale,
-              //     ),
-              //   ),
-              // ),
               Positioned.fill(
                 child: CustomPaint(
                   painter: DottedGridPainter(
@@ -131,42 +121,18 @@ class CanvasRenderer extends StatelessWidget {
                   child: Transform.scale(
                     scale: scale,
                     alignment: Alignment.topLeft,
+                    transformHitTests: true,
                     child: nodeWidgetFactory.createNodeWidget(node),
                   ),
                 );
               }),
 
-              // ======= 3) 节点（Nodes）层 =======
-              // Transform(
-              //   transform: Matrix4.identity()
-              //     ..translate(offset.dx, offset.dy)
-              //     ..scale(scale),
-              //   alignment: Alignment.topLeft,
-              //   child: Stack(
-              //     clipBehavior: Clip.none,
-              //     children: [
-              //       for (final node in nodeList) ...[
-              //         Positioned(
-              //           left: node.x - node.anchorPadding.left,
-              //           top: node.y - node.anchorPadding.top,
-              //           width: node.width +
-              //               node.anchorPadding.left +
-              //               node.anchorPadding.right,
-              //           height: node.height +
-              //               node.anchorPadding.top +
-              //               node.anchorPadding.bottom,
-              //           child: nodeWidgetFactory.createNodeWidget(node),
-              //         ),
-              //       ],
-              //     ],
-              //   ),
-              // ),
-
-              // ======= 4) 边上的 Overlay（删除按钮等） =======
+              // ======= 4) 边上的 Overlay（删除按钮等） ======
               Transform(
                 transform: Matrix4.identity()
                   ..translate(offset.dx, offset.dy)
                   ..scale(scale),
+                transformHitTests: true,
                 alignment: Alignment.topLeft,
                 child: Stack(
                   clipBehavior: Clip.none,

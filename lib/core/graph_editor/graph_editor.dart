@@ -200,8 +200,8 @@ class _GraphEditorState extends ConsumerState<GraphEditor> {
   Widget _buildViewportArea(CanvasState canvasState) {
     return Center(
       child: Container(
-        width: 800, // 固定宽度
-        height: 600, // 固定高度，形成视口
+        width: 1200, // 固定宽度
+        height: 800, // 固定高度，形成视口
         decoration: BoxDecoration(
           border: Border.all(color: Colors.blueAccent, width: 2),
         ),
