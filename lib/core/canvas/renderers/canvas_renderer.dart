@@ -81,19 +81,12 @@ class CanvasRenderer extends StatelessWidget {
             clipBehavior: Clip.none, // 不裁剪
             children: [
               // ======= 1) 背景层 =======
-              Transform(
-                transform: Matrix4.identity()
-                  ..translate(offset.dx, offset.dy)
-                  ..scale(scale),
-                alignment: Alignment.topLeft,
-                transformHitTests: false,
-                child: Positioned.fill(
-                  child: CustomPaint(
-                    painter: BackgroundRenderer(
-                      config: visualConfig,
-                      offset: offset,
-                      scale: scale,
-                    ),
+              Positioned.fill(
+                child: CustomPaint(
+                  painter: BackgroundRenderer(
+                    config: visualConfig,
+                    offset: offset,
+                    scale: scale,
                   ),
                 ),
               ),
