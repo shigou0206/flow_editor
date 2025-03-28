@@ -9,80 +9,83 @@ class NodeStateNotifier extends StateNotifier<NodeState> {
   NodeStateNotifier({required this.workflowId}) : super(const NodeState());
 
   void upsertNode(NodeModel node) {
-    final workflowNodes = state.nodesOf(workflowId);
-    final updatedNodes = Map<String, NodeModel>.from(workflowNodes);
-    updatedNodes[node.id] = node;
-    state = state.updateWorkflowNodes(workflowId, updatedNodes);
+    final nodes = state.nodesOf(workflowId);
+    final updated = [
+      ...nodes.where((n) => n.id != node.id),
+      node,
+    ];
+    state = state.updateWorkflowNodes(workflowId, updated);
   }
 
-  void moveNode(String nodeId, Offset delta) {
-    final workflowNodes = state.nodesOf(workflowId);
-    final node = workflowNodes[nodeId];
-    if (node == null) return;
-    final updatedNode =
-        node.copyWith(x: node.x + delta.dx, y: node.y + delta.dy);
-    final updatedMap = {...workflowNodes, nodeId: updatedNode};
-    state = state.updateWorkflowNodes(workflowId, updatedMap);
-  }
-
-  void upsertNodes(List<NodeModel> nodes) {
-    final workflowNodes = state.nodesOf(workflowId);
-    final updatedNodes = Map<String, NodeModel>.from(workflowNodes);
+  void upsertNodes(List<NodeModel> newNodes) {
+    final oldNodes = state.nodesOf(workflowId);
+    final Map<String, NodeModel> nodeMap = {
+      for (var node in oldNodes) node.id: node
+    };
     bool hasChanges = false;
-    for (final node in nodes) {
-      if (updatedNodes[node.id] != node) {
-        updatedNodes[node.id] = node;
+
+    for (var node in newNodes) {
+      if (nodeMap[node.id] != node) {
+        nodeMap[node.id] = node;
         hasChanges = true;
       }
     }
+
     if (hasChanges) {
-      state = state.updateWorkflowNodes(workflowId, updatedNodes);
+      state = state.updateWorkflowNodes(workflowId, nodeMap.values.toList());
     }
   }
 
   void removeNode(String nodeId) {
-    final workflowNodes = state.nodesOf(workflowId);
-    if (!workflowNodes.containsKey(nodeId)) return;
-    final updatedNodes = Map<String, NodeModel>.from(workflowNodes)
-      ..remove(nodeId);
-    state = state.updateWorkflowNodes(workflowId, updatedNodes);
+    final nodes = state.nodesOf(workflowId);
+    final updated = nodes.where((n) => n.id != nodeId).toList();
+    if (updated.length != nodes.length) {
+      state = state.updateWorkflowNodes(workflowId, updated);
+    }
   }
 
   void removeNodes(List<String> nodeIds) {
-    final workflowNodes = state.nodesOf(workflowId);
-    final updatedNodes = Map<String, NodeModel>.from(workflowNodes);
-    bool hasChanges = false;
-    for (final nodeId in nodeIds) {
-      if (updatedNodes.containsKey(nodeId)) {
-        updatedNodes.remove(nodeId);
-        hasChanges = true;
+    final nodes = state.nodesOf(workflowId);
+    final updated = nodes.where((n) => !nodeIds.contains(n.id)).toList();
+    if (updated.length != nodes.length) {
+      state = state.updateWorkflowNodes(workflowId, updated);
+    }
+  }
+
+  void moveNode(String nodeId, Offset delta) {
+    final nodes = state.nodesOf(workflowId);
+    final updated = nodes.map((node) {
+      if (node.id == nodeId) {
+        return node.copyWith(x: node.x + delta.dx, y: node.y + delta.dy);
       }
-    }
-    if (hasChanges) {
-      state = state.updateWorkflowNodes(workflowId, updatedNodes);
-    }
+      return node;
+    }).toList();
+    state = state.updateWorkflowNodes(workflowId, updated);
   }
 
   void clearWorkflow() {
     if (state.nodesOf(workflowId).isEmpty) return;
-    state = state.updateWorkflowNodes(workflowId, {});
+    state = state.updateWorkflowNodes(workflowId, []);
   }
 
   void removeWorkflow() {
-    if (!state.nodesByWorkflow.containsKey(workflowId)) return;
     state = state.removeWorkflow(workflowId);
   }
 
   NodeModel? getNode(String nodeId) {
-    return state.nodesOf(workflowId)[nodeId];
+    final nodes = state.nodesOf(workflowId);
+    for (final node in nodes) {
+      if (node.id == nodeId) return node;
+    }
+    return null;
   }
 
   List<NodeModel> getNodes() {
-    return state.nodesOf(workflowId).values.toList();
+    return state.nodesOf(workflowId);
   }
 
   bool nodeExists(String nodeId) {
-    return state.nodesOf(workflowId).containsKey(nodeId);
+    return state.nodesOf(workflowId).any((node) => node.id == nodeId);
   }
 }
 

@@ -2,28 +2,17 @@ import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:flow_editor/core/edge/models/edge_model.dart';
 
-/// EdgeState: 多工作流场景的边数据，支持：
-///   1) workflowId -> (edgeId -> EdgeModel)
-///   2) 按edgeType 分组索引
-///   3) 选中集合 selectedEdgeIds
-///   4) 拖拽相关: draggingEdgeId / draggingEnd
 class EdgeState extends Equatable {
-  /// { workflowId : { edgeId : EdgeModel } }
-  final Map<String, Map<String, EdgeModel>> edgesByWorkflow;
+  /// { workflowId : [EdgeModel, ...] }
+  final Map<String, List<EdgeModel>> edgesByWorkflow;
 
   /// { edgeType : { edgeId1, edgeId2, ... } }
   final Map<String, Set<String>> edgeIdsByType;
 
-  /// 每次更新递增
   final int version;
-
-  /// 当前选中的 edgeId 集合
   final Set<String> selectedEdgeIds;
 
-  /// 正在拖拽的边 ID (半连接 / ghost line)
   final String? draggingEdgeId;
-
-  /// 拖拽终点(世界坐标) 用于 ghost line
   final Offset? draggingEnd;
 
   const EdgeState({
@@ -35,22 +24,20 @@ class EdgeState extends Equatable {
     this.draggingEnd,
   });
 
-  /// 取得指定 workflowId 下的所有边
-  Map<String, EdgeModel> edgesOf(String workflowId) =>
-      edgesByWorkflow[workflowId] ?? {};
+  /// 获取指定工作流下的所有边
+  List<EdgeModel> edgesOf(String workflowId) =>
+      edgesByWorkflow[workflowId] ?? [];
 
-  /// 取得指定edgeType下的所有edgeId
+  /// 获取某类型的所有 edgeId（不分 workflow）
   Set<String> edgesByTypeOf(String edgeType) => edgeIdsByType[edgeType] ?? {};
 
-  /// copyWith
   EdgeState copyWith({
-    Map<String, Map<String, EdgeModel>>? edgesByWorkflow,
+    Map<String, List<EdgeModel>>? edgesByWorkflow,
     Map<String, Set<String>>? edgeIdsByType,
     int? version,
     Set<String>? selectedEdgeIds,
     String? draggingEdgeId,
     Offset? draggingEnd,
-    String? hoveredEdgeId,
   }) {
     return EdgeState(
       edgesByWorkflow: edgesByWorkflow ?? this.edgesByWorkflow,
@@ -62,36 +49,36 @@ class EdgeState extends Equatable {
     );
   }
 
-  /// 替换某 workflow 下的所有边
+  /// 替换某工作流下所有边
   EdgeState updateWorkflowEdges(
     String workflowId,
-    Map<String, EdgeModel> newEdges,
+    List<EdgeModel> newEdges,
   ) {
-    final updated = Map<String, Map<String, EdgeModel>>.from(edgesByWorkflow);
+    final updated = Map<String, List<EdgeModel>>.from(edgesByWorkflow);
     updated[workflowId] = newEdges;
     return rebuildIndexes(updated, version: version + 1);
   }
 
-  /// 移除整个 workflow
+  /// 移除某个 workflow
   EdgeState removeWorkflow(String workflowId) {
     if (!edgesByWorkflow.containsKey(workflowId)) return this;
-    final updated = Map<String, Map<String, EdgeModel>>.from(edgesByWorkflow)
+    final updated = Map<String, List<EdgeModel>>.from(edgesByWorkflow)
       ..remove(workflowId);
     return rebuildIndexes(updated, version: version + 1);
   }
 
-  /// 重建 edgeIdsByType，version可递增
+  /// 重建 type 索引
   EdgeState rebuildIndexes(
-    Map<String, Map<String, EdgeModel>> updatedEdgesByWorkflow, {
+    Map<String, List<EdgeModel>> updatedEdgesByWorkflow, {
     int? version,
   }) {
     final typeIndex = <String, Set<String>>{};
 
-    updatedEdgesByWorkflow.forEach((_, edgesMap) {
-      edgesMap.forEach((edgeId, edge) {
-        typeIndex.putIfAbsent(edge.edgeType, () => <String>{}).add(edgeId);
-      });
-    });
+    for (final edges in updatedEdgesByWorkflow.values) {
+      for (final edge in edges) {
+        typeIndex.putIfAbsent(edge.edgeType, () => {}).add(edge.id);
+      }
+    }
 
     return copyWith(
       edgesByWorkflow: updatedEdgesByWorkflow,

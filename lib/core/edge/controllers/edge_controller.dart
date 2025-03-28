@@ -138,7 +138,10 @@ class EdgeController implements IEdgeController {
   // region =========== 内部辅助 ===========
 
   EdgeModel? _findEdgeInState(String edgeId, EdgeState state) {
-    return state.edgesOf(workflowId)[edgeId];
+    for (final edge in state.edgesOf(workflowId)) {
+      if (edge.id == edgeId) return edge;
+    }
+    return null;
   }
 
   // endregion

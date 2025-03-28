@@ -16,6 +16,7 @@ import 'package:flow_editor/core/edge/models/edge_model.dart';
 import 'package:flow_editor/core/types/position_enum.dart';
 
 class CanvasRenderer extends StatelessWidget {
+  final String workflowId;
   final Offset offset; // 画布平移量
   final double scale; // 画布缩放因子
 
@@ -33,6 +34,7 @@ class CanvasRenderer extends StatelessWidget {
 
   const CanvasRenderer({
     super.key,
+    required this.workflowId,
     required this.offset,
     required this.scale,
     required this.nodeWidgetFactory,
@@ -49,10 +51,8 @@ class CanvasRenderer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // 1. 获取节点 / 边 数据
-    final nodeList =
-        nodeState.nodesByWorkflow.values.expand((m) => m.values).toList();
-    final edgeList =
-        edgeState.edgesByWorkflow.values.expand((m) => m.values).toList();
+    final nodeList = nodeState.nodesOf(workflowId);
+    final edgeList = edgeState.edgesOf(workflowId);
 
     final draggingEdgeId = edgeState.draggingEdgeId;
     final draggingEnd = edgeState.draggingEnd;
@@ -102,15 +102,15 @@ class CanvasRenderer extends StatelessWidget {
                   ..scale(scale),
                 alignment: Alignment.topLeft,
                 child: CustomPaint(
-                    painter: EdgeRenderer(
-                      nodes: nodeList,
-                      edges: edgeList,
-                      draggingEdgeId: draggingEdgeId,
-                      draggingEnd: draggingEnd,
-                      hoveredEdgeId: hoveredEdgeId,
-                    ),
+                  painter: EdgeRenderer(
+                    nodes: nodeList,
+                    edges: edgeList,
+                    draggingEdgeId: draggingEdgeId,
+                    draggingEnd: draggingEnd,
+                    hoveredEdgeId: hoveredEdgeId,
                   ),
                 ),
+              ),
 
               ...nodeList.map((node) {
                 return Positioned(
@@ -194,9 +194,8 @@ class CanvasRenderer extends StatelessWidget {
 
   /// 找到某节点 anchor 的世界坐标
   (Offset?, Position?) _getAnchorWorldInfo(String nodeId, String anchorId) {
-    final node = nodeState.nodesByWorkflow.values
-        .expand((m) => m.values)
-        .firstWhereOrNull((n) => n.id == nodeId);
+    final node =
+        nodeState.nodesOf(workflowId).firstWhereOrNull((n) => n.id == nodeId);
 
     final anchor = node?.anchors.firstWhereOrNull((a) => a.id == anchorId);
     if (node == null || anchor == null) return (null, null);

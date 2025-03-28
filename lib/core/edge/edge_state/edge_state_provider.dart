@@ -11,28 +11,33 @@ class EdgeStateNotifier extends StateNotifier<EdgeState> {
   // --- Edge 增删改 ---
 
   void upsertEdge(EdgeModel edge) {
-    final oldMap = state.edgesOf(workflowId);
-    final updatedMap = {...oldMap, edge.id: edge};
-    state = state.updateWorkflowEdges(workflowId, updatedMap);
+    final oldList = state.edgesOf(workflowId);
+    final updatedList = [
+      ...oldList.where((e) => e.id != edge.id),
+      edge,
+    ];
+    state = state.updateWorkflowEdges(workflowId, updatedList);
   }
 
   void removeEdge(String edgeId) {
-    final oldMap = state.edgesOf(workflowId);
-    if (!oldMap.containsKey(edgeId)) return;
-    final updatedMap = {...oldMap}..remove(edgeId);
-    state = state.updateWorkflowEdges(workflowId, updatedMap);
-  }
-
-  void removeEdgesOfNode(String nodeId) {
-    final oldMap = state.edgesOf(workflowId);
-    final updatedMap = {...oldMap}..removeWhere((_, edge) =>
-        edge.sourceNodeId == nodeId || edge.targetNodeId == nodeId);
-    if (updatedMap.length != oldMap.length) {
-      state = state.updateWorkflowEdges(workflowId, updatedMap);
+    final oldList = state.edgesOf(workflowId);
+    final updatedList = oldList.where((e) => e.id != edgeId).toList();
+    if (updatedList.length != oldList.length) {
+      state = state.updateWorkflowEdges(workflowId, updatedList);
     }
   }
 
-  void setWorkflowEdges(Map<String, EdgeModel> edges) {
+  void removeEdgesOfNode(String nodeId) {
+    final oldList = state.edgesOf(workflowId);
+    final updatedList = oldList
+        .where((e) => e.sourceNodeId != nodeId && e.targetNodeId != nodeId)
+        .toList();
+    if (updatedList.length != oldList.length) {
+      state = state.updateWorkflowEdges(workflowId, updatedList);
+    }
+  }
+
+  void setWorkflowEdges(List<EdgeModel> edges) {
     state = state.updateWorkflowEdges(workflowId, edges);
   }
 
@@ -79,9 +84,7 @@ class EdgeStateNotifier extends StateNotifier<EdgeState> {
   }
 
   void updateEdgeDrag(Offset currentPos) {
-    if (state.draggingEdgeId == null) {
-      return;
-    }
+    if (state.draggingEdgeId == null) return;
     state = state.copyWith(draggingEnd: currentPos);
   }
 
@@ -114,19 +117,39 @@ class EdgeStateNotifier extends StateNotifier<EdgeState> {
     required String targetNodeId,
     required String targetAnchorId,
   }) {
-    final oldEdge = state.edgesOf(workflowId)[edgeId];
-    if (oldEdge == null) {
+    final oldEdge = state.edgesOf(workflowId).firstWhere((e) => e.id == edgeId);
+
+    // 检查：目标节点或目标 anchor 不能与源节点或源 anchor 相同
+    if (oldEdge.sourceNodeId == targetNodeId ||
+        oldEdge.sourceAnchorId == targetAnchorId) {
+      // 如果目标与源相同，取消连接
+      removeEdge(edgeId);
+      state = state.copyWith(
+        draggingEdgeId: null,
+        draggingEnd: null,
+      );
       return;
     }
 
-    final exists = state.edgesOf(workflowId).values.any((edge) =>
-        edge.sourceAnchorId == oldEdge.sourceAnchorId &&
-        edge.targetAnchorId == targetAnchorId &&
-        edge.isConnected);
+    // 检查是否已存在同一对 source 和 target 的边（排除当前边本身）
+    EdgeModel? existingEdge;
+    for (final e in state.edgesOf(workflowId)) {
+      if (e.id != edgeId &&
+          e.sourceNodeId == oldEdge.sourceNodeId &&
+          e.sourceAnchorId == oldEdge.sourceAnchorId &&
+          e.targetNodeId == targetNodeId &&
+          e.targetAnchorId == targetAnchorId &&
+          e.isConnected) {
+        existingEdge = e;
+        break;
+      }
+    }
 
-    if (exists) {
-      removeEdge(edgeId); // 删除临时边
+    if (existingEdge != null) {
+      // 已存在相同 source-target 的边，则取消当前边的连接
+      removeEdge(edgeId);
     } else {
+      // 更新当前边为已连接状态
       final newEdge = oldEdge.copyWith(
         targetNodeId: targetNodeId,
         targetAnchorId: targetAnchorId,
@@ -135,22 +158,20 @@ class EdgeStateNotifier extends StateNotifier<EdgeState> {
       upsertEdge(newEdge);
     }
 
-    // 强制确保拖拽状态清空
-    if (state.draggingEdgeId != null || state.draggingEnd != null) {
-      state = state.copyWith(
-        draggingEdgeId: null,
-        draggingEnd: null,
-      );
-    }
+    // 清空拖拽状态
+    state = state.copyWith(
+      draggingEdgeId: null,
+      draggingEnd: null,
+    );
   }
-
   // --- 批量操作 ---
 
   void removeEdges(List<String> edgeIds) {
-    final oldMap = state.edgesOf(workflowId);
-    final updatedMap = {...oldMap}
-      ..removeWhere((id, _) => edgeIds.contains(id));
-    state = state.updateWorkflowEdges(workflowId, updatedMap);
+    final oldList = state.edgesOf(workflowId);
+    final updatedList = oldList.where((e) => !edgeIds.contains(e.id)).toList();
+    if (updatedList.length != oldList.length) {
+      state = state.updateWorkflowEdges(workflowId, updatedList);
+    }
   }
 }
 

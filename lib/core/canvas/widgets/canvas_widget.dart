@@ -58,6 +58,7 @@ class CanvasWidget extends ConsumerWidget {
     return SizedBox(
       key: canvasGlobalKey,
       child: CanvasRenderer(
+        workflowId: workflowId,
         offset: offset,
         scale: scale,
         nodeWidgetFactory: nodeWidgetFactory,
