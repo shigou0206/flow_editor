@@ -7,7 +7,6 @@ import 'package:flow_editor/core/node/behaviors/node_behavior.dart';
 import 'package:flow_editor/core/edge/behaviors/edge_behavior.dart';
 import 'package:flow_editor/core/anchor/behaviors/anchor_behavior.dart';
 import 'package:flow_editor/core/node/models/node_model.dart';
-import 'package:flow_editor/core/edge/models/edge_model.dart';
 import 'package:flow_editor/core/anchor/models/anchor_model.dart';
 import 'package:flow_editor/core/anchor/models/anchor_enums.dart';
 import 'package:flow_editor/core/types/position_enum.dart';
@@ -95,92 +94,10 @@ class _GraphEditorState extends ConsumerState<GraphEditor> {
       ref
           .read(multiCanvasStateProvider.notifier)
           .switchWorkflow(widget.workflowId);
-
-      // 插入示例节点 & 边
-      _initSampleData();
     });
   }
 
   /// 在这里插入“示例节点 + 边”
-  void _initSampleData() {
-    // 定义两个节点 ID
-    const nodeAId = 'nodeA';
-    const nodeBId = 'nodeB';
-
-    // 1. 创建节点 A
-    final nodeA = NodeModel(
-      id: nodeAId,
-      type: 'default', // 关键：指定type为"default"
-      x: 100,
-      y: 100,
-      width: 100,
-      height: 100,
-      title: 'Node A',
-      anchors: [
-        AnchorModel(
-          id: 'out_$nodeAId',
-          nodeId: nodeAId,
-          position: Position.right,
-          placement: AnchorPlacement.border,
-          offsetDistance: 0,
-          ratio: 0.65,
-          width: 12,
-          height: 12,
-          shape: AnchorShape.diamond,
-        ),
-        AnchorModel(
-          id: 'in_$nodeAId',
-          nodeId: nodeAId,
-          position: Position.left,
-          placement: AnchorPlacement.border,
-          offsetDistance: 0,
-          ratio: 0.65,
-          width: 12,
-          height: 12,
-          shape: AnchorShape.square,
-        ),
-      ],
-    );
-
-    // 2. 创建节点 B
-    final nodeB = NodeModel(
-      id: nodeBId,
-      type: 'default', // 同样设为"default"
-      x: 300,
-      y: 120,
-      width: 100,
-      height: 100,
-      title: 'Node B',
-      anchors: [
-        AnchorModel(
-          id: 'in_$nodeBId',
-          nodeId: nodeBId,
-          position: Position.left,
-          placement: AnchorPlacement.border,
-          offsetDistance: 0,
-          ratio: 0.65,
-          width: 24,
-          height: 24,
-        ),
-      ],
-    );
-
-    // 3. 通过 nodeController 插入节点
-    widget.nodeBehavior.nodeController.upsertNode(nodeA);
-    widget.nodeBehavior.nodeController.upsertNode(nodeB);
-
-    // 4. 创建一条边 A->B
-    const edgeId = 'edgeAB';
-    const edge = EdgeModel(
-      id: edgeId,
-      sourceNodeId: nodeAId,
-      sourceAnchorId: 'out_$nodeAId',
-      targetNodeId: nodeBId,
-      targetAnchorId: 'in_$nodeBId',
-      isConnected: true,
-    );
-    widget.edgeBehavior.edgeController.createEdge(edge);
-  }
 
   @override
   Widget build(BuildContext context) {

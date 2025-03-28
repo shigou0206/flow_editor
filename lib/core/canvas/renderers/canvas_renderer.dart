@@ -126,17 +126,17 @@ class CanvasRenderer extends StatelessWidget {
               }),
 
               // ======= 4) 边上的 Overlay（删除按钮等） ======
-              Transform(
-                transform: Matrix4.identity()
-                  ..translate(offset.dx, offset.dy)
-                  ..scale(scale),
-                transformHitTests: true,
-                alignment: Alignment.topLeft,
-                child: Stack(
-                  clipBehavior: Clip.none,
-                  children: edgeOverlays,
-                ),
-              ),
+              // Transform(
+              //   transform: Matrix4.identity()
+              //     ..translate(offset.dx, offset.dy)
+              //     ..scale(scale),
+              //   transformHitTests: true,
+              //   alignment: Alignment.topLeft,
+              //   child: Stack(
+              //     clipBehavior: Clip.none,
+              //     children: edgeOverlays,
+              //   ),
+              // ),
             ],
           ),
         ),
