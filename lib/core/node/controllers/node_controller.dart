@@ -1,5 +1,5 @@
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flow_editor/core/anchor/utils/anchor_position_utils.dart';
 import 'package:flow_editor/core/anchor/models/anchor_model.dart';
 import 'package:flow_editor/core/node/node_state/node_state_provider.dart';
@@ -7,6 +7,7 @@ import 'package:flow_editor/core/node/node_state/node_state.dart';
 import 'package:flow_editor/core/node/models/node_model.dart';
 import 'package:flow_editor/core/node/controllers/node_controller_interface.dart';
 import 'package:flow_editor/core/node/controllers/events.dart';
+import 'package:flow_editor/core/canvas/canvas_state/canvas_state_provider.dart';
 
 class NodeController implements INodeController {
   final ProviderContainer container;
@@ -44,7 +45,15 @@ class NodeController implements INodeController {
   void removeNode(String nodeId) {
     final node = getNode(nodeId);
     if (node != null) {
-      _notifier.removeNode(nodeId);
+      // 使用策略化删除，调用 MultiCanvasStateNotifier 中封装好的方法
+      final multiCanvasController =
+          container.read(multiCanvasStateProvider.notifier);
+      multiCanvasController.deleteNodeWithStrategy(nodeId);
+
+      // 删除后再执行全局校验，确保画布状态更新
+      multiCanvasController.validateCanvas();
+
+      // 触发回调通知
       onNodeRemoved?.call(node);
     }
   }

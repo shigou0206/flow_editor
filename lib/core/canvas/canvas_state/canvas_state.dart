@@ -2,12 +2,14 @@ import 'dart:ui';
 import 'package:flow_editor/core/canvas/models/canvas_interaction_mode.dart';
 import 'package:flow_editor/core/canvas/models/canvas_visual_config.dart';
 import 'package:flow_editor/core/canvas/models/canvas_interaction_config.dart';
+import 'package:flow_editor/core/logic/strategy/workflow_mode.dart';
 
-/// 单个画布状态（单个workflow）
+/// 单个画布状态（单个 workflow）
 class CanvasState {
   final Offset offset;
   final double scale;
-  final CanvasInteractionMode mode;
+  final WorkflowMode workflowMode;
+  final CanvasInteractionMode interactionMode;
   final CanvasVisualConfig visualConfig;
   final CanvasInteractionConfig interactionConfig;
   final int version;
@@ -16,7 +18,8 @@ class CanvasState {
   const CanvasState({
     this.offset = Offset.zero,
     this.scale = 1.0,
-    this.mode = CanvasInteractionMode.panCanvas,
+    this.workflowMode = WorkflowMode.generic,
+    this.interactionMode = CanvasInteractionMode.panCanvas,
     this.visualConfig = const CanvasVisualConfig(),
     this.interactionConfig = const CanvasInteractionConfig(),
     this.version = 1,
@@ -26,7 +29,8 @@ class CanvasState {
   CanvasState copyWith({
     Offset? offset,
     double? scale,
-    CanvasInteractionMode? mode,
+    WorkflowMode? workflowMode,
+    CanvasInteractionMode? interactionMode,
     CanvasVisualConfig? visualConfig,
     CanvasInteractionConfig? interactionConfig,
     int? version,
@@ -40,7 +44,8 @@ class CanvasState {
         effectiveInteractionConfig.minScale,
         effectiveInteractionConfig.maxScale,
       ),
-      mode: mode ?? this.mode,
+      workflowMode: workflowMode ?? this.workflowMode,
+      interactionMode: interactionMode ?? this.interactionMode,
       visualConfig: visualConfig ?? this.visualConfig,
       interactionConfig: effectiveInteractionConfig,
       version: version ?? this.version,
@@ -52,7 +57,8 @@ class CanvasState {
         'offsetX': offset.dx,
         'offsetY': offset.dy,
         'scale': scale,
-        'mode': mode.name,
+        'workflowMode': workflowMode.name,
+        'interactionMode': interactionMode.name,
         'visualConfig': visualConfig.toJson(),
         'interactionConfig': interactionConfig.toJson(),
         'version': version,
@@ -85,16 +91,24 @@ class CanvasState {
     final scale = parseDouble(json['scale'], 1.0);
     final version = parseInt(json['version'], 1);
 
-    final modeStr = json['mode'] as String? ?? 'panCanvas';
-    final mode = CanvasInteractionMode.values.firstWhere(
-      (m) => m.name == modeStr,
+    final workflowModeStr = json['workflowMode'] as String? ?? 'generic';
+    final workflowMode = WorkflowMode.values.firstWhere(
+      (m) => m.name == workflowModeStr,
+      orElse: () => WorkflowMode.generic,
+    );
+
+    final interactionModeStr =
+        json['interactionMode'] as String? ?? 'panCanvas';
+    final interactionMode = CanvasInteractionMode.values.firstWhere(
+      (m) => m.name == interactionModeStr,
       orElse: () => CanvasInteractionMode.panCanvas,
     );
 
     return CanvasState(
       offset: Offset(dx, dy),
       scale: scale,
-      mode: mode,
+      workflowMode: workflowMode,
+      interactionMode: interactionMode,
       visualConfig: json['visualConfig'] is Map
           ? CanvasVisualConfig.fromJson(json['visualConfig'])
           : const CanvasVisualConfig(),
@@ -107,7 +121,7 @@ class CanvasState {
   }
 }
 
-/// 支持多workflow的状态管理
+/// 支持多 workflow 的状态管理
 class MultiWorkflowCanvasState {
   final String activeWorkflowId;
   final Map<String, CanvasState> workflows;

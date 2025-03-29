@@ -8,6 +8,11 @@ class EdgeStateNotifier extends StateNotifier<EdgeState> {
 
   EdgeStateNotifier({required this.workflowId}) : super(const EdgeState());
 
+  // 获取当前工作流的所有边
+  List<EdgeModel> getEdges() {
+    return state.edgesOf(workflowId);
+  }
+
   // --- Edge 增删改 ---
 
   void upsertEdge(EdgeModel edge) {

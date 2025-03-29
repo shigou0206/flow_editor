@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-
 import 'package:flow_editor/core/canvas/canvas_state/canvas_state.dart';
 import 'package:flow_editor/core/canvas/models/canvas_interaction_config.dart';
 import 'package:flow_editor/core/canvas/models/canvas_visual_config.dart';
@@ -13,6 +12,10 @@ import 'package:flow_editor/core/anchor/utils/anchor_position_utils.dart';
 import 'package:flow_editor/core/edge/utils/hit_test_utils.dart';
 import 'package:flow_editor/core/edge/style/edge_style_resolver.dart';
 import 'package:flow_editor/core/types/position_enum.dart';
+import 'package:flow_editor/core/logic/strategy/workflow_mode.dart';
+import 'package:flow_editor/core/logic/strategy/workflow_strategy.dart';
+import 'package:flow_editor/core/logic/strategy/generic_flow_strategy.dart';
+import 'package:flow_editor/core/logic/strategy/state_machine_strategy.dart';
 
 final multiCanvasStateProvider =
     StateNotifierProvider<MultiCanvasStateNotifier, MultiWorkflowCanvasState>(
@@ -42,11 +45,14 @@ class MultiCanvasStateNotifier extends StateNotifier<MultiWorkflowCanvasState> {
               'default': CanvasState(
                 interactionConfig:
                     interactionConfig ?? const CanvasInteractionConfig(),
+                workflowMode: WorkflowMode.generic,
+                visualConfig: const CanvasVisualConfig(),
               ),
             },
           ),
         );
 
+  /// 切换工作流（不在 activeWorkflowId 内新增的工作流会自动创建）
   void switchWorkflow(String workflowId) {
     if (state.activeWorkflowId == workflowId) return;
     if (!state.workflows.containsKey(workflowId)) {
@@ -55,6 +61,8 @@ class MultiCanvasStateNotifier extends StateNotifier<MultiWorkflowCanvasState> {
         offset: state.activeState.offset,
         scale: state.activeState.scale,
         visualConfig: state.activeState.visualConfig,
+        workflowMode: state.activeState.workflowMode,
+        interactionMode: state.activeState.interactionMode,
       );
       state = state.copyWith(
         workflows: {
@@ -132,6 +140,91 @@ class MultiCanvasStateNotifier extends StateNotifier<MultiWorkflowCanvasState> {
       _draggingNodeId = null;
     }
   }
+
+  // 假设 multiCanvasStateNotifier 是 MultiCanvasStateNotifier 的实例
+  void setWorkflowMode(String workflowId, WorkflowMode newMode) {
+    final currentCanvas = state.workflows[workflowId];
+    if (currentCanvas != null) {
+      final updated = currentCanvas.copyWith(workflowMode: newMode);
+      state = state.copyWith(workflows: {
+        ...state.workflows,
+        workflowId: updated,
+      });
+    }
+  }
+
+  //====================  以下为策略调用部分  ====================
+
+  /// 策略工厂，根据当前 CanvasState.mode 返回对应策略
+  WorkflowModeStrategy _createStrategy(String workflowId, WorkflowMode mode) {
+    debugPrint('createStrategy wfId: $workflowId, mode: $mode');
+    switch (mode) {
+      case WorkflowMode.stateMachine:
+        return StateMachineStrategy(workflowId: workflowId);
+      case WorkflowMode.generic:
+      default:
+        return GenericFlowStrategy(workflowId: workflowId);
+    }
+  }
+
+  /// 根据工作流模式删除节点，并自动处理上下游连接断裂情况
+  void deleteNodeWithStrategy(String nodeId) {
+    final wfId = state.activeWorkflowId;
+    final nodeNotifier = _ref.read(nodeStateProvider(wfId).notifier);
+    final edgeNotifier = _ref.read(edgeStateProvider(wfId).notifier);
+    final canvas = state.workflows[wfId];
+
+    final node = nodeNotifier.getNode(nodeId);
+    if (node == null) return;
+
+    // 获取所有相关边
+    final allEdges = edgeNotifier.state.edgesOf(wfId);
+
+    // 上游：所有指向该节点的节点
+    final upstream = allEdges
+        .where((e) => e.targetNodeId == nodeId)
+        .map((e) => nodeNotifier.getNode(e.sourceNodeId))
+        .whereType<NodeModel>()
+        .toList();
+
+    // 下游：所有该节点指向的节点
+    final downstream = allEdges
+        .where((e) => e.sourceNodeId == nodeId)
+        .map((e) => nodeNotifier.getNode(e.targetNodeId ?? ''))
+        .whereType<NodeModel>()
+        .toList();
+
+    final strategy =
+        _createStrategy(wfId, canvas?.workflowMode ?? WorkflowMode.generic);
+
+    strategy.onNodeDeleted(
+      deletedNode: node,
+      upstreamNodes: upstream,
+      downstreamNodes: downstream,
+      edgeNotifier: edgeNotifier,
+      nodeNotifier: nodeNotifier,
+    );
+  }
+
+  /// 调用策略对整个工作流进行校验（例如 Start 节点、孤立节点等）
+  void validateCanvas() {
+    final wfId = state.activeWorkflowId;
+    final nodeNotifier = _ref.read(nodeStateProvider(wfId).notifier);
+    final edgeNotifier = _ref.read(edgeStateProvider(wfId).notifier);
+    final canvas = state.workflows[wfId];
+    final strategy =
+        _createStrategy(wfId, canvas?.workflowMode ?? WorkflowMode.generic);
+
+    debugPrint(
+        'validateCanvas wfId: $wfId, strategy: ${strategy.runtimeType}, nodes: ${nodeNotifier.getNodes().map((e) => e.id).toList()}, edges: ${edgeNotifier.state.edgesOf(wfId).map((e) => e.id).toList()}');
+    strategy.validate(
+      nodes: nodeNotifier.getNodes(),
+      edges: edgeNotifier.state.edgesOf(wfId),
+      nodeNotifier: nodeNotifier,
+    );
+  }
+
+  //====================  以下为原有功能  ====================
 
   void _startEdgeDrag(
       BuildContext context, Offset globalPos, AnchorModel anchor) {

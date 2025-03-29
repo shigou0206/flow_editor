@@ -23,6 +23,7 @@ import 'package:flow_editor/core/node/widgets/workflows/base/node_widget.dart';
 import 'package:flow_editor/core/node/node_widget_registry.dart';
 import 'package:flow_editor/core/node/factories/node_widget_factory.dart';
 import 'package:flow_editor/core/node/factories/node_widget_factory_impl.dart';
+import 'package:flow_editor/core/logic/strategy/workflow_mode.dart';
 
 /// GraphEditor(改造版):
 /// - 保留原有逻辑：插入示例节点、示例边
@@ -94,6 +95,9 @@ class _GraphEditorState extends ConsumerState<GraphEditor> {
       ref
           .read(multiCanvasStateProvider.notifier)
           .switchWorkflow(widget.workflowId);
+      ref
+          .read(multiCanvasStateProvider.notifier)
+          .setWorkflowMode(widget.workflowId, WorkflowMode.stateMachine);
     });
   }
 

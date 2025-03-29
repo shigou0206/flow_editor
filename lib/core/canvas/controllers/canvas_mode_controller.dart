@@ -12,7 +12,7 @@ class CanvasModeController {
   /// 获取当前模式
   CanvasInteractionMode getMode() {
     final st = ref.read(multiCanvasStateProvider);
-    return st.activeState.mode;
+    return st.activeState.interactionMode;
   }
 
   /// 是否处于某种模式
