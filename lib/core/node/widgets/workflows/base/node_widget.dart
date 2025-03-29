@@ -8,6 +8,7 @@ import 'package:flow_editor/core/node/widgets/workflows/base/node_anchors.dart';
 import 'package:flow_editor/core/node/widgets/components/node_body.dart';
 import 'package:flow_editor/core/node/widgets/components/node_header.dart';
 import 'package:flow_editor/core/node/painter/configurable_border_painter.dart';
+import 'package:flow_editor/core/node/plugins/node_action_callbacks.dart';
 
 class NodeWidget extends StatelessWidget {
   final NodeModel node;
@@ -20,10 +21,7 @@ class NodeWidget extends StatelessWidget {
   final Widget? footer;
 
   // 添加回调函数
-  final VoidCallback? onRun;
-  final VoidCallback? onStop;
-  final VoidCallback? onDelete;
-  final VoidCallback? onMenu;
+  final NodeActionCallbacks? callbacks;
 
   const NodeWidget({
     super.key,
@@ -33,10 +31,7 @@ class NodeWidget extends StatelessWidget {
     this.footer,
     this.behavior,
     this.anchorBehavior,
-    this.onRun,
-    this.onStop,
-    this.onDelete,
-    this.onMenu,
+    this.callbacks,
   });
 
   @override
@@ -70,19 +65,27 @@ class NodeWidget extends StatelessWidget {
                     buttons: [
                       NodeHeaderButton(
                           icon: Icons.play_arrow,
-                          onTap: onRun ?? () {},
+                          onTap: callbacks?.onRun != null
+                              ? () => callbacks!.onRun!(node)
+                              : () {},
                           tooltip: 'Run'),
                       NodeHeaderButton(
                           icon: Icons.stop,
-                          onTap: onStop ?? () {},
+                          onTap: callbacks?.onStop != null
+                              ? () => callbacks!.onStop!(node)
+                              : () {},
                           tooltip: 'Stop'),
                       NodeHeaderButton(
                           icon: Icons.delete,
-                          onTap: onDelete ?? () {},
+                          onTap: callbacks?.onDelete != null
+                              ? () => callbacks!.onDelete!(node)
+                              : () {},
                           tooltip: 'Delete'),
                       NodeHeaderButton(
                           icon: Icons.more_vert,
-                          onTap: onMenu ?? () {},
+                          onTap: callbacks?.onMenu != null
+                              ? () => callbacks!.onMenu!(node)
+                              : () {},
                           tooltip: 'Menu'),
                     ],
                   ),

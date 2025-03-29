@@ -5,6 +5,7 @@ import 'package:flow_editor/core/node/behaviors/node_behavior.dart';
 import 'package:flow_editor/core/anchor/behaviors/anchor_behavior.dart';
 import 'package:flow_editor/core/node/widgets/workflows/base/node_widget.dart';
 import 'package:flow_editor/core/node/widgets/components/node_header.dart';
+import 'package:flow_editor/core/node/plugins/node_action_callbacks.dart';
 
 class StartNodeWidget extends StatelessWidget {
   final NodeModel node;
@@ -12,16 +13,14 @@ class StartNodeWidget extends StatelessWidget {
   final AnchorBehavior? anchorBehavior;
 
   /// 运行和菜单按钮的回调
-  final VoidCallback? onRun;
-  final VoidCallback? onMenu;
+  final NodeActionCallbacks? callbacks;
 
   const StartNodeWidget({
     super.key,
     required this.node,
     this.behavior,
     this.anchorBehavior,
-    this.onRun,
-    this.onMenu,
+    this.callbacks,
   });
 
   @override
@@ -36,12 +35,16 @@ class StartNodeWidget extends StatelessWidget {
         buttons: [
           NodeHeaderButton(
             icon: Icons.play_arrow,
-            onTap: onRun ?? () {},
+            onTap: callbacks?.onRun != null
+                ? () => callbacks!.onRun!(node)
+                : () {},
             tooltip: 'Run',
           ),
           NodeHeaderButton(
             icon: Icons.more_vert,
-            onTap: onMenu ?? () {},
+            onTap: callbacks?.onMenu != null
+                ? () => callbacks!.onMenu!(node)
+                : () {},
             tooltip: 'Menu',
           ),
         ],
@@ -73,7 +76,9 @@ class StartNodeWidget extends StatelessWidget {
         ),
       ),
       footer: null,
-      onDelete: () {}, // 禁止删除
+      callbacks: NodeActionCallbacks(
+        onDelete: (node) {}, // 禁止删除
+      ),
     );
   }
 }

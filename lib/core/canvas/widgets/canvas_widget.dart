@@ -1,4 +1,3 @@
-// file: canvas_controller.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -14,9 +13,10 @@ import 'package:flow_editor/core/edge/behaviors/edge_behavior.dart';
 import 'package:flow_editor/core/node/factories/node_widget_factory.dart';
 import 'package:flow_editor/core/edge/plugins/edge_overlay_plugin.dart';
 
-/// CanvasController(改造版):
-/// - 不再用 ClipRect + Transform 包裹子树
-/// - 仅布局一个容器来承载 CanvasRenderer
+/// CanvasWidget(插件机制版):
+/// - 基于原先 CanvasWidget，
+/// - 用 Stack(children: [...]) 叠加画布 + 可选插件。
+/// - 外部可在 plugins 里传一批 Widget(如 Positioned(...) 小地图/缩放工具等)
 class CanvasWidget extends ConsumerWidget {
   final String workflowId; // 唯一标识某个工作流
 
@@ -32,7 +32,11 @@ class CanvasWidget extends ConsumerWidget {
   final EdgeBehavior? edgeBehavior;
   final CanvasBehavior? canvasBehavior;
 
+  /// 原有的 edgePlugins, 如果要保留
   final List<EdgeOverlayPlugin>? edgePlugins;
+
+  /// 新增：一批可叠加在画布之上的插件 Widget
+  final List<Widget> plugins;
 
   const CanvasWidget({
     super.key,
@@ -47,30 +51,46 @@ class CanvasWidget extends ConsumerWidget {
     this.edgeBehavior,
     this.canvasBehavior,
     this.edgePlugins,
+    this.plugins = const [],
   });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    // 1. watch state
     final nodeState = ref.watch(nodeStateProvider(workflowId));
     final edgeState = ref.watch(edgeStateProvider(workflowId));
     final hoveredEdgeId = ref.watch(multiCanvasStateProvider).hoveredEdgeId;
 
-    return SizedBox(
-      key: canvasGlobalKey,
-      child: CanvasRenderer(
-        workflowId: workflowId,
-        offset: offset,
-        scale: scale,
-        nodeWidgetFactory: nodeWidgetFactory,
-        nodeState: nodeState,
-        edgeState: edgeState,
-        visualConfig: visualConfig,
-        nodeBehavior: nodeBehavior,
-        anchorBehavior: anchorBehavior,
-        edgeBehavior: edgeBehavior,
-        canvasBehavior: canvasBehavior,
-        hoveredEdgeId: hoveredEdgeId,
-      ),
+    // 2. 用Stack叠加：
+    //   - 底层: 画布( CanvasRenderer )
+    //   - 中层: (可选) EdgePlugins Overlay
+    //   - 顶层: 用户自定义传进来的 plugins
+    return Stack(
+      children: [
+        // ========== 画布本体 ========== //
+        SizedBox(
+          key: canvasGlobalKey,
+          child: CanvasRenderer(
+            workflowId: workflowId,
+            offset: offset,
+            scale: scale,
+            nodeWidgetFactory: nodeWidgetFactory,
+            nodeState: nodeState,
+            edgeState: edgeState,
+            visualConfig: visualConfig,
+            nodeBehavior: nodeBehavior,
+            anchorBehavior: anchorBehavior,
+            edgeBehavior: edgeBehavior,
+            canvasBehavior: canvasBehavior,
+            hoveredEdgeId: hoveredEdgeId,
+            edgePlugins: edgePlugins ?? const [],
+          ),
+        ),
+
+        // ========== 最顶层: 用户自定义插件 ========== //
+        // plugins 里可以包含 Positioned(...) 之类
+        if (plugins.isNotEmpty) ...plugins,
+      ],
     );
   }
 }

@@ -12,6 +12,7 @@ import 'package:flow_editor/core/canvas/interaction/mouse_event_handler.dart';
 import 'package:flow_editor/core/canvas/widgets/canvas_widget.dart';
 import 'package:flow_editor/core/canvas/canvas_state/canvas_state_provider.dart';
 import 'package:flow_editor/core/canvas/canvas_state/canvas_state.dart';
+import 'package:flow_editor/core/node/plugins/node_action_callbacks.dart';
 
 // ------------------- Node-Related Imports -------------------
 import 'package:flow_editor/core/node/models/node_model.dart';
@@ -29,6 +30,10 @@ import 'package:flow_editor/core/types/position_enum.dart';
 import 'node_list_widget.dart';
 import 'node_widget_registry_initializer.dart';
 
+// ------------------- Plugins -------------------
+import 'package:flow_editor/core/plugin/tools_plugin.dart';
+import 'package:flow_editor/core/plugin/minimap_plugin.dart';
+
 /// GraphEditor：当侧边栏收起时，不能拖拽节点；展开时才可拖拽
 class GraphEditor extends ConsumerStatefulWidget {
   final String workflowId;
@@ -42,14 +47,14 @@ class GraphEditor extends ConsumerStatefulWidget {
   static final GlobalKey canvasStackKey = GlobalKey();
 
   const GraphEditor({
-    Key? key,
+    super.key,
     required this.workflowId,
     required this.nodeBehavior,
     required this.edgeBehavior,
     required this.anchorBehavior,
     required this.visualConfig,
     required this.canvasBehavior,
-  }) : super(key: key);
+  });
 
   @override
   ConsumerState<GraphEditor> createState() => _GraphEditorState();
@@ -72,10 +77,19 @@ class _GraphEditorState extends ConsumerState<GraphEditor> {
     debugPrint('=== initNodeWidgetRegistry done ===');
 
     // 2. 工厂
+    // 默认的回调
+    final defaultCallbacks = NodeActionCallbacks(
+      onRun: _runNode,
+      onStop: _stopNode,
+      onDelete: _deleteNode,
+      onMenu: _showMenu,
+    );
+
     nodeFactory = NodeWidgetFactoryImpl(
       registry: registry,
       nodeBehavior: widget.nodeBehavior,
       anchorBehavior: widget.anchorBehavior,
+      callbacks: defaultCallbacks,
     );
     debugPrint('=== NodeWidgetFactoryImpl created ===');
 
@@ -150,19 +164,17 @@ class _GraphEditorState extends ConsumerState<GraphEditor> {
     final canvasState = ref.watch(multiCanvasStateProvider).activeState;
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text('GraphEditor (No Drag when Collapsed)'),
-      ),
-      body: Row(
-        children: [
-          _buildSidebarNoAnimation(),
-          Expanded(
-            child: _buildCanvasArea(canvasState),
-          ),
-        ],
-      ),
-      floatingActionButton: _buildFloatingActions(),
-    );
+        appBar: AppBar(
+          title: Text('GraphEditor (workflowId=${widget.workflowId})'),
+        ),
+        body: Row(
+          children: [
+            _buildSidebarNoAnimation(),
+            Expanded(
+              child: _buildCanvasArea(canvasState),
+            ),
+          ],
+        ));
   }
 
   /// 去除动画，固定宽度，但区分展开/收起逻辑
@@ -312,6 +324,24 @@ class _GraphEditorState extends ConsumerState<GraphEditor> {
                     edgeBehavior: widget.edgeBehavior,
                     anchorBehavior: widget.anchorBehavior,
                     nodeWidgetFactory: nodeFactory,
+                    plugins: [
+                      Positioned(
+                        left: 16,
+                        bottom: 16,
+                        child: ToolsPlugin(
+                          nodeBehavior: widget.nodeBehavior,
+                          viewportWidth: 1200,
+                          viewportHeight: 800,
+                        ),
+                      ),
+                      Positioned(
+                        right: 16,
+                        bottom: 16,
+                        child: MinimapPlugin(
+                          workflowId: widget.workflowId,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               );
@@ -322,116 +352,20 @@ class _GraphEditorState extends ConsumerState<GraphEditor> {
     );
   }
 
-  /// 浮动按钮区域：平移 / 缩放 / 添加 / 删除 等操作
-  Widget _buildFloatingActions() {
-    final multiCanvasNotifier = ref.read(multiCanvasStateProvider.notifier);
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      crossAxisAlignment: CrossAxisAlignment.end,
-      children: [
-        FloatingActionButton(
-          onPressed: _addNodeExample,
-          heroTag: 'addNode',
-          child: const Icon(Icons.add),
-        ),
-        const SizedBox(height: 8),
-        FloatingActionButton(
-          onPressed: _removeLastNodeExample,
-          heroTag: 'removeNode',
-          child: const Icon(Icons.remove),
-        ),
-        const SizedBox(height: 8),
-        FloatingActionButton(
-          onPressed: () {
-            debugPrint('>>> Pan by (10, 0)');
-            multiCanvasNotifier.panBy(10, 0);
-          },
-          heroTag: 'panRight',
-          child: const Icon(Icons.arrow_right),
-        ),
-        const SizedBox(height: 8),
-        FloatingActionButton(
-          onPressed: () {
-            debugPrint('>>> Zoom in (1.1) at Offset.zero');
-            multiCanvasNotifier.zoomAtPoint(1.1, Offset.zero);
-          },
-          heroTag: 'zoomIn',
-          child: const Icon(Icons.zoom_in),
-        ),
-        const SizedBox(height: 8),
-        FloatingActionButton(
-          onPressed: () {
-            debugPrint('>>> Zoom out (0.9) at Offset.zero');
-            multiCanvasNotifier.zoomAtPoint(0.9, Offset.zero);
-          },
-          heroTag: 'zoomOut',
-          child: const Icon(Icons.zoom_out),
-        ),
-        const SizedBox(height: 8),
-        FloatingActionButton(
-          onPressed: () {
-            debugPrint('>>> ResetCanvas');
-            multiCanvasNotifier.resetCanvas();
-          },
-          heroTag: 'resetCanvas',
-          child: const Icon(Icons.refresh),
-        ),
-      ],
-    );
+  void _runNode(NodeModel node) {
+    debugPrint('Run Node => ${node.id}');
   }
 
-  /// 手动添加一个"middle"节点，仅供示例
-  void _addNodeExample() {
-    debugPrint('>>> _addNodeExample triggered');
-    final newId = 'new_${DateTime.now().millisecondsSinceEpoch}';
-    final node = NodeModel(
-      id: newId,
-      type: 'middle',
-      role: NodeRole.middle,
-      x: 200,
-      y: 200,
-      width: 100,
-      height: 100,
-      title: newId,
-      anchors: [
-        AnchorModel(
-          id: 'out_$newId',
-          nodeId: newId,
-          position: Position.right,
-          placement: AnchorPlacement.border,
-          offsetDistance: 0,
-          ratio: 0.65,
-          width: 24,
-          height: 24,
-          shape: AnchorShape.diamond,
-        ),
-        AnchorModel(
-          id: 'in_$newId',
-          nodeId: newId,
-          position: Position.left,
-          placement: AnchorPlacement.border,
-          offsetDistance: 0,
-          ratio: 0.65,
-          width: 24,
-          height: 24,
-          shape: AnchorShape.square,
-        ),
-      ],
-    );
-    debugPrint('>>> Manually addNodeExample: $newId');
-    widget.nodeBehavior.nodeController.upsertNode(node);
+  void _stopNode(NodeModel node) {
+    debugPrint('Stop Node => ${node.id}');
   }
 
-  /// 删除最后一个节点
-  void _removeLastNodeExample() {
-    debugPrint('>>> _removeLastNodeExample triggered');
-    final allNodes = widget.nodeBehavior.nodeController.getAllNodes();
-    if (allNodes.isEmpty) {
-      debugPrint('>>> No node to remove');
-      return;
-    }
-    final lastNode = allNodes.last;
-    debugPrint('>>> removeLastNodeExample: removing ${lastNode.id}');
-    widget.nodeBehavior.nodeController.removeNode(lastNode.id);
+  void _deleteNode(NodeModel node) {
+    debugPrint('Delete Node => ${node.id}');
+    widget.nodeBehavior.nodeController.removeNode(node.id);
+  }
+
+  void _showMenu(NodeModel node) {
+    debugPrint('Show menu for ${node.id}');
   }
 }

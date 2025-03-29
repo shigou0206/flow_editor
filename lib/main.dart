@@ -11,6 +11,9 @@ import 'core/edge/behaviors/default_edge_behavior.dart';
 import 'core/node/behaviors/default_node_behavior.dart';
 import 'core/anchor/behaviors/default_anchor_behavior.dart';
 
+// ------------------- Providers -------------------
+import 'package:flow_editor/core/plugin/tools_plugin.dart';
+
 void main() {
   runApp(
     const ProviderScope(
@@ -66,8 +69,13 @@ class MyApp extends ConsumerWidget {
       gridSpacing: 20,
     );
 
+    final currentMode = ref.watch(themeModeProvider);
+
     return MaterialApp(
       debugShowCheckedModeBanner: false,
+      theme: ThemeData.light(),
+      darkTheme: ThemeData.dark(),
+      themeMode: currentMode,
       home: Scaffold(
         body: GraphEditor(
           workflowId: workflowId,

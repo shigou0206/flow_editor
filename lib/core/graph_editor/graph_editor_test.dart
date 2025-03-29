@@ -42,14 +42,14 @@ class GraphEditor extends ConsumerStatefulWidget {
   static final GlobalKey canvasStackKey = GlobalKey();
 
   const GraphEditor({
-    Key? key,
+    super.key,
     required this.workflowId,
     required this.nodeBehavior,
     required this.edgeBehavior,
     required this.anchorBehavior,
     required this.visualConfig,
     required this.canvasBehavior,
-  }) : super(key: key);
+  });
 
   @override
   ConsumerState<GraphEditor> createState() => _GraphEditorState();
@@ -151,7 +151,7 @@ class _GraphEditorState extends ConsumerState<GraphEditor> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('GraphEditor (No Animation)'),
+        title: const Text('GraphEditor (No Animation)'),
       ),
       body: Row(
         children: [

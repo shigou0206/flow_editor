@@ -4,6 +4,7 @@ import 'package:flow_editor/core/node/behaviors/node_behavior.dart';
 import 'package:flow_editor/core/anchor/behaviors/anchor_behavior.dart';
 import 'package:flow_editor/core/node/models/node_enums.dart';
 import 'package:flow_editor/core/node/widgets/workflows/base/node_widget.dart';
+import 'package:flow_editor/core/node/plugins/node_action_callbacks.dart';
 
 class PlaceholderNodeWidget extends StatelessWidget {
   final NodeModel node;
@@ -11,14 +12,14 @@ class PlaceholderNodeWidget extends StatelessWidget {
   final AnchorBehavior? anchorBehavior;
 
   /// 当点击占位节点内部按钮时调用，打开配置界面或转换为正式节点
-  final VoidCallback? onConfigure;
+  final NodeActionCallbacks? callbacks;
 
   const PlaceholderNodeWidget({
     super.key,
     required this.node,
     this.behavior,
     this.anchorBehavior,
-    this.onConfigure,
+    this.callbacks,
   });
 
   @override
@@ -55,12 +56,13 @@ class PlaceholderNodeWidget extends StatelessWidget {
               color: Colors.grey,
               size: 32,
             ),
-            onPressed: onConfigure,
+            onPressed: callbacks?.onConfigure != null
+                ? () => callbacks!.onConfigure!(node)
+                : null,
           ),
         ),
       ),
       footer: null,
-      onDelete: () {}, // 占位节点禁止删除
     );
   }
 }

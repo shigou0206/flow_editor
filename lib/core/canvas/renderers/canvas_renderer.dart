@@ -13,6 +13,7 @@ import 'package:flow_editor/core/canvas/renderers/dotted_grid_painter.dart';
 import 'package:flow_editor/core/edge/painter/edge_renderer.dart';
 import 'package:flow_editor/core/edge/utils/edge_utils.dart';
 import 'package:flow_editor/core/types/position_enum.dart';
+import 'package:flow_editor/core/edge/plugins/edge_overlay_plugin.dart';
 
 extension CanvasRendererIterableExtension<T> on Iterable<T> {
   T? firstWhereOrNullSafe(bool Function(T) test) {
@@ -43,6 +44,8 @@ class CanvasRenderer extends StatefulWidget {
 
   final String? hoveredEdgeId;
 
+  final List<EdgeOverlayPlugin> edgePlugins;
+
   /// 是否开启动画
   final bool isAnimated;
 
@@ -63,6 +66,7 @@ class CanvasRenderer extends StatefulWidget {
     this.edgeBehavior,
     this.canvasBehavior,
     this.hoveredEdgeId,
+    this.edgePlugins = const [],
     this.isAnimated = false, // 默认静态
     this.duration = const Duration(seconds: 60), // 默认3秒
   });

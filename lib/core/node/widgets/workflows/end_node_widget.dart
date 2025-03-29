@@ -5,6 +5,7 @@ import 'package:flow_editor/core/anchor/behaviors/anchor_behavior.dart';
 import 'package:flow_editor/core/node/widgets/components/node_header.dart';
 import 'package:flow_editor/core/node/models/node_enums.dart';
 import 'package:flow_editor/core/node/widgets/workflows/base/node_widget.dart';
+import 'package:flow_editor/core/node/plugins/node_action_callbacks.dart';
 
 class EndNodeWidget extends StatelessWidget {
   final NodeModel node;
@@ -12,14 +13,14 @@ class EndNodeWidget extends StatelessWidget {
   final AnchorBehavior? anchorBehavior;
 
   /// 菜单按钮回调
-  final VoidCallback? onMenu;
+  final NodeActionCallbacks? callbacks;
 
   const EndNodeWidget({
     super.key,
     required this.node,
     this.behavior,
     this.anchorBehavior,
-    this.onMenu,
+    this.callbacks,
   });
 
   @override
@@ -34,7 +35,9 @@ class EndNodeWidget extends StatelessWidget {
         buttons: [
           NodeHeaderButton(
             icon: Icons.more_vert,
-            onTap: onMenu ?? () {},
+            onTap: callbacks?.onMenu != null
+                ? () => callbacks!.onMenu!(node)
+                : () {},
             tooltip: 'Menu',
           ),
         ],
@@ -67,7 +70,9 @@ class EndNodeWidget extends StatelessWidget {
         ),
       ),
       footer: null,
-      onDelete: () {}, // 禁止删除
+      callbacks: NodeActionCallbacks(
+        onDelete: (node) {}, // 禁止删除
+      ),
     );
   }
 }

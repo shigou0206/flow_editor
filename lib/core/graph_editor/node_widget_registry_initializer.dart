@@ -14,25 +14,46 @@ NodeWidgetRegistry initNodeWidgetRegistry() {
 
   registry.register<NodeModel>(
     type: 'start',
-    builder: (node) => StartNodeWidget(node: node),
+    builder: (node, nodeBehavior, anchorBehavior, callbacks) => StartNodeWidget(
+      node: node,
+      behavior: nodeBehavior,
+      anchorBehavior: anchorBehavior,
+      callbacks: callbacks,
+    ),
     useDefaultContainer: false,
   );
 
   registry.register<NodeModel>(
     type: 'end',
-    builder: (node) => EndNodeWidget(node: node),
+    builder: (node, nodeBehavior, anchorBehavior, callbacks) => EndNodeWidget(
+      node: node,
+      behavior: nodeBehavior,
+      anchorBehavior: anchorBehavior,
+      callbacks: callbacks,
+    ),
     useDefaultContainer: false,
   );
 
   registry.register<NodeModel>(
     type: 'placeholder',
-    builder: (node) => PlaceholderNodeWidget(node: node),
+    builder: (node, nodeBehavior, anchorBehavior, callbacks) =>
+        PlaceholderNodeWidget(
+      node: node,
+      behavior: nodeBehavior,
+      anchorBehavior: anchorBehavior,
+      callbacks: callbacks,
+    ),
     useDefaultContainer: false,
   );
 
   registry.register<NodeModel>(
     type: 'middle',
-    builder: (node) => NodeWidget(node: node),
+    builder: (node, nodeBehavior, anchorBehavior, callbacks) => NodeWidget(
+      node: node,
+      behavior: nodeBehavior,
+      anchorBehavior: anchorBehavior,
+      callbacks: callbacks,
+    ),
     useDefaultContainer: false,
   );
 
