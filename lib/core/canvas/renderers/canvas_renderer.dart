@@ -15,6 +15,16 @@ import 'package:flow_editor/core/edge/utils/edge_utils.dart';
 import 'package:flow_editor/core/edge/models/edge_model.dart';
 import 'package:flow_editor/core/types/position_enum.dart';
 
+// 使用 collection 包的 IterableExtension 扩展
+extension CanvasRendererIterableExtension<T> on Iterable<T> {
+  T? firstWhereOrNullSafe(bool Function(T) test) {
+    for (final element in this) {
+      if (test(element)) return element;
+    }
+    return null;
+  }
+}
+
 class CanvasRenderer extends StatelessWidget {
   final String workflowId;
   final Offset offset; // 画布平移量
@@ -57,7 +67,7 @@ class CanvasRenderer extends StatelessWidget {
     final draggingEdgeId = edgeState.draggingEdgeId;
     final draggingEnd = edgeState.draggingEnd;
 
-    // 2. 过滤出“完整连接”的边
+    // 2. 过滤出"完整连接"的边
     final validEdges = edgeList.where((edge) {
       return edge.isConnected &&
           edge.sourceNodeId.isNotEmpty &&
@@ -66,17 +76,17 @@ class CanvasRenderer extends StatelessWidget {
           edge.targetAnchorId != null;
     }).toList();
 
-    // 3. 构建边上的按钮 Overlay
-    final List<Widget> edgeOverlays = [];
-    for (final edge in validEdges) {
-      edgeOverlays.addAll(_buildEdgeOverlay(edge));
-    }
+    // 3. 构建边上的按钮 Overlay（包含删除和插入按钮）
+    // final List<Widget> edgeOverlays = [];
+    // for (final edge in validEdges) {
+    //   edgeOverlays.addAll(_buildEdgeOverlay(edge));
+    // }
 
     return Stack(
       clipBehavior: Clip.none, // 允许越界绘制
       children: [
         Positioned.fill(
-          // 这个 fill 只是让外层“视窗”占满父容器大小
+          // 外层视窗
           child: Stack(
             clipBehavior: Clip.none, // 不裁剪
             children: [
@@ -94,8 +104,7 @@ class CanvasRenderer extends StatelessWidget {
                   ),
                 ),
               ),
-
-              // // ======= 2) 边（Edges）层 =======
+              // ======= 2) 边（Edges）层 =======
               Transform(
                 transform: Matrix4.identity()
                   ..translate(offset.dx, offset.dy)
@@ -111,7 +120,7 @@ class CanvasRenderer extends StatelessWidget {
                   ),
                 ),
               ),
-
+              // ======= 3) 节点层 =======
               ...nodeList.map((node) {
                 return Positioned(
                   left: offset.dx + (node.x - node.anchorPadding.left) * scale,
@@ -124,19 +133,41 @@ class CanvasRenderer extends StatelessWidget {
                   ),
                 );
               }),
+              // ======= 4) 边上的 Overlay（删除、插入按钮） =======
+              ...validEdges.map((edge) {
+                final (sourceWorld, sourcePos) =
+                    _getAnchorWorldInfo(edge.sourceNodeId, edge.sourceAnchorId);
+                final (targetWorld, targetPos) = _getAnchorWorldInfo(
+                    edge.targetNodeId!, edge.targetAnchorId!);
+                final result = buildEdgePathAndCenter(
+                  mode: edge.lineStyle.edgeMode,
+                  sourceX: sourceWorld!.dx,
+                  sourceY: sourceWorld.dy,
+                  sourcePos: sourcePos!,
+                  targetX: targetWorld!.dx,
+                  targetY: targetWorld.dy,
+                  targetPos: targetPos!,
+                  curvature: 0.25,
+                  hvOffset: 50.0,
+                  orthoDist: 40.0,
+                );
+                final center = result.center;
 
-              // ======= 4) 边上的 Overlay（删除按钮等） ======
-              // Transform(
-              //   transform: Matrix4.identity()
-              //     ..translate(offset.dx, offset.dy)
-              //     ..scale(scale),
-              //   transformHitTests: true,
-              //   alignment: Alignment.topLeft,
-              //   child: Stack(
-              //     clipBehavior: Clip.none,
-              //     children: edgeOverlays,
-              //   ),
-              // ),
+                const size = 24.0;
+                return Positioned(
+                  left: offset.dx + (center.dx - size / 2) * scale,
+                  top: offset.dy + (center.dy - size / 2) * scale,
+                  child: Transform.scale(
+                    scale: scale,
+                    alignment: Alignment.topLeft,
+                    transformHitTests: true,
+                    child: EdgeButtonOverlay(
+                      edgeCenter: center,
+                      onDeleteEdge: () {},
+                    ),
+                  ),
+                );
+              }),
             ],
           ),
         ),
@@ -144,61 +175,14 @@ class CanvasRenderer extends StatelessWidget {
     );
   }
 
-  /// 计算边中点 Overlay 按钮
-  List<Widget> _buildEdgeOverlay(EdgeModel edge) {
-    final (sourceWorld, sourcePos) =
-        _getAnchorWorldInfo(edge.sourceNodeId, edge.sourceAnchorId);
-    final (targetWorld, targetPos) =
-        _getAnchorWorldInfo(edge.targetNodeId!, edge.targetAnchorId!);
-
-    if (sourceWorld == null || targetWorld == null) return [];
-    if (sourcePos == null || targetPos == null) return [];
-
-    final result = buildEdgePathAndCenter(
-      mode: edge.lineStyle.edgeMode,
-      sourceX: sourceWorld.dx,
-      sourceY: sourceWorld.dy,
-      sourcePos: sourcePos,
-      targetX: targetWorld.dx,
-      targetY: targetWorld.dy,
-      targetPos: targetPos,
-      curvature: 0.25,
-      hvOffset: 50.0,
-      orthoDist: 40.0,
-    );
-    final center = result.center;
-
-    if (center.dx.isNaN ||
-        center.dy.isNaN ||
-        (center.dx == 0 && center.dy == 0)) {
-      return [];
-    }
-
-    const size = 24.0;
-    return [
-      Positioned(
-        left: center.dx - size / 2,
-        top: center.dy - size / 2,
-        width: size,
-        height: size,
-        child: EdgeButtonOverlay(
-          edgeCenter: const Offset(size / 2, size / 2),
-          onDeleteEdge: () {
-            edgeBehavior?.onEdgeDelete(edge);
-          },
-          size: size,
-        ),
-      ),
-    ];
-  }
-
-  /// 找到某节点 anchor 的世界坐标
+  /// 根据节点ID和anchorID获取锚点的世界坐标和位置
   (Offset?, Position?) _getAnchorWorldInfo(String nodeId, String anchorId) {
-    final node =
-        nodeState.nodesOf(workflowId).firstWhereOrNull((n) => n.id == nodeId);
-
-    final anchor = node?.anchors.firstWhereOrNull((a) => a.id == anchorId);
-    if (node == null || anchor == null) return (null, null);
+    final node = nodeState
+        .nodesOf(workflowId)
+        .firstWhereOrNullSafe((n) => n.id == nodeId);
+    if (node == null) return (null, null);
+    final anchor = node.anchors.firstWhereOrNullSafe((a) => a.id == anchorId);
+    if (anchor == null) return (null, null);
 
     final worldPos = computeAnchorWorldPosition(node, anchor) +
         Offset(anchor.width / 2, anchor.height / 2);
