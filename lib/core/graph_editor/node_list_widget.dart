@@ -14,11 +14,11 @@ class NodeListWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // 过滤掉 Start 和 End 节点
-    final list = availableNodes
-        .where(
-            (node) => node.role != NodeRole.start && node.role != NodeRole.end)
-        .toList();
+    // 过滤掉 Start / End
+    final list = availableNodes.where((node) {
+      return node.role != NodeRole.start && node.role != NodeRole.end;
+    }).toList();
+
     return Container(
       width: 250,
       color: Colors.grey.shade100,
@@ -26,50 +26,53 @@ class NodeListWidget extends StatelessWidget {
         itemCount: list.length,
         separatorBuilder: (_, __) => const Divider(height: 1),
         itemBuilder: (context, index) {
-          final nodeTemplate = list[index];
+          final template = list[index];
           return Draggable<NodeModel>(
-            data: nodeTemplate,
-            feedback: Opacity(
-              opacity: 0.7,
-              child: ListTile(
-                leading: _buildNodeIcon(nodeTemplate),
-                title: Text(nodeTemplate.title),
+            data: template,
+            feedback: Material(
+              color: Colors.transparent,
+              child: Container(
+                color: Colors.blue.withOpacity(0.7),
+                padding: const EdgeInsets.all(8),
+                child: Row(
+                  children: [
+                    const Icon(Icons.add, color: Colors.white),
+                    const SizedBox(width: 8),
+                    Text(
+                      'Drag: ${template.title}',
+                      style: const TextStyle(color: Colors.white),
+                    ),
+                  ],
+                ),
               ),
             ),
             childWhenDragging: Container(
               color: Colors.grey.shade200,
               child: ListTile(
-                leading: _buildNodeIcon(nodeTemplate),
-                title: Text(nodeTemplate.title),
+                leading: const Icon(Icons.add),
+                title: Text('[Dragging] ${template.title}'),
               ),
             ),
             child: ListTile(
-              leading: _buildNodeIcon(nodeTemplate),
-              title: Text(nodeTemplate.title),
+              leading: const Icon(Icons.add),
+              title: Text(template.title),
             ),
-            // 注意：真正添加节点的逻辑放在 DragTarget 中实现，
-            // 此处 onDragCompleted 仅作回调提示（也可不使用）
+
+            // 调试日志
+            onDragStarted: () {
+              debugPrint('>>> Draggable onDragStarted: ${template.title}');
+            },
             onDragEnd: (details) {
-              onDragCompleted(nodeTemplate);
+              debugPrint(
+                  '>>> Draggable onDragEnd: ${template.title}, offset=${details.offset}');
+            },
+            onDraggableCanceled: (velocity, offset) {
+              debugPrint(
+                  '>>> Draggable onDraggableCanceled: ${template.title}, offset=$offset');
             },
           );
         },
       ),
     );
-  }
-
-  Widget _buildNodeIcon(NodeModel node) {
-    // 根据节点类型简单返回一个 Icon
-    // 这里仅示例 task 类型；实际可根据你的需求扩展
-    switch (node.role) {
-      case NodeRole.middle:
-        return const Icon(Icons.task, color: Colors.blue);
-      case NodeRole.custom:
-        return const Icon(Icons.call_split, color: Colors.purple);
-      case NodeRole.placeholder:
-        return const Icon(Icons.hourglass_empty, color: Colors.orange);
-      default:
-        return const Icon(Icons.description, color: Colors.grey);
-    }
   }
 }
