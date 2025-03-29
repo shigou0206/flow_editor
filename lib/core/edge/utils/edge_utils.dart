@@ -374,15 +374,15 @@ List<double> _getControlWithCurvature(
 }
 
 // 定义返回值类
-class EdgePathCenter {
+class EdgePathPoint {
   final Path path;
-  final Offset center;
-  EdgePathCenter(this.path, this.center);
+  final Offset point;
+  EdgePathPoint(this.path, this.point);
 }
 
 /// buildEdgePathAndCenter
 /// 根据传入的参数和 EdgeMode，构造边的路径，并计算路径中点
-EdgePathCenter buildEdgePathAndCenter({
+EdgePathPoint buildEdgePathAndPoint({
   required EdgeMode mode,
   required double sourceX,
   required double sourceY,
@@ -393,14 +393,18 @@ EdgePathCenter buildEdgePathAndCenter({
   double curvature = 0.25,
   double hvOffset = 50.0,
   double orthoDist = 40.0,
+  double pathRatio = 0.5, // 控制点在路径的 0~1 位置，默认为 0.5（中心）
 }) {
+  // 1) 根据 mode 获取原始 path
   Path rawPath;
   switch (mode) {
     case EdgeMode.line:
+      // 直线
       rawPath = Path()
         ..moveTo(sourceX, sourceY)
         ..lineTo(targetX, targetY);
       break;
+
     case EdgeMode.orthogonal3:
       rawPath = getOrthogonalPath3Segments(
         sx: sourceX,
@@ -412,6 +416,7 @@ EdgePathCenter buildEdgePathAndCenter({
         offsetDist: orthoDist,
       );
       break;
+
     case EdgeMode.orthogonal5:
       rawPath = getOrthogonalPath5Segments(
         sx: sourceX,
@@ -423,7 +428,10 @@ EdgePathCenter buildEdgePathAndCenter({
         offsetDist: orthoDist,
       );
       break;
+
     case EdgeMode.bezier:
+      // getBezierPath 返回一个 list: [path, centerX, centerY, dx, dy]
+      // 这里我们只需要第一项 (path)
       rawPath = getBezierPath(
         sourceX: sourceX,
         sourceY: sourceY,
@@ -434,6 +442,7 @@ EdgePathCenter buildEdgePathAndCenter({
         curvature: curvature,
       )[0] as Path;
       break;
+
     case EdgeMode.hvBezier:
       rawPath = getHVBezierPath(
         sourceX: sourceX,
@@ -446,17 +455,27 @@ EdgePathCenter buildEdgePathAndCenter({
       )[0] as Path;
       break;
   }
-  // 计算路径中点
+
+  // 2) 计算 pathRatio 处的点
+  //  - 首先获取 PathMetric
+  //  - 然后根据 pathRatio*length 获取 Tangent
+  Offset targetPoint;
   final metrics = rawPath.computeMetrics().toList();
-  Offset center;
   if (metrics.isNotEmpty) {
-    final metric = metrics.first;
-    final halfLen = metric.length * 0.5;
-    final tangent = metric.getTangentForOffset(halfLen);
-    center = tangent?.position ??
-        Offset((sourceX + targetX) / 2, (sourceY + targetY) / 2);
+    final metric = metrics.first; // 假设这里只有一段 path
+    final length = metric.length;
+    final offsetDist = (pathRatio.clamp(0.0, 1.0)) * length; // 0~length
+    final tangent = metric.getTangentForOffset(offsetDist);
+    if (tangent != null) {
+      targetPoint = tangent.position;
+    } else {
+      // 如果意外取不到 tangent，就用中点 fallback
+      targetPoint = Offset((sourceX + targetX) / 2, (sourceY + targetY) / 2);
+    }
   } else {
-    center = Offset((sourceX + targetX) / 2, (sourceY + targetY) / 2);
+    // 如果 pathMetric 为空，表示 path 可能无效，fallback -> 中点
+    targetPoint = Offset((sourceX + targetX) / 2, (sourceY + targetY) / 2);
   }
-  return EdgePathCenter(rawPath, center);
+
+  return EdgePathPoint(rawPath, targetPoint);
 }

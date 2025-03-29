@@ -2,13 +2,13 @@
 import 'package:flutter/material.dart';
 
 class EdgeButtonOverlay extends StatelessWidget {
-  final Offset edgeCenter; // 可选：用于调试或者其他需求，但不用于定位
+  final Offset edgePoint; // 可选：用于调试或者其他需求，但不用于定位
   final VoidCallback onDeleteEdge; // 删除回调
   final double size;
 
   const EdgeButtonOverlay({
     super.key,
-    required this.edgeCenter,
+    required this.edgePoint,
     required this.onDeleteEdge,
     this.size = 24.0,
   });

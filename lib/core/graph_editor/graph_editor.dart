@@ -89,7 +89,7 @@ class _GraphEditorState extends ConsumerState<GraphEditor> {
       anchorBehavior: widget.anchorBehavior,
     );
 
-    // 3. 首帧渲染后，切换到对应 workflow 并插入示例数据
+    // 3. 首帧渲染后，切换到对应 workflow
     WidgetsBinding.instance.addPostFrameCallback((_) {
       // 切换 workflow
       ref
@@ -100,8 +100,6 @@ class _GraphEditorState extends ConsumerState<GraphEditor> {
           .setWorkflowMode(widget.workflowId, WorkflowMode.stateMachine);
     });
   }
-
-  /// 在这里插入“示例节点 + 边”
 
   @override
   Widget build(BuildContext context) {

@@ -12,10 +12,8 @@ import 'package:flow_editor/core/canvas/models/canvas_visual_config.dart';
 import 'package:flow_editor/core/canvas/renderers/dotted_grid_painter.dart';
 import 'package:flow_editor/core/edge/painter/edge_renderer.dart';
 import 'package:flow_editor/core/edge/utils/edge_utils.dart';
-import 'package:flow_editor/core/edge/models/edge_model.dart';
 import 'package:flow_editor/core/types/position_enum.dart';
 
-// 使用 collection 包的 IterableExtension 扩展
 extension CanvasRendererIterableExtension<T> on Iterable<T> {
   T? firstWhereOrNullSafe(bool Function(T) test) {
     for (final element in this) {
@@ -25,7 +23,10 @@ extension CanvasRendererIterableExtension<T> on Iterable<T> {
   }
 }
 
-class CanvasRenderer extends StatelessWidget {
+/// CanvasRenderer 支持两种模式：
+/// 1. 静态模式 (isAnimated = false): 在路径上固定 0.45 位置
+/// 2. 动态模式 (isAnimated = true): 使用 AnimationController 把位置从 0.0 ~ 1.0 动画
+class CanvasRenderer extends StatefulWidget {
   final String workflowId;
   final Offset offset; // 画布平移量
   final double scale; // 画布缩放因子
@@ -42,6 +43,12 @@ class CanvasRenderer extends StatelessWidget {
 
   final String? hoveredEdgeId;
 
+  /// 是否开启动画
+  final bool isAnimated;
+
+  /// 动画总时长
+  final Duration duration;
+
   const CanvasRenderer({
     super.key,
     required this.workflowId,
@@ -56,18 +63,54 @@ class CanvasRenderer extends StatelessWidget {
     this.edgeBehavior,
     this.canvasBehavior,
     this.hoveredEdgeId,
+    this.isAnimated = false, // 默认静态
+    this.duration = const Duration(seconds: 60), // 默认3秒
   });
 
   @override
+  State<CanvasRenderer> createState() => _CanvasRendererState();
+}
+
+class _CanvasRendererState extends State<CanvasRenderer>
+    with SingleTickerProviderStateMixin {
+  AnimationController? _controller;
+  Animation<double>? _animation; // 0.0 ~ 1.0
+
+  @override
+  void initState() {
+    super.initState();
+
+    if (widget.isAnimated) {
+      // 如果开启动画，则初始化 AnimationController
+      _controller = AnimationController(
+        vsync: this,
+        duration: widget.duration,
+      );
+      _animation = Tween<double>(begin: 0.0, end: 1.0).animate(_controller!)
+        ..addListener(() {
+          setState(() {});
+        });
+      // 开始动画
+      _controller!.forward();
+    }
+  }
+
+  @override
+  void dispose() {
+    _controller?.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    // 1. 获取节点 / 边 数据
-    final nodeList = nodeState.nodesOf(workflowId);
-    final edgeList = edgeState.edgesOf(workflowId);
+    // 获取节点 / 边 数据
+    final nodeList = widget.nodeState.nodesOf(widget.workflowId);
+    final edgeList = widget.edgeState.edgesOf(widget.workflowId);
 
-    final draggingEdgeId = edgeState.draggingEdgeId;
-    final draggingEnd = edgeState.draggingEnd;
+    final draggingEdgeId = widget.edgeState.draggingEdgeId;
+    final draggingEnd = widget.edgeState.draggingEnd;
 
-    // 2. 过滤出"完整连接"的边
+    // 只取 "完整连接" 边
     final validEdges = edgeList.where((edge) {
       return edge.isConnected &&
           edge.sourceNodeId.isNotEmpty &&
@@ -76,39 +119,32 @@ class CanvasRenderer extends StatelessWidget {
           edge.targetAnchorId != null;
     }).toList();
 
-    // 3. 构建边上的按钮 Overlay（包含删除和插入按钮）
-    // final List<Widget> edgeOverlays = [];
-    // for (final edge in validEdges) {
-    //   edgeOverlays.addAll(_buildEdgeOverlay(edge));
-    // }
-
     return Stack(
-      clipBehavior: Clip.none, // 允许越界绘制
+      clipBehavior: Clip.none,
       children: [
         Positioned.fill(
-          // 外层视窗
           child: Stack(
-            clipBehavior: Clip.none, // 不裁剪
+            clipBehavior: Clip.none,
             children: [
-              // ======= 1) 背景层 =======
+              // 1) 背景层
               Positioned.fill(
                 child: CustomPaint(
                   painter: DottedGridPainter(
-                    config: visualConfig,
-                    offset: offset,
-                    scale: scale,
-                    style: visualConfig.backgroundStyle,
+                    config: widget.visualConfig,
+                    offset: widget.offset,
+                    scale: widget.scale,
+                    style: widget.visualConfig.backgroundStyle,
                     themeMode: Theme.of(context).brightness == Brightness.dark
                         ? ThemeMode.dark
                         : ThemeMode.light,
                   ),
                 ),
               ),
-              // ======= 2) 边（Edges）层 =======
+              // 2) 边绘制层
               Transform(
                 transform: Matrix4.identity()
-                  ..translate(offset.dx, offset.dy)
-                  ..scale(scale),
+                  ..translate(widget.offset.dx, widget.offset.dy)
+                  ..scale(widget.scale),
                 alignment: Alignment.topLeft,
                 child: CustomPaint(
                   painter: EdgeRenderer(
@@ -116,54 +152,79 @@ class CanvasRenderer extends StatelessWidget {
                     edges: edgeList,
                     draggingEdgeId: draggingEdgeId,
                     draggingEnd: draggingEnd,
-                    hoveredEdgeId: hoveredEdgeId,
+                    hoveredEdgeId: widget.hoveredEdgeId,
                   ),
                 ),
               ),
-              // ======= 3) 节点层 =======
+              // 3) 节点层
               ...nodeList.map((node) {
                 return Positioned(
-                  left: offset.dx + (node.x - node.anchorPadding.left) * scale,
-                  top: offset.dy + (node.y - node.anchorPadding.top) * scale,
+                  left: widget.offset.dx +
+                      (node.x - node.anchorPadding.left) * widget.scale,
+                  top: widget.offset.dy +
+                      (node.y - node.anchorPadding.top) * widget.scale,
                   child: Transform.scale(
-                    scale: scale,
+                    scale: widget.scale,
                     alignment: Alignment.topLeft,
                     transformHitTests: true,
-                    child: nodeWidgetFactory.createNodeWidget(node),
+                    child: widget.nodeWidgetFactory.createNodeWidget(node),
                   ),
                 );
               }),
-              // ======= 4) 边上的 Overlay（删除、插入按钮） =======
+              // 4) 边上的 Overlay
               ...validEdges.map((edge) {
-                final (sourceWorld, sourcePos) =
-                    _getAnchorWorldInfo(edge.sourceNodeId, edge.sourceAnchorId);
+                final (sourceWorld, sourcePos) = _getAnchorWorldInfo(
+                  edge.sourceNodeId,
+                  edge.sourceAnchorId,
+                );
                 final (targetWorld, targetPos) = _getAnchorWorldInfo(
-                    edge.targetNodeId!, edge.targetAnchorId!);
-                final result = buildEdgePathAndCenter(
+                  edge.targetNodeId!,
+                  edge.targetAnchorId!,
+                );
+                if (sourceWorld == null ||
+                    sourcePos == null ||
+                    targetWorld == null ||
+                    targetPos == null) {
+                  return const SizedBox.shrink();
+                }
+
+                // 根据是否动画，决定 pathRatio
+                double ratio;
+                if (widget.isAnimated && _animation != null) {
+                  ratio = _animation!.value; // 0.0 ~ 1.0
+                } else {
+                  ratio = 0.3; // 静态时就固定个值
+                }
+
+                final result = buildEdgePathAndPoint(
                   mode: edge.lineStyle.edgeMode,
-                  sourceX: sourceWorld!.dx,
+                  sourceX: sourceWorld.dx,
                   sourceY: sourceWorld.dy,
-                  sourcePos: sourcePos!,
-                  targetX: targetWorld!.dx,
+                  sourcePos: sourcePos,
+                  targetX: targetWorld.dx,
                   targetY: targetWorld.dy,
-                  targetPos: targetPos!,
+                  targetPos: targetPos,
                   curvature: 0.25,
                   hvOffset: 50.0,
                   orthoDist: 40.0,
+                  pathRatio: ratio,
                 );
-                final center = result.center;
+                final point = result.point;
 
                 const size = 24.0;
                 return Positioned(
-                  left: offset.dx + (center.dx - size / 2) * scale,
-                  top: offset.dy + (center.dy - size / 2) * scale,
+                  left: widget.offset.dx + (point.dx - size / 2) * widget.scale,
+                  top: widget.offset.dy + (point.dy - size / 2) * widget.scale,
                   child: Transform.scale(
-                    scale: scale,
+                    scale: widget.scale,
                     alignment: Alignment.topLeft,
                     transformHitTests: true,
                     child: EdgeButtonOverlay(
-                      edgeCenter: center,
-                      onDeleteEdge: () {},
+                      edgePoint: point,
+                      size: size,
+                      onDeleteEdge: () {
+                        // do something
+                      },
                     ),
                   ),
                 );
@@ -175,10 +236,10 @@ class CanvasRenderer extends StatelessWidget {
     );
   }
 
-  /// 根据节点ID和anchorID获取锚点的世界坐标和位置
+  /// 获取锚点世界坐标
   (Offset?, Position?) _getAnchorWorldInfo(String nodeId, String anchorId) {
-    final node = nodeState
-        .nodesOf(workflowId)
+    final node = widget.nodeState
+        .nodesOf(widget.workflowId)
         .firstWhereOrNullSafe((n) => n.id == nodeId);
     if (node == null) return (null, null);
     final anchor = node.anchors.firstWhereOrNullSafe((a) => a.id == anchorId);
