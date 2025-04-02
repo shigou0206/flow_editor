@@ -18,34 +18,29 @@ class AnchorPainter extends CustomPainter {
     final center = Offset(size.width / 2, size.height / 2);
     const double radius = 8;
 
-    // 动态颜色计算
-    final baseColor =
-        _parseColorHex(anchor.plusButtonColorHex) ?? const Color(0xFF252525);
-    final fillColor = anchor.locked
-        ? Colors.grey
-        : baseColor.withOpacity(isHover || isSelected ? 0.9 : 0.7);
+    // 1) 决定填充颜色
+    final Color fillColor = _resolveFillColor();
 
-    final borderColor = isSelected
-        ? Colors.blueAccent
-        : isHover
-            ? Colors.orange
-            : Colors.black12;
+    // 2) 决定边框颜色
+    final Color strokeColor = _resolveBorderColor();
 
-    final borderWidth = isSelected ? 2.5 : 1.0;
+    // 3) 决定边框宽度
+    final double strokeWidth = isSelected ? 2.5 : 1.0;
 
     final fillPaint = Paint()
       ..color = fillColor
       ..style = PaintingStyle.fill;
 
-    final borderPaint = Paint()
-      ..color = borderColor
+    final strokePaint = Paint()
+      ..color = strokeColor
       ..style = PaintingStyle.stroke
-      ..strokeWidth = borderWidth;
+      ..strokeWidth = strokeWidth;
 
     switch (anchor.shape) {
       case AnchorShape.circle:
+        // 画圆
         canvas.drawCircle(center, radius, fillPaint);
-        canvas.drawCircle(center, radius, borderPaint);
+        canvas.drawCircle(center, radius, strokePaint);
         break;
       case AnchorShape.square:
         final rect = Rect.fromCenter(
@@ -54,7 +49,7 @@ class AnchorPainter extends CustomPainter {
           height: radius * 2,
         );
         canvas.drawRect(rect, fillPaint);
-        canvas.drawRect(rect, borderPaint);
+        canvas.drawRect(rect, strokePaint);
         break;
       case AnchorShape.diamond:
         final path = Path()
@@ -64,7 +59,7 @@ class AnchorPainter extends CustomPainter {
           ..lineTo(center.dx - radius, center.dy)
           ..close();
         canvas.drawPath(path, fillPaint);
-        canvas.drawPath(path, borderPaint);
+        canvas.drawPath(path, strokePaint);
         break;
       case AnchorShape.custom:
         final path2 = Path()
@@ -73,19 +68,52 @@ class AnchorPainter extends CustomPainter {
           ..lineTo(center.dx - radius, center.dy + radius)
           ..close();
         canvas.drawPath(path2, fillPaint);
-        canvas.drawPath(path2, borderPaint);
+        canvas.drawPath(path2, strokePaint);
         break;
     }
 
-    // 发光效果（可选）
+    // 如果想在 hover 或 selected 时做发光效果:
     if (isHover || isSelected) {
       final glowPaint = Paint()
-        ..color = borderColor.withOpacity(0.3)
+        ..color = strokeColor.withOpacity(0.3)
         ..style = PaintingStyle.stroke
         ..strokeWidth = 6.0
         ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 4.0);
-
       canvas.drawCircle(center, radius + 2, glowPaint);
+    }
+  }
+
+  Color _resolveFillColor() {
+    // 优先使用 anchor.fillColorHex
+    if (anchor.plusButtonColorHex != null &&
+        anchor.plusButtonColorHex!.isNotEmpty) {
+      return _parseColorHex(anchor.plusButtonColorHex) ?? Colors.white;
+    }
+
+    // 否则回到原先 plusButtonColorHex / locked / isHover
+    final baseColor =
+        _parseColorHex(anchor.plusButtonColorHex) ?? const Color(0xFF252525);
+    if (anchor.locked) {
+      return Colors.grey;
+    } else {
+      return baseColor.withOpacity(isHover || isSelected ? 0.9 : 0.7);
+    }
+  }
+
+  Color _resolveBorderColor() {
+    // 优先使用 anchor.borderColorHex
+    if (anchor.plusButtonColorHex != null &&
+        anchor.plusButtonColorHex!.isNotEmpty) {
+      return _parseColorHex(anchor.plusButtonColorHex) ?? Colors.blue;
+    }
+
+    // 否则回到原先 hover / selected
+    if (isSelected) {
+      return Colors.blueAccent;
+    } else if (isHover) {
+      return Colors.orange;
+    } else {
+      return Colors.black12;
     }
   }
 

@@ -13,6 +13,7 @@ class AnchorModel {
   final List<String>? acceptedEdgeTypes;
   final AnchorShape shape;
   final ArrowDirection arrowDirection;
+
   final bool locked;
   final int version;
   final String? lockedByUser;
