@@ -118,7 +118,7 @@ class _CanvasRendererState extends State<CanvasRenderer>
     final validEdges = edgeList.where((edge) {
       return edge.isConnected &&
           edge.sourceNodeId.isNotEmpty &&
-          edge.sourceAnchorId.isNotEmpty &&
+          edge.sourceAnchorId?.isNotEmpty == true &&
           edge.targetNodeId != null &&
           edge.targetAnchorId != null;
     }).toList();
@@ -241,11 +241,12 @@ class _CanvasRendererState extends State<CanvasRenderer>
   }
 
   /// 获取锚点世界坐标
-  (Offset?, Position?) _getAnchorWorldInfo(String nodeId, String anchorId) {
+  (Offset?, Position?) _getAnchorWorldInfo(String nodeId, String? anchorId) {
     final node = widget.nodeState
         .nodesOf(widget.workflowId)
         .firstWhereOrNullSafe((n) => n.id == nodeId);
     if (node == null) return (null, null);
+    if (anchorId == null) return (null, null);
     final anchor = node.anchors.firstWhereOrNullSafe((a) => a.id == anchorId);
     if (anchor == null) return (null, null);
 

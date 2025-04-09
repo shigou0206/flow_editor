@@ -2,20 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:flow_editor/core/node/models/node_model.dart';
 import 'package:flow_editor/core/node/behaviors/node_behavior.dart';
 import 'package:flow_editor/core/anchor/behaviors/anchor_behavior.dart';
-import 'package:flow_editor/core/node/widgets/components/node_header.dart';
 import 'package:flow_editor/core/node/models/node_enums.dart';
-import 'package:flow_editor/core/node/widgets/workflows/base/node_widget.dart';
+import 'package:flow_editor/domain/workflows/base/node_widget.dart';
 import 'package:flow_editor/core/node/plugins/node_action_callbacks.dart';
 
-class EndNodeWidget extends StatelessWidget {
+class StartNodeWidget extends StatelessWidget {
   final NodeModel node;
   final NodeBehavior? behavior;
   final AnchorBehavior? anchorBehavior;
-
-  /// 菜单按钮回调
   final NodeActionCallbacks? callbacks;
 
-  const EndNodeWidget({
+  const StartNodeWidget({
     super.key,
     required this.node,
     this.behavior,
@@ -26,46 +23,33 @@ class EndNodeWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return NodeWidget(
-      node: node.copyWith(role: NodeRole.end),
+      node: node.copyWith(role: NodeRole.start),
       behavior: behavior,
       anchorBehavior: anchorBehavior,
-      header: NodeHeader(
-        width: node.width,
-        height: 30.0,
-        buttons: [
-          NodeHeaderButton(
-            icon: Icons.more_vert,
-            onTap: callbacks?.onMenu != null
-                ? () => callbacks!.onMenu!(node)
-                : () {},
-            tooltip: 'Menu',
-          ),
-        ],
-      ),
+      header: null,
       body: Container(
         width: node.width,
         height: node.height,
         decoration: BoxDecoration(
           shape: BoxShape.circle,
-          gradient: const LinearGradient(
-            colors: [Color(0xFFE53935), Color(0xFFEF5350)],
-            begin: Alignment.topRight,
-            end: Alignment.bottomLeft,
-          ),
+          color: Colors.grey[100],
+          border: Border.all(color: Colors.black87, width: 2),
           boxShadow: const [
             BoxShadow(
-              color: Colors.black26,
-              blurRadius: 8,
-              offset: Offset(2, 2),
-            )
+              color: Colors.black12,
+              blurRadius: 4,
+              offset: Offset(1, 2),
+            ),
           ],
-          border: Border.all(color: Colors.redAccent, width: 4),
         ),
         child: const Center(
-          child: Icon(
-            Icons.stop,
-            color: Colors.white,
-            size: 40,
+          child: Text(
+            'Start',
+            style: TextStyle(
+              color: Color.fromARGB(221, 19, 19, 19),
+              fontWeight: FontWeight.bold,
+              fontSize: 16,
+            ),
           ),
         ),
       ),

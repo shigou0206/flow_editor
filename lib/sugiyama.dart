@@ -1,219 +1,602 @@
-import 'package:flutter/material.dart';
 import 'dart:math' as math;
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-// 1) 如果你已经将前面拆分的所有 Sugiyama 文件放在某个目录，
-//   这里把它们 import 进来即可，比如：
-import 'core/layout/node_model.dart';
-import 'core/layout/edge_model.dart';
-import 'core/layout/sugiyama_configuration.dart';
-import 'core/layout/sugiyama_layout.dart';
+// flow_layout相关
+import 'package:flow_layout/graph/graph.dart';
+import 'package:flow_layout/layout/layout.dart';
 
-// --------------------- 示例入口 ---------------------
-void main() {
-  runApp(const MySugiyamaDemoApp());
+// =============================
+//  0) 节点类型
+// =============================
+enum NodeType { normal, choice }
+
+// 扩展 Offset.normalize() 用来画箭头
+extension OffsetExtension on Offset {
+  Offset normalize() {
+    final dist = distance;
+    if (dist == 0) return Offset.zero;
+    return this / dist;
+  }
 }
 
-// --------------------- 主App ---------------------
-class MySugiyamaDemoApp extends StatelessWidget {
-  const MySugiyamaDemoApp({Key? key}) : super(key: key);
+// =============================
+//  1) 节点 & 边 数据模型
+// =============================
+class NodeModel {
+  final String id;
+  final double x;
+  final double y;
+  final double width;
+  final double height;
+  final String title;
+  final NodeType type;
 
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      home: SugiyamaDemoScreen(),
+  NodeModel({
+    required this.id,
+    required this.title,
+    required this.type,
+    this.x = 0,
+    this.y = 0,
+    this.width = 100,
+    this.height = 60,
+  });
+
+  NodeModel copyWith({
+    double? x,
+    double? y,
+  }) {
+    return NodeModel(
+      id: id,
+      title: title,
+      type: type,
+      x: x ?? this.x,
+      y: y ?? this.y,
+      width: width,
+      height: height,
     );
   }
 }
 
-// --------------------- 具体的屏幕 ---------------------
-class SugiyamaDemoScreen extends StatefulWidget {
-  @override
-  State<SugiyamaDemoScreen> createState() => _SugiyamaDemoScreenState();
+class EdgeModel {
+  final String id;
+  final String sourceId;
+  final String targetId;
+
+  EdgeModel({
+    required this.id,
+    required this.sourceId,
+    required this.targetId,
+  });
 }
 
-class _SugiyamaDemoScreenState extends State<SugiyamaDemoScreen> {
-  // 2) 准备节点和边 (仅示例)
-  final nodes = <Node>[
-    Node(id: 1, width: 60, height: 40),
-    Node(id: 2, width: 70, height: 40),
-    Node(id: 3, width: 100, height: 50),
-    Node(id: 4, width: 60, height: 40),
-    Node(id: 5, width: 50, height: 30),
-    Node(id: 6, width: 50, height: 30),
-    Node(id: 7, width: 80, height: 40),
-    Node(id: 10, width: 60, height: 40),
-    Node(id: 11, width: 60, height: 40),
-  ];
+// =============================
+//  2) Riverpod Providers
+// =============================
+final nodesProvider = StateProvider<List<NodeModel>>((ref) => [
+      // 初始给2个节点
+      NodeModel(
+        id: 'start',
+        title: 'Start',
+        type: NodeType.normal,
+        x: 200,
+        y: 100,
+      ),
+      NodeModel(
+        id: 'end',
+        title: 'End',
+        type: NodeType.normal,
+        x: 200,
+        y: 250,
+      ),
+    ]);
 
-  final edges = <Edge>[
-    Edge(sourceId: 1, targetId: 2),
-    Edge(sourceId: 2, targetId: 3),
-    Edge(sourceId: 3, targetId: 4),
-    Edge(sourceId: 4, targetId: 5),
-    Edge(sourceId: 2, targetId: 11),
-    Edge(sourceId: 11, targetId: 7),
-    Edge(sourceId: 1, targetId: 6),
-    Edge(sourceId: 6, targetId: 7),
-    Edge(sourceId: 7, targetId: 3),
-    Edge(sourceId: 1, targetId: 10),
-    Edge(sourceId: 10, targetId: 11),
-  ];
+final edgesProvider = StateProvider<List<EdgeModel>>((ref) => [
+      EdgeModel(id: 'edge_start_end', sourceId: 'start', targetId: 'end'),
+    ]);
 
-  // 配置
-  final config = SugiyamaConfiguration()
-    ..orientation = SugiyamaConfiguration.ORIENTATION_TOP_BOTTOM
-    ..nodeSeparation = 40
-    ..levelSeparation = 50
-    ..iterations = 24;
+final nodeCounterProvider = StateProvider<int>((ref) => 1);
 
-  @override
-  void initState() {
-    super.initState();
+// =============================
+//  3) 主App
+// =============================
+void main() {
+  runApp(const ProviderScope(child: StepFunctionLayoutApp()));
+}
 
-    // 3) 在 initState 中执行布局
-    runSugiyamaLayout(nodes: nodes, edges: edges, config: config);
-    // 布局完成后，nodes[*].x,y 已有值
-  }
+class StepFunctionLayoutApp extends StatelessWidget {
+  const StepFunctionLayoutApp({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Sugiyama Demo'),
-      ),
-      body: InteractiveViewer(
-        boundaryMargin: const EdgeInsets.all(1000),
-        minScale: 0.1,
-        maxScale: 2.5,
-        child: CustomPaint(
-          // 4) 使用自定义画笔，传入节点、边
-          painter: _SugiyamaPainter(nodes, edges),
-          // 这里给个比较大的画布，让我们可以自由拖动
-          size: const Size(3000, 2000),
+    return MaterialApp(
+      home: Scaffold(
+        appBar: AppBar(
+          title: const Text('StepFunction Layout Demo'),
+        ),
+        body: Row(
+          children: const [
+            SizedBox(width: 200, child: NodeSidebar()),
+            Expanded(child: StepFunctionCanvas()),
+          ],
         ),
       ),
     );
   }
 }
 
-// --------------------- 自定义画笔： 绘制节点和边 ---------------------
-class _SugiyamaPainter extends CustomPainter {
-  final List<Node> nodes;
-  final List<Edge> edges;
+// =============================
+//  4) Sidebar (拖拽模板)
+// =============================
+class NodeSidebar extends ConsumerWidget {
+  const NodeSidebar({super.key});
 
-  _SugiyamaPainter(this.nodes, this.edges);
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return Column(
+      children: [
+        const SizedBox(height: 16),
+        const Text(
+          'Node Templates',
+          style: TextStyle(fontWeight: FontWeight.bold),
+        ),
+        const SizedBox(height: 8),
+        // 普通 Task 节点
+        Draggable<NodeModel>(
+          data: NodeModel(
+            id: 'task_template',
+            title: 'Task',
+            type: NodeType.normal,
+          ),
+          feedback: _dragFeedback('Task'),
+          child: _sidebarItem('Task'),
+        ),
+        const SizedBox(height: 12),
+        // Choice 节点
+        Draggable<NodeModel>(
+          data: NodeModel(
+            id: 'choice_template',
+            title: 'Choice',
+            type: NodeType.choice,
+          ),
+          feedback: _dragFeedback('Choice'),
+          child: _sidebarItem('Choice'),
+        ),
+        const SizedBox(height: 12),
+        ElevatedButton(
+          onPressed: () {
+            // reset
+            ref.read(nodesProvider.notifier).state = [
+              NodeModel(
+                id: 'start',
+                title: 'Start',
+                type: NodeType.normal,
+                x: 200,
+                y: 100,
+              ),
+              NodeModel(
+                id: 'end',
+                title: 'End',
+                type: NodeType.normal,
+                x: 200,
+                y: 250,
+              ),
+            ];
+            ref.read(edgesProvider.notifier).state = [
+              EdgeModel(
+                id: 'edge_start_end',
+                sourceId: 'start',
+                targetId: 'end',
+              ),
+            ];
+            ref.read(nodeCounterProvider.notifier).state = 1;
+          },
+          child: const Text('Reset'),
+        ),
+      ],
+    );
+  }
+
+  static Widget _sidebarItem(String label) {
+    return Container(
+      width: 100,
+      height: 40,
+      alignment: Alignment.center,
+      margin: const EdgeInsets.symmetric(horizontal: 16),
+      decoration: BoxDecoration(
+        color: Colors.blue.shade100,
+        borderRadius: BorderRadius.circular(4),
+      ),
+      child: Text(label),
+    );
+  }
+
+  static Widget _dragFeedback(String label) {
+    return Material(
+      color: Colors.transparent,
+      child: Container(
+        width: 100,
+        height: 40,
+        alignment: Alignment.center,
+        decoration: BoxDecoration(
+          color: Colors.blue.shade300,
+          borderRadius: BorderRadius.circular(4),
+        ),
+        child: Text(label, style: const TextStyle(color: Colors.white)),
+      ),
+    );
+  }
+}
+
+// =============================
+//  5) StepFunctionCanvas
+// =============================
+class StepFunctionCanvas extends ConsumerStatefulWidget {
+  const StepFunctionCanvas({super.key});
+
+  @override
+  ConsumerState<StepFunctionCanvas> createState() => _StepFunctionCanvasState();
+}
+
+class _StepFunctionCanvasState extends ConsumerState<StepFunctionCanvas> {
+  final _canvasKey = GlobalKey();
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) => _performLayout());
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final nodes = ref.watch(nodesProvider);
+    final edges = ref.watch(edgesProvider);
+
+    return Stack(
+      key: _canvasKey,
+      children: [
+        // 1) 先画线
+        Positioned.fill(
+          child: CustomPaint(
+            painter: EdgePainter(nodes, edges),
+          ),
+        ),
+        // 2) DragTarget覆盖画布：检查拖拽是否命中某条边
+        Positioned.fill(
+          child: DragTarget<NodeModel>(
+            onWillAccept: (data) => true,
+            onAcceptWithDetails: (details) {
+              final localPos = _globalToLocal(details.offset);
+              _onDraggedOverCanvas(localPos, details.data);
+            },
+            builder: (context, candidate, rejected) {
+              return Container(
+                color: candidate.isNotEmpty
+                    ? Colors.blue.withOpacity(0.05)
+                    : Colors.transparent,
+                child: Center(
+                  child: candidate.isNotEmpty
+                      ? Text('拖拽到边上插入节点',
+                          style: TextStyle(color: Colors.blue.shade300))
+                      : null,
+                ),
+              );
+            },
+          ),
+        ),
+        // 3) 渲染节点
+        for (final node in nodes)
+          Positioned(
+            left: node.x - node.width / 2,
+            top: node.y - node.height / 2,
+            width: node.width,
+            height: node.height,
+            child: _buildNodeWidget(node),
+          ),
+      ],
+    );
+  }
+
+  void _onDraggedOverCanvas(Offset localPos, NodeModel draggedData) {
+    final edges = ref.read(edgesProvider);
+    final nodes = ref.read(nodesProvider);
+
+    final threshold = 30.0;
+    String? hitEdgeId;
+    double minDist = double.infinity;
+
+    for (final edge in edges) {
+      final srcNode = nodes.firstWhere((n) => n.id == edge.sourceId);
+      final dstNode = nodes.firstWhere((n) => n.id == edge.targetId);
+
+      final dist = _distanceToSegment(
+        localPos,
+        Offset(srcNode.x, srcNode.y),
+        Offset(dstNode.x, dstNode.y),
+      );
+      if (dist < minDist) {
+        minDist = dist;
+        hitEdgeId = edge.id;
+      }
+    }
+
+    if (hitEdgeId != null && minDist < threshold) {
+      _insertNodeOnEdge(hitEdgeId, draggedData);
+    } else {
+      debugPrint('No edge hit. Not inserting. dist=$minDist');
+    }
+  }
+
+  Widget _buildNodeWidget(NodeModel node) {
+    return GestureDetector(
+      onLongPress: () {
+        // 删除节点
+        _deleteNode(node.id);
+      },
+      child: Container(
+        alignment: Alignment.center,
+        decoration: BoxDecoration(
+          color: node.type == NodeType.choice
+              ? Colors.pink.shade100
+              : Colors.orange.shade100,
+          border: Border.all(
+            color: node.type == NodeType.choice ? Colors.pink : Colors.orange,
+            width: 2,
+          ),
+          borderRadius: BorderRadius.circular(8),
+        ),
+        child: Text(node.title),
+      ),
+    );
+  }
+
+  /// 核心方法：在某条边上插入新节点
+  /// 如果是Choice节点，保证至少 1 条入 + 2 条出 => 共3条边
+  void _insertNodeOnEdge(String edgeId, NodeModel template) {
+    final edges = ref.read(edgesProvider);
+    final nodes = ref.read(nodesProvider);
+    final edge = edges.firstWhere((e) => e.id == edgeId);
+
+    // 计数器
+    final count = ref.read(nodeCounterProvider.notifier);
+    final index = count.state;
+    count.state++;
+
+    final newNodeId = 'node_$index';
+
+    // 找到原边的源节点 / 目标节点
+    final sourceNode = nodes.firstWhere((n) => n.id == edge.sourceId);
+    final targetNode = nodes.firstWhere((n) => n.id == edge.targetId);
+
+    // 新节点初始位置 = (源 + 目) / 2
+    final initialX = (sourceNode.x + targetNode.x) / 2;
+    final initialY = (sourceNode.y + targetNode.y) / 2;
+
+    // 创建新节点
+    final newNode = NodeModel(
+      id: newNodeId,
+      title: template.title,
+      type: template.type,
+      x: initialX,
+      y: initialY,
+    );
+
+    // 删除旧边
+    final updatedEdges = edges.where((e) => e.id != edgeId).toList();
+
+    // 添加节点
+    final updatedNodes = [...nodes, newNode];
+
+    // 新增2条边：source->newNode, newNode->target
+    updatedEdges.addAll([
+      EdgeModel(
+        id: 'edge_${edge.sourceId}_$newNodeId',
+        sourceId: edge.sourceId,
+        targetId: newNodeId,
+      ),
+      EdgeModel(
+        id: 'edge_${newNodeId}_${edge.targetId}',
+        sourceId: newNodeId,
+        targetId: edge.targetId,
+      ),
+    ]);
+
+    // ----------------------------
+    // 如果是Choice节点，需确保最少有2条出边
+    // 这时它已有 1条in(edge.source->choice) + 1条out(choice->edge.target)
+    // 若 outEdges <2，就加一条到 end节点(或者其他节点)。
+    // ----------------------------
+    if (template.type == NodeType.choice) {
+      // 找到Choice节点当前outEdges
+      final outEdgesOfChoice =
+          updatedEdges.where((e) => e.sourceId == newNodeId).toList();
+
+      if (outEdgesOfChoice.length < 2) {
+        // 假设我们要给它加一条到 'end' 节点
+        final maybeEnd = updatedNodes.firstWhere(
+          (n) => n.id == 'end',
+          orElse: () => NodeModel(
+            id: 'end',
+            title: 'End',
+            type: NodeType.normal,
+          ),
+        );
+        if (maybeEnd != null) {
+          final secondEdgeId =
+              'edge_${newNodeId}_end_extra_${math.Random().nextInt(9999)}';
+          updatedEdges.add(
+            EdgeModel(
+              id: secondEdgeId,
+              sourceId: newNodeId,
+              targetId: 'end',
+            ),
+          );
+          debugPrint('Choice node => auto add second out edge to "end"');
+        }
+      }
+    }
+
+    // 更新 provider
+    ref.read(nodesProvider.notifier).state = updatedNodes;
+    ref.read(edgesProvider.notifier).state = updatedEdges;
+
+    WidgetsBinding.instance.addPostFrameCallback((_) => _performLayout());
+  }
+
+  /// 删除节点
+  void _deleteNode(String nodeId) {
+    final nodes = ref.read(nodesProvider);
+    final edges = ref.read(edgesProvider);
+
+    // 保护 start/end 不删
+    if (nodeId == 'start' || nodeId == 'end') {
+      return;
+    }
+
+    final incoming = edges.where((e) => e.targetId == nodeId).toList();
+    final outgoing = edges.where((e) => e.sourceId == nodeId).toList();
+
+    final updatedNodes = nodes.where((n) => n.id != nodeId).toList();
+    var updatedEdges = edges
+        .where((e) => e.sourceId != nodeId && e.targetId != nodeId)
+        .toList();
+
+    // 若只有1 in + 1 out, 自动连起来
+    if (incoming.length == 1 && outgoing.length == 1) {
+      final up = incoming.first;
+      final down = outgoing.first;
+      updatedEdges.add(EdgeModel(
+        id: 'edge_${up.sourceId}_${down.targetId}',
+        sourceId: up.sourceId,
+        targetId: down.targetId,
+      ));
+    }
+
+    ref.read(nodesProvider.notifier).state = updatedNodes;
+    ref.read(edgesProvider.notifier).state = updatedEdges;
+
+    WidgetsBinding.instance.addPostFrameCallback((_) => _performLayout());
+  }
+
+  // 计算点到线段的最短距离
+  double _distanceToSegment(Offset p, Offset a, Offset b) {
+    final ap = p - a;
+    final ab = b - a;
+    final abLenSq = ab.dx * ab.dx + ab.dy * ab.dy;
+    if (abLenSq == 0) {
+      return (p - a).distance;
+    }
+    final t = (ap.dx * ab.dx + ap.dy * ab.dy) / abLenSq;
+    if (t < 0) {
+      return (p - a).distance;
+    } else if (t > 1) {
+      return (p - b).distance;
+    } else {
+      final proj = a + Offset(ab.dx * t, ab.dy * t);
+      return (p - proj).distance;
+    }
+  }
+
+  Offset _globalToLocal(Offset globalPos) {
+    final box = _canvasKey.currentContext?.findRenderObject() as RenderBox?;
+    if (box == null) return globalPos;
+    return box.globalToLocal(globalPos);
+  }
+
+  /// 执行 dagre 布局
+  void _performLayout() {
+    final nodes = ref.read(nodesProvider);
+    final edges = ref.read(edgesProvider);
+
+    final graph = Graph();
+
+    for (var node in nodes) {
+      graph.setNode(node.id, {
+        'width': node.width,
+        'height': node.height,
+        'x': node.x - node.width / 2,
+        'y': node.y - node.height / 2,
+      });
+    }
+
+    for (var edge in edges) {
+      graph.setEdge(edge.sourceId, edge.targetId);
+    }
+
+    layout(graph, {
+      'rankdir': 'TB',
+      'ranksep': 50,
+      'edgesep': 10,
+      'nodesep': 50,
+    });
+
+    final updatedNodes = <NodeModel>[];
+    for (var node in nodes) {
+      final nd = graph.node(node.id);
+      if (nd != null && nd['x'] != null && nd['y'] != null) {
+        final x = (nd['x'] as num).toDouble() + node.width / 2;
+        final y = (nd['y'] as num).toDouble() + node.height / 2;
+        updatedNodes.add(node.copyWith(x: x, y: y));
+      } else {
+        updatedNodes.add(node);
+      }
+    }
+
+    ref.read(nodesProvider.notifier).state = updatedNodes;
+  }
+}
+
+// =============================
+//  6) EdgePainter
+// =============================
+class EdgePainter extends CustomPainter {
+  final List<NodeModel> nodes;
+  final List<EdgeModel> edges;
+
+  EdgePainter(this.nodes, this.edges);
 
   @override
   void paint(Canvas canvas, Size size) {
-    // 1) 先计算 (minX, maxX, minY, maxY)
-    double minX = double.infinity;
-    double maxX = double.negativeInfinity;
-    double minY = double.infinity;
-    double maxY = double.negativeInfinity;
-
-    for (var n in nodes) {
-      final left = n.x;
-      final right = n.x + n.width;
-      final top = n.y;
-      final bottom = n.y + n.height;
-
-      if (left < minX) minX = left;
-      if (top < minY) minY = top;
-      if (right > maxX) maxX = right;
-      if (bottom > maxY) maxY = bottom;
-    }
-
-    final layoutWidth = maxX - minX;
-    final layoutHeight = maxY - minY;
-
-    // 2) 计算平移量，使包围盒居中于 size (即 CustomPaint 的 size)
-    //   注意：size 可能是 3000x2000 或者屏幕大小
-    //   这里先假设 size 就是我们可视画布
-    final offsetX = (size.width - layoutWidth) / 2.0;
-    final offsetY = (size.height - layoutHeight) / 2.0;
-
-    // 3) 准备画笔
-    final paintEdge = Paint()
+    final paint = Paint()
       ..color = Colors.black
-      ..strokeWidth = 2
-      ..style = PaintingStyle.stroke;
+      ..strokeWidth = 2;
 
-    final paintNodeBorder = Paint()
-      ..color = Colors.blue
-      ..strokeWidth = 2
-      ..style = PaintingStyle.stroke;
+    final nodeMap = {for (var n in nodes) n.id: n};
 
-    final paintNodeFill = Paint()
-      ..color = Colors.lightGreen.withOpacity(0.3)
-      ..style = PaintingStyle.fill;
-
-    // 4) 先画边
     for (var e in edges) {
-      final src = nodes.firstWhere((n) => n.id == e.sourceId,
-          orElse: () => Node(id: -1));
-      final tgt = nodes.firstWhere((n) => n.id == e.targetId,
-          orElse: () => Node(id: -1));
-      if (src.id < 0 || tgt.id < 0) continue;
+      final src = nodeMap[e.sourceId];
+      final dst = nodeMap[e.targetId];
+      if (src == null || dst == null) continue;
 
-      // 假设边连节点中心
-      final start = Offset(
-        src.x + src.width / 2 - minX + offsetX,
-        src.y + src.height / 2 - minY + offsetY,
-      );
-      final end = Offset(
-        tgt.x + tgt.width / 2 - minX + offsetX,
-        tgt.y + tgt.height / 2 - minY + offsetY,
-      );
+      final srcPos = Offset(src.x, src.y);
+      final dstPos = Offset(dst.x, dst.y);
 
-      canvas.drawLine(start, end, paintEdge);
-      _drawArrow(canvas, paintEdge, start, end);
-    }
-
-    // 5) 再画节点
-    final textPainter = TextPainter(textDirection: TextDirection.ltr);
-
-    for (var n in nodes) {
-      // 计算在画布上的位置：平移 + (x - minX)
-      final rectLeft = n.x - minX + offsetX;
-      final rectTop = n.y - minY + offsetY;
-      final rect = Rect.fromLTWH(rectLeft, rectTop, n.width, n.height);
-
-      // 填充
-      canvas.drawRect(rect, paintNodeFill);
-      // 边框
-      canvas.drawRect(rect, paintNodeBorder);
-
-      // 绘制文本
-      final label = 'id=${n.id}';
-      textPainter.text = TextSpan(
-        text: label,
-        style: const TextStyle(fontSize: 12, color: Colors.black),
-      );
-      textPainter.layout();
-      final dx = rectLeft + (n.width - textPainter.width) / 2;
-      final dy = rectTop + (n.height - textPainter.height) / 2;
-      textPainter.paint(canvas, Offset(dx, dy));
+      canvas.drawLine(srcPos, dstPos, paint);
+      _drawArrow(canvas, srcPos, dstPos, paint);
     }
   }
 
   @override
-  bool shouldRepaint(covariant _SugiyamaPainter oldDelegate) => true;
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => true;
 
-  void _drawArrow(Canvas canvas, Paint paint, Offset start, Offset end) {
-    const arrowSize = 8.0;
-    final angle = math.atan2(end.dy - start.dy, end.dx - start.dx);
+  // 绘制箭头
+  void _drawArrow(Canvas canvas, Offset start, Offset end, Paint paint) {
+    final arrowSize = 10.0;
+    final direction = (end - start).normalize();
+    final arrowEnd = end - direction * 15.0;
 
-    final path = Path();
-    path.moveTo(end.dx, end.dy);
-    path.lineTo(
-      end.dx - arrowSize * math.cos(angle - math.pi / 6),
-      end.dy - arrowSize * math.sin(angle - math.pi / 6),
-    );
-    path.moveTo(end.dx, end.dy);
-    path.lineTo(
-      end.dx - arrowSize * math.cos(angle + math.pi / 6),
-      end.dy - arrowSize * math.sin(angle + math.pi / 6),
-    );
+    final perpendicular = Offset(-direction.dy, direction.dx);
+    final arrowPoint1 =
+        arrowEnd - direction * arrowSize + perpendicular * (arrowSize / 2);
+    final arrowPoint2 =
+        arrowEnd - direction * arrowSize - perpendicular * (arrowSize / 2);
+
+    final path = Path()
+      ..moveTo(end.dx, end.dy)
+      ..lineTo(arrowPoint1.dx, arrowPoint1.dy)
+      ..lineTo(arrowPoint2.dx, arrowPoint2.dy)
+      ..close();
+
     canvas.drawPath(path, paint);
   }
 }

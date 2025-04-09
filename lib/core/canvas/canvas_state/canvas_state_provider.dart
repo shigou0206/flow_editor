@@ -466,7 +466,7 @@ class MultiCanvasStateNotifier extends StateNotifier<MultiWorkflowCanvasState> {
         (canvas) => CanvasState(interactionConfig: canvas.interactionConfig));
   }
 
-  (Offset?, Position?) _getAnchorWorldInfo(String nodeId, String anchorId) {
+  (Offset?, Position?) _getAnchorWorldInfo(String nodeId, String? anchorId) {
     final wfId = state.activeWorkflowId;
     final nodeSt = _ref.read(nodeStateProvider(wfId));
     NodeModel? node;
@@ -477,6 +477,7 @@ class MultiCanvasStateNotifier extends StateNotifier<MultiWorkflowCanvasState> {
       }
     }
     AnchorModel? anchor;
+    if (anchorId == null) return (null, null);
     if (node != null) {
       for (final a in node.anchors) {
         if (a.id == anchorId) {

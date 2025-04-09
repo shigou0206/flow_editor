@@ -3,18 +3,16 @@ import 'package:flow_editor/core/node/models/node_model.dart';
 import 'package:flow_editor/core/node/behaviors/node_behavior.dart';
 import 'package:flow_editor/core/anchor/behaviors/anchor_behavior.dart';
 import 'package:flow_editor/core/node/models/node_enums.dart';
-import 'package:flow_editor/core/node/widgets/workflows/base/node_widget.dart';
+import 'package:flow_editor/domain/workflows/base/node_widget.dart';
 import 'package:flow_editor/core/node/plugins/node_action_callbacks.dart';
 
-class PlaceholderNodeWidget extends StatelessWidget {
+class EndNodeWidget extends StatelessWidget {
   final NodeModel node;
   final NodeBehavior? behavior;
   final AnchorBehavior? anchorBehavior;
-
-  /// 当点击占位节点内部按钮时调用，打开配置界面或转换为正式节点
   final NodeActionCallbacks? callbacks;
 
-  const PlaceholderNodeWidget({
+  const EndNodeWidget({
     super.key,
     required this.node,
     this.behavior,
@@ -25,7 +23,7 @@ class PlaceholderNodeWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return NodeWidget(
-      node: node.copyWith(role: NodeRole.placeholder),
+      node: node.copyWith(role: NodeRole.end),
       behavior: behavior,
       anchorBehavior: anchorBehavior,
       header: null,
@@ -34,35 +32,32 @@ class PlaceholderNodeWidget extends StatelessWidget {
         height: node.height,
         decoration: BoxDecoration(
           shape: BoxShape.circle,
-          // 这里示意使用实线灰色边框，实际可用自定义 painter 实现虚线
-          border: Border.all(
-            color: Colors.grey,
-            width: 2,
-            style: BorderStyle.solid,
-          ),
-          color: Colors.white,
+          color: Colors.grey[100],
+          border: Border.all(color: Colors.black87, width: 2),
           boxShadow: const [
             BoxShadow(
               color: Colors.black12,
               blurRadius: 4,
-              offset: Offset(1, 1),
-            )
+              offset: Offset(1, 2),
+            ),
           ],
         ),
         child: Center(
-          child: IconButton(
-            icon: const Icon(
-              Icons.add,
-              color: Colors.grey,
-              size: 32,
+          child: Container(
+            width: node.width / 4,
+            height: node.height / 3.5,
+            decoration: BoxDecoration(
+              color: Color.fromARGB(221, 96, 96, 96),
+              shape: BoxShape.rectangle,
+              borderRadius: BorderRadius.circular(4),
             ),
-            onPressed: callbacks?.onConfigure != null
-                ? () => callbacks!.onConfigure!(node)
-                : null,
           ),
         ),
       ),
       footer: null,
+      callbacks: NodeActionCallbacks(
+        onDelete: (node) {}, // 禁止删除
+      ),
     );
   }
 }

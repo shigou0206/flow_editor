@@ -5,7 +5,7 @@ class EdgeModel {
   // ===== 基本连接信息 =====
   final String id;
   final String sourceNodeId;
-  final String sourceAnchorId;
+  final String? sourceAnchorId;
   final String? targetNodeId;
   final String? targetAnchorId;
   final bool isConnected;

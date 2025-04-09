@@ -4,10 +4,10 @@ import 'package:flow_editor/core/node/node_widget_registry.dart';
 import 'package:flow_editor/core/node/models/node_model.dart';
 
 // 这里引入你各种节点的自定义Widget
-import 'package:flow_editor/core/node/widgets/workflows/start_node_widget.dart';
-import 'package:flow_editor/core/node/widgets/workflows/end_node_widget.dart';
-import 'package:flow_editor/core/node/widgets/workflows/base/node_widget.dart';
-import 'package:flow_editor/core/node/widgets/workflows/placeholder_node_widget.dart';
+import 'package:flow_editor/domain/workflows/start_node_widget.dart';
+import 'package:flow_editor/domain/workflows/end_node_widget.dart';
+import 'package:flow_editor/domain/workflows/base/node_widget.dart';
+import 'package:flow_editor/domain/workflows/placeholder_node_widget.dart';
 
 NodeWidgetRegistry initNodeWidgetRegistry() {
   final registry = NodeWidgetRegistry();

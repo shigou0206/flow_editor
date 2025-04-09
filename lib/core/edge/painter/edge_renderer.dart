@@ -150,8 +150,9 @@ class EdgeRenderer extends CustomPainter {
   }
 
   /// 获取 anchor 世界坐标和方向
-  (Offset?, Position?) _getAnchorWorldInfo(String nodeId, String anchorId) {
+  (Offset?, Position?) _getAnchorWorldInfo(String nodeId, String? anchorId) {
     final node = nodes.firstWhereOrNull((n) => n.id == nodeId);
+    if (anchorId == null) return (null, null);
     final anchor = node?.anchors.firstWhereOrNull((a) => a.id == anchorId);
     if (node == null || anchor == null) return (null, null);
 

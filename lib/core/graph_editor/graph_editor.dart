@@ -22,9 +22,6 @@ import 'package:flow_editor/core/node/factories/node_widget_factory_impl.dart';
 // ------------------- Logic -------------------
 import 'package:flow_editor/core/logic/strategy/workflow_mode.dart';
 import 'package:flow_editor/core/node/models/node_enums.dart';
-import 'package:flow_editor/core/anchor/models/anchor_model.dart';
-import 'package:flow_editor/core/anchor/models/anchor_enums.dart';
-import 'package:flow_editor/core/types/position_enum.dart';
 
 // ------------------- UI Widgets -------------------
 import 'node_list_widget.dart';
@@ -283,28 +280,28 @@ class _GraphEditorState extends ConsumerState<GraphEditor> {
                 height: nodeTemplate.height,
                 title: nodeTemplate.title,
                 anchors: [
-                  AnchorModel(
-                    id: 'out_$newId',
-                    nodeId: newId,
-                    position: Position.right,
-                    placement: AnchorPlacement.border,
-                    offsetDistance: 0,
-                    ratio: 0.65,
-                    width: 24,
-                    height: 24,
-                    shape: AnchorShape.diamond,
-                  ),
-                  AnchorModel(
-                    id: 'in_$newId',
-                    nodeId: newId,
-                    position: Position.left,
-                    placement: AnchorPlacement.border,
-                    offsetDistance: 0,
-                    ratio: 0.65,
-                    width: 24,
-                    height: 24,
-                    shape: AnchorShape.square,
-                  ),
+                  // AnchorModel(
+                  //   id: 'out_$newId',
+                  //   nodeId: newId,
+                  //   position: Position.right,
+                  //   placement: AnchorPlacement.border,
+                  //   offsetDistance: 0,
+                  //   ratio: 0.65,
+                  //   width: 24,
+                  //   height: 24,
+                  //   shape: AnchorShape.diamond,
+                  // ),
+                  // AnchorModel(
+                  //   id: 'in_$newId',
+                  //   nodeId: newId,
+                  //   position: Position.left,
+                  //   placement: AnchorPlacement.border,
+                  //   offsetDistance: 0,
+                  //   ratio: 0.65,
+                  //   width: 24,
+                  //   height: 24,
+                  //   shape: AnchorShape.square,
+                  // ),
                 ],
               );
               debugPrint('+++ newNode => ${newNode.type}');
