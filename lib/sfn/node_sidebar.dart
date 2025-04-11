@@ -1,5 +1,3 @@
-// lib/node_sidebar.dart
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'models.dart';
@@ -18,7 +16,6 @@ class NodeSidebar extends ConsumerWidget {
           style: TextStyle(fontWeight: FontWeight.bold),
         ),
         const SizedBox(height: 8),
-
         // 拖拽 "Task" 节点
         Draggable<NodeModel>(
           data: NodeModel(
@@ -30,7 +27,6 @@ class NodeSidebar extends ConsumerWidget {
           child: _sidebarItem('Task'),
         ),
         const SizedBox(height: 12),
-
         // 拖拽 "Choice" 节点
         Draggable<NodeModel>(
           data: NodeModel(
@@ -42,7 +38,6 @@ class NodeSidebar extends ConsumerWidget {
           child: _sidebarItem('Choice'),
         ),
         const SizedBox(height: 12),
-
         // Reset 按钮
         ElevatedButton(
           onPressed: () {
@@ -68,6 +63,11 @@ class NodeSidebar extends ConsumerWidget {
                   id: 'edge_start_end', sourceId: 'start', targetId: 'end'),
             ];
             ref.read(nodeCounterProvider.notifier).state = 1;
+            ref.read(edgeRoutesProvider.notifier).state = {};
+            // 触发重新布局（注意 StepFunctionCanvas 内部会捕获布局变化）
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              // 此处不直接调用 _performLayout()，因为它在 StepFunctionCanvas 内部。Reset 后画布会重建并自动布局。
+            });
           },
           child: const Text('Reset'),
         ),

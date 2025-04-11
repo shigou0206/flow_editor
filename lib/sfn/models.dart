@@ -1,5 +1,3 @@
-// lib/models.dart
-
 enum NodeType { normal, choice }
 
 /// 节点模型
