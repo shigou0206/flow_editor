@@ -10,9 +10,10 @@ class NodeSidebar extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     // 获取canvas状态中的缩放因子
-    final canvasState = context.findAncestorStateOfType<StepFunctionCanvasState>();
+    final canvasState =
+        context.findAncestorStateOfType<StepFunctionCanvasState>();
     final scale = canvasState?.scale ?? 1.0;
-    
+
     return Column(
       children: [
         const SizedBox(height: 16),
@@ -26,7 +27,7 @@ class NodeSidebar extends ConsumerWidget {
           data: NodeModel(
             id: 'task_template',
             title: 'Task',
-            type: NodeType.normal,
+            type: 'normal',
             x: 0,
             y: 0,
           ),
@@ -39,7 +40,7 @@ class NodeSidebar extends ConsumerWidget {
           data: NodeModel(
             id: 'choice_template',
             title: 'Choice',
-            type: NodeType.choice,
+            type: 'choice',
             x: 0,
             y: 0,
           ),
@@ -55,14 +56,14 @@ class NodeSidebar extends ConsumerWidget {
               NodeModel(
                 id: 'start',
                 title: 'Start',
-                type: NodeType.normal,
+                type: 'normal',
                 x: 200,
                 y: 100,
               ),
               NodeModel(
                 id: 'end',
                 title: 'End',
-                type: NodeType.normal,
+                type: 'normal',
                 x: 200,
                 y: 300,
               ),
@@ -73,11 +74,12 @@ class NodeSidebar extends ConsumerWidget {
             ];
             ref.read(nodeCounterProvider.notifier).state = 1;
             ref.read(edgeRoutesProvider.notifier).state = {};
-            
+
             // 触发重新布局
             WidgetsBinding.instance.addPostFrameCallback((_) {
               // 查找 StepFunctionCanvas 的 State 并调用其 performLayout 方法
-              final canvasState = context.findAncestorStateOfType<StepFunctionCanvasState>();
+              final canvasState =
+                  context.findAncestorStateOfType<StepFunctionCanvasState>();
               if (canvasState != null) {
                 canvasState.performLayout();
               }

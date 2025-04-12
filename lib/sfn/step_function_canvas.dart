@@ -25,7 +25,7 @@ class StepFunctionCanvasState extends ConsumerState<StepFunctionCanvas> {
   bool _isDragging = false;
   String? _highlightedEdgeId;
   final bool debug = true; // 调试模式开关
-  
+
   // 添加getter，使外部可以访问当前的缩放比例
   double get scale => _scale;
 
@@ -55,7 +55,7 @@ class StepFunctionCanvasState extends ConsumerState<StepFunctionCanvas> {
             // 限制缩放范围
             _scale = _scale.clamp(0.5, 3.0);
           }
-          
+
           // 处理平移
           if (details.pointerCount > 1 || _isDragging) {
             final delta = details.focalPoint - _lastFocalPoint;
@@ -106,7 +106,7 @@ class StepFunctionCanvasState extends ConsumerState<StepFunctionCanvas> {
                         ),
                       ),
                     ),
-                    
+
                     // 渲染每个节点
                     for (final node in nodes)
                       Positioned(
@@ -119,12 +119,13 @@ class StepFunctionCanvasState extends ConsumerState<StepFunctionCanvas> {
                   ],
                 ),
               ),
-              
+
               // 拖拽提示层 - 仅在拖拽时显示
               if (candidate.isNotEmpty)
                 Center(
                   child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                     decoration: BoxDecoration(
                       color: Colors.blue.withOpacity(0.1),
                       borderRadius: BorderRadius.circular(4),
@@ -132,7 +133,9 @@ class StepFunctionCanvasState extends ConsumerState<StepFunctionCanvas> {
                     ),
                     child: Text(
                       '拖拽到边上插入节点',
-                      style: TextStyle(color: Colors.blue.shade700, fontWeight: FontWeight.bold),
+                      style: TextStyle(
+                          color: Colors.blue.shade700,
+                          fontWeight: FontWeight.bold),
                     ),
                   ),
                 ),
@@ -203,7 +206,7 @@ class StepFunctionCanvasState extends ConsumerState<StepFunctionCanvas> {
       final index = count.state;
       count.state++;
       final newId = 'node_$index';
-      
+
       // 弹出对话框让用户输入节点名称
       final nodeName = await showDialog<String>(
         context: context,
@@ -233,13 +236,13 @@ class StepFunctionCanvasState extends ConsumerState<StepFunctionCanvas> {
           );
         },
       );
-      
+
       if (nodeName == null) return; // 用户取消了输入
-      
+
       final newNode = NodeModel(
         id: newId,
         title: nodeName,
-        type: NodeType.normal,
+        type: 'normal',
         x: fromNode.x + 100,
         y: fromNode.y + 80,
       );
@@ -279,7 +282,7 @@ class StepFunctionCanvasState extends ConsumerState<StepFunctionCanvas> {
     double minDist = double.infinity;
 
     debugPrint('尝试插入节点 - 鼠标位置: $dropPos');
-    
+
     // 如果没有边，直接返回
     if (edges.isEmpty) {
       debugPrint('没有可用的边进行检测');
@@ -289,37 +292,38 @@ class StepFunctionCanvasState extends ConsumerState<StepFunctionCanvas> {
     // 对每条边进行检测
     for (final edge in edges) {
       final routePoints = edgeRoutes[edge.id];
-      
+
       // 如果路由点不存在或不够，跳过
       if (routePoints == null || routePoints.length < 2) {
         continue;
       }
-      
+
       // 逐段检查边的每个线段
       double edgeMinDist = double.infinity;
       bool edgeInRange = false;
-      
+
       for (int i = 0; i < routePoints.length - 1; i++) {
         final point1 = routePoints[i];
         final point2 = routePoints[i + 1];
-        
+
         // 计算点到线段的距离
         final dist = _distanceToSegment(dropPos, point1, point2);
-        
+
         // 检查是否在此线段范围内
         final isInRange = _isPointInLineRange(dropPos, point1, point2);
-        
+
         if (debug) {
-          debugPrint('  线段 $i: (${point1.dx}, ${point1.dy}) -> (${point2.dx}, ${point2.dy})');
+          debugPrint(
+              '  线段 $i: (${point1.dx}, ${point1.dy}) -> (${point2.dx}, ${point2.dy})');
           debugPrint('    鼠标: $dropPos, 距离: $dist, 在范围内: $isInRange');
         }
-        
+
         if (isInRange && dist < edgeMinDist) {
           edgeMinDist = dist;
           edgeInRange = true;
         }
       }
-      
+
       // 如果此边有任何线段在范围内且距离小于当前最小值
       if (edgeInRange && edgeMinDist < minDist) {
         minDist = edgeMinDist;
@@ -381,7 +385,7 @@ class StepFunctionCanvasState extends ConsumerState<StepFunctionCanvas> {
             TextButton(
               onPressed: () {
                 Navigator.pop(ctx, name);
-                
+
                 // 创建新节点
                 final newNode = NodeModel(
                   id: newNodeId,
@@ -391,7 +395,8 @@ class StepFunctionCanvasState extends ConsumerState<StepFunctionCanvas> {
                   y: cy,
                 );
 
-                final updatedEdges = edges.where((e) => e.id != edgeId).toList();
+                final updatedEdges =
+                    edges.where((e) => e.id != edgeId).toList();
                 final updatedNodes = [...nodes, newNode];
 
                 updatedEdges.addAll([
@@ -410,7 +415,8 @@ class StepFunctionCanvasState extends ConsumerState<StepFunctionCanvas> {
                 ref.read(nodesProvider.notifier).state = updatedNodes;
                 ref.read(edgesProvider.notifier).state = updatedEdges;
 
-                WidgetsBinding.instance.addPostFrameCallback((_) => performLayout());
+                WidgetsBinding.instance
+                    .addPostFrameCallback((_) => performLayout());
               },
               child: const Text('OK'),
             ),
@@ -459,11 +465,12 @@ class StepFunctionCanvasState extends ConsumerState<StepFunctionCanvas> {
     final nodes = ref.read(nodesProvider);
     final edges = ref.read(edgesProvider);
     debugPrint('开始布局: ${nodes.length} 个节点, ${edges.length} 条边');
-    
+
     // 记录start节点的初始位置（如果存在）
     final startNode = nodes.where((n) => n.id == 'start').firstOrNull;
-    final initialStartPos = startNode != null ? Offset(startNode.x, startNode.y) : null;
-    
+    final initialStartPos =
+        startNode != null ? Offset(startNode.x, startNode.y) : null;
+
     final graph = Graph();
 
     // 添加所有节点（左上角位置）
@@ -526,7 +533,7 @@ class StepFunctionCanvasState extends ConsumerState<StepFunctionCanvas> {
         // 获取源和目标节点
         final srcNode = updatedNodes.firstWhere((n) => n.id == e.sourceId);
         final dstNode = updatedNodes.firstWhere((n) => n.id == e.targetId);
-        
+
         // 添加源节点中心作为起点
         offsetPoints.add(Offset(srcNode.x, srcNode.y));
 
@@ -540,7 +547,7 @@ class StepFunctionCanvasState extends ConsumerState<StepFunctionCanvas> {
 
         // 添加目标节点中心作为终点
         offsetPoints.add(Offset(dstNode.x, dstNode.y));
-        
+
         routes[e.id] = offsetPoints;
       } else {
         debugPrint('  边 ${e.id} 没有路由点信息');
@@ -558,9 +565,11 @@ class StepFunctionCanvasState extends ConsumerState<StepFunctionCanvas> {
 
     // 如果存在start节点，尝试保持其稳定
     if (initialStartPos != null) {
-      final updatedStartNode = updatedNodes.where((n) => n.id == 'start').firstOrNull;
+      final updatedStartNode =
+          updatedNodes.where((n) => n.id == 'start').firstOrNull;
       if (updatedStartNode != null) {
-        _preserveStartNodePosition(updatedNodes, initialStartPos, updatedStartNode);
+        _preserveStartNodePosition(
+            updatedNodes, initialStartPos, updatedStartNode);
       } else {
         // 计算所有节点包围盒，居中画布
         _centerCanvas(updatedNodes);
@@ -569,18 +578,19 @@ class StepFunctionCanvasState extends ConsumerState<StepFunctionCanvas> {
       // 计算所有节点包围盒，居中画布
       _centerCanvas(updatedNodes);
     }
-    
+
     debugPrint('布局完成');
   }
 
   // 保持start节点位置稳定
-  void _preserveStartNodePosition(List<NodeModel> nodes, Offset initialPos, NodeModel updatedStartNode) {
+  void _preserveStartNodePosition(
+      List<NodeModel> nodes, Offset initialPos, NodeModel updatedStartNode) {
     final box = _canvasKey.currentContext?.findRenderObject() as RenderBox?;
     if (box != null) {
       // 计算start节点的位移
       final deltaX = updatedStartNode.x - initialPos.dx;
       final deltaY = updatedStartNode.y - initialPos.dy;
-      
+
       // 调整画布偏移以补偿start节点的移动
       setState(() {
         _canvasOffset = Offset(
@@ -588,8 +598,9 @@ class StepFunctionCanvasState extends ConsumerState<StepFunctionCanvas> {
           _canvasOffset.dy - deltaY,
         );
       });
-      
-      debugPrint('保持start节点位置稳定: 初始位置=$initialPos, 更新位置=(${updatedStartNode.x}, ${updatedStartNode.y}), 偏移量=($deltaX, $deltaY)');
+
+      debugPrint(
+          '保持start节点位置稳定: 初始位置=$initialPos, 更新位置=(${updatedStartNode.x}, ${updatedStartNode.y}), 偏移量=($deltaX, $deltaY)');
     }
   }
 
@@ -623,22 +634,21 @@ class StepFunctionCanvasState extends ConsumerState<StepFunctionCanvas> {
   Offset _globalToLocal(Offset globalPos) {
     final box = context.findRenderObject() as RenderBox?;
     if (box == null) return globalPos;
-    
+
     // 先将全局坐标转换为相对于Stack的位置
     final localPos = box.globalToLocal(globalPos);
-    
+
     // Transform的变换顺序是先平移后缩放:
     // Matrix4.identity()..translate(_canvasOffset.dx, _canvasOffset.dy)..scale(_scale)
     // 所以逆变换应该是先除以缩放因子,再减去(偏移量)
-    final canvasPos = Offset(
-      localPos.dx / _scale - _canvasOffset.dx,
-      localPos.dy / _scale - _canvasOffset.dy
-    );
-    
+    final canvasPos = Offset(localPos.dx / _scale - _canvasOffset.dx,
+        localPos.dy / _scale - _canvasOffset.dy);
+
     if (debug) {
-      debugPrint('坐标转换: global=$globalPos, local=$localPos, canvas=$canvasPos, scale=$_scale, offset=$_canvasOffset');
+      debugPrint(
+          '坐标转换: global=$globalPos, local=$localPos, canvas=$canvasPos, scale=$_scale, offset=$_canvasOffset');
     }
-    
+
     return canvasPos;
   }
 
@@ -658,32 +668,32 @@ class StepFunctionCanvasState extends ConsumerState<StepFunctionCanvas> {
     // 对每条边进行检测
     for (final edge in edges) {
       final routePoints = edgeRoutes[edge.id];
-      
+
       // 如果路由点不存在或不够，跳过
       if (routePoints == null || routePoints.length < 2) {
         continue;
       }
-      
+
       // 逐段检查边的每个线段
       double edgeMinDist = double.infinity;
       bool edgeInRange = false;
-      
+
       for (int i = 0; i < routePoints.length - 1; i++) {
         final point1 = routePoints[i];
         final point2 = routePoints[i + 1];
-        
+
         // 计算点到线段的距离
         final dist = _distanceToSegment(pos, point1, point2);
-        
+
         // 检查是否在此线段范围内
         final isInRange = _isPointInLineRange(pos, point1, point2);
-        
+
         if (isInRange && dist < edgeMinDist) {
           edgeMinDist = dist;
           edgeInRange = true;
         }
       }
-      
+
       // 如果此边有任何线段在范围内且距离小于当前最小值
       if (edgeInRange && edgeMinDist < minDist) {
         minDist = edgeMinDist;
@@ -711,15 +721,15 @@ class StepFunctionCanvasState extends ConsumerState<StepFunctionCanvas> {
     final ab = b - a;
     final abLenSq = ab.dx * ab.dx + ab.dy * ab.dy;
     if (abLenSq == 0) return false; // 如果线段长度为0，直接返回false
-    
+
     // 计算投影比例
     final t = (ap.dx * ab.dx + ap.dy * ab.dy) / abLenSq;
-    
+
     // 修改为允许点稍微超出线段端点
     if (t < -0.2 || t > 1.2) {
       return false;
     }
-    
+
     return true; // 在线段范围内
   }
 
@@ -728,14 +738,14 @@ class StepFunctionCanvasState extends ConsumerState<StepFunctionCanvas> {
     // 计算直线的方向向量
     final ab = b - a;
     final abLenSq = ab.dx * ab.dx + ab.dy * ab.dy;
-    
+
     // 如果线段长度为0，直接返回点到a的距离
     if (abLenSq == 0) return (p - a).distance;
-    
+
     // 计算点到线段的投影位置参数t
     final ap = p - a;
     final t = (ap.dx * ab.dx + ap.dy * ab.dy) / abLenSq;
-    
+
     // 根据t的值确定最近点
     if (t < 0) {
       // 如果t<0，最近点是a
@@ -745,10 +755,10 @@ class StepFunctionCanvasState extends ConsumerState<StepFunctionCanvas> {
       // 如果t>1，最近点是b
       return (p - b).distance;
     }
-    
+
     // 如果0<=t<=1，最近点在线段上
     final closest = a + Offset(ab.dx * t, ab.dy * t);
-    
+
     // 增大检测范围，使边更容易被选中
     // 当缩放比例大于1时，进一步提高检测灵敏度（乘以缩放系数）
     double distScaleFactor = 0.3; // 基础灵敏度系数
@@ -758,4 +768,3 @@ class StepFunctionCanvasState extends ConsumerState<StepFunctionCanvas> {
     return (p - closest).distance * distScaleFactor;
   }
 }
-

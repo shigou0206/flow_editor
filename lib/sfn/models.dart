@@ -5,8 +5,8 @@ enum NodeType { task, source, destination, parallel, choice, subgraph, normal }
 /// 节点模型
 class NodeModel {
   final String id;
+  final String type;
   final String title;
-  final NodeType type;
   final double x;
   final double y;
   final double width;
@@ -16,20 +16,22 @@ class NodeModel {
   final String? rootNodeId; // 子图根节点ID
   final List<String> childrenIds; // 子图中的子节点ID列表
   final bool isVisible; // 节点是否可见
+  final Map<String, dynamic> data;
 
   const NodeModel({
     required this.id,
-    required this.title,
     required this.type,
+    required this.title,
     required this.x,
     required this.y,
-    this.width = 100.0,
+    this.width = 80.0,
     this.height = 60.0,
     this.expanded = false,
     this.parentId,
     this.rootNodeId,
     this.childrenIds = const [],
     this.isVisible = true,
+    this.data = const {},
   });
 
   NodeModel copyWith({
@@ -38,8 +40,8 @@ class NodeModel {
   }) {
     return NodeModel(
       id: id,
-      title: title,
       type: type,
+      title: title,
       x: x ?? this.x,
       y: y ?? this.y,
       width: width,
@@ -49,6 +51,7 @@ class NodeModel {
       rootNodeId: rootNodeId,
       childrenIds: childrenIds,
       isVisible: isVisible,
+      data: data,
     );
   }
 }

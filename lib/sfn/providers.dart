@@ -4,17 +4,17 @@ import 'models.dart';
 
 /// 存储画布上的节点列表
 final nodesProvider = StateProvider<List<NodeModel>>((ref) => [
-      NodeModel(
+      const NodeModel(
         id: 'start',
         title: 'Start',
-        type: NodeType.normal,
+        type: 'normal',
         x: 200,
         y: 100,
       ),
-      NodeModel(
+      const NodeModel(
         id: 'end',
         title: 'End',
-        type: NodeType.normal,
+        type: 'normal',
         x: 200,
         y: 300,
       ),
