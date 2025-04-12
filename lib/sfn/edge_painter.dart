@@ -46,54 +46,75 @@ class EdgePainter extends CustomPainter {
       final points = routes[edge.id];
       if (points != null && points.length >= 2) {
         // 处理原始路由点
-        final originalPoints = List<Offset>.from(points);
+        final routePoints = List<Offset>.from(points);
         
-        // 获取源点和目标点
-        final sourcePoint = originalPoints.first;
-        final targetPoint = originalPoints.last;
+        // 打印路由点信息，帮助调试
+        if (debug) {
+          debugPrint('边 ${edge.id} 的路由点:');
+          for (int i = 0; i < routePoints.length; i++) {
+            debugPrint('  点 $i: (${routePoints[i].dx}, ${routePoints[i].dy})');
+          }
+        }
+        
+        // 获取源点和目标点（第一个和最后一个路由点）
+        final sourcePoint = routePoints.first;
+        final targetPoint = routePoints.last;
         
         // 获取倒数第二个点（用于计算箭头角度）
-        final secondLastPoint = originalPoints.length > 2 
-            ? originalPoints[originalPoints.length - 2] 
-            : originalPoints.first;
+        final secondLastPoint = routePoints.length > 1 
+            ? routePoints[routePoints.length - 2] 
+            : sourcePoint;
         
-        // 计算方向向量和角度
-        final dx = targetPoint.dx - secondLastPoint.dx;
-        final dy = targetPoint.dy - secondLastPoint.dy;
-        final angle = atan2(dy, dx);
+        // 计算指向目标节点的方向向量
+        final dirX = targetPoint.dx - secondLastPoint.dx;
+        final dirY = targetPoint.dy - secondLastPoint.dy;
+        final angle = atan2(dirY, dirX);
         
-        // 节点尺寸参数 - 基于 NodeModel 的 width 和 height
+        if (debug) {
+          debugPrint('边 ${edge.id} 的角度: ${angle * 180 / pi}°');
+        }
+        
+        // 节点尺寸参数
         final nodeWidth = 100.0;
         final nodeHeight = 60.0;
         
-        // 计算节点边界到中心的距离（根据从哪个方向进入节点）
+        // 更精确的计算与矩形边界的交点
         double boundaryDistance;
         
-        // 根据角度确定是从哪个方向进入节点（上下左右）
+        // 根据角度计算与矩形边界的交点
         final absAngle = angle.abs();
-        if (absAngle <= pi/4 || absAngle >= 3*pi/4) {
-          // 从左右方向进入
+        if (absAngle < pi/4 || absAngle > 3*pi/4) {
+          // 主要是水平方向（从左或右进入）
           boundaryDistance = nodeWidth / 2;
         } else {
-          // 从上下方向进入
+          // 主要是垂直方向（从上或下进入）
           boundaryDistance = nodeHeight / 2;
         }
         
-        // 计算箭头应该在的位置（节点边界）
+        // 计算边缘交点
         final edgeEndX = targetPoint.dx - boundaryDistance * cos(angle);
         final edgeEndY = targetPoint.dy - boundaryDistance * sin(angle);
         
         // 创建边的路径
         final path = Path();
-        path.moveTo(sourcePoint.dx + canvasOffset.dx, sourcePoint.dy + canvasOffset.dy);
+        path.moveTo(
+          sourcePoint.dx + canvasOffset.dx, 
+          sourcePoint.dy + canvasOffset.dy
+        );
         
         // 绘制所有中间点
-        for (var i = 1; i < originalPoints.length - 1; i++) {
-          path.lineTo(originalPoints[i].dx + canvasOffset.dx, originalPoints[i].dy + canvasOffset.dy);
+        for (var i = 1; i < routePoints.length - 1; i++) {
+          path.lineTo(
+            routePoints[i].dx + canvasOffset.dx, 
+            routePoints[i].dy + canvasOffset.dy
+          );
         }
         
-        // 绘制到边缘点
-        path.lineTo(edgeEndX + canvasOffset.dx, edgeEndY + canvasOffset.dy);
+        // 绘制到节点边缘
+        path.lineTo(
+          edgeEndX + canvasOffset.dx, 
+          edgeEndY + canvasOffset.dy
+        );
         
         // 绘制边
         if (edge.id == highlightedEdgeId) {
@@ -102,18 +123,20 @@ class EdgePainter extends CustomPainter {
           canvas.drawPath(path, paint);
         }
         
-        // 绘制箭头 - 直接在边缘点上添加
-        const arrowSize = 10.0; // 稍微增大箭头尺寸，使其更明显
+        // 箭头大小
+        const arrowSize = 12.0;
+        
+        // 箭头尖端位置是边缘交点
         final tipX = edgeEndX + canvasOffset.dx;
         final tipY = edgeEndY + canvasOffset.dy;
         
-        // 计算箭头底边两个点
-        final x1 = tipX - arrowSize * cos(angle - pi / 6);
-        final y1 = tipY - arrowSize * sin(angle - pi / 6);
-        final x2 = tipX - arrowSize * cos(angle + pi / 6);
-        final y2 = tipY - arrowSize * sin(angle + pi / 6);
+        // 计算箭头的两个底角
+        final x1 = tipX - arrowSize * cos(angle - pi/6);
+        final y1 = tipY - arrowSize * sin(angle - pi/6);
+        final x2 = tipX - arrowSize * cos(angle + pi/6);
+        final y2 = tipY - arrowSize * sin(angle + pi/6);
         
-        // 创建箭头路径
+        // 创建并填充箭头路径
         final arrowPath = Path();
         arrowPath.moveTo(tipX, tipY);
         arrowPath.lineTo(x1, y1);
@@ -127,27 +150,42 @@ class EdgePainter extends CustomPainter {
           canvas.drawPath(arrowPath, arrowPaint);
         }
         
-        // 绘制端点指示 - 帮助调试
+        // 调试辅助 - 绘制关键点
         if (debug) {
-          // 在箭头尖端绘制小圆点
+          // 绘制边缘交点（绿色）
           canvas.drawCircle(
             Offset(tipX, tipY),
-            3.0,
+            4.0,
             Paint()..color = Colors.green..style = PaintingStyle.fill
           );
           
-          // 在直线中间点绘制边的ID
-          final midPoint = originalPoints[originalPoints.length ~/ 2];
+          // 绘制目标节点中心点（蓝色）
+          canvas.drawCircle(
+            Offset(targetPoint.dx + canvasOffset.dx, targetPoint.dy + canvasOffset.dy),
+            4.0,
+            Paint()..color = Colors.blue..style = PaintingStyle.fill
+          );
+          
+          // 绘制倒数第二个点（红色）- 用于计算方向
+          canvas.drawCircle(
+            Offset(secondLastPoint.dx + canvasOffset.dx, secondLastPoint.dy + canvasOffset.dy),
+            4.0,
+            Paint()..color = Colors.red..style = PaintingStyle.fill
+          );
+          
+          // 显示边ID
+          final midIdx = routePoints.length ~/ 2;
+          final midPoint = routePoints[midIdx];
           final textPainter = TextPainter(
             text: TextSpan(
-              text: edge.id,
+              text: '${edge.id}\nθ=${(angle * 180 / pi).toStringAsFixed(1)}°',
               style: const TextStyle(color: Colors.red, fontSize: 8),
             ),
             textDirection: TextDirection.ltr,
           );
           textPainter.layout();
           
-          // 在中点绘制文本背景
+          // 绘制文本背景
           canvas.drawRect(
             Rect.fromLTWH(
               midPoint.dx + canvasOffset.dx - 2,

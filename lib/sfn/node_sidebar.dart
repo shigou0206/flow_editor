@@ -9,6 +9,10 @@ class NodeSidebar extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    // 获取canvas状态中的缩放因子
+    final canvasState = context.findAncestorStateOfType<StepFunctionCanvasState>();
+    final scale = canvasState?.scale ?? 1.0;
+    
     return Column(
       children: [
         const SizedBox(height: 16),
@@ -24,7 +28,7 @@ class NodeSidebar extends ConsumerWidget {
             title: 'Task',
             type: NodeType.normal,
           ),
-          feedback: _dragFeedback('Task'),
+          feedback: _dragFeedback('Task', scale: scale),
           child: _sidebarItem('Task'),
         ),
         const SizedBox(height: 12),
@@ -35,7 +39,7 @@ class NodeSidebar extends ConsumerWidget {
             title: 'Choice',
             type: NodeType.choice,
           ),
-          feedback: _dragFeedback('Choice'),
+          feedback: _dragFeedback('Choice', scale: scale),
           child: _sidebarItem('Choice'),
         ),
         const SizedBox(height: 12),
@@ -95,18 +99,22 @@ class NodeSidebar extends ConsumerWidget {
     );
   }
 
-  static Widget _dragFeedback(String label) {
-    return Material(
-      color: Colors.transparent,
-      child: Container(
-        width: 100,
-        height: 40,
-        alignment: Alignment.center,
-        decoration: BoxDecoration(
-          color: Colors.blue.shade300,
-          borderRadius: BorderRadius.circular(4),
+  static Widget _dragFeedback(String label, {double scale = 1.0}) {
+    // 应用缩放到拖拽图标上
+    return Transform.scale(
+      scale: scale,
+      child: Material(
+        color: Colors.transparent,
+        child: Container(
+          width: 100,
+          height: 40,
+          alignment: Alignment.center,
+          decoration: BoxDecoration(
+            color: Colors.blue.shade300,
+            borderRadius: BorderRadius.circular(4),
+          ),
+          child: Text(label, style: const TextStyle(color: Colors.white)),
         ),
-        child: Text(label, style: const TextStyle(color: Colors.white)),
       ),
     );
   }

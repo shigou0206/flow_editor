@@ -25,6 +25,9 @@ class StepFunctionCanvasState extends ConsumerState<StepFunctionCanvas> {
   bool _isDragging = false;
   String? _highlightedEdgeId;
   final bool debug = true; // 调试模式开关
+  
+  // 添加getter，使外部可以访问当前的缩放比例
+  double get scale => _scale;
 
   @override
   void initState() {
@@ -270,15 +273,13 @@ class StepFunctionCanvasState extends ConsumerState<StepFunctionCanvas> {
   void _insertNodeOnEdgeByDrag(Offset dropPos, NodeModel template) {
     final edges = ref.read(edgesProvider);
     final nodes = ref.read(nodesProvider);
-    final threshold = 100.0; // 增大阈值，与高亮保持一致
+    final edgeRoutes = ref.read(edgeRoutesProvider);
+    final threshold = 80.0; // 阈值调低一些，更容易检测
     String? hitEdgeId;
     double minDist = double.infinity;
 
-    debugPrint('尝试插入节点 - 拖放位置: ($dropPos)');
-    debugPrint('当前边数量: ${edges.length}, 节点数量: ${nodes.length}');
-    debugPrint('拖拽模板: ID=${template.id}, 类型=${template.type}, 标题=${template.title}');
-    debugPrint('当前阈值: $threshold');
-
+    debugPrint('尝试插入节点 - 鼠标位置: $dropPos');
+    
     // 如果没有边，直接返回
     if (edges.isEmpty) {
       debugPrint('没有可用的边进行检测');
@@ -287,77 +288,58 @@ class StepFunctionCanvasState extends ConsumerState<StepFunctionCanvas> {
 
     // 对每条边进行检测
     for (final edge in edges) {
-      try {
-        final srcNode = nodes.firstWhere((n) => n.id == edge.sourceId);
-        final dstNode = nodes.firstWhere((n) => n.id == edge.targetId);
-        
-        debugPrint('检查边 ${edge.id}:');
-        debugPrint('  源节点: ID=${srcNode.id}, 位置=(${srcNode.x}, ${srcNode.y})');
-        debugPrint('  目标节点: ID=${dstNode.id}, 位置=(${dstNode.x}, ${dstNode.y})');
+      final routePoints = edgeRoutes[edge.id];
+      
+      // 如果路由点不存在或不够，跳过
+      if (routePoints == null || routePoints.length < 2) {
+        continue;
+      }
+      
+      // 逐段检查边的每个线段
+      double edgeMinDist = double.infinity;
+      bool edgeInRange = false;
+      
+      for (int i = 0; i < routePoints.length - 1; i++) {
+        final point1 = routePoints[i];
+        final point2 = routePoints[i + 1];
         
         // 计算点到线段的距离
-        final dist = _distanceToSegment(
-          dropPos,
-          Offset(srcNode.x, srcNode.y),
-          Offset(dstNode.x, dstNode.y),
-        );
+        final dist = _distanceToSegment(dropPos, point1, point2);
         
-        // 检查点是否在线段的范围内
-        final isInRange = _isPointInLineRange(
-          dropPos,
-          Offset(srcNode.x, srcNode.y),
-          Offset(dstNode.x, dstNode.y),
-        );
+        // 检查是否在此线段范围内
+        final isInRange = _isPointInLineRange(dropPos, point1, point2);
         
-        debugPrint('  到线段的距离: $dist');
-        debugPrint('  是否在范围内: $isInRange');
-        
-        // 只有当点在范围内且距离小于阈值时才考虑这条边
-        if (isInRange && dist < minDist) {
-          minDist = dist;
-          hitEdgeId = edge.id;
-          debugPrint('  *** 找到可能的边: ${edge.id}, 距离: $dist');
+        if (debug) {
+          debugPrint('  线段 $i: (${point1.dx}, ${point1.dy}) -> (${point2.dx}, ${point2.dy})');
+          debugPrint('    鼠标: $dropPos, 距离: $dist, 在范围内: $isInRange');
         }
-      } catch (e) {
-        debugPrint('处理边 ${edge.id} 时出错: $e');
+        
+        if (isInRange && dist < edgeMinDist) {
+          edgeMinDist = dist;
+          edgeInRange = true;
+        }
+      }
+      
+      // 如果此边有任何线段在范围内且距离小于当前最小值
+      if (edgeInRange && edgeMinDist < minDist) {
+        minDist = edgeMinDist;
+        hitEdgeId = edge.id;
+        debugPrint('  *** 找到可能的边: $hitEdgeId, 最小距离: $minDist');
       }
     }
 
     // 如果找到了合适的边，插入节点
     if (hitEdgeId != null && minDist < threshold) {
-      debugPrint('选中边: $hitEdgeId, 距离: $minDist, 将插入节点');
+      debugPrint('选中边: $hitEdgeId, 距离: $minDist');
       _insertNodeOnEdge(hitEdgeId, template);
     } else {
       debugPrint('没有找到合适的边 (最小距离=$minDist, 阈值=$threshold)');
     }
   }
 
-  /// 检查点是否在线段的范围内
-  bool _isPointInLineRange(Offset p, Offset a, Offset b) {
-    // 计算线段长度
-    final lineLength = (b - a).distance;
-    
-    // 计算点到线段的投影位置
-    final ap = p - a;
-    final ab = b - a;
-    final abLenSq = ab.dx * ab.dx + ab.dy * ab.dy;
-    if (abLenSq == 0) return false; // 如果线段长度为0，直接返回false
-    
-    // 计算投影比例
-    final t = (ap.dx * ab.dx + ap.dy * ab.dy) / abLenSq;
-    
-    // 放宽检查条件，允许点稍微超出线段端点
-    // 原来是 t < 0 || t > 1，现在改为 t < -0.2 || t > 1.2
-    if (t < -0.2 || t > 1.2) {
-      return false;
-    }
-    
-    // 计算点到线段的垂直距离
-    final dist = _distanceToSegment(p, a, b);
-    
-    // 增大检测阈值，使拖放更容易命中
-    // 原来是 dist < 50.0，现在改为 dist < 80.0
-    return dist < 80.0;
+  /// 在指定位置创建新节点（当拖放不在边上时）
+  void _createNodeAtPosition(Offset pos, NodeModel template) {
+    // 保留但未使用的方法
   }
 
   /// 在指定边上插入新节点，拆分原有边
@@ -365,9 +347,9 @@ class StepFunctionCanvasState extends ConsumerState<StepFunctionCanvas> {
     final edges = ref.read(edgesProvider);
     final nodes = ref.read(nodesProvider);
     final edge = edges.firstWhere((e) => e.id == edgeId);
-    final count = ref.read(nodeCounterProvider.notifier);
-    final index = count.state;
-    count.state++;
+    final counter = ref.read(nodeCounterProvider.notifier);
+    final index = counter.state;
+    counter.state++;
     final newNodeId = 'node_$index';
 
     final src = nodes.firstWhere((n) => n.id == edge.sourceId);
@@ -389,9 +371,7 @@ class StepFunctionCanvasState extends ConsumerState<StepFunctionCanvas> {
             decoration: const InputDecoration(
               labelText: 'Node name',
             ),
-            onChanged: (value) {
-              name = value;
-            },
+            onChanged: (value) => name = value,
           ),
           actions: [
             TextButton(
@@ -479,6 +459,11 @@ class StepFunctionCanvasState extends ConsumerState<StepFunctionCanvas> {
     final nodes = ref.read(nodesProvider);
     final edges = ref.read(edgesProvider);
     debugPrint('开始布局: ${nodes.length} 个节点, ${edges.length} 条边');
+    
+    // 记录start节点的初始位置（如果存在）
+    final startNode = nodes.where((n) => n.id == 'start').firstOrNull;
+    final initialStartPos = startNode != null ? Offset(startNode.x, startNode.y) : null;
+    
     final graph = Graph();
 
     // 添加所有节点（左上角位置）
@@ -571,9 +556,41 @@ class StepFunctionCanvasState extends ConsumerState<StepFunctionCanvas> {
     debugPrint('收集了 ${routes.length} 条边的路由信息');
     ref.read(edgeRoutesProvider.notifier).state = routes;
 
-    // 计算所有节点包围盒，居中画布
-    _centerCanvas(updatedNodes);
+    // 如果存在start节点，尝试保持其稳定
+    if (initialStartPos != null) {
+      final updatedStartNode = updatedNodes.where((n) => n.id == 'start').firstOrNull;
+      if (updatedStartNode != null) {
+        _preserveStartNodePosition(updatedNodes, initialStartPos, updatedStartNode);
+      } else {
+        // 计算所有节点包围盒，居中画布
+        _centerCanvas(updatedNodes);
+      }
+    } else {
+      // 计算所有节点包围盒，居中画布
+      _centerCanvas(updatedNodes);
+    }
+    
     debugPrint('布局完成');
+  }
+
+  // 保持start节点位置稳定
+  void _preserveStartNodePosition(List<NodeModel> nodes, Offset initialPos, NodeModel updatedStartNode) {
+    final box = _canvasKey.currentContext?.findRenderObject() as RenderBox?;
+    if (box != null) {
+      // 计算start节点的位移
+      final deltaX = updatedStartNode.x - initialPos.dx;
+      final deltaY = updatedStartNode.y - initialPos.dy;
+      
+      // 调整画布偏移以补偿start节点的移动
+      setState(() {
+        _canvasOffset = Offset(
+          _canvasOffset.dx - deltaX,
+          _canvasOffset.dy - deltaY,
+        );
+      });
+      
+      debugPrint('保持start节点位置稳定: 初始位置=$initialPos, 更新位置=(${updatedStartNode.x}, ${updatedStartNode.y}), 偏移量=($deltaX, $deltaY)');
+    }
   }
 
   // 计算并设置全局偏移，使得所有节点整体居中显示
@@ -602,73 +619,81 @@ class StepFunctionCanvasState extends ConsumerState<StepFunctionCanvas> {
     }
   }
 
-  // 计算点到线段的最短距离（用于判断拖拽是否位于边附近）
-  double _distanceToSegment(Offset p, Offset a, Offset b) {
-    final ap = p - a;
-    final ab = b - a;
-    final abLenSq = ab.dx * ab.dx + ab.dy * ab.dy;
-    if (abLenSq == 0) return (p - a).distance;
-    final t = (ap.dx * ab.dx + ap.dy * ab.dy) / abLenSq;
-    if (t < 0) return (p - a).distance;
-    if (t > 1) return (p - b).distance;
-    final proj = a + Offset(ab.dx * t, ab.dy * t);
-    return (p - proj).distance;
+  // 将全局坐标转换为画布的本地坐标
+  Offset _globalToLocal(Offset globalPos) {
+    final box = context.findRenderObject() as RenderBox?;
+    if (box == null) return globalPos;
+    
+    // 先将全局坐标转换为相对于Stack的位置
+    final localPos = box.globalToLocal(globalPos);
+    
+    // Transform的变换顺序是先平移后缩放:
+    // Matrix4.identity()..translate(_canvasOffset.dx, _canvasOffset.dy)..scale(_scale)
+    // 所以逆变换应该是先除以缩放因子,再减去(偏移量)
+    final canvasPos = Offset(
+      localPos.dx / _scale - _canvasOffset.dx,
+      localPos.dy / _scale - _canvasOffset.dy
+    );
+    
+    if (debug) {
+      debugPrint('坐标转换: global=$globalPos, local=$localPos, canvas=$canvasPos, scale=$_scale, offset=$_canvasOffset');
+    }
+    
+    return canvasPos;
   }
 
   // 更新高亮的边
   void _updateHighlightedEdge(Offset pos) {
     final edges = ref.read(edgesProvider);
-    final nodes = ref.read(nodesProvider);
-    final threshold = 100.0; // 增大阈值，使检测更容易
+    final edgeRoutes = ref.read(edgeRoutesProvider);
+    final threshold = 80.0;
     String? newHighlightedEdgeId;
     double minDist = double.infinity;
 
-    debugPrint('更新高亮边 - 鼠标位置: ($pos)');
-    debugPrint('当前边数量: ${edges.length}, 节点数量: ${nodes.length}');
-    debugPrint('当前阈值: $threshold');
-
     // 如果没有边，直接返回
     if (edges.isEmpty) {
-      debugPrint('没有可用的边进行高亮');
       return;
     }
 
     // 对每条边进行检测
     for (final edge in edges) {
-      try {
-        final srcNode = nodes.firstWhere((n) => n.id == edge.sourceId);
-        final dstNode = nodes.firstWhere((n) => n.id == edge.targetId);
-        
-        debugPrint('检查边 ${edge.id} 是否需要高亮:');
-        debugPrint('  源节点: ${srcNode.id} 位置=(${srcNode.x}, ${srcNode.y})');
-        debugPrint('  目标节点: ${dstNode.id} 位置=(${dstNode.x}, ${dstNode.y})');
+      final routePoints = edgeRoutes[edge.id];
+      
+      // 如果路由点不存在或不够，跳过
+      if (routePoints == null || routePoints.length < 2) {
+        continue;
+      }
+      
+      // 逐段检查边的每个线段
+      double edgeMinDist = double.infinity;
+      bool edgeInRange = false;
+      
+      for (int i = 0; i < routePoints.length - 1; i++) {
+        final point1 = routePoints[i];
+        final point2 = routePoints[i + 1];
         
         // 计算点到线段的距离
-        final dist = _distanceToSegment(
-          pos,
-          Offset(srcNode.x, srcNode.y),
-          Offset(dstNode.x, dstNode.y),
-        );
+        final dist = _distanceToSegment(pos, point1, point2);
         
-        // 检查点是否在线段的范围内
-        final isInRange = _isPointInLineRange(
-          pos,
-          Offset(srcNode.x, srcNode.y),
-          Offset(dstNode.x, dstNode.y),
-        );
+        // 检查是否在此线段范围内
+        final isInRange = _isPointInLineRange(pos, point1, point2);
         
-        debugPrint('  到线段的距离: $dist');
-        debugPrint('  是否在范围内: $isInRange');
-        
-        // 只有当点在范围内且距离小于阈值时才考虑这条边
-        if (isInRange && dist < threshold && dist < minDist) {
-          minDist = dist;
-          newHighlightedEdgeId = edge.id;
-          debugPrint('  *** 找到可能的高亮边: ${edge.id}, 距离: $dist');
+        if (isInRange && dist < edgeMinDist) {
+          edgeMinDist = dist;
+          edgeInRange = true;
         }
-      } catch (e) {
-        debugPrint('处理边 ${edge.id} 高亮时出错: $e');
       }
+      
+      // 如果此边有任何线段在范围内且距离小于当前最小值
+      if (edgeInRange && edgeMinDist < minDist) {
+        minDist = edgeMinDist;
+        newHighlightedEdgeId = edge.id;
+      }
+    }
+
+    // 只有在距离小于阈值时才高亮
+    if (minDist > threshold) {
+      newHighlightedEdgeId = null;
     }
 
     // 更新高亮边ID，必要时刷新界面
@@ -676,39 +701,61 @@ class StepFunctionCanvasState extends ConsumerState<StepFunctionCanvas> {
       setState(() {
         _highlightedEdgeId = newHighlightedEdgeId;
       });
-      debugPrint('更新高亮边: $_highlightedEdgeId');
     }
   }
 
-  // 将全局坐标转换为画布的本地坐标
-  Offset _globalToLocal(Offset globalPos) {
-    final box = _canvasKey.currentContext?.findRenderObject() as RenderBox?;
-    if (box != null) {
-      // 获取鼠标相对于画布组件的位置
-      final localPos = box.globalToLocal(globalPos);
-      
-      // 基本转换
-      final rawAdjustedPos = Offset(
-        localPos.dx / _scale - _canvasOffset.dx,
-        localPos.dy / _scale - _canvasOffset.dy,
-      );
-      
-      // 添加额外的偏移量补偿，根据调试输出调整
-      // 这些固定的补偿值是基于观察到的偏差模式
-      final adjustedPos = Offset(
-        rawAdjustedPos.dx - 100,  // 向左移动100个像素
-        rawAdjustedPos.dy - 50,   // 向上移动50个像素
-      );
-      
-      debugPrint('坐标转换:');
-      debugPrint('  全局坐标: $globalPos');
-      debugPrint('  本地坐标: $localPos');
-      debugPrint('  原始调整坐标: $rawAdjustedPos');
-      debugPrint('  补偿后坐标: $adjustedPos');
-      
-      return adjustedPos;
+  /// 检查点是否在线段的范围内
+  bool _isPointInLineRange(Offset p, Offset a, Offset b) {
+    // 计算点到线段的投影位置
+    final ap = p - a;
+    final ab = b - a;
+    final abLenSq = ab.dx * ab.dx + ab.dy * ab.dy;
+    if (abLenSq == 0) return false; // 如果线段长度为0，直接返回false
+    
+    // 计算投影比例
+    final t = (ap.dx * ab.dx + ap.dy * ab.dy) / abLenSq;
+    
+    // 修改为允许点稍微超出线段端点
+    if (t < -0.2 || t > 1.2) {
+      return false;
     }
-    return globalPos;
+    
+    return true; // 在线段范围内
+  }
+
+  // 计算点到线段的最短距离（用于判断拖拽是否位于边附近）
+  double _distanceToSegment(Offset p, Offset a, Offset b) {
+    // 计算直线的方向向量
+    final ab = b - a;
+    final abLenSq = ab.dx * ab.dx + ab.dy * ab.dy;
+    
+    // 如果线段长度为0，直接返回点到a的距离
+    if (abLenSq == 0) return (p - a).distance;
+    
+    // 计算点到线段的投影位置参数t
+    final ap = p - a;
+    final t = (ap.dx * ab.dx + ap.dy * ab.dy) / abLenSq;
+    
+    // 根据t的值确定最近点
+    if (t < 0) {
+      // 如果t<0，最近点是a
+      return (p - a).distance;
+    }
+    if (t > 1) {
+      // 如果t>1，最近点是b
+      return (p - b).distance;
+    }
+    
+    // 如果0<=t<=1，最近点在线段上
+    final closest = a + Offset(ab.dx * t, ab.dy * t);
+    
+    // 增大检测范围，使边更容易被选中
+    // 当缩放比例大于1时，进一步提高检测灵敏度（乘以缩放系数）
+    double distScaleFactor = 0.3; // 基础灵敏度系数
+    if (_scale > 1.0) {
+      distScaleFactor *= (_scale * 0.8); // 缩放时提高灵敏度
+    }
+    return (p - closest).distance * distScaleFactor;
   }
 }
 
