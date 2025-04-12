@@ -14,18 +14,23 @@ class StepFunctionCanvas extends ConsumerStatefulWidget {
   const StepFunctionCanvas({super.key});
 
   @override
-  ConsumerState<StepFunctionCanvas> createState() => _StepFunctionCanvasState();
+  ConsumerState<StepFunctionCanvas> createState() => StepFunctionCanvasState();
 }
 
-class _StepFunctionCanvasState extends ConsumerState<StepFunctionCanvas> {
+class StepFunctionCanvasState extends ConsumerState<StepFunctionCanvas> {
   final _canvasKey = GlobalKey();
   Offset _canvasOffset = Offset.zero;
+  double _scale = 1.0;
+  Offset _lastFocalPoint = Offset.zero;
+  bool _isDragging = false;
+  String? _highlightedEdgeId;
+  final bool debug = true; // 调试模式开关
 
   @override
   void initState() {
     super.initState();
     // 首次布局
-    WidgetsBinding.instance.addPostFrameCallback((_) => _performLayout());
+    WidgetsBinding.instance.addPostFrameCallback((_) => performLayout());
   }
 
   @override
@@ -34,49 +39,104 @@ class _StepFunctionCanvasState extends ConsumerState<StepFunctionCanvas> {
     final edges = ref.watch(edgesProvider);
     final edgeRoutes = ref.watch(edgeRoutesProvider);
 
-    return Stack(
-      key: _canvasKey,
-      children: [
-        // 背景：绘制所有边（包括折线）
-        Positioned.fill(
-          child: CustomPaint(
-            painter:
-                EdgePainter(nodes, edges, edgeRoutes, offset: _canvasOffset),
-          ),
-        ),
-        // 用于拖拽插入节点的目标区域
-        Positioned.fill(
-          child: DragTarget<NodeModel>(
-            onWillAccept: (data) => true,
-            onAcceptWithDetails: (details) {
-              final localPos = _globalToLocal(details.offset);
-              _insertNodeOnEdgeByDrag(localPos, details.data);
-            },
-            builder: (context, candidate, rejected) {
-              return Container(
-                color: candidate.isNotEmpty
-                    ? Colors.blue.withOpacity(0.05)
-                    : Colors.transparent,
-                child: Center(
-                  child: candidate.isNotEmpty
-                      ? Text('拖拽到边上插入节点',
-                          style: TextStyle(color: Colors.blue.shade300))
-                      : null,
+    return GestureDetector(
+      onScaleStart: (details) {
+        _lastFocalPoint = details.focalPoint;
+        _isDragging = true;
+      },
+      onScaleUpdate: (details) {
+        setState(() {
+          // 处理缩放
+          if (details.scale != 1.0) {
+            _scale *= details.scale;
+            // 限制缩放范围
+            _scale = _scale.clamp(0.5, 3.0);
+          }
+          
+          // 处理平移
+          if (details.pointerCount > 1 || _isDragging) {
+            final delta = details.focalPoint - _lastFocalPoint;
+            _canvasOffset += delta / _scale;
+            _lastFocalPoint = details.focalPoint;
+          }
+        });
+      },
+      onScaleEnd: (details) {
+        _isDragging = false;
+      },
+      child: DragTarget<NodeModel>(
+        onWillAccept: (data) => true,
+        onAcceptWithDetails: (details) {
+          final localPos = _globalToLocal(details.offset);
+          debugPrint('DragTarget接收到拖拽，位置: $localPos, 数据: ${details.data.id}');
+          _insertNodeOnEdgeByDrag(localPos, details.data);
+        },
+        onMove: (details) {
+          final localPos = _globalToLocal(details.offset);
+          _updateHighlightedEdge(localPos);
+        },
+        onLeave: (data) {
+          setState(() {
+            _highlightedEdgeId = null;
+          });
+        },
+        builder: (context, candidate, rejected) {
+          return Stack(
+            children: [
+              // 画布层 - 包含绘制的边和节点
+              Transform(
+                transform: Matrix4.identity()
+                  ..translate(_canvasOffset.dx, _canvasOffset.dy)
+                  ..scale(_scale),
+                child: Stack(
+                  key: _canvasKey,
+                  children: [
+                    // 背景：绘制所有边（包括折线）
+                    Positioned.fill(
+                      child: CustomPaint(
+                        painter: EdgePainter(
+                          edges: edges,
+                          routes: edgeRoutes,
+                          canvasOffset: Offset.zero,
+                          debug: true,
+                          highlightedEdgeId: _highlightedEdgeId,
+                        ),
+                      ),
+                    ),
+                    
+                    // 渲染每个节点
+                    for (final node in nodes)
+                      Positioned(
+                        left: node.x - node.width / 2,
+                        top: node.y - node.height / 2,
+                        width: node.width,
+                        height: node.height,
+                        child: _buildNodeWidget(node),
+                      ),
+                  ],
                 ),
-              );
-            },
-          ),
-        ),
-        // 渲染每个节点
-        for (final node in nodes)
-          Positioned(
-            left: node.x - node.width / 2 + _canvasOffset.dx,
-            top: node.y - node.height / 2 + _canvasOffset.dy,
-            width: node.width,
-            height: node.height,
-            child: _buildNodeWidget(node),
-          ),
-      ],
+              ),
+              
+              // 拖拽提示层 - 仅在拖拽时显示
+              if (candidate.isNotEmpty)
+                Center(
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                    decoration: BoxDecoration(
+                      color: Colors.blue.withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(4),
+                      border: Border.all(color: Colors.blue.shade300),
+                    ),
+                    child: Text(
+                      '拖拽到边上插入节点',
+                      style: TextStyle(color: Colors.blue.shade700, fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                ),
+            ],
+          );
+        },
+      ),
     );
   }
 
@@ -140,9 +200,42 @@ class _StepFunctionCanvasState extends ConsumerState<StepFunctionCanvas> {
       final index = count.state;
       count.state++;
       final newId = 'node_$index';
+      
+      // 弹出对话框让用户输入节点名称
+      final nodeName = await showDialog<String>(
+        context: context,
+        builder: (ctx) {
+          String name = 'Node$index';
+          return AlertDialog(
+            title: const Text('Enter node name'),
+            content: TextField(
+              autofocus: true,
+              decoration: const InputDecoration(
+                labelText: 'Node name',
+              ),
+              onChanged: (value) {
+                name = value;
+              },
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(ctx),
+                child: const Text('Cancel'),
+              ),
+              TextButton(
+                onPressed: () => Navigator.pop(ctx, name),
+                child: const Text('OK'),
+              ),
+            ],
+          );
+        },
+      );
+      
+      if (nodeName == null) return; // 用户取消了输入
+      
       final newNode = NodeModel(
         id: newId,
-        title: 'NewNode$index',
+        title: nodeName,
         type: NodeType.normal,
         x: fromNode.x + 100,
         y: fromNode.y + 80,
@@ -170,36 +263,101 @@ class _StepFunctionCanvasState extends ConsumerState<StepFunctionCanvas> {
       );
       ref.read(edgesProvider.notifier).state = updatedEdges;
     }
-    WidgetsBinding.instance.addPostFrameCallback((_) => _performLayout());
+    WidgetsBinding.instance.addPostFrameCallback((_) => performLayout());
   }
 
   /// 拖拽插入节点到边：根据拖拽位置判断最近边是否需要插入节点
   void _insertNodeOnEdgeByDrag(Offset dropPos, NodeModel template) {
     final edges = ref.read(edgesProvider);
     final nodes = ref.read(nodesProvider);
-    final threshold = 30.0;
+    final threshold = 100.0; // 增大阈值，与高亮保持一致
     String? hitEdgeId;
     double minDist = double.infinity;
 
+    debugPrint('尝试插入节点 - 拖放位置: ($dropPos)');
+    debugPrint('当前边数量: ${edges.length}, 节点数量: ${nodes.length}');
+    debugPrint('拖拽模板: ID=${template.id}, 类型=${template.type}, 标题=${template.title}');
+    debugPrint('当前阈值: $threshold');
+
+    // 如果没有边，直接返回
+    if (edges.isEmpty) {
+      debugPrint('没有可用的边进行检测');
+      return;
+    }
+
+    // 对每条边进行检测
     for (final edge in edges) {
-      final srcNode = nodes.firstWhere((n) => n.id == edge.sourceId);
-      final dstNode = nodes.firstWhere((n) => n.id == edge.targetId);
-      final dist = _distanceToSegment(
-        dropPos,
-        Offset(srcNode.x, srcNode.y),
-        Offset(dstNode.x, dstNode.y),
-      );
-      if (dist < minDist) {
-        minDist = dist;
-        hitEdgeId = edge.id;
+      try {
+        final srcNode = nodes.firstWhere((n) => n.id == edge.sourceId);
+        final dstNode = nodes.firstWhere((n) => n.id == edge.targetId);
+        
+        debugPrint('检查边 ${edge.id}:');
+        debugPrint('  源节点: ID=${srcNode.id}, 位置=(${srcNode.x}, ${srcNode.y})');
+        debugPrint('  目标节点: ID=${dstNode.id}, 位置=(${dstNode.x}, ${dstNode.y})');
+        
+        // 计算点到线段的距离
+        final dist = _distanceToSegment(
+          dropPos,
+          Offset(srcNode.x, srcNode.y),
+          Offset(dstNode.x, dstNode.y),
+        );
+        
+        // 检查点是否在线段的范围内
+        final isInRange = _isPointInLineRange(
+          dropPos,
+          Offset(srcNode.x, srcNode.y),
+          Offset(dstNode.x, dstNode.y),
+        );
+        
+        debugPrint('  到线段的距离: $dist');
+        debugPrint('  是否在范围内: $isInRange');
+        
+        // 只有当点在范围内且距离小于阈值时才考虑这条边
+        if (isInRange && dist < minDist) {
+          minDist = dist;
+          hitEdgeId = edge.id;
+          debugPrint('  *** 找到可能的边: ${edge.id}, 距离: $dist');
+        }
+      } catch (e) {
+        debugPrint('处理边 ${edge.id} 时出错: $e');
       }
     }
 
+    // 如果找到了合适的边，插入节点
     if (hitEdgeId != null && minDist < threshold) {
+      debugPrint('选中边: $hitEdgeId, 距离: $minDist, 将插入节点');
       _insertNodeOnEdge(hitEdgeId, template);
     } else {
-      debugPrint('No edge hit (dist=$minDist), no insertion');
+      debugPrint('没有找到合适的边 (最小距离=$minDist, 阈值=$threshold)');
     }
+  }
+
+  /// 检查点是否在线段的范围内
+  bool _isPointInLineRange(Offset p, Offset a, Offset b) {
+    // 计算线段长度
+    final lineLength = (b - a).distance;
+    
+    // 计算点到线段的投影位置
+    final ap = p - a;
+    final ab = b - a;
+    final abLenSq = ab.dx * ab.dx + ab.dy * ab.dy;
+    if (abLenSq == 0) return false; // 如果线段长度为0，直接返回false
+    
+    // 计算投影比例
+    final t = (ap.dx * ab.dx + ap.dy * ab.dy) / abLenSq;
+    
+    // 放宽检查条件，允许点稍微超出线段端点
+    // 原来是 t < 0 || t > 1，现在改为 t < -0.2 || t > 1.2
+    if (t < -0.2 || t > 1.2) {
+      return false;
+    }
+    
+    // 计算点到线段的垂直距离
+    final dist = _distanceToSegment(p, a, b);
+    
+    // 增大检测阈值，使拖放更容易命中
+    // 原来是 dist < 50.0，现在改为 dist < 80.0
+    return dist < 80.0;
   }
 
   /// 在指定边上插入新节点，拆分原有边
@@ -219,34 +377,67 @@ class _StepFunctionCanvasState extends ConsumerState<StepFunctionCanvas> {
     final cx = (src.x + dst.x) / 2;
     final cy = (src.y + dst.y) / 2;
 
-    final newNode = NodeModel(
-      id: newNodeId,
-      title: template.title,
-      type: template.type,
-      x: cx,
-      y: cy,
+    // 弹出对话框让用户输入节点名称
+    showDialog<String>(
+      context: context,
+      builder: (ctx) {
+        String name = 'Node$index';
+        return AlertDialog(
+          title: const Text('Enter node name'),
+          content: TextField(
+            autofocus: true,
+            decoration: const InputDecoration(
+              labelText: 'Node name',
+            ),
+            onChanged: (value) {
+              name = value;
+            },
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(ctx),
+              child: const Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.pop(ctx, name);
+                
+                // 创建新节点
+                final newNode = NodeModel(
+                  id: newNodeId,
+                  title: name,
+                  type: template.type,
+                  x: cx,
+                  y: cy,
+                );
+
+                final updatedEdges = edges.where((e) => e.id != edgeId).toList();
+                final updatedNodes = [...nodes, newNode];
+
+                updatedEdges.addAll([
+                  EdgeModel(
+                    id: 'edge_${src.id}_$newNodeId',
+                    sourceId: src.id,
+                    targetId: newNodeId,
+                  ),
+                  EdgeModel(
+                    id: 'edge_${newNodeId}_${dst.id}',
+                    sourceId: newNodeId,
+                    targetId: dst.id,
+                  ),
+                ]);
+
+                ref.read(nodesProvider.notifier).state = updatedNodes;
+                ref.read(edgesProvider.notifier).state = updatedEdges;
+
+                WidgetsBinding.instance.addPostFrameCallback((_) => performLayout());
+              },
+              child: const Text('OK'),
+            ),
+          ],
+        );
+      },
     );
-
-    final updatedEdges = edges.where((e) => e.id != edgeId).toList();
-    final updatedNodes = [...nodes, newNode];
-
-    updatedEdges.addAll([
-      EdgeModel(
-        id: 'edge_${src.id}_$newNodeId',
-        sourceId: src.id,
-        targetId: newNodeId,
-      ),
-      EdgeModel(
-        id: 'edge_${newNodeId}_${dst.id}',
-        sourceId: newNodeId,
-        targetId: dst.id,
-      ),
-    ]);
-
-    ref.read(nodesProvider.notifier).state = updatedNodes;
-    ref.read(edgesProvider.notifier).state = updatedEdges;
-
-    WidgetsBinding.instance.addPostFrameCallback((_) => _performLayout());
   }
 
   /// 删除节点，同时尝试把入边和出边重新连接起来
@@ -280,11 +471,11 @@ class _StepFunctionCanvasState extends ConsumerState<StepFunctionCanvas> {
     ref.read(nodesProvider.notifier).state = updatedNodes;
     ref.read(edgesProvider.notifier).state = updatedEdges;
 
-    WidgetsBinding.instance.addPostFrameCallback((_) => _performLayout());
+    WidgetsBinding.instance.addPostFrameCallback((_) => performLayout());
   }
 
   /// 调用 dagre 布局算法，并更新节点及边的状态
-  void _performLayout() {
+  void performLayout() {
     final nodes = ref.read(nodesProvider);
     final edges = ref.read(edgesProvider);
     debugPrint('开始布局: ${nodes.length} 个节点, ${edges.length} 条边');
@@ -299,8 +490,8 @@ class _StepFunctionCanvasState extends ConsumerState<StepFunctionCanvas> {
       graph.setNode(node.id, {
         'width': node.width,
         'height': node.height,
-        'x': node.x - node.width / 2,
-        'y': node.y - node.height / 2,
+        'x': nodeX,
+        'y': nodeY,
       });
     }
 
@@ -347,52 +538,34 @@ class _StepFunctionCanvasState extends ConsumerState<StepFunctionCanvas> {
         final offsetPoints = <Offset>[];
         debugPrint('  边 ${e.id} 有 ${points.length} 个路由点');
 
-        // 获取源和目标节点，用于判断是否需要在路由中补充节点中心
-        final srcNode = nodes.firstWhere((n) => n.id == e.sourceId);
-        final dstNode = nodes.firstWhere((n) => n.id == e.targetId);
-        final srcPos = Offset(srcNode.x, srcNode.y);
-        final dstPos = Offset(dstNode.x, dstNode.y);
+        // 获取源和目标节点
+        final srcNode = updatedNodes.firstWhere((n) => n.id == e.sourceId);
+        final dstNode = updatedNodes.firstWhere((n) => n.id == e.targetId);
+        
+        // 添加源节点中心作为起点
+        offsetPoints.add(Offset(srcNode.x, srcNode.y));
 
-        // 检查首尾点与节点的距离，判断是否需要调整
-        bool needsAdjustment = false;
-        if (points.isNotEmpty) {
-          final firstPoint = points.first;
-          final lastPoint = points.last;
-          final firstPointOffset = Offset((firstPoint['x'] as num).toDouble(),
-              (firstPoint['y'] as num).toDouble());
-          // 与源节点左上角比较
-          final distToSrc = (firstPointOffset -
-                  (srcPos - Offset(srcNode.width / 2, srcNode.height / 2)))
-              .distance;
-          final lastPointOffset = Offset((lastPoint['x'] as num).toDouble(),
-              (lastPoint['y'] as num).toDouble());
-          final distToDst = (lastPointOffset -
-                  (dstPos - Offset(dstNode.width / 2, dstNode.height / 2)))
-              .distance;
-          needsAdjustment = distToSrc > 20 || distToDst > 20;
-          debugPrint(
-              '  距离检查: 源节点距离=$distToSrc, 目标节点距离=$distToDst, 需要调整=$needsAdjustment');
-        }
-
-        if (needsAdjustment) {
-          offsetPoints.add(srcPos);
-        }
-
+        // 添加中间路由点
         for (final p in points) {
-          // 注意：对每个点增加节点左上角至中心的偏移（假设节点尺寸一致）
           final px = (p['x'] as num).toDouble() + (srcNode.width / 2);
           final py = (p['y'] as num).toDouble() + (srcNode.height / 2);
           offsetPoints.add(Offset(px, py));
           debugPrint('    点: ($px, $py)');
         }
 
-        if (needsAdjustment) {
-          offsetPoints.add(dstPos);
-        }
+        // 添加目标节点中心作为终点
+        offsetPoints.add(Offset(dstNode.x, dstNode.y));
+        
         routes[e.id] = offsetPoints;
       } else {
         debugPrint('  边 ${e.id} 没有路由点信息');
-        routes[e.id] = [];
+        // 如果没有路由点，则使用源节点和目标节点的中心点
+        final srcNode = updatedNodes.firstWhere((n) => n.id == e.sourceId);
+        final dstNode = updatedNodes.firstWhere((n) => n.id == e.targetId);
+        routes[e.id] = [
+          Offset(srcNode.x, srcNode.y),
+          Offset(dstNode.x, dstNode.y),
+        ];
       }
     }
     debugPrint('收集了 ${routes.length} 条边的路由信息');
@@ -442,9 +615,100 @@ class _StepFunctionCanvasState extends ConsumerState<StepFunctionCanvas> {
     return (p - proj).distance;
   }
 
+  // 更新高亮的边
+  void _updateHighlightedEdge(Offset pos) {
+    final edges = ref.read(edgesProvider);
+    final nodes = ref.read(nodesProvider);
+    final threshold = 100.0; // 增大阈值，使检测更容易
+    String? newHighlightedEdgeId;
+    double minDist = double.infinity;
+
+    debugPrint('更新高亮边 - 鼠标位置: ($pos)');
+    debugPrint('当前边数量: ${edges.length}, 节点数量: ${nodes.length}');
+    debugPrint('当前阈值: $threshold');
+
+    // 如果没有边，直接返回
+    if (edges.isEmpty) {
+      debugPrint('没有可用的边进行高亮');
+      return;
+    }
+
+    // 对每条边进行检测
+    for (final edge in edges) {
+      try {
+        final srcNode = nodes.firstWhere((n) => n.id == edge.sourceId);
+        final dstNode = nodes.firstWhere((n) => n.id == edge.targetId);
+        
+        debugPrint('检查边 ${edge.id} 是否需要高亮:');
+        debugPrint('  源节点: ${srcNode.id} 位置=(${srcNode.x}, ${srcNode.y})');
+        debugPrint('  目标节点: ${dstNode.id} 位置=(${dstNode.x}, ${dstNode.y})');
+        
+        // 计算点到线段的距离
+        final dist = _distanceToSegment(
+          pos,
+          Offset(srcNode.x, srcNode.y),
+          Offset(dstNode.x, dstNode.y),
+        );
+        
+        // 检查点是否在线段的范围内
+        final isInRange = _isPointInLineRange(
+          pos,
+          Offset(srcNode.x, srcNode.y),
+          Offset(dstNode.x, dstNode.y),
+        );
+        
+        debugPrint('  到线段的距离: $dist');
+        debugPrint('  是否在范围内: $isInRange');
+        
+        // 只有当点在范围内且距离小于阈值时才考虑这条边
+        if (isInRange && dist < threshold && dist < minDist) {
+          minDist = dist;
+          newHighlightedEdgeId = edge.id;
+          debugPrint('  *** 找到可能的高亮边: ${edge.id}, 距离: $dist');
+        }
+      } catch (e) {
+        debugPrint('处理边 ${edge.id} 高亮时出错: $e');
+      }
+    }
+
+    // 更新高亮边ID，必要时刷新界面
+    if (newHighlightedEdgeId != _highlightedEdgeId) {
+      setState(() {
+        _highlightedEdgeId = newHighlightedEdgeId;
+      });
+      debugPrint('更新高亮边: $_highlightedEdgeId');
+    }
+  }
+
   // 将全局坐标转换为画布的本地坐标
   Offset _globalToLocal(Offset globalPos) {
     final box = _canvasKey.currentContext?.findRenderObject() as RenderBox?;
-    return box != null ? box.globalToLocal(globalPos) : globalPos;
+    if (box != null) {
+      // 获取鼠标相对于画布组件的位置
+      final localPos = box.globalToLocal(globalPos);
+      
+      // 基本转换
+      final rawAdjustedPos = Offset(
+        localPos.dx / _scale - _canvasOffset.dx,
+        localPos.dy / _scale - _canvasOffset.dy,
+      );
+      
+      // 添加额外的偏移量补偿，根据调试输出调整
+      // 这些固定的补偿值是基于观察到的偏差模式
+      final adjustedPos = Offset(
+        rawAdjustedPos.dx - 100,  // 向左移动100个像素
+        rawAdjustedPos.dy - 50,   // 向上移动50个像素
+      );
+      
+      debugPrint('坐标转换:');
+      debugPrint('  全局坐标: $globalPos');
+      debugPrint('  本地坐标: $localPos');
+      debugPrint('  原始调整坐标: $rawAdjustedPos');
+      debugPrint('  补偿后坐标: $adjustedPos');
+      
+      return adjustedPos;
+    }
+    return globalPos;
   }
 }
+

@@ -1,129 +1,182 @@
 import 'package:flutter/material.dart';
 import 'models.dart';
+import 'dart:math';
 
 class EdgePainter extends CustomPainter {
-  final List<NodeModel> nodes;
   final List<EdgeModel> edges;
-  final Map<String, List<Offset>> edgeRoutes; // 路由点列表
-  final bool debug; // 是否开启调试信息
-  final Offset offset; // 画布整体偏移
+  final Map<String, List<Offset>> routes;
+  final Offset canvasOffset;
+  final bool debug;
+  final String? highlightedEdgeId;
 
-  EdgePainter(this.nodes, this.edges, this.edgeRoutes,
-      {this.debug = false, this.offset = Offset.zero});
+  EdgePainter({
+    required this.edges,
+    required this.routes,
+    required this.canvasOffset,
+    this.debug = false,
+    this.highlightedEdgeId,
+  });
 
   @override
   void paint(Canvas canvas, Size size) {
     if (debug) {
-      debugPrint(
-          'EdgePainter: 绘制 ${edges.length} 条边, ${edgeRoutes.length} 条路由信息');
+      debugPrint('EdgePainter: 开始绘制 ${edges.length} 条边');
+      debugPrint('EdgePainter: 画布偏移量: $canvasOffset');
     }
 
     final paint = Paint()
       ..color = Colors.black
-      ..strokeWidth = 2;
+      ..strokeWidth = 2
+      ..style = PaintingStyle.stroke;
 
-    final nodeMap = {for (var n in nodes) n.id: n};
+    final highlightPaint = Paint()
+      ..color = Colors.blue
+      ..strokeWidth = 4
+      ..style = PaintingStyle.stroke;
 
-    for (final e in edges) {
-      if (debug) debugPrint('绘制边 ${e.id}: ${e.sourceId} -> ${e.targetId}');
-      final src = nodeMap[e.sourceId];
-      final dst = nodeMap[e.targetId];
-      if (src == null || dst == null) continue;
+    final arrowPaint = Paint()
+      ..color = Colors.black
+      ..style = PaintingStyle.fill;
 
-      final routePoints = edgeRoutes[e.id];
-      if (routePoints != null && routePoints.isNotEmpty) {
+    final arrowHighlightPaint = Paint()
+      ..color = Colors.blue
+      ..style = PaintingStyle.fill;
+
+    for (final edge in edges) {
+      final points = routes[edge.id];
+      if (points != null && points.length >= 2) {
+        // 处理原始路由点
+        final originalPoints = List<Offset>.from(points);
+        
+        // 获取源点和目标点
+        final sourcePoint = originalPoints.first;
+        final targetPoint = originalPoints.last;
+        
+        // 获取倒数第二个点（用于计算箭头角度）
+        final secondLastPoint = originalPoints.length > 2 
+            ? originalPoints[originalPoints.length - 2] 
+            : originalPoints.first;
+        
+        // 计算方向向量和角度
+        final dx = targetPoint.dx - secondLastPoint.dx;
+        final dy = targetPoint.dy - secondLastPoint.dy;
+        final angle = atan2(dy, dx);
+        
+        // 节点尺寸参数 - 基于 NodeModel 的 width 和 height
+        final nodeWidth = 100.0;
+        final nodeHeight = 60.0;
+        
+        // 计算节点边界到中心的距离（根据从哪个方向进入节点）
+        double boundaryDistance;
+        
+        // 根据角度确定是从哪个方向进入节点（上下左右）
+        final absAngle = angle.abs();
+        if (absAngle <= pi/4 || absAngle >= 3*pi/4) {
+          // 从左右方向进入
+          boundaryDistance = nodeWidth / 2;
+        } else {
+          // 从上下方向进入
+          boundaryDistance = nodeHeight / 2;
+        }
+        
+        // 计算箭头应该在的位置（节点边界）
+        final edgeEndX = targetPoint.dx - boundaryDistance * cos(angle);
+        final edgeEndY = targetPoint.dy - boundaryDistance * sin(angle);
+        
+        // 创建边的路径
+        final path = Path();
+        path.moveTo(sourcePoint.dx + canvasOffset.dx, sourcePoint.dy + canvasOffset.dy);
+        
+        // 绘制所有中间点
+        for (var i = 1; i < originalPoints.length - 1; i++) {
+          path.lineTo(originalPoints[i].dx + canvasOffset.dx, originalPoints[i].dy + canvasOffset.dy);
+        }
+        
+        // 绘制到边缘点
+        path.lineTo(edgeEndX + canvasOffset.dx, edgeEndY + canvasOffset.dy);
+        
+        // 绘制边
+        if (edge.id == highlightedEdgeId) {
+          canvas.drawPath(path, highlightPaint);
+        } else {
+          canvas.drawPath(path, paint);
+        }
+        
+        // 绘制箭头 - 直接在边缘点上添加
+        const arrowSize = 10.0; // 稍微增大箭头尺寸，使其更明显
+        final tipX = edgeEndX + canvasOffset.dx;
+        final tipY = edgeEndY + canvasOffset.dy;
+        
+        // 计算箭头底边两个点
+        final x1 = tipX - arrowSize * cos(angle - pi / 6);
+        final y1 = tipY - arrowSize * sin(angle - pi / 6);
+        final x2 = tipX - arrowSize * cos(angle + pi / 6);
+        final y2 = tipY - arrowSize * sin(angle + pi / 6);
+        
+        // 创建箭头路径
+        final arrowPath = Path();
+        arrowPath.moveTo(tipX, tipY);
+        arrowPath.lineTo(x1, y1);
+        arrowPath.lineTo(x2, y2);
+        arrowPath.close();
+        
+        // 绘制箭头
+        if (edge.id == highlightedEdgeId) {
+          canvas.drawPath(arrowPath, arrowHighlightPaint);
+        } else {
+          canvas.drawPath(arrowPath, arrowPaint);
+        }
+        
+        // 绘制端点指示 - 帮助调试
         if (debug) {
-          debugPrint('  使用路由点绘制: ${routePoints.length} 个点');
-          for (int i = 0; i < routePoints.length; i++) {
-            debugPrint(
-                '    点 $i: (${routePoints[i].dx}, ${routePoints[i].dy})');
-          }
+          // 在箭头尖端绘制小圆点
+          canvas.drawCircle(
+            Offset(tipX, tipY),
+            3.0,
+            Paint()..color = Colors.green..style = PaintingStyle.fill
+          );
+          
+          // 在直线中间点绘制边的ID
+          final midPoint = originalPoints[originalPoints.length ~/ 2];
+          final textPainter = TextPainter(
+            text: TextSpan(
+              text: edge.id,
+              style: const TextStyle(color: Colors.red, fontSize: 8),
+            ),
+            textDirection: TextDirection.ltr,
+          );
+          textPainter.layout();
+          
+          // 在中点绘制文本背景
+          canvas.drawRect(
+            Rect.fromLTWH(
+              midPoint.dx + canvasOffset.dx - 2,
+              midPoint.dy + canvasOffset.dy - 2,
+              textPainter.width + 4,
+              textPainter.height + 4
+            ),
+            Paint()..color = Colors.white..style = PaintingStyle.fill
+          );
+          
+          // 绘制文本
+          textPainter.paint(
+            canvas, 
+            Offset(
+              midPoint.dx + canvasOffset.dx,
+              midPoint.dy + canvasOffset.dy
+            )
+          );
         }
-
-        final pathPaint = Paint()
-          ..color = debug ? Colors.blue.shade700 : Colors.black
-          ..strokeWidth = 1.5
-          ..style = PaintingStyle.stroke;
-
-        final path = Path()
-          ..moveTo(
-              routePoints[0].dx + offset.dx, routePoints[0].dy + offset.dy);
-        for (int i = 1; i < routePoints.length; i++) {
-          path.lineTo(
-              routePoints[i].dx + offset.dx, routePoints[i].dy + offset.dy);
-        }
-        canvas.drawPath(path, pathPaint);
-
-        // 绘制调试用的小圆点
-        if (debug) {
-          final dotPaint = Paint()
-            ..color = Colors.red
-            ..strokeWidth = 1
-            ..style = PaintingStyle.fill;
-          for (final point in routePoints) {
-            canvas.drawCircle(
-                Offset(point.dx + offset.dx, point.dy + offset.dy),
-                2,
-                dotPaint);
-          }
-        }
-
-        // 绘制箭头：使用最后两个点确定方向
-        if (routePoints.length >= 2) {
-          final lastPoint = routePoints.last + offset;
-          final secondLastPoint = routePoints[routePoints.length - 2] + offset;
-          _drawArrow(canvas, secondLastPoint, lastPoint, paint);
-        }
-      } else {
-        if (debug) debugPrint('  没有路由点，使用直线绘制');
-
-        // fallback 使用节点中心直线绘制
-        final srcPos = Offset(src.x, src.y) + offset;
-        final dstPos = Offset(dst.x, dst.y) + offset;
-        if (debug) {
-          debugPrint(
-              '  直线: (${srcPos.dx}, ${srcPos.dy}) -> (${dstPos.dx}, ${dstPos.dy})');
-        }
-        canvas.drawLine(srcPos, dstPos, paint);
-        _drawArrow(canvas, srcPos, dstPos, paint);
       }
     }
   }
 
-  // 绘制箭头函数
-  void _drawArrow(Canvas canvas, Offset start, Offset end, Paint paint) {
-    final arrowSize = 6.0;
-    final direction = (end - start);
-    final length = direction.distance;
-    if (length == 0) return;
-    final normalized = direction / length;
-    // 避免箭头与节点重叠，稍微缩回一点
-    final arrowEnd = end - normalized * 2.0;
-    final perpendicular = Offset(-normalized.dy, normalized.dx);
-    final arrowPoint1 =
-        arrowEnd - normalized * arrowSize + perpendicular * (arrowSize / 2);
-    final arrowPoint2 =
-        arrowEnd - normalized * arrowSize - perpendicular * (arrowSize / 2);
-    final arrowPaint = Paint()
-      ..color = paint.color
-      ..strokeWidth = 1.5
-      ..style = PaintingStyle.stroke;
-    final path = Path()
-      ..moveTo(arrowEnd.dx, arrowEnd.dy)
-      ..lineTo(arrowPoint1.dx, arrowPoint1.dy)
-      ..lineTo(arrowPoint2.dx, arrowPoint2.dy)
-      ..close();
-    canvas.drawPath(path, arrowPaint);
-
-    if (debug) {
-      debugPrint(
-          '  绘制箭头: 从 (${start.dx}, ${start.dy}) 到 (${end.dx}, ${end.dy})');
-      debugPrint('    箭头尖端: (${arrowEnd.dx}, ${arrowEnd.dy})');
-      debugPrint('    箭头点1: (${arrowPoint1.dx}, ${arrowPoint1.dy})');
-      debugPrint('    箭头点2: (${arrowPoint2.dx}, ${arrowPoint2.dy})');
-    }
-  }
-
   @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) => true;
+  bool shouldRepaint(EdgePainter oldDelegate) {
+    return edges != oldDelegate.edges ||
+        routes != oldDelegate.routes ||
+        canvasOffset != oldDelegate.canvasOffset ||
+        debug != oldDelegate.debug ||
+        highlightedEdgeId != oldDelegate.highlightedEdgeId;
+  }
 }

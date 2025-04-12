@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'models.dart';
 import 'providers.dart';
+import 'step_function_canvas.dart';
 
 class NodeSidebar extends ConsumerWidget {
   const NodeSidebar({super.key});
@@ -64,9 +65,14 @@ class NodeSidebar extends ConsumerWidget {
             ];
             ref.read(nodeCounterProvider.notifier).state = 1;
             ref.read(edgeRoutesProvider.notifier).state = {};
-            // 触发重新布局（注意 StepFunctionCanvas 内部会捕获布局变化）
+            
+            // 触发重新布局
             WidgetsBinding.instance.addPostFrameCallback((_) {
-              // 此处不直接调用 _performLayout()，因为它在 StepFunctionCanvas 内部。Reset 后画布会重建并自动布局。
+              // 查找 StepFunctionCanvas 的 State 并调用其 performLayout 方法
+              final canvasState = context.findAncestorStateOfType<StepFunctionCanvasState>();
+              if (canvasState != null) {
+                canvasState.performLayout();
+              }
             });
           },
           child: const Text('Reset'),
