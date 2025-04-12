@@ -102,12 +102,67 @@ class EdgePainter extends CustomPainter {
           sourcePoint.dy + canvasOffset.dy
         );
         
-        // 绘制所有中间点
-        for (var i = 1; i < routePoints.length - 1; i++) {
+        // 绘制所有中间点，使用圆角连接
+        final cornerRadius = 15.0; // 转角的圆角半径
+        
+        if (routePoints.length >= 3) {
+          for (var i = 1; i < routePoints.length - 1; i++) {
+            final prevPoint = routePoints[i - 1];
+            final currentPoint = routePoints[i]; 
+            final nextPoint = routePoints[i + 1];
+            
+            // 计算当前方向向量和下一个方向向量
+            final dx1 = currentPoint.dx - prevPoint.dx;
+            final dy1 = currentPoint.dy - prevPoint.dy;
+            final dx2 = nextPoint.dx - currentPoint.dx;
+            final dy2 = nextPoint.dy - currentPoint.dy;
+            
+            // 如果方向发生了变化，则添加圆角
+            if ((dx1 != 0 && dx2 != 0) || (dy1 != 0 && dy2 != 0)) {
+              // 计算转角前的点（距离转角cornerRadius的距离）
+              final beforeCornerX = currentPoint.dx - dx1 * cornerRadius / sqrt(dx1 * dx1 + dy1 * dy1);
+              final beforeCornerY = currentPoint.dy - dy1 * cornerRadius / sqrt(dx1 * dx1 + dy1 * dy1);
+              
+              // 计算转角后的点（距离转角cornerRadius的距离）
+              final afterCornerX = currentPoint.dx + dx2 * cornerRadius / sqrt(dx2 * dx2 + dy2 * dy2);
+              final afterCornerY = currentPoint.dy + dy2 * cornerRadius / sqrt(dx2 * dx2 + dy2 * dy2);
+              
+              // 先画直线到转角前的点
+              path.lineTo(
+                beforeCornerX + canvasOffset.dx,
+                beforeCornerY + canvasOffset.dy
+              );
+              
+              // 再绘制四分之一圆作为转角
+              path.quadraticBezierTo(
+                currentPoint.dx + canvasOffset.dx,
+                currentPoint.dy + canvasOffset.dy,
+                afterCornerX + canvasOffset.dx,
+                afterCornerY + canvasOffset.dy
+              );
+            } else {
+              // 如果方向没有变化，则直接连接到当前点
+              path.lineTo(
+                currentPoint.dx + canvasOffset.dx,
+                currentPoint.dy + canvasOffset.dy
+              );
+            }
+          }
+          
+          // 连接到终点前的最后一个点
+          final lastPoint = routePoints[routePoints.length - 1];
           path.lineTo(
-            routePoints[i].dx + canvasOffset.dx, 
-            routePoints[i].dy + canvasOffset.dy
+            lastPoint.dx + canvasOffset.dx,
+            lastPoint.dy + canvasOffset.dy
           );
+        } else {
+          // 如果没有中间点，直接连接到最后一个点
+          for (var i = 1; i < routePoints.length; i++) {
+            path.lineTo(
+              routePoints[i].dx + canvasOffset.dx, 
+              routePoints[i].dy + canvasOffset.dy
+            );
+          }
         }
         
         // 绘制到节点边缘
