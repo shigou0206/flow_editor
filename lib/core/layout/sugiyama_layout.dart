@@ -22,17 +22,6 @@ class SugiyamaLayoutStrategy implements LayoutStrategy {
     }
 
     layoutGroup(null);
-
-    for (final node in nodes) {
-      node.position = node.absolutePosition(nodes);
-    }
-
-    for (final edge in edges) {
-      if (edge.waypoints != null) {
-        final absPoints = mapEdgeWaypointsToAbsolute(edge, nodes);
-        edge.waypoints = absPoints.map((p) => [p.dx, p.dy]).toList();
-      }
-    }
   }
 
   void _performGraphLayoutForGroup(

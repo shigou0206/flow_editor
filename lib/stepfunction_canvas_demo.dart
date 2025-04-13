@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flow_editor/core/node/models/node_model.dart';
 import 'package:flow_editor/core/edge/models/edge_model.dart';
 import 'package:flow_editor/core/layout/sugiyama_layout.dart';
+import 'package:flow_editor/core/canvas/utils.dart';
 import 'dart:math' show pi, cos, sin;
 
 void main() {
@@ -28,16 +29,68 @@ class _LayoutDemoPageState extends State<LayoutDemoPage> {
 
   void _initGraph() {
     nodes.addAll([
-      NodeModel(id: 'group1', title: 'Group 1', position: const Offset(100, 100), size: Size.zero, isGroup: true),
-      NodeModel(id: 'root1', title: 'Root 1', parentId: 'group1', position: const Offset(16, 16), size: const Size(100, 40), isGroupRoot: true),
-      NodeModel(id: 'node11', title: 'Node 1.1', parentId: 'group1', position: const Offset(16, 68), size: const Size(100, 40)),
-      NodeModel(id: 'node12', title: 'Node 1.2', parentId: 'group1', position: const Offset(16, 68), size: const Size(100, 40)),
-      NodeModel(id: 'group2', title: 'Group 2', parentId: 'group1', position: const Offset(16, 120), size: const Size(150, 100), isGroup: true),
-      NodeModel(id: 'node21', title: 'Node 2.1', parentId: 'group2', position: const Offset(16, 16), size: const Size(100, 40)),
-      NodeModel(id: 'node22', title: 'Node 2.2', parentId: 'group2', position: const Offset(16, 68), size: const Size(100, 40)),
-      NodeModel(id: 'node23', title: 'Node 2.3', parentId: 'group2', position: const Offset(16, 68), size: const Size(100, 40)),
-      NodeModel(id: 'node24', title: 'Node 2.4', parentId: 'group2', position: const Offset(16, 68), size: const Size(100, 40)),
-      NodeModel(id: 'nodeend', title: 'Node End', parentId: 'group1', position: const Offset(16, 180), size: const Size(100, 40)),
+      NodeModel(
+          id: 'group1',
+          title: 'Group 1',
+          position: const Offset(100, 100),
+          size: Size.zero,
+          isGroup: true),
+      NodeModel(
+          id: 'root1',
+          title: 'Root 1',
+          parentId: 'group1',
+          position: const Offset(16, 16),
+          size: const Size(100, 40),
+          isGroupRoot: true),
+      NodeModel(
+          id: 'node11',
+          title: 'Node 1.1',
+          parentId: 'group1',
+          position: const Offset(16, 68),
+          size: const Size(100, 40)),
+      NodeModel(
+          id: 'node12',
+          title: 'Node 1.2',
+          parentId: 'group1',
+          position: const Offset(16, 68),
+          size: const Size(100, 40)),
+      NodeModel(
+          id: 'group2',
+          title: 'Group 2',
+          parentId: 'group1',
+          position: const Offset(16, 120),
+          size: const Size(150, 100),
+          isGroup: true),
+      NodeModel(
+          id: 'node21',
+          title: 'Node 2.1',
+          parentId: 'group2',
+          position: const Offset(16, 16),
+          size: const Size(100, 40)),
+      NodeModel(
+          id: 'node22',
+          title: 'Node 2.2',
+          parentId: 'group2',
+          position: const Offset(16, 68),
+          size: const Size(100, 40)),
+      NodeModel(
+          id: 'node23',
+          title: 'Node 2.3',
+          parentId: 'group2',
+          position: const Offset(16, 68),
+          size: const Size(100, 40)),
+      NodeModel(
+          id: 'node24',
+          title: 'Node 2.4',
+          parentId: 'group2',
+          position: const Offset(16, 68),
+          size: const Size(100, 40)),
+      NodeModel(
+          id: 'nodeend',
+          title: 'Node End',
+          parentId: 'group1',
+          position: const Offset(16, 180),
+          size: const Size(100, 40)),
     ]);
 
     edges.addAll([
@@ -58,24 +111,37 @@ class _LayoutDemoPageState extends State<LayoutDemoPage> {
     layout.performLayout(nodes, edges);
   }
 
+  Map<String, List<Offset>> performGlobalEdgeRouteUpdate(List<EdgeModel> edges) {
+    final edgeRoutes = <String, List<Offset>>{};
+    for (final edge in edges) {
+      if (edge.waypoints != null) {
+        final absPoints = mapEdgeWaypointsToAbsolute(edge, nodes);
+        edgeRoutes[edge.id] = absPoints;
+      }
+    }
+    return edgeRoutes;
+  }
+
   @override
   Widget build(BuildContext context) {
     // 渲染阶段：先计算边路由，然后进行节点渲染
+    final edgeRoutes = performGlobalEdgeRouteUpdate(edges);
     final sorted = _getSortedByDepthFirst();
     return Container(
       color: Colors.grey.shade200,
       child: Stack(
         children: [
           // 边先绘制
-          // CustomPaint(
-          //   painter: EdgePainter(edgeRoutes: edgeRoutes),
-          //   size: Size.infinite,
-          // ),
+          CustomPaint(
+            painter: EdgePainter(edgeRoutes: edgeRoutes),
+            size: Size.infinite,
+          ),
           // 节点之后，使用扩展方法计算绝对坐标
           ...sorted.map((node) {
+            final absPos = node.absolutePosition(nodes);
             return Positioned(
-              left: node.position.dx,
-              top: node.position.dy,
+              left: absPos.dx,
+              top: absPos.dy,
               child: node.isGroup ? _renderGroup(node) : _renderNode(node),
             );
           }),
@@ -84,7 +150,7 @@ class _LayoutDemoPageState extends State<LayoutDemoPage> {
     );
   }
 
-    /// 深度优先遍历排序，确保 group 先渲染（背景），内部节点后渲染
+  /// 深度优先遍历排序，确保 group 先渲染（背景），内部节点后渲染
   List<NodeModel> _getSortedByDepthFirst() {
     List<NodeModel> result = [];
     void visit(String? parentId) {
@@ -110,7 +176,7 @@ class _LayoutDemoPageState extends State<LayoutDemoPage> {
       ),
       child: Text(
         group.title ?? '',
-        style: const TextStyle(fontWeight: FontWeight.bold),
+        style: const TextStyle(fontSize: 12, color: Colors.black),
       ),
     );
   }
@@ -125,33 +191,12 @@ class _LayoutDemoPageState extends State<LayoutDemoPage> {
         border: Border.all(color: Colors.black),
         borderRadius: BorderRadius.circular(6),
       ),
-      child: Text(node.title ?? ''),
+      child: Text(
+        node.title ?? '',
+        style: const TextStyle(fontSize: 12, color: Colors.black),
+      ),
     );
   }
-}
-
-class _EdgeLinePainter extends CustomPainter {
-  final List<Offset> points;
-  _EdgeLinePainter(this.points);
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    final paint = Paint()
-      ..color = Colors.grey
-      ..strokeWidth = 2
-      ..style = PaintingStyle.stroke;
-
-    final path = Path()..moveTo(points.first.dx, points.first.dy);
-    for (var p in points.skip(1)) {
-      path.lineTo(p.dx, p.dy);
-    }
-
-    canvas.drawPath(path, paint);
-  }
-
-  @override
-  bool shouldRepaint(covariant _EdgeLinePainter oldDelegate) =>
-      oldDelegate.points != points;
 }
 
 class EdgePainter extends CustomPainter {
