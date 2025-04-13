@@ -25,8 +25,8 @@ class NodeWidget extends StatelessWidget {
     // 1. 计算锚点外扩的边距
     final AnchorPadding padding = node.anchorPadding;
     // 2. 总宽高：节点尺寸 + 锚点扩展
-    final double totalWidth = node.width + padding.left + padding.right;
-    final double totalHeight = node.height + padding.top + padding.bottom;
+    final double totalWidth = node.size.width + padding.left + padding.right;
+    final double totalHeight = node.size.height + padding.top + padding.bottom;
 
     // 3. 返回一个普通 Widget (不再 Positioned)
     //    父层会决定它的 (left, top)

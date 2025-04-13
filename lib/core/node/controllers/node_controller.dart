@@ -126,17 +126,17 @@ class NodeController implements INodeController {
 
         final anchorLocalPos = computeAnchorLocalPosition(
           anchor,
-          Size(node.width, node.height),
+          node.size,
         );
 
         final padding = computeAnchorPadding(
           node.anchors ?? [],
-          Size(node.width, node.height),
+          Size(node.size.width, node.size.height),
         );
 
         final anchorWorldPos = Offset(
-          node.x - padding.left + anchorLocalPos.dx,
-          node.y - padding.top + anchorLocalPos.dy,
+          node.position.dx - padding.left + anchorLocalPos.dx,
+          node.position.dy - padding.top + anchorLocalPos.dy,
         );
 
         final distance = (anchorWorldPos - worldPos).distance;

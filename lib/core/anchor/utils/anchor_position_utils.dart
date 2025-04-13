@@ -52,9 +52,9 @@ Offset computeAnchorLocalPosition(AnchorModel anchor, Size nodeSize) {
 /// 2) 计算锚点在画布(世界)上的坐标
 /// ---------------------
 Offset computeAnchorWorldPosition(NodeModel node, AnchorModel anchor) {
-  final nodePos = Offset(node.x, node.y);
-  final localAnchorPos =
-      computeAnchorLocalPosition(anchor, Size(node.width, node.height));
+  final nodePos = Offset(node.position.dx, node.position.dy);
+  final localAnchorPos = computeAnchorLocalPosition(
+      anchor, Size(node.size.width, node.size.height));
   return nodePos + localAnchorPos;
 }
 

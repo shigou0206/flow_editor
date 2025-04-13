@@ -28,8 +28,8 @@ class EndNodeWidget extends StatelessWidget {
       anchorBehavior: anchorBehavior,
       header: null,
       body: Container(
-        width: node.width,
-        height: node.height,
+        width: node.size.width,
+        height: node.size.height,
         decoration: BoxDecoration(
           shape: BoxShape.circle,
           color: Colors.grey[100],
@@ -44,8 +44,8 @@ class EndNodeWidget extends StatelessWidget {
         ),
         child: Center(
           child: Container(
-            width: node.width / 4,
-            height: node.height / 3.5,
+            width: node.size.width / 4,
+            height: node.size.height / 3.5,
             decoration: BoxDecoration(
               color: Color.fromARGB(221, 96, 96, 96),
               shape: BoxShape.rectangle,

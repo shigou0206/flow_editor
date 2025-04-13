@@ -92,13 +92,14 @@ class EdgeRenderer extends CustomPainter {
       }
     }
 
-    return Offset(node.x, node.y);
+    return Offset(node.position.dx, node.position.dy);
   }
 
   @override
   bool shouldRepaint(covariant EdgeRenderer oldDelegate) {
     return oldDelegate.nodes != nodes ||
         oldDelegate.edges != edges ||
+        oldDelegate.draggingEdgeId != draggingEdgeId ||
         oldDelegate.draggingEnd != draggingEnd ||
         oldDelegate.hoveredEdgeId != hoveredEdgeId ||
         oldDelegate.selectedEdgeIds != selectedEdgeIds;

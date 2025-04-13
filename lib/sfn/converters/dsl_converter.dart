@@ -8,7 +8,7 @@ class DslConverter {
     final Map<String, dynamic> dsl = {
       'version': '1.0',
       'type': 'workflow',
-      'start': _findStartNode(nodes)?.id ?? '',
+      'start': _findStartNode(nodes).id,
       'states': {},
     };
 

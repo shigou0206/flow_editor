@@ -21,7 +21,7 @@ class EdgeModel {
   final int zIndex;
 
   // ===== 折线/waypoints =====
-  final List<List<double>>? waypoints;
+  List<List<double>>? waypoints;
 
   // ===== 样式 & 动画 =====
   final EdgeLineStyle lineStyle;
@@ -37,9 +37,9 @@ class EdgeModel {
   EdgeModel({
     String? id,
     required this.sourceNodeId,
-    required this.sourceAnchorId,
-    this.targetNodeId,
-    this.targetAnchorId,
+    this.sourceAnchorId,
+    this.targetNodeId = "none",
+    this.targetAnchorId = "none",
     this.isConnected = false,
     this.isDirected = true,
     this.edgeType = "default",
@@ -62,17 +62,27 @@ class EdgeModel {
   static String generateEdgeId(String sourceNodeId, String? targetNodeId,
       String? sourceAnchorId, String? targetAnchorId, String? name,
       {bool isDirected = true}) {
-    final sourceAnchor = sourceAnchorId ?? "none";
-    final targetAnchor = targetAnchorId ?? "none";
+    final sourceAnchor = sourceAnchorId ?? "";
+    final targetAnchor = targetAnchorId ?? "";
     final source = sourceNodeId;
-    final target = targetNodeId ?? "none";
-    name = name ?? "none";
-    if (sourceAnchor.compareTo(targetAnchor) <= 0) {
-      name = "$sourceAnchor\u0001$targetAnchor\u0001$name";
-    } else {
-      name = "$targetAnchor\u0001$sourceAnchor\u0001$name";
+    final target = targetNodeId ?? "";
+
+    String? anchorName;
+    if (sourceAnchorId != null && targetAnchorId != null) {
+      if (sourceAnchorId.compareTo(targetAnchorId) <= 0) {
+        anchorName = "$sourceAnchor\u0001$targetAnchor";
+      } else {
+        anchorName = "$targetAnchor\u0001$sourceAnchor";
+      }
     }
-    return createEdgeId(source, target, name, isDirected);
+    if (anchorName != null && name != null) {
+      name = "$anchorName\u0001$name";
+    }
+
+    if (name != null) {
+      return createEdgeId(source, target, name, isDirected);
+    }
+    return createEdgeId(source, target, null, isDirected);
   }
 
   // copyWith

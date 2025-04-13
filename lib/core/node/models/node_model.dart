@@ -9,12 +9,23 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 
+extension OffsetJson on Offset {
+  Map<String, dynamic> toJson() => {'dx': dx, 'dy': dy};
+}
+
+extension SizeJson on Size {
+  Map<String, dynamic> toJson() => {'width': width, 'height': height};
+}
+
 class NodeModel extends BaseNodeModel {
   final DragMode? dragMode;
   final String? type;
   final NodeRole? role;
   final String? title;
   final List<AnchorModel>? anchors;
+
+  final bool isGroup;
+  final bool isGroupRoot;
 
   // ========== 扩展字段 ==========
   final NodeStatus? status;
@@ -38,15 +49,15 @@ class NodeModel extends BaseNodeModel {
 
   NodeModel({
     required super.id,
-    required super.x,
-    required super.y,
-    required super.width,
-    required super.height,
+    required super.position,
+    required super.size,
     this.dragMode = DragMode.full,
     this.type = "",
     this.role = NodeRole.middle,
     this.title,
     this.anchors = const [],
+    this.isGroup = false,
+    this.isGroupRoot = false,
     this.status = NodeStatus.none,
     this.parentId,
     this.zIndex = 0,
@@ -65,29 +76,31 @@ class NodeModel extends BaseNodeModel {
 
   // 逻辑坐标Rect, 便于渲染或碰撞检测
   @override
-  Rect get rect => Rect.fromLTWH(x, y, width, height);
+  Rect get rect =>
+      Rect.fromLTWH(position.dx, position.dy, size.width, size.height);
 
   @override
   void doLayout() {}
 
-  AnchorPadding get anchorPadding =>
-      computeAnchorPadding(anchors ?? [], Size(width, height));
+  AnchorPadding get anchorPadding => computeAnchorPadding(anchors ?? [], size);
 
-  double get totalWidth => width + anchorPadding.left + anchorPadding.right;
-  double get totalHeight => height + anchorPadding.top + anchorPadding.bottom;
+  double get totalWidth =>
+      size.width + anchorPadding.left + anchorPadding.right;
+  double get totalHeight =>
+      size.height + anchorPadding.top + anchorPadding.bottom;
 
   /// 不可变更新: 返回新的 NodeModel 实例
   @override
   NodeModel copyWith({
-    double? x,
-    double? y,
-    double? width,
-    double? height,
+    Offset? position,
+    Size? size,
     DragMode? dragMode,
     String? type,
     NodeRole? role,
     String? title,
     List<AnchorModel>? anchors,
+    bool? isGroup,
+    bool? isGroupRoot,
     AnchorPadding? anchorPadding,
     NodeStatus? status,
     String? parentId,
@@ -106,15 +119,15 @@ class NodeModel extends BaseNodeModel {
   }) {
     return NodeModel(
       id: id, // id保持不变
-      x: x ?? this.x,
-      y: y ?? this.y,
-      width: width ?? this.width,
-      height: height ?? this.height,
+      position: position ?? this.position,
+      size: size ?? this.size,
       dragMode: dragMode ?? this.dragMode,
       type: type ?? this.type,
       role: role ?? this.role,
       title: title ?? this.title,
       anchors: anchors ?? this.anchors,
+      isGroup: isGroup ?? this.isGroup,
+      isGroupRoot: isGroupRoot ?? this.isGroupRoot,
       status: status ?? this.status,
       parentId: parentId ?? this.parentId,
       zIndex: zIndex ?? this.zIndex,
@@ -136,15 +149,15 @@ class NodeModel extends BaseNodeModel {
   Map<String, dynamic> toJson() {
     return {
       'id': id,
-      'x': x,
-      'y': y,
-      'width': width,
-      'height': height,
+      'position': position.toJson(),
+      'size': size.toJson(),
       'dragMode': dragMode.toString(), // e.g. "DragMode.full"
       'type': type,
       'role': role.toString(), // e.g. "NodeRole.middle"
       'title': title,
       'anchors': anchors?.map((a) => a.toJson()).toList() ?? [],
+      'isGroup': isGroup,
+      'isGroupRoot': isGroupRoot,
       'anchorPadding': anchorPadding.toJson(),
       'status': status.toString(), // e.g. "NodeStatus.running"
       'parentId': parentId,
@@ -165,12 +178,17 @@ class NodeModel extends BaseNodeModel {
 
   /// fromJson: 反序列化
   factory NodeModel.fromJson(Map<String, dynamic> json) {
+    final position = json['position'] is Map
+        ? Offset((json['position']['dx'] as num).toDouble(),
+            (json['position']['dy'] as num).toDouble())
+        : Offset((json['x'] as num?)?.toDouble() ?? 0,
+            (json['y'] as num?)?.toDouble() ?? 0);
+
     return NodeModel(
       id: json['id'] as String,
-      x: (json['x'] as num).toDouble(),
-      y: (json['y'] as num).toDouble(),
-      width: (json['width'] as num).toDouble(),
-      height: (json['height'] as num).toDouble(),
+      position: position,
+      size: Size((json['width'] as num).toDouble(),
+          (json['height'] as num).toDouble()),
       dragMode: _parseDragMode(json['dragMode']),
       type: json['type'] ?? 'default',
       role: _parseNodeRole(json['role']),
@@ -178,6 +196,8 @@ class NodeModel extends BaseNodeModel {
       anchors: (json['anchors'] as List)
           .map((a) => AnchorModel.fromJson(a))
           .toList(),
+      isGroup: json['isGroup'] ?? false,
+      isGroupRoot: json['isGroupRoot'] ?? false,
       status: _parseNodeStatus(json['status']),
       parentId: json['parentId'] as String?,
       zIndex: _parseZIndex(json['zIndex']),

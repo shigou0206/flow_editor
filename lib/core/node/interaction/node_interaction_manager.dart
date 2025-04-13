@@ -118,8 +118,7 @@ class NodeInteractionManager {
   /// 当节点被拖拽移动到 [newPosition]
   void onNodeDrag(NodeModel node, Offset newPosition) {
     // 确保 node.x / node.y 可变
-    node.x = newPosition.dx;
-    node.y = newPosition.dy;
+    node.position = newPosition;
   }
 
   // =================== 置顶/置底操作 ===================

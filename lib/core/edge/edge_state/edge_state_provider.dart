@@ -96,8 +96,11 @@ class EdgeStateNotifier extends StateNotifier<EdgeState> {
         targetAnchorId: targetAnchorId,
       );
     }
-
-    state = state.copyWith(draggingEdgeId: null, draggingEnd: null);
+    debugPrint(
+        '清理前 draggingEdgeId=${state.draggingEdgeId}, draggingEnd=${state.draggingEnd}');
+    state = state.copyWith(clearDraggingEdgeId: true, clearDraggingEnd: true);
+    debugPrint(
+        '清理后 draggingEdgeId=${state.draggingEdgeId}, draggingEnd=${state.draggingEnd}');
   }
 
   void finalizeEdge({
@@ -120,7 +123,6 @@ class EdgeStateNotifier extends StateNotifier<EdgeState> {
     );
     upsertEdge(newEdge);
   }
-
   // --- 批量操作 ---
 
   void removeEdges(List<String> edgeIds) {

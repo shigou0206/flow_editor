@@ -86,16 +86,16 @@ class ToolsPlugin extends ConsumerWidget {
     final allNodes = nodeBehavior.nodeController.getAllNodes();
     if (allNodes.isEmpty) return;
 
-    double minX = allNodes.first.x;
-    double minY = allNodes.first.y;
-    double maxX = allNodes.first.x + allNodes.first.width;
-    double maxY = allNodes.first.y + allNodes.first.height;
+    double minX = allNodes.first.position.dx;
+    double minY = allNodes.first.position.dy;
+    double maxX = allNodes.first.position.dx + allNodes.first.size.width;
+    double maxY = allNodes.first.position.dy + allNodes.first.size.height;
 
     for (final node in allNodes) {
-      minX = math.min(minX, node.x);
-      minY = math.min(minY, node.y);
-      maxX = math.max(maxX, node.x + node.width);
-      maxY = math.max(maxY, node.y + node.height);
+      minX = math.min(minX, node.position.dx);
+      minY = math.min(minY, node.position.dy);
+      maxX = math.max(maxX, node.position.dx + node.size.width);
+      maxY = math.max(maxY, node.position.dy + node.size.height);
     }
 
     const padding = 50.0;

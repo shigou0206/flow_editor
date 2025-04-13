@@ -11,16 +11,16 @@ class MinimapStateNotifier extends StateNotifier<MinimapState> {
     if (nodes.isEmpty) {
       return const Rect.fromLTWH(0, 0, 10, 10);
     }
-    double minX = nodes.first.x;
-    double minY = nodes.first.y;
-    double maxX = nodes.first.x + nodes.first.width;
-    double maxY = nodes.first.y + nodes.first.height;
+    double minX = nodes.first.position.dx;
+    double minY = nodes.first.position.dy;
+    double maxX = nodes.first.position.dx + nodes.first.size.width;
+    double maxY = nodes.first.position.dy + nodes.first.size.height;
 
     for (final node in nodes) {
-      minX = node.x < minX ? node.x : minX;
-      minY = node.y < minY ? node.y : minY;
-      final nodeRight = node.x + node.width;
-      final nodeBottom = node.y + node.height;
+      minX = node.position.dx < minX ? node.position.dx : minX;
+      minY = node.position.dy < minY ? node.position.dy : minY;
+      final nodeRight = node.position.dx + node.size.width;
+      final nodeBottom = node.position.dy + node.size.height;
       maxX = nodeRight > maxX ? nodeRight : maxX;
       maxY = nodeBottom > maxY ? nodeBottom : maxY;
     }

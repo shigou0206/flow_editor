@@ -17,10 +17,10 @@ class BaseNode extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Positioned(
-      left: node.x,
-      top: node.y,
-      width: node.width,
-      height: node.height,
+      left: node.position.dx,
+      top: node.position.dy,
+      width: node.size.width,
+      height: node.size.height,
       child: child,
     );
   }

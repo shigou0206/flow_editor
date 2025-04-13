@@ -10,7 +10,7 @@ class ShapeNodeWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return CustomPaint(
-      size: Size(node.width, node.height),
+      size: node.size,
       painter: RectanglePainter(node.color),
       child: Center(
         child: Text(

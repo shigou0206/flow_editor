@@ -56,7 +56,7 @@ class NodeStateNotifier extends StateNotifier<NodeState> {
     final nodes = state.nodesOf(workflowId);
     final updated = nodes.map((node) {
       if (node.id == nodeId) {
-        return node.copyWith(x: node.x + delta.dx, y: node.y + delta.dy);
+        return node.copyWith(position: node.position + delta);
       }
       return node;
     }).toList();

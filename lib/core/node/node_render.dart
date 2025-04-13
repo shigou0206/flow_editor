@@ -28,10 +28,10 @@ class NodeRenderer extends CustomPainter {
       ..strokeWidth = 1;
 
     final rect = Rect.fromLTWH(
-      (node.x + offset.dx) * scale,
-      (node.y + offset.dy) * scale,
-      node.width * scale,
-      node.height * scale,
+      (node.position.dx + offset.dx) * scale,
+      (node.position.dy + offset.dy) * scale,
+      node.size.width * scale,
+      node.size.height * scale,
     );
 
     canvas.drawRRect(

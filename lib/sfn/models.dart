@@ -1,5 +1,3 @@
-import 'dart:math' as math;
-
 enum NodeType { task, source, destination, parallel, choice, subgraph, normal }
 
 /// 节点模型

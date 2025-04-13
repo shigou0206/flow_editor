@@ -85,10 +85,10 @@ class MinimapPlugin extends ConsumerWidget {
               // 绘制所有节点缩略图
               for (final node in nodes)
                 Positioned(
-                  left: (node.x - contentOrigin.dx) * scaleFactor,
-                  top: (node.y - contentOrigin.dy) * scaleFactor,
-                  width: node.width * scaleFactor,
-                  height: node.height * scaleFactor,
+                  left: (node.position.dx - contentOrigin.dx) * scaleFactor,
+                  top: (node.position.dy - contentOrigin.dy) * scaleFactor,
+                  width: node.size.width * scaleFactor,
+                  height: node.size.height * scaleFactor,
                   child: Container(
                     decoration: BoxDecoration(
                       color: Colors.black.withOpacity(0.8),

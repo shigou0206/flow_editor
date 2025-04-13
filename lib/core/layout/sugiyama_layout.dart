@@ -19,10 +19,10 @@ class SugiyamaLayoutStrategy implements LayoutStrategy {
 
     for (var node in nodes) {
       graph.setNode(node.id, {
-        'width': node.width,
-        'height': node.height,
-        'x': node.x - node.width / 2,
-        'y': node.y - node.height / 2,
+        'width': node.size.width,
+        'height': node.size.height,
+        'x': node.position.dx - node.size.width / 2,
+        'y': node.position.dy - node.size.height / 2,
       });
     }
 
@@ -43,9 +43,9 @@ class SugiyamaLayoutStrategy implements LayoutStrategy {
     for (var node in nodes) {
       final nd = graph.node(node.id);
       if (nd != null && nd['x'] != null && nd['y'] != null) {
-        final x = (nd['x'] as num).toDouble() + node.width / 2;
-        final y = (nd['y'] as num).toDouble() + node.height / 2;
-        updatedNodes.add(node.copyWith(x: x, y: y));
+        final x = (nd['x'] as num).toDouble() + node.size.width / 2;
+        final y = (nd['y'] as num).toDouble() + node.size.height / 2;
+        updatedNodes.add(node.copyWith(position: Offset(x, y)));
       } else {
         updatedNodes.add(node);
       }
@@ -63,13 +63,13 @@ class SugiyamaLayoutStrategy implements LayoutStrategy {
         final dstNode =
             updatedNodes.firstWhere((n) => n.id == edge.targetNodeId);
 
-        offsetPoints.add(Offset(srcNode.x, srcNode.y));
+        offsetPoints.add(Offset(srcNode.position.dx, srcNode.position.dy));
         for (final p in points) {
           final px = (p['x'] as num).toDouble();
           final py = (p['y'] as num).toDouble();
           offsetPoints.add(Offset(px, py));
         }
-        offsetPoints.add(Offset(dstNode.x, dstNode.y));
+        offsetPoints.add(Offset(dstNode.position.dx, dstNode.position.dy));
         routes[edge.id] = offsetPoints;
       } else {
         final srcNode =
@@ -77,8 +77,8 @@ class SugiyamaLayoutStrategy implements LayoutStrategy {
         final dstNode =
             updatedNodes.firstWhere((n) => n.id == edge.targetNodeId);
         routes[edge.id] = [
-          Offset(srcNode.x, srcNode.y),
-          Offset(dstNode.x, dstNode.y),
+          Offset(srcNode.position.dx, srcNode.position.dy),
+          Offset(dstNode.position.dx, dstNode.position.dy),
         ];
       }
     }

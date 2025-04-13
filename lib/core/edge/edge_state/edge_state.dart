@@ -38,14 +38,17 @@ class EdgeState extends Equatable {
     Set<String>? selectedEdgeIds,
     String? draggingEdgeId,
     Offset? draggingEnd,
+    bool clearDraggingEdgeId = false,
+    bool clearDraggingEnd = false,
   }) {
     return EdgeState(
       edgesByWorkflow: edgesByWorkflow ?? this.edgesByWorkflow,
       edgeIdsByType: edgeIdsByType ?? this.edgeIdsByType,
-      version: version ?? this.version,
+      version: version ?? (this.version + 1), // 自动增加版本确保刷新
       selectedEdgeIds: selectedEdgeIds ?? this.selectedEdgeIds,
-      draggingEdgeId: draggingEdgeId ?? this.draggingEdgeId,
-      draggingEnd: draggingEnd ?? this.draggingEnd,
+      draggingEdgeId:
+          clearDraggingEdgeId ? null : (draggingEdgeId ?? this.draggingEdgeId),
+      draggingEnd: clearDraggingEnd ? null : (draggingEnd ?? this.draggingEnd),
     );
   }
 

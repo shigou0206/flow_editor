@@ -113,25 +113,30 @@ class MultiCanvasStateNotifier extends StateNotifier<MultiWorkflowCanvasState> {
   }
 
   void endDrag() {
+    debugPrint('endDrag 被调用');
     if (_isCreatingEdge) {
       final targetAnchor = _detectTargetAnchor();
+      final edgeNotifier =
+          _ref.read(edgeStateProvider(state.activeWorkflowId).notifier);
+
+      final workflowId = state.activeWorkflowId; // ⚠️ 确认这一行的值
+      debugPrint('endDrag 当前workflowId: $workflowId');
+
       if (targetAnchor != null) {
-        _ref
-            .read(edgeStateProvider(state.activeWorkflowId).notifier)
-            .finalizeEdge(
-              edgeId: _creatingEdgeId!,
-              targetNodeId: targetAnchor.nodeId,
-              targetAnchorId: targetAnchor.id,
-            );
-      } else {
-        _ref
-            .read(edgeStateProvider(state.activeWorkflowId).notifier)
-            .endEdgeDrag(
-              canceled: true,
-              targetNodeId: null,
-              targetAnchorId: null,
-            );
+        edgeNotifier.finalizeEdge(
+          edgeId: _creatingEdgeId!,
+          targetNodeId: targetAnchor.nodeId,
+          targetAnchorId: targetAnchor.id,
+        );
       }
+
+      // 🚩 无论连接成功或失败，都明确调用 endEdgeDrag 清理状态
+      edgeNotifier.endEdgeDrag(
+        canceled: targetAnchor == null,
+        targetNodeId: targetAnchor?.nodeId,
+        targetAnchorId: targetAnchor?.id,
+      );
+
       _isCreatingEdge = false;
       _edgeDragCurrentCanvas = null;
       _creatingEdgeId = null;
@@ -271,7 +276,7 @@ class MultiCanvasStateNotifier extends StateNotifier<MultiWorkflowCanvasState> {
     final canvasSt = state.activeState;
     final dx = deltaGlobal.dx / canvasSt.scale;
     final dy = deltaGlobal.dy / canvasSt.scale;
-    final updated = node.copyWith(x: node.x + dx, y: node.y + dy);
+    final updated = node.copyWith(position: node.position + Offset(dx, dy));
     nodeNotifier.upsertNode(updated);
   }
 
@@ -305,7 +310,12 @@ class MultiCanvasStateNotifier extends StateNotifier<MultiWorkflowCanvasState> {
     final wfId = state.activeWorkflowId;
     final nodeSt = _ref.read(nodeStateProvider(wfId));
     for (final n in nodeSt.nodesOf(wfId)) {
-      final rect = Rect.fromLTWH(n.x, n.y, n.width, n.height);
+      final rect = Rect.fromLTWH(
+        n.position.dx,
+        n.position.dy,
+        n.size.width,
+        n.size.height,
+      );
       if (rect.contains(canvasPt)) {
         return n;
       }

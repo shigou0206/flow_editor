@@ -28,8 +28,8 @@ class StartNodeWidget extends StatelessWidget {
       anchorBehavior: anchorBehavior,
       header: null,
       body: Container(
-        width: node.width,
-        height: node.height,
+        width: node.size.width,
+        height: node.size.height,
         decoration: BoxDecoration(
           shape: BoxShape.circle,
           color: Colors.grey[100],

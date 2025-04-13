@@ -57,10 +57,10 @@ class _NodeBlockState extends State<NodeBlock> {
       builder: (ctx, constraints) {
         final double w = constraints.hasBoundedWidth
             ? constraints.maxWidth
-            : widget.node.width;
+            : widget.node.size.width;
         final double h = constraints.hasBoundedHeight
             ? constraints.maxHeight
-            : widget.node.height;
+            : widget.node.size.height;
 
         return SizedBox(
           width: w,

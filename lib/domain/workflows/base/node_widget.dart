@@ -37,8 +37,8 @@ class NodeWidget extends StatelessWidget {
     final AnchorPadding padding = node.anchorPadding;
 
     // 2) 总宽高：节点大小 + 锚点外扩
-    final double totalWidth = node.width + padding.left + padding.right;
-    final double totalHeight = node.height + padding.top + padding.bottom;
+    final double totalWidth = node.size.width + padding.left + padding.right;
+    final double totalHeight = node.size.height + padding.top + padding.bottom;
 
     return SizedBox(
       width: totalWidth,
@@ -91,7 +91,7 @@ class NodeWidget extends StatelessWidget {
               // (2) 直接用一个 Container 做 "body" => Step Functions 样式
               body: body ??
                   Container(
-                    width: node.width,
+                    width: node.size.width,
                     // 高度若需要,可以 node.height - headerHeight - footerHeight
                     // 也可让 NodeBlock 自适应
                     padding: const EdgeInsets.all(8.0),

@@ -20,13 +20,13 @@ class NodeAnchors extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      width: node.width + padding.left + padding.right,
-      height: node.height + padding.top + padding.bottom,
+      width: node.size.width + padding.left + padding.right,
+      height: node.size.height + padding.top + padding.bottom,
       child: Stack(
         clipBehavior: Clip.none,
         children: node.anchors?.map((anchor) {
               final Offset localPos = computeAnchorLocalPosition(
-                  anchor, Size(node.width, node.height));
+                  anchor, Size(node.size.width, node.size.height));
 
               return Positioned(
                 left: localPos.dx + padding.left,

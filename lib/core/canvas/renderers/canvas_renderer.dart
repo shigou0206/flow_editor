@@ -10,10 +10,12 @@ import 'package:flow_editor/core/edge/edge_state/edge_state.dart';
 import 'package:flow_editor/core/edge/widgets/edge_button_overlay.dart';
 import 'package:flow_editor/core/canvas/models/canvas_visual_config.dart';
 import 'package:flow_editor/core/canvas/renderers/dotted_grid_painter.dart';
-import 'package:flow_editor/core/edge/painter/edge_renderer.dart';
+// import 'package:flow_editor/core/edge/painter/edge_renderer.dart';
+import 'package:flow_editor/core/edge/edge_renderer/edge_renderer.dart';
 import 'package:flow_editor/core/edge/utils/edge_utils.dart';
 import 'package:flow_editor/core/types/position_enum.dart';
 import 'package:flow_editor/core/edge/plugins/edge_overlay_plugin.dart';
+import 'package:flow_editor/core/edge/edge_renderer/path_generators/direct_path_generator.dart';
 
 extension CanvasRendererIterableExtension<T> on Iterable<T> {
   T? firstWhereOrNullSafe(bool Function(T) test) {
@@ -114,6 +116,11 @@ class _CanvasRendererState extends State<CanvasRenderer>
     final draggingEdgeId = widget.edgeState.draggingEdgeId;
     final draggingEnd = widget.edgeState.draggingEnd;
 
+    debugPrint(
+        'draggingEdgeId: $draggingEdgeId, draggingEnd: $draggingEnd, edgeList: $edgeList');
+
+    debugPrint('CanvasRenderer: workflowId=${widget.workflowId}');
+
     // 只取 "完整连接" 边
     final validEdges = edgeList.where((edge) {
       return edge.isConnected &&
@@ -154,6 +161,7 @@ class _CanvasRendererState extends State<CanvasRenderer>
                   painter: EdgeRenderer(
                     nodes: nodeList,
                     edges: edgeList,
+                    pathGenerator: DirectPathGenerator(nodeList),
                     draggingEdgeId: draggingEdgeId,
                     draggingEnd: draggingEnd,
                     hoveredEdgeId: widget.hoveredEdgeId,
@@ -164,9 +172,11 @@ class _CanvasRendererState extends State<CanvasRenderer>
               ...nodeList.map((node) {
                 return Positioned(
                   left: widget.offset.dx +
-                      (node.x - node.anchorPadding.left) * widget.scale,
+                      (node.position.dx - node.anchorPadding.left) *
+                          widget.scale,
                   top: widget.offset.dy +
-                      (node.y - node.anchorPadding.top) * widget.scale,
+                      (node.position.dy - node.anchorPadding.top) *
+                          widget.scale,
                   child: Transform.scale(
                     scale: widget.scale,
                     alignment: Alignment.topLeft,

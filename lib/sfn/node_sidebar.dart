@@ -24,7 +24,7 @@ class NodeSidebar extends ConsumerWidget {
         const SizedBox(height: 8),
         // 拖拽 "Task" 节点
         Draggable<NodeModel>(
-          data: NodeModel(
+          data: const NodeModel(
             id: 'task_template',
             title: 'Task',
             type: 'normal',
@@ -37,7 +37,7 @@ class NodeSidebar extends ConsumerWidget {
         const SizedBox(height: 12),
         // 拖拽 "Choice" 节点
         Draggable<NodeModel>(
-          data: NodeModel(
+          data: const NodeModel(
             id: 'choice_template',
             title: 'Choice',
             type: 'choice',
@@ -53,14 +53,14 @@ class NodeSidebar extends ConsumerWidget {
           onPressed: () {
             // 重置为初始状态
             ref.read(nodesProvider.notifier).state = [
-              NodeModel(
+              const NodeModel(
                 id: 'start',
                 title: 'Start',
                 type: 'normal',
                 x: 200,
                 y: 100,
               ),
-              NodeModel(
+              const NodeModel(
                 id: 'end',
                 title: 'End',
                 type: 'normal',
