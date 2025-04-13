@@ -64,7 +64,6 @@ class EdgePainter extends CustomPainter {
   });
 
   @override
-  @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint()
       ..color = color
@@ -109,21 +108,6 @@ class EdgePainter extends CustomPainter {
       _drawArrow(canvas, paint, points[points.length - 2], points.last);
     }
   }
-  // void paint(Canvas canvas, Size size) {
-  //   final paint = Paint()
-  //     ..color = color
-  //     ..strokeWidth = strokeWidth
-  //     ..style = PaintingStyle.stroke;
-  //   for (final points in edgeRoutes.values) {
-  //     if (points.isEmpty) continue;
-  //     final path = Path()..moveTo(points.first.dx, points.first.dy);
-  //     for (final pt in points.skip(1)) {
-  //       path.lineTo(pt.dx, pt.dy);
-  //     }
-  //     canvas.drawPath(path, paint);
-  //     _drawArrow(canvas, paint, points[points.length - 2], points.last);
-  //   }
-  // }
 
   void _drawArrow(Canvas canvas, Paint paint, Offset from, Offset to) {
     const double arrowLength = 10;

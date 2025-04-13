@@ -46,8 +46,8 @@ class CanvasVisualConfig {
         'showGrid': showGrid,
         'gridSpacing': gridSpacing,
         'backgroundColor':
-            '#${backgroundColor.value.toRadixString(16).padLeft(8, '0')}',
-        'gridColor': '#${gridColor.value.toRadixString(16).padLeft(8, '0')}',
+            '#${(backgroundColor.alpha << 24 | backgroundColor.red << 16 | backgroundColor.green << 8 | backgroundColor.blue).toRadixString(16).padLeft(8, '0')}',
+        'gridColor': '#${(gridColor.alpha << 24 | gridColor.red << 16 | gridColor.green << 8 | gridColor.blue).toRadixString(16).padLeft(8, '0')}',
         'width': width,
         'height': height,
         'backgroundStyle': backgroundStyle.name,

@@ -75,8 +75,8 @@ class EdgePainter extends CustomPainter {
         }
         
         // 节点尺寸参数
-        final nodeWidth = 100.0;
-        final nodeHeight = 60.0;
+        const nodeWidth = 100.0;
+        const nodeHeight = 60.0;
         
         // 更精确的计算与矩形边界的交点
         double boundaryDistance;

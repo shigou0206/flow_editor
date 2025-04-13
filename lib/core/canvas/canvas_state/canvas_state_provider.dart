@@ -167,8 +167,7 @@ class MultiCanvasStateNotifier extends StateNotifier<MultiWorkflowCanvasState> {
       case WorkflowMode.stateMachine:
         return StateMachineStrategy(workflowId: workflowId);
       case WorkflowMode.generic:
-      default:
-        return GenericFlowStrategy(workflowId: workflowId);
+      return GenericFlowStrategy(workflowId: workflowId);
     }
   }
 
