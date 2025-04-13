@@ -436,7 +436,7 @@ class _CanvasWidgetState extends State<CanvasWidget> {
       ),
       child: Text(
         group.title ?? '',
-        style: const TextStyle(fontWeight: FontWeight.bold),
+        style: const TextStyle(fontSize: 12),
       ),
     );
   }
@@ -451,7 +451,7 @@ class _CanvasWidgetState extends State<CanvasWidget> {
         border: Border.all(color: Colors.black),
         borderRadius: BorderRadius.circular(6),
       ),
-      child: Text(node.title ?? ''),
+      child: Text(node.title ?? '', style: const TextStyle(fontSize: 12)),
     );
   }
 }

@@ -1,157 +1,243 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flow_editor/core/node/models/node_model.dart';
+import 'package:flow_editor/core/edge/models/edge_model.dart';
+import 'package:flow_editor/core/layout/sugiyama_layout.dart';
+import 'dart:math' show pi, cos, sin;
 
-void main() => runApp(const ProviderScope(child: MyApp()));
+void main() {
+  runApp(const MaterialApp(home: LayoutDemoPage()));
+}
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+class LayoutDemoPage extends StatefulWidget {
+  const LayoutDemoPage({super.key});
+
+  @override
+  State<LayoutDemoPage> createState() => _LayoutDemoPageState();
+}
+
+class _LayoutDemoPageState extends State<LayoutDemoPage> {
+  final List<NodeModel> nodes = [];
+  final List<EdgeModel> edges = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _initGraph();
+    _performLayout();
+  }
+
+  void _initGraph() {
+    nodes.addAll([
+      NodeModel(id: 'group1', title: 'Group 1', position: const Offset(100, 100), size: Size.zero, isGroup: true),
+      NodeModel(id: 'root1', title: 'Root 1', parentId: 'group1', position: const Offset(16, 16), size: const Size(100, 40), isGroupRoot: true),
+      NodeModel(id: 'node11', title: 'Node 1.1', parentId: 'group1', position: const Offset(16, 68), size: const Size(100, 40)),
+      NodeModel(id: 'node12', title: 'Node 1.2', parentId: 'group1', position: const Offset(16, 68), size: const Size(100, 40)),
+      NodeModel(id: 'group2', title: 'Group 2', parentId: 'group1', position: const Offset(16, 120), size: const Size(150, 100), isGroup: true),
+      NodeModel(id: 'node21', title: 'Node 2.1', parentId: 'group2', position: const Offset(16, 16), size: const Size(100, 40)),
+      NodeModel(id: 'node22', title: 'Node 2.2', parentId: 'group2', position: const Offset(16, 68), size: const Size(100, 40)),
+      NodeModel(id: 'node23', title: 'Node 2.3', parentId: 'group2', position: const Offset(16, 68), size: const Size(100, 40)),
+      NodeModel(id: 'node24', title: 'Node 2.4', parentId: 'group2', position: const Offset(16, 68), size: const Size(100, 40)),
+      NodeModel(id: 'nodeend', title: 'Node End', parentId: 'group1', position: const Offset(16, 180), size: const Size(100, 40)),
+    ]);
+
+    edges.addAll([
+      EdgeModel(sourceNodeId: 'root1', targetNodeId: 'node11'),
+      EdgeModel(sourceNodeId: 'node11', targetNodeId: 'node12'),
+      EdgeModel(sourceNodeId: 'node11', targetNodeId: 'group2'),
+      EdgeModel(sourceNodeId: 'node21', targetNodeId: 'node22'),
+      EdgeModel(sourceNodeId: 'node21', targetNodeId: 'node23'),
+      EdgeModel(sourceNodeId: 'node24', targetNodeId: 'node23'),
+      EdgeModel(sourceNodeId: 'group2', targetNodeId: 'nodeend'),
+      EdgeModel(sourceNodeId: 'node12', targetNodeId: 'nodeend'),
+      EdgeModel(sourceNodeId: 'node11', targetNodeId: 'nodeend'),
+    ]);
+  }
+
+  void _performLayout() {
+    final layout = SugiyamaLayoutStrategy();
+    layout.performLayout(nodes, edges);
+  }
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(home: Scaffold(body: CanvasDemo()));
-  }
-}
-
-class Node {
-  String id;
-  Offset position;
-
-  Node({required this.id, required this.position});
-}
-
-class Edge {
-  String id;
-  String sourceId;
-  String targetId;
-
-  Edge({required this.id, required this.sourceId, required this.targetId});
-}
-
-final nodeProvider = StateProvider<List<Node>>((ref) => [
-      Node(id: 'start', position: Offset(150, 100)),
-      Node(id: 'end', position: Offset(150, 400)),
-      Node(id: 'task1', position: Offset(150, 200)),
-      Node(id: 'task2', position: Offset(150, 300)),
-    ]);
-
-final edgeProvider = StateProvider<List<Edge>>((ref) => [
-      Edge(id: 'start-end', sourceId: 'start', targetId: 'end'),
-      Edge(id: 'start-task1', sourceId: 'start', targetId: 'task1'),
-      Edge(id: 'task1-end', sourceId: 'task1', targetId: 'end'),
-    ]);
-
-class CanvasDemo extends ConsumerWidget {
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final nodes = ref.watch(nodeProvider);
-    final edges = ref.watch(edgeProvider);
-
-    return Stack(children: [
-      CustomPaint(
-        size: Size.infinite,
-        painter: EdgePainter(nodes: nodes, edges: edges),
-      ),
-      ...nodes.map((node) => Positioned(
-            left: node.position.dx - 25,
-            top: node.position.dy - 25,
-            child: Draggable<Node>(
-              data: node,
-              feedback: NodeWidget(node),
-              childWhenDragging: Opacity(opacity: 0.3, child: NodeWidget(node)),
-              child: NodeWidget(node),
-            ),
-          )),
-      Positioned.fill(
-        child: DragTarget<Node>(
-          onAcceptWithDetails: (details) {
-            final position = details.offset;
-            final edge = edges.first;
-
-            final newNode = Node(
-                id: DateTime.now().millisecondsSinceEpoch.toString(),
-                position: position);
-
-            // Update nodes
-            ref
-                .read(nodeProvider.notifier)
-                .update((state) => [...state, newNode]);
-
-            // Replace existing edge with two new edges
-            ref.read(edgeProvider.notifier).update((state) => [
-                  ...state.where((e) => e.id != edge.id),
-                  Edge(
-                      id: '${edge.sourceId}-${newNode.id}',
-                      sourceId: edge.sourceId,
-                      targetId: newNode.id),
-                  Edge(
-                      id: '${newNode.id}-${edge.targetId}',
-                      sourceId: newNode.id,
-                      targetId: edge.targetId),
-                ]);
-          },
-          builder: (context, candidateData, rejectedData) => Container(),
-        ),
-      ),
-      Positioned(
-        right: 20,
-        bottom: 20,
-        child: ElevatedButton(
-          child: Text('Reset'),
-          onPressed: () {
-            ref.read(nodeProvider.notifier).state = [
-              Node(id: 'start', position: Offset(150, 100)),
-              Node(id: 'end', position: Offset(150, 400)),
-            ];
-            ref.read(edgeProvider.notifier).state = [
-              Edge(id: 'start-end', sourceId: 'start', targetId: 'end'),
-            ];
-          },
-        ),
-      ),
-    ]);
-  }
-}
-
-class NodeWidget extends StatelessWidget {
-  final Node node;
-  const NodeWidget(this.node);
-
-  @override
-  Widget build(BuildContext context) {
+    // 渲染阶段：先计算边路由，然后进行节点渲染
+    final sorted = _getSortedByDepthFirst();
     return Container(
-      width: 50,
-      height: 50,
+      color: Colors.grey.shade200,
+      child: Stack(
+        children: [
+          // 边先绘制
+          // CustomPaint(
+          //   painter: EdgePainter(edgeRoutes: edgeRoutes),
+          //   size: Size.infinite,
+          // ),
+          // 节点之后，使用扩展方法计算绝对坐标
+          ...sorted.map((node) {
+            return Positioned(
+              left: node.position.dx,
+              top: node.position.dy,
+              child: node.isGroup ? _renderGroup(node) : _renderNode(node),
+            );
+          }),
+        ],
+      ),
+    );
+  }
+
+    /// 深度优先遍历排序，确保 group 先渲染（背景），内部节点后渲染
+  List<NodeModel> _getSortedByDepthFirst() {
+    List<NodeModel> result = [];
+    void visit(String? parentId) {
+      for (final node in nodes.where((n) => n.parentId == parentId)) {
+        if (node.isGroup) result.add(node);
+        visit(node.id);
+        if (!node.isGroup) result.add(node);
+      }
+    }
+
+    visit(null);
+    return result;
+  }
+
+  Widget _renderGroup(NodeModel group) {
+    return Container(
+      width: group.size.width,
+      height: group.size.height,
+      padding: const EdgeInsets.all(4),
+      decoration: BoxDecoration(
+        color: Colors.blue.withOpacity(0.1),
+        border: Border.all(color: Colors.blue, width: 2),
+      ),
+      child: Text(
+        group.title ?? '',
+        style: const TextStyle(fontWeight: FontWeight.bold),
+      ),
+    );
+  }
+
+  Widget _renderNode(NodeModel node) {
+    return Container(
+      width: node.size.width,
+      height: node.size.height,
       alignment: Alignment.center,
       decoration: BoxDecoration(
-        color: Colors.white,
-        border: Border.all(color: Colors.blue, width: 2),
-        borderRadius: BorderRadius.circular(25),
-        boxShadow: const [BoxShadow(blurRadius: 2, color: Colors.grey)],
+        color: node.isGroupRoot ? Colors.redAccent : Colors.orangeAccent,
+        border: Border.all(color: Colors.black),
+        borderRadius: BorderRadius.circular(6),
       ),
-      child: Text(node.id),
+      child: Text(node.title ?? ''),
     );
   }
 }
 
-class EdgePainter extends CustomPainter {
-  final List<Node> nodes;
-  final List<Edge> edges;
-
-  EdgePainter({required this.nodes, required this.edges});
+class _EdgeLinePainter extends CustomPainter {
+  final List<Offset> points;
+  _EdgeLinePainter(this.points);
 
   @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint()
-      ..color = Colors.black
-      ..strokeWidth = 2;
+      ..color = Colors.grey
+      ..strokeWidth = 2
+      ..style = PaintingStyle.stroke;
 
-    for (final edge in edges) {
-      final source = nodes.firstWhere((n) => n.id == edge.sourceId);
-      final target = nodes.firstWhere((n) => n.id == edge.targetId);
-      canvas.drawLine(source.position, target.position, paint);
+    final path = Path()..moveTo(points.first.dx, points.first.dy);
+    for (var p in points.skip(1)) {
+      path.lineTo(p.dx, p.dy);
     }
+
+    canvas.drawPath(path, paint);
   }
 
   @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) => true;
+  bool shouldRepaint(covariant _EdgeLinePainter oldDelegate) =>
+      oldDelegate.points != points;
+}
+
+class EdgePainter extends CustomPainter {
+  final Map<String, List<Offset>> edgeRoutes;
+  final Color color;
+  final double strokeWidth;
+
+  EdgePainter({
+    required this.edgeRoutes,
+    this.color = Colors.black,
+    this.strokeWidth = 2.0,
+  });
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = color
+      ..strokeWidth = strokeWidth
+      ..style = PaintingStyle.stroke;
+
+    for (final points in edgeRoutes.values) {
+      if (points.length < 2) continue;
+
+      final path = Path()..moveTo(points.first.dx, points.first.dy);
+
+      for (int i = 0; i < points.length - 1; i++) {
+        final current = points[i];
+        final next = points[i + 1];
+
+        if (i < points.length - 2) {
+          // 取中点用于控制曲线
+          final midPoint = Offset(
+            (current.dx + next.dx) / 2,
+            (current.dy + next.dy) / 2,
+          );
+          path.quadraticBezierTo(
+            current.dx,
+            current.dy,
+            midPoint.dx,
+            midPoint.dy,
+          );
+        } else {
+          // 最后一个线段直接连接到终点
+          path.quadraticBezierTo(
+            current.dx,
+            current.dy,
+            next.dx,
+            next.dy,
+          );
+        }
+      }
+
+      canvas.drawPath(path, paint);
+
+      // 绘制箭头，基于路径的最后两个点
+      _drawArrow(canvas, paint, points[points.length - 2], points.last);
+    }
+  }
+
+  void _drawArrow(Canvas canvas, Paint paint, Offset from, Offset to) {
+    const double arrowLength = 10;
+    const double arrowAngle = 25 * (pi / 180); // 箭头角度（25度）
+
+    final angle = (to - from).direction;
+    final path = Path();
+
+    final Offset arrowPoint1 = to -
+        Offset(
+          arrowLength * cos(angle - arrowAngle),
+          arrowLength * sin(angle - arrowAngle),
+        );
+    final Offset arrowPoint2 = to -
+        Offset(
+          arrowLength * cos(angle + arrowAngle),
+          arrowLength * sin(angle + arrowAngle),
+        );
+
+    path.moveTo(to.dx, to.dy);
+    path.lineTo(arrowPoint1.dx, arrowPoint1.dy);
+    path.moveTo(to.dx, to.dy);
+    path.lineTo(arrowPoint2.dx, arrowPoint2.dy);
+
+    canvas.drawPath(path, paint);
+  }
+
+  @override
+  bool shouldRepaint(covariant EdgePainter oldDelegate) =>
+      oldDelegate.edgeRoutes != edgeRoutes;
 }
