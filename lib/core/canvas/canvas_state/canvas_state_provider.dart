@@ -289,7 +289,7 @@ class MultiCanvasStateNotifier extends StateNotifier<MultiWorkflowCanvasState> {
     final nodeSt = _ref.read(nodeStateProvider(wfId));
     if (_edgeDragCurrentCanvas == null) return null;
     for (final node in nodeSt.nodesOf(wfId)) {
-      for (final anchor in node.anchors) {
+      for (final anchor in node.anchors ?? []) {
         final anchorGlobal = computeAnchorWorldPosition(node, anchor);
         final anchorCenter =
             anchorGlobal + Offset(anchor.width / 2, anchor.height / 2);
@@ -320,7 +320,7 @@ class MultiCanvasStateNotifier extends StateNotifier<MultiWorkflowCanvasState> {
     final canvasPt = _globalToCanvas(context, globalPos, state.activeState);
 
     for (final node in nodeSt.nodesOf(wfId)) {
-      for (final anchor in node.anchors) {
+      for (final anchor in node.anchors ?? []) {
         final anchorGlobal = computeAnchorWorldPosition(node, anchor);
         final anchorCenter =
             anchorGlobal + Offset(anchor.width / 2, anchor.height / 2);
@@ -479,7 +479,7 @@ class MultiCanvasStateNotifier extends StateNotifier<MultiWorkflowCanvasState> {
     AnchorModel? anchor;
     if (anchorId == null) return (null, null);
     if (node != null) {
-      for (final a in node.anchors) {
+      for (final a in node.anchors ?? []) {
         if (a.id == anchorId) {
           anchor = a;
           break;

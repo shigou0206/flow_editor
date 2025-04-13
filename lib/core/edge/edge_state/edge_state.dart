@@ -62,9 +62,10 @@ class EdgeState extends Equatable {
   /// 移除某个 workflow
   EdgeState removeWorkflow(String workflowId) {
     if (!edgesByWorkflow.containsKey(workflowId)) return this;
-    final updated = Map<String, List<EdgeModel>>.from(edgesByWorkflow)
+    final updatedEdges = Map<String, List<EdgeModel>>.from(edgesByWorkflow)
       ..remove(workflowId);
-    return rebuildIndexes(updated, version: version + 1);
+
+    return rebuildIndexes(updatedEdges, version: version + 1);
   }
 
   /// 重建 type 索引

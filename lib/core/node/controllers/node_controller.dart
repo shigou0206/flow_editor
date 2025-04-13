@@ -121,7 +121,7 @@ class NodeController implements INodeController {
     final nodes = getAllNodes();
 
     for (final node in nodes) {
-      for (final anchor in node.anchors) {
+      for (final anchor in node.anchors ?? []) {
         if (anchor.id == excludeAnchorId) continue;
 
         final anchorLocalPos = computeAnchorLocalPosition(
@@ -130,7 +130,7 @@ class NodeController implements INodeController {
         );
 
         final padding = computeAnchorPadding(
-          node.anchors,
+          node.anchors ?? [],
           Size(node.width, node.height),
         );
 

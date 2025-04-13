@@ -24,21 +24,22 @@ class NodeAnchors extends StatelessWidget {
       height: node.height + padding.top + padding.bottom,
       child: Stack(
         clipBehavior: Clip.none,
-        children: node.anchors.map((anchor) {
-          final Offset localPos =
-              computeAnchorLocalPosition(anchor, Size(node.width, node.height));
+        children: node.anchors?.map((anchor) {
+              final Offset localPos = computeAnchorLocalPosition(
+                  anchor, Size(node.width, node.height));
 
-          return Positioned(
-            left: localPos.dx + padding.left,
-            top: localPos.dy + padding.top,
-            child: AnchorWidget(
-              anchor: anchor,
-              width: anchor.width,
-              height: anchor.height,
-              anchorBehavior: anchorBehavior,
-            ),
-          );
-        }).toList(),
+              return Positioned(
+                left: localPos.dx + padding.left,
+                top: localPos.dy + padding.top,
+                child: AnchorWidget(
+                  anchor: anchor,
+                  width: anchor.width,
+                  height: anchor.height,
+                  anchorBehavior: anchorBehavior,
+                ),
+              );
+            }).toList() ??
+            [],
       ),
     );
   }

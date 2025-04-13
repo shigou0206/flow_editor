@@ -275,7 +275,6 @@ class StepFunctionCanvasState extends ConsumerState<StepFunctionCanvas> {
   /// 拖拽插入节点到边：根据拖拽位置判断最近边是否需要插入节点
   void _insertNodeOnEdgeByDrag(Offset dropPos, NodeModel template) {
     final edges = ref.read(edgesProvider);
-    final nodes = ref.read(nodesProvider);
     final edgeRoutes = ref.read(edgeRoutesProvider);
     final threshold = 80.0; // 阈值调低一些，更容易检测
     String? hitEdgeId;

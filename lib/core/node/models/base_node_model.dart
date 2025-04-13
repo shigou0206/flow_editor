@@ -17,6 +17,8 @@ abstract class BaseNodeModel {
 
   Rect get rect => Rect.fromLTWH(x, y, width, height);
 
+  void doLayout();
+
   BaseNodeModel copyWith({
     double? x,
     double? y,

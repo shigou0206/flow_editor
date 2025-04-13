@@ -22,7 +22,7 @@ class NodeWidgetFactoryImpl implements NodeWidgetFactory {
 
   @override
   Widget createNodeWidget(NodeModel node, {Key? key}) {
-    final config = registry.getConfig(node.type);
+    final config = registry.getConfig(node.type ?? '');
     if (config != null) {
       final widget =
           config.builder(node, nodeBehavior, anchorBehavior, callbacks);

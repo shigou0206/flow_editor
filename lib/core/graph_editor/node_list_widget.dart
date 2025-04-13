@@ -107,7 +107,7 @@ class NodeListWidget extends StatelessWidget {
           const Icon(Icons.add, color: Colors.blue),
           const SizedBox(width: 6),
           Text(
-            template.title,
+            template.title ?? '',
             style: const TextStyle(fontSize: 14),
           ),
         ],

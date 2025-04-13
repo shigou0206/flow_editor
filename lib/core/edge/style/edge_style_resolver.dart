@@ -1,42 +1,38 @@
 import 'package:flutter/material.dart';
 import 'package:flow_editor/core/edge/models/edge_line_style.dart';
 import 'package:flow_editor/core/edge/models/edge_enums.dart';
-import 'package:flow_editor/core/edge/models/edge_animation_config.dart';
 import 'package:flow_editor/core/types/position_enum.dart';
 import 'package:flow_editor/core/edge/utils/edge_utils.dart';
+import 'package:flow_editor/core/edge/models/edge_animation_config.dart';
+import 'dart:math';
 
 class EdgeStyleResolver {
   const EdgeStyleResolver();
 
-  /// 根据 edge 的各种状态 (isDragging / isSelected / isHover)
-  /// 返回一支 Paint，用于实际画线。
   Paint resolvePaint(
     EdgeLineStyle style,
     bool isSelected, {
     bool isHover = false,
     bool isDragging = false,
   }) {
-    // 1) 基础色
     final baseColor = _parseColor(style.colorHex);
 
-    // 2) 优先级: 拖拽 > 选中 > 悬停 > 默认
     Color finalColor;
     double finalOpacity = 0.5;
     double finalStrokeWidth = style.strokeWidth;
 
     if (isDragging) {
-      finalColor = Colors.orangeAccent; // 拖拽优先
+      finalColor = Colors.orangeAccent;
       finalOpacity = 1.0;
-      finalStrokeWidth *= 1.2; // 拖拽时稍加粗
+      finalStrokeWidth *= 1.2;
     } else if (isSelected) {
-      finalColor = baseColor; // 选中
+      finalColor = baseColor;
       finalOpacity = 1.0;
     } else if (isHover) {
-      finalColor = baseColor; // 悬停
+      finalColor = baseColor;
       finalOpacity = 0.7;
-      finalStrokeWidth *= 1.1; // 悬停时略加粗
+      finalStrokeWidth *= 1.1;
     } else {
-      // 默认
       finalColor = baseColor;
       finalOpacity = 0.5;
     }
@@ -49,7 +45,6 @@ class EdgeStyleResolver {
       ..strokeJoin = _toStrokeJoin(style.lineJoin);
   }
 
-  /// 拖拽中的“幽灵线”专用 Paint
   Paint resolveGhostPaint(EdgeLineStyle style) {
     return Paint()
       ..color = Colors.orange
@@ -57,7 +52,6 @@ class EdgeStyleResolver {
       ..style = PaintingStyle.stroke;
   }
 
-  /// 根据 edgeMode 构建实际连接路径 (source->target)
   Path resolvePath(
     EdgeMode edgeMode,
     Offset sourceWorld,
@@ -94,44 +88,29 @@ class EdgeStyleResolver {
         );
 
       case EdgeMode.bezier:
-        if (sourcePos != null && targetPos != null) {
-          final result = getBezierPath(
-            sourceX: sourceWorld.dx,
-            sourceY: sourceWorld.dy,
-            sourcePosition: sourcePos,
-            targetX: targetWorld.dx,
-            targetY: targetWorld.dy,
-            targetPosition: targetPos,
-            curvature: 0.25,
-          );
-          return result[0] as Path;
-        } else {
-          return Path()
-            ..moveTo(sourceWorld.dx, sourceWorld.dy)
-            ..lineTo(targetWorld.dx, targetWorld.dy);
-        }
+        return getBezierPath(
+          sourceX: sourceWorld.dx,
+          sourceY: sourceWorld.dy,
+          sourcePosition: sourcePos!,
+          targetX: targetWorld.dx,
+          targetY: targetWorld.dy,
+          targetPosition: targetPos!,
+          curvature: 0.25,
+        )[0];
 
       case EdgeMode.hvBezier:
-        if (sourcePos != null && targetPos != null) {
-          final result = getHVBezierPath(
-            sourceX: sourceWorld.dx,
-            sourceY: sourceWorld.dy,
-            sourcePos: sourcePos,
-            targetX: targetWorld.dx,
-            targetY: targetWorld.dy,
-            targetPos: targetPos,
-            offset: 50.0,
-          );
-          return result[0] as Path;
-        } else {
-          return Path()
-            ..moveTo(sourceWorld.dx, sourceWorld.dy)
-            ..lineTo(targetWorld.dx, targetWorld.dy);
-        }
+        return getHVBezierPath(
+          sourceX: sourceWorld.dx,
+          sourceY: sourceWorld.dy,
+          sourcePos: sourcePos!,
+          targetX: targetWorld.dx,
+          targetY: targetWorld.dy,
+          targetPos: targetPos!,
+          offset: 50.0,
+        )[0];
     }
   }
 
-  /// 拖拽中的“单端”路径(ghost edge)
   Path resolveGhostPath(
     EdgeMode edgeMode,
     Offset sourceWorld,
@@ -206,52 +185,75 @@ class EdgeStyleResolver {
     }
   }
 
-  /// 计算 dash流动动画的相位
-  double computeDashFlowPhase(EdgeAnimationConfig anim) {
-    if (anim.animateDash) {
-      return anim.dashFlowPhase ?? 0;
+  void drawArrowIfNeeded(
+      Canvas canvas, Path path, Paint paint, EdgeLineStyle style) {
+    final pathMetrics = path.computeMetrics();
+    if (pathMetrics.isEmpty) return;
+
+    final metric = pathMetrics.first;
+
+    if (style.arrowStart != ArrowType.none) {
+      final tangent = metric.getTangentForOffset(0);
+      if (tangent != null) {
+        drawArrow(canvas, tangent.position, tangent.angle + pi, style, paint);
+      }
     }
-    return 0;
+
+    if (style.arrowEnd != ArrowType.none) {
+      final tangent = metric.getTangentForOffset(metric.length);
+      if (tangent != null) {
+        drawArrow(canvas, tangent.position, tangent.angle, style, paint);
+      }
+    }
   }
 
-  /// 下面几个方法是辅助(箭头、dash等)
-  List<double> resolveDashPattern(EdgeLineStyle style) => style.dashPattern;
-  ArrowType resolveArrowStart(EdgeLineStyle style) => style.arrowStart;
-  ArrowType resolveArrowEnd(EdgeLineStyle style) => style.arrowEnd;
-  double resolveArrowSize(EdgeLineStyle style) => style.arrowSize;
-  double resolveArrowAngle(EdgeLineStyle style) => style.arrowAngleDeg;
+  void drawArrow(Canvas canvas, Offset position, double angle,
+      EdgeLineStyle style, Paint paint) {
+    final arrowAngleRad = style.arrowAngleDeg * (pi / 180.0);
+    final arrowLength = style.arrowSize;
 
-  // ========== 内部解析/辅助函数 ==========
+    final path = Path()
+      ..moveTo(position.dx, position.dy)
+      ..lineTo(position.dx - arrowLength * cos(angle - arrowAngleRad),
+          position.dy - arrowLength * sin(angle - arrowAngleRad))
+      ..moveTo(position.dx, position.dy)
+      ..lineTo(position.dx - arrowLength * cos(angle + arrowAngleRad),
+          position.dy - arrowLength * sin(angle + arrowAngleRad));
+
+    canvas.drawPath(path, paint);
+  }
 
   Color _parseColor(String hex) {
-    final cleaned = hex.replaceAll('#', '');
-    final hexValue = cleaned.length == 6 ? 'FF$cleaned' : cleaned;
+    final hexValue = hex.replaceAll('#', '').padLeft(8, 'FF');
     return Color(int.parse(hexValue, radix: 16));
   }
 
   StrokeCap _toStrokeCap(EdgeLineCap cap) {
-    switch (cap) {
-      case EdgeLineCap.round:
-        return StrokeCap.round;
-      case EdgeLineCap.square:
-        return StrokeCap.square;
-      case EdgeLineCap.butt:
-      default:
-        return StrokeCap.butt;
-    }
+    return StrokeCap.values[cap.index];
   }
 
   StrokeJoin _toStrokeJoin(EdgeLineJoin join) {
-    switch (join) {
-      case EdgeLineJoin.round:
-        return StrokeJoin.round;
-      case EdgeLineJoin.bevel:
-        return StrokeJoin.bevel;
-      case EdgeLineJoin.miter:
-      default:
-        return StrokeJoin.miter;
-    }
+    return StrokeJoin.values[join.index];
   }
+
+  double computeDashFlowPhase(EdgeAnimationConfig animConfig) {
+    if (!animConfig.animateDash || animConfig.dashFlowPhase == null) {
+      return 0.0;
+    }
+    return animConfig.dashFlowPhase!;
+  }
+
+  // StrokeJoin _toStrokeJoin(EdgeLineJoin join) {
+  //   switch (join) {
+  //     case EdgeLineJoin.round:
+  //       return StrokeJoin.round;
+  //     case EdgeLineJoin.bevel:
+  //       return StrokeJoin.bevel;
+  //     case EdgeLineJoin.miter:
+  //     default:
+  //       return StrokeJoin.miter;
+  //   }
+  // }
 
   // ======== Orthogonal / hvBezier 拓展配合的函数 ==========
   (double, double) _extendOutSingle(

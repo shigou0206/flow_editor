@@ -247,7 +247,7 @@ class _CanvasRendererState extends State<CanvasRenderer>
         .firstWhereOrNullSafe((n) => n.id == nodeId);
     if (node == null) return (null, null);
     if (anchorId == null) return (null, null);
-    final anchor = node.anchors.firstWhereOrNullSafe((a) => a.id == anchorId);
+    final anchor = node.anchors?.firstWhereOrNullSafe((a) => a.id == anchorId);
     if (anchor == null) return (null, null);
 
     final worldPos = computeAnchorWorldPosition(node, anchor) +

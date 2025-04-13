@@ -35,6 +35,7 @@ dependencies:
   freezed_annotation: ^2.4.1
   json_annotation: ^4.8.1
   http: ^1.1.0
+  collection: ^1.18.0
 
   flow_layout:
     path: /Users/sryu/projects/flow_layout

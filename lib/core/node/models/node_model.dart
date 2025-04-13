@@ -1,36 +1,40 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart'; // for Rect, Offset
 import 'package:flow_editor/core/anchor/models/anchor_model.dart';
 import 'package:flow_editor/core/anchor/utils/anchor_position_utils.dart';
 import 'package:flow_editor/core/node/models/node_enums.dart';
 import 'package:flow_editor/core/node/models/base_node_model.dart';
 import 'package:flow_editor/core/node/models/styles/node_style.dart';
+import 'package:flutter/rendering.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter/widgets.dart';
 
 class NodeModel extends BaseNodeModel {
-  final DragMode dragMode;
-  final String type; // 业务自定义类型: e.g. "start", "end"...
-  final NodeRole role;
-  final String title;
-  final List<AnchorModel> anchors;
+  final DragMode? dragMode;
+  final String? type;
+  final NodeRole? role;
+  final String? title;
+  final List<AnchorModel>? anchors;
 
   // ========== 扩展字段 ==========
-  final NodeStatus status;
+  final NodeStatus? status;
   final String? parentId;
-  final int zIndex;
-  final bool enabled;
-  final bool locked;
+  final int? zIndex;
+  final bool? enabled;
+  final bool? locked;
   final String? description;
   final NodeStyle? style;
 
   // ========== 版本/审计信息 ==========
-  final int version;
+  final int? version;
   final DateTime? createdAt;
   final DateTime? updatedAt;
 
   // ========== 动态数据存储 (与业务扩展) ==========
-  final Map<String, dynamic> inputs;
-  final Map<String, dynamic> outputs;
-  final Map<String, dynamic> config;
-  final Map<String, dynamic> data;
+  final Map<String, dynamic>? inputs;
+  final Map<String, dynamic>? outputs;
+  final Map<String, dynamic>? config;
+  final Map<String, dynamic>? data;
 
   NodeModel({
     required super.id,
@@ -41,7 +45,7 @@ class NodeModel extends BaseNodeModel {
     this.dragMode = DragMode.full,
     this.type = "",
     this.role = NodeRole.middle,
-    required this.title,
+    this.title,
     this.anchors = const [],
     this.status = NodeStatus.none,
     this.parentId,
@@ -63,8 +67,11 @@ class NodeModel extends BaseNodeModel {
   @override
   Rect get rect => Rect.fromLTWH(x, y, width, height);
 
+  @override
+  void doLayout() {}
+
   AnchorPadding get anchorPadding =>
-      computeAnchorPadding(anchors, Size(width, height));
+      computeAnchorPadding(anchors ?? [], Size(width, height));
 
   double get totalWidth => width + anchorPadding.left + anchorPadding.right;
   double get totalHeight => height + anchorPadding.top + anchorPadding.bottom;
@@ -137,7 +144,7 @@ class NodeModel extends BaseNodeModel {
       'type': type,
       'role': role.toString(), // e.g. "NodeRole.middle"
       'title': title,
-      'anchors': anchors.map((a) => a.toJson()).toList(),
+      'anchors': anchors?.map((a) => a.toJson()).toList() ?? [],
       'anchorPadding': anchorPadding.toJson(),
       'status': status.toString(), // e.g. "NodeStatus.running"
       'parentId': parentId,

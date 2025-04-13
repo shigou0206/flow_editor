@@ -1,5 +1,6 @@
 import 'package:flow_editor/core/edge/models/edge_animation_config.dart';
 import 'package:flow_editor/core/edge/models/edge_line_style.dart';
+import 'package:flow_layout/graph/graph.dart';
 
 class EdgeModel {
   // ===== 基本连接信息 =====
@@ -9,6 +10,7 @@ class EdgeModel {
   final String? targetNodeId;
   final String? targetAnchorId;
   final bool isConnected;
+  final bool isDirected;
 
   // ===== 分类 / 状态 / 协作 =====
   final String edgeType; // "flow", "dependency", ...
@@ -32,13 +34,14 @@ class EdgeModel {
   // ===== 额外数据 =====
   final Map<String, dynamic> data;
 
-  const EdgeModel({
-    required this.id,
+  EdgeModel({
+    String? id,
     required this.sourceNodeId,
     required this.sourceAnchorId,
     this.targetNodeId,
     this.targetAnchorId,
     this.isConnected = false,
+    this.isDirected = true,
     this.edgeType = "default",
     this.status,
     this.locked = false,
@@ -51,7 +54,26 @@ class EdgeModel {
     this.label,
     this.labelStyle,
     this.data = const {},
-  });
+  }) : id = id ??
+            generateEdgeId(sourceNodeId, targetNodeId, sourceAnchorId,
+                targetAnchorId, label,
+                isDirected: isDirected);
+
+  static String generateEdgeId(String sourceNodeId, String? targetNodeId,
+      String? sourceAnchorId, String? targetAnchorId, String? name,
+      {bool isDirected = true}) {
+    final sourceAnchor = sourceAnchorId ?? "none";
+    final targetAnchor = targetAnchorId ?? "none";
+    final source = sourceNodeId;
+    final target = targetNodeId ?? "none";
+    name = name ?? "none";
+    if (sourceAnchor.compareTo(targetAnchor) <= 0) {
+      name = "$sourceAnchor\u0001$targetAnchor\u0001$name";
+    } else {
+      name = "$targetAnchor\u0001$sourceAnchor\u0001$name";
+    }
+    return createEdgeId(source, target, name, isDirected);
+  }
 
   // copyWith
   EdgeModel copyWith({

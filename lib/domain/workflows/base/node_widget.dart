@@ -4,6 +4,7 @@ import 'package:flow_editor/core/node/behaviors/node_behavior.dart';
 import 'package:flow_editor/core/anchor/behaviors/anchor_behavior.dart';
 import 'package:flow_editor/core/anchor/utils/anchor_position_utils.dart';
 import 'package:flow_editor/domain/workflows/base/node_block.dart';
+import 'package:flow_editor/domain/workflows/base/node_anchors.dart';
 import 'package:flow_editor/core/node/plugins/node_action_callbacks.dart';
 
 class NodeWidget extends StatelessWidget {
@@ -110,7 +111,7 @@ class NodeWidget extends StatelessWidget {
                       ],
                     ),
                     child: Text(
-                      node.title,
+                      node.title ?? '',
                       style:
                           const TextStyle(fontSize: 14, color: Colors.black87),
                     ),
@@ -120,15 +121,15 @@ class NodeWidget extends StatelessWidget {
           ),
 
           // (3) 在 (0,0) 放置锚点层
-          // Positioned(
-          //   left: 0,
-          //   top: 0,
-          //   child: NodeAnchors(
-          //     node: node,
-          //     anchorBehavior: anchorBehavior,
-          //     padding: padding,
-          //   ),
-          // ),
+          Positioned(
+            left: 0,
+            top: 0,
+            child: NodeAnchors(
+              node: node,
+              anchorBehavior: anchorBehavior,
+              padding: padding,
+            ),
+          ),
         ],
       ),
     );
