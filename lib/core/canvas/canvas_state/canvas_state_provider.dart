@@ -10,7 +10,7 @@ import 'package:flow_editor/core/edge/edge_state/edge_state_provider.dart';
 import 'package:flow_editor/core/anchor/models/anchor_model.dart';
 import 'package:flow_editor/core/anchor/utils/anchor_position_utils.dart';
 import 'package:flow_editor/core/edge/utils/hit_test_utils.dart';
-import 'package:flow_editor/core/edge/style/edge_style_resolver.dart';
+import 'package:flow_editor/core/edge/edge_renderer/path_generators/flexible_path_generator.dart';
 import 'package:flow_editor/core/types/position_enum.dart';
 import 'package:flow_editor/core/logic/strategy/workflow_mode.dart';
 import 'package:flow_editor/core/logic/strategy/workflow_strategy.dart';
@@ -167,7 +167,7 @@ class MultiCanvasStateNotifier extends StateNotifier<MultiWorkflowCanvasState> {
       case WorkflowMode.stateMachine:
         return StateMachineStrategy(workflowId: workflowId);
       case WorkflowMode.generic:
-      return GenericFlowStrategy(workflowId: workflowId);
+        return GenericFlowStrategy(workflowId: workflowId);
     }
   }
 
@@ -294,7 +294,8 @@ class MultiCanvasStateNotifier extends StateNotifier<MultiWorkflowCanvasState> {
     if (_edgeDragCurrentCanvas == null) return null;
     for (final node in nodeSt.nodesOf(wfId)) {
       for (final anchor in node.anchors ?? []) {
-        final anchorGlobal = computeAnchorWorldPosition(node, anchor);
+        final anchorGlobal =
+            computeAnchorWorldPosition(node, anchor, nodeSt.nodesOf(wfId));
         final anchorCenter =
             anchorGlobal + Offset(anchor.width / 2, anchor.height / 2);
         if ((_edgeDragCurrentCanvas! - anchorCenter).distance < snapThreshold) {
@@ -330,7 +331,8 @@ class MultiCanvasStateNotifier extends StateNotifier<MultiWorkflowCanvasState> {
 
     for (final node in nodeSt.nodesOf(wfId)) {
       for (final anchor in node.anchors ?? []) {
-        final anchorGlobal = computeAnchorWorldPosition(node, anchor);
+        final anchorGlobal =
+            computeAnchorWorldPosition(node, anchor, nodeSt.nodesOf(wfId));
         final anchorCenter =
             anchorGlobal + Offset(anchor.width / 2, anchor.height / 2);
         if ((canvasPt - anchorCenter).distance < threshold) {
@@ -347,24 +349,19 @@ class MultiCanvasStateNotifier extends StateNotifier<MultiWorkflowCanvasState> {
 
     final wfId = state.activeWorkflowId;
     final edges = _ref.read(edgeStateProvider(wfId)).edgesOf(wfId);
-    const styleResolver = EdgeStyleResolver();
+
+    // 使用统一的 FlexiblePathGenerator
+    final nodes = _ref.read(nodeStateProvider(wfId)).nodesOf(wfId);
+    final pathGenerator = FlexiblePathGenerator(nodes);
 
     for (final edge in edges) {
       if (edge.targetNodeId == null || edge.targetAnchorId == null) continue;
 
-      final (srcWorld, srcPos) =
-          _getAnchorWorldInfo(edge.sourceNodeId, edge.sourceAnchorId);
-      final (tarWorld, tarPos) =
-          _getAnchorWorldInfo(edge.targetNodeId!, edge.targetAnchorId!);
-      if (srcWorld == null || tarWorld == null) continue;
+      final pathResult =
+          pathGenerator.generate(edge, type: edge.lineStyle.edgeMode);
+      if (pathResult == null) continue;
 
-      final path = styleResolver.resolvePath(
-        edge.lineStyle.edgeMode,
-        srcWorld,
-        srcPos,
-        tarWorld,
-        tarPos,
-      );
+      final path = pathResult.path;
 
       final dist = distanceToPath(path, pointer);
       if (dist < minDist) {
@@ -497,8 +494,9 @@ class MultiCanvasStateNotifier extends StateNotifier<MultiWorkflowCanvasState> {
     }
     if (node == null || anchor == null) return (null, null);
 
-    final worldPos = computeAnchorWorldPosition(node, anchor) +
-        Offset(anchor.width / 2, anchor.height / 2);
+    final worldPos =
+        computeAnchorWorldPosition(node, anchor, nodeSt.nodesOf(wfId)) +
+            Offset(anchor.width / 2, anchor.height / 2);
     return (worldPos, anchor.position);
   }
 

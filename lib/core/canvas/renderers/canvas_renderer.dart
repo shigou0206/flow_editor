@@ -15,7 +15,7 @@ import 'package:flow_editor/core/edge/edge_renderer/edge_renderer.dart';
 import 'package:flow_editor/core/edge/utils/edge_utils.dart';
 import 'package:flow_editor/core/types/position_enum.dart';
 import 'package:flow_editor/core/edge/plugins/edge_overlay_plugin.dart';
-import 'package:flow_editor/core/edge/edge_renderer/path_generators/direct_path_generator.dart';
+import 'package:flow_editor/core/edge/edge_renderer/path_generators/flexible_path_generator.dart';
 
 extension CanvasRendererIterableExtension<T> on Iterable<T> {
   T? firstWhereOrNullSafe(bool Function(T) test) {
@@ -161,7 +161,7 @@ class _CanvasRendererState extends State<CanvasRenderer>
                   painter: EdgeRenderer(
                     nodes: nodeList,
                     edges: edgeList,
-                    pathGenerator: DirectPathGenerator(nodeList),
+                    pathGenerator: FlexiblePathGenerator(nodeList),
                     draggingEdgeId: draggingEdgeId,
                     draggingEnd: draggingEnd,
                     hoveredEdgeId: widget.hoveredEdgeId,
@@ -260,7 +260,8 @@ class _CanvasRendererState extends State<CanvasRenderer>
     final anchor = node.anchors?.firstWhereOrNullSafe((a) => a.id == anchorId);
     if (anchor == null) return (null, null);
 
-    final worldPos = computeAnchorWorldPosition(node, anchor) +
+    final worldPos = computeAnchorWorldPosition(
+            node, anchor, widget.nodeState.nodesOf(widget.workflowId)) +
         Offset(anchor.width / 2, anchor.height / 2);
     return (worldPos, anchor.position);
   }

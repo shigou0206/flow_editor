@@ -3,8 +3,6 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flow_editor/core/edge/models/edge_line_style.dart';
 import 'package:flow_editor/core/edge/models/edge_enums.dart';
-import 'package:flow_editor/core/types/position_enum.dart';
-import 'package:flow_editor/core/edge/utils/edge_utils.dart';
 import 'package:flow_editor/core/edge/models/edge_animation_config.dart';
 
 class EdgeStyleResolver {
@@ -36,122 +34,56 @@ class EdgeStyleResolver {
       ..style = PaintingStyle.stroke;
   }
 
-  Path resolvePath(
-    EdgeMode edgeMode,
-    Offset sourceWorld,
-    Position? sourcePos,
-    Offset targetWorld,
-    Position? targetPos,
-  ) {
-    switch (edgeMode) {
-      case EdgeMode.line:
-        return _simpleLinePath(sourceWorld, targetWorld);
-      case EdgeMode.orthogonal3:
-        return getOrthogonalPath3Segments(
-          sx: sourceWorld.dx,
-          sy: sourceWorld.dy,
-          sourcePos: sourcePos,
-          tx: targetWorld.dx,
-          ty: targetWorld.dy,
-          targetPos: targetPos,
-          offsetDist: 40,
-        );
-      case EdgeMode.orthogonal5:
-        return getOrthogonalPath5Segments(
-          sx: sourceWorld.dx,
-          sy: sourceWorld.dy,
-          sourcePos: sourcePos,
-          tx: targetWorld.dx,
-          ty: targetWorld.dy,
-          targetPos: targetPos,
-          offsetDist: 40,
-        );
-      case EdgeMode.bezier:
-        return getBezierPath(
-          sourceX: sourceWorld.dx,
-          sourceY: sourceWorld.dy,
-          sourcePosition: sourcePos!,
-          targetX: targetWorld.dx,
-          targetY: targetWorld.dy,
-          targetPosition: targetPos!,
-          curvature: 0.25,
-        )[0];
-      case EdgeMode.hvBezier:
-        return getHVBezierPath(
-          sourceX: sourceWorld.dx,
-          sourceY: sourceWorld.dy,
-          sourcePos: sourcePos!,
-          targetX: targetWorld.dx,
-          targetY: targetWorld.dy,
-          targetPos: targetPos!,
-          offset: 50.0,
-        )[0];
+  void drawArrowIfNeeded({
+    required Canvas canvas,
+    required Path path,
+    required Paint paint,
+    required EdgeLineStyle style,
+    List<Offset>? waypoints,
+  }) {
+    // 如果两端都不画箭头，就直接返回
+    if (style.arrowStart == ArrowType.none &&
+        style.arrowEnd == ArrowType.none) {
+      return;
     }
-  }
 
-  Path resolveGhostPath(
-    EdgeMode edgeMode,
-    Offset sourceWorld,
-    Position? sourcePos,
-    Offset draggingEnd,
-  ) {
-    final sx = sourceWorld.dx, sy = sourceWorld.dy;
-    final tx = draggingEnd.dx, ty = draggingEnd.dy;
+    if (waypoints != null && waypoints.length >= 2) {
+      // --- 用 points 方式 ---
+      // waypoints 方式：适合折线/动态多点的场景
+      _drawArrowByWaypoints(
+        canvas: canvas,
+        paint: paint,
+        style: style,
+        waypoints: waypoints,
+      );
+    } else {
+      // --- 用 PathMetric 方式 ---
+      // 适合贝塞尔/Orthogonal 等复杂路径
+      final metrics = path.computeMetrics().toList();
+      if (metrics.isEmpty) return;
 
-    switch (edgeMode) {
-      case EdgeMode.line:
-        return _simpleLinePath(sourceWorld, draggingEnd);
-      case EdgeMode.orthogonal3:
-        final (mx, my) = _extendOutSingle(sx, sy, sourcePos, 40);
-        return Path()
-          ..moveTo(sx, sy)
-          ..lineTo(mx, my)
-          ..lineTo(mx, ty)
-          ..lineTo(tx, ty);
-      case EdgeMode.orthogonal5:
-        final (mx, my) = _extendOutSingle(sx, sy, sourcePos, 40);
-        final midY = (my + ty) / 2;
-        return Path()
-          ..moveTo(sx, sy)
-          ..lineTo(mx, my)
-          ..lineTo(mx, midY)
-          ..lineTo(tx, midY)
-          ..lineTo(tx, ty);
-      case EdgeMode.bezier:
-        if (sourcePos != null) {
-          final (sxC, syC) =
-              _getHVControlPointSingleStandard(sx, sy, sourcePos, 50);
-          return Path()
-            ..moveTo(sx, sy)
-            ..cubicTo(sxC, syC, tx, ty, tx, ty);
-        } else {
-          return _simpleLinePath(sourceWorld, draggingEnd);
-        }
-      case EdgeMode.hvBezier:
-        if (sourcePos != null) {
-          final guessedPos = _guessPosStandard(sx, sy, tx, ty);
-          final (sxC, syC) =
-              _getHVControlPointSingleStandard(sx, sy, sourcePos, 50);
-          final (txC, tyC) =
-              _getHVControlPointSingleStandard(tx, ty, guessedPos, 50);
-          return Path()
-            ..moveTo(sx, sy)
-            ..cubicTo(sxC, syC, txC, tyC, tx, ty);
-        } else {
-          return _simpleLinePath(sourceWorld, draggingEnd);
-        }
+      // 起点箭头 => first metric offset=0
+      if (style.arrowStart != ArrowType.none) {
+        _drawArrowByMetric(
+          canvas: canvas,
+          metric: metrics.first,
+          isStart: true,
+          style: style,
+          paint: paint,
+        );
+      }
+
+      // 终点箭头 => last metric offset=length
+      if (style.arrowEnd != ArrowType.none) {
+        _drawArrowByMetric(
+          canvas: canvas,
+          metric: metrics.last,
+          isStart: false,
+          style: style,
+          paint: paint,
+        );
+      }
     }
-  }
-
-  void drawArrowIfNeeded(
-      Canvas canvas, Path path, Paint paint, EdgeLineStyle style) {
-    final metrics = path.computeMetrics().toList();
-    if (metrics.isEmpty) return;
-    final metric = metrics.first;
-
-    _drawArrow(canvas, metric, 0, style.arrowStart, style, paint,
-        reverse: true);
-    _drawArrow(canvas, metric, metric.length, style.arrowEnd, style, paint);
   }
 
   double computeDashFlowPhase(EdgeAnimationConfig animConfig) {
@@ -159,13 +91,6 @@ class EdgeStyleResolver {
   }
 
   // ========== 私有辅助函数 ==========
-
-  Path _simpleLinePath(Offset start, Offset end) {
-    return Path()
-      ..moveTo(start.dx, start.dy)
-      ..lineTo(end.dx, end.dy);
-  }
-
   (Color, double, double) _resolvePaintAttributes(
     Color baseColor,
     double baseWidth,
@@ -185,68 +110,90 @@ class EdgeStyleResolver {
     return (baseColor, 0.5, baseWidth);
   }
 
-  void _drawArrow(Canvas canvas, PathMetric metric, double offset,
-      ArrowType type, EdgeLineStyle style, Paint paint,
-      {bool reverse = false}) {
-    if (type == ArrowType.none) return;
+  // =============== Waypoints 方式 ===============
+  void _drawArrowByWaypoints({
+    required Canvas canvas,
+    required Paint paint,
+    required EdgeLineStyle style,
+    required List<Offset> waypoints,
+  }) {
+    // 如果只想画终点箭头，就画[倒数第2点->最后1点]
+    // 如果需要起点箭头，就画[第1点->第2点]
+    // 如果是 both，就都画
 
+    // 画“起点箭头”
+    if (style.arrowStart != ArrowType.none && waypoints.length > 1) {
+      // 取 [0]->[1] 计算方向 (箭头朝第0个点)
+      final from = waypoints[1];
+      final to = waypoints.first;
+      _drawArrowByPoints(canvas, paint, style, from, to);
+    }
+
+    // 画“终点箭头”
+    if (style.arrowEnd != ArrowType.none && waypoints.length > 1) {
+      // 取 [倒数第2]->[倒数第1] 计算方向
+      final from = waypoints[waypoints.length - 2];
+      final to = waypoints.last;
+      _drawArrowByPoints(canvas, paint, style, from, to);
+    }
+  }
+
+  /// points 直接两个点计算方向
+  void _drawArrowByPoints(
+      Canvas canvas, Paint paint, EdgeLineStyle style, Offset from, Offset to) {
+    final angle = (to - from).direction;
+    final arrowAngle = radians(style.arrowAngleDeg);
+
+    final path = Path()
+      ..moveTo(to.dx, to.dy)
+      ..lineTo(
+        to.dx - style.arrowSize * cos(angle - arrowAngle),
+        to.dy - style.arrowSize * sin(angle - arrowAngle),
+      )
+      ..moveTo(to.dx, to.dy)
+      ..lineTo(
+        to.dx - style.arrowSize * cos(angle + arrowAngle),
+        to.dy - style.arrowSize * sin(angle + arrowAngle),
+      );
+
+    canvas.drawPath(path, paint);
+  }
+
+  // =============== PathMetric 方式 ===============
+  void _drawArrowByMetric({
+    required Canvas canvas,
+    required PathMetric metric,
+    required bool isStart,
+    required EdgeLineStyle style,
+    required Paint paint,
+  }) {
+    // offset=0 => 起点； offset=metric.length => 终点
+    final offset = isStart ? 0.0 : metric.length;
     final tangent = metric.getTangentForOffset(offset);
     if (tangent == null) return;
 
-    final angle = reverse ? tangent.angle + pi : tangent.angle;
-    final arrowPath = Path()
-      ..moveTo(tangent.position.dx, tangent.position.dy)
-      ..lineTo(
-          tangent.position.dx -
-              style.arrowSize * cos(angle - radians(style.arrowAngleDeg)),
-          tangent.position.dy -
-              style.arrowSize * sin(angle - radians(style.arrowAngleDeg)))
-      ..moveTo(tangent.position.dx, tangent.position.dy)
-      ..lineTo(
-          tangent.position.dx -
-              style.arrowSize * cos(angle + radians(style.arrowAngleDeg)),
-          tangent.position.dy -
-              style.arrowSize * sin(angle + radians(style.arrowAngleDeg)));
+    // 如果是起点箭头，需要反向
+    final angle = isStart ? tangent.angle + pi : tangent.angle;
+    final arrowAngle = radians(style.arrowAngleDeg);
 
-    canvas.drawPath(arrowPath, paint);
+    final path = Path()
+      ..moveTo(tangent.position.dx, tangent.position.dy)
+      ..lineTo(
+        tangent.position.dx - style.arrowSize * cos(angle - arrowAngle),
+        tangent.position.dy - style.arrowSize * sin(angle - arrowAngle),
+      )
+      ..moveTo(tangent.position.dx, tangent.position.dy)
+      ..lineTo(
+        tangent.position.dx - style.arrowSize * cos(angle + arrowAngle),
+        tangent.position.dy - style.arrowSize * sin(angle + arrowAngle),
+      );
+
+    canvas.drawPath(path, paint);
   }
 
   Color _parseColor(String hex) {
     final hexValue = hex.replaceAll('#', '').padLeft(8, 'FF');
     return Color(int.parse(hexValue, radix: 16));
-  }
-
-  (double, double) _extendOutSingle(
-      double sx, double sy, Position? pos, double dist) {
-    if (pos == null) return (sx, sy);
-    switch (pos) {
-      case Position.left:
-        return (sx - dist, sy);
-      case Position.right:
-        return (sx + dist, sy);
-      case Position.top:
-        return (sx, sy - dist);
-      case Position.bottom:
-        return (sx, sy + dist);
-    }
-  }
-
-  (double, double) _getHVControlPointSingleStandard(
-      double sx, double sy, Position pos, double offset) {
-    switch (pos) {
-      case Position.left:
-        return (sx - offset, sy);
-      case Position.right:
-        return (sx + offset, sy);
-      case Position.top:
-        return (sx, sy - offset);
-      case Position.bottom:
-        return (sx, sy + offset);
-    }
-  }
-
-  Position _guessPosStandard(double sx, double sy, double tx, double ty) {
-    return Position.left; // 根据具体需求实现
   }
 
   double radians(double degrees) => degrees * pi / 180;

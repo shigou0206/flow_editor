@@ -193,14 +193,14 @@ Path getOrthogonalPath5Segments({
 List<dynamic> getBezierPath({
   required double sourceX,
   required double sourceY,
-  required Position sourcePosition,
+  required Position sourcePos,
   required double targetX,
   required double targetY,
-  required Position targetPosition,
+  required Position targetPos,
   double curvature = 0.25,
 }) {
   final sc = _getControlWithCurvature(
-    sourcePosition,
+    sourcePos,
     sourceX,
     sourceY,
     targetX,
@@ -210,7 +210,7 @@ List<dynamic> getBezierPath({
   final (sxC, syC) = (sc[0], sc[1]);
 
   final tc = _getControlWithCurvature(
-    targetPosition,
+    targetPos,
     targetX,
     targetY,
     sourceX,
@@ -435,10 +435,10 @@ EdgePathPoint buildEdgePathAndPoint({
       rawPath = getBezierPath(
         sourceX: sourceX,
         sourceY: sourceY,
-        sourcePosition: sourcePos,
+        sourcePos: sourcePos,
         targetX: targetX,
         targetY: targetY,
-        targetPosition: targetPos,
+        targetPos: targetPos,
         curvature: curvature,
       )[0] as Path;
       break;
@@ -478,4 +478,43 @@ EdgePathPoint buildEdgePathAndPoint({
   }
 
   return EdgePathPoint(rawPath, targetPoint);
+}
+
+Path simpleLinePath(Offset start, Offset end) {
+  return Path()
+    ..moveTo(start.dx, start.dy)
+    ..lineTo(end.dx, end.dy);
+}
+
+(double, double) extendOutSingle(
+    double sx, double sy, Position? pos, double dist) {
+  if (pos == null) return (sx, sy);
+  switch (pos) {
+    case Position.left:
+      return (sx - dist, sy);
+    case Position.right:
+      return (sx + dist, sy);
+    case Position.top:
+      return (sx, sy - dist);
+    case Position.bottom:
+      return (sx, sy + dist);
+  }
+}
+
+(double, double) getHVControlPointSingleStandard(
+    double sx, double sy, Position pos, double offset) {
+  switch (pos) {
+    case Position.left:
+      return (sx - offset, sy);
+    case Position.right:
+      return (sx + offset, sy);
+    case Position.top:
+      return (sx, sy - offset);
+    case Position.bottom:
+      return (sx, sy + offset);
+  }
+}
+
+Position guessPosStandard(double sx, double sy, double tx, double ty) {
+  return Position.left; // 根据具体需求实现
 }

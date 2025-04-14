@@ -4,6 +4,7 @@ import 'package:flow_editor/core/edge/models/edge_model.dart';
 import 'package:flow_editor/core/edge/style/edge_style_resolver.dart';
 import 'package:flow_editor/core/anchor/utils/anchor_position_utils.dart';
 import 'package:flow_editor/core/edge/edge_renderer/path_generators/path_generator.dart';
+import 'package:flow_editor/core/canvas/utils.dart';
 import 'package:collection/collection.dart';
 
 class EdgeRenderer extends CustomPainter {
@@ -53,9 +54,18 @@ class EdgeRenderer extends CustomPainter {
 
     canvas.drawPath(edgePath.path, paint);
 
-    // 绘制箭头（确保已实现）
+    List<Offset>? absoluteWaypoints;
+    if (edge.waypoints != null && edge.waypoints!.isNotEmpty) {
+      absoluteWaypoints = mapEdgeWaypointsToAbsolute(edge, nodes);
+    }
+
     styleResolver.drawArrowIfNeeded(
-        canvas, edgePath.path, paint, edge.lineStyle);
+      canvas: canvas,
+      path: edgePath.path,
+      paint: paint,
+      style: edge.lineStyle,
+      waypoints: absoluteWaypoints,
+    );
   }
 
   void _drawGhostEdge(Canvas canvas) {
@@ -69,15 +79,17 @@ class EdgeRenderer extends CustomPainter {
     if (source == null) return;
 
     // 生成拖拽过程中的临时路径
-    final path = Path()
-      ..moveTo(source.dx, source.dy)
-      ..lineTo(draggingEnd!.dx, draggingEnd!.dy);
+    final edgePath = pathGenerator.generateGhost(edge, draggingEnd!);
+    if (edgePath == null) return;
+
+    final path = edgePath.path;
 
     final paint = styleResolver.resolveGhostPaint(edge.lineStyle);
     canvas.drawPath(path, paint);
 
     // 也可以绘制箭头（根据需求）
-    styleResolver.drawArrowIfNeeded(canvas, path, paint, edge.lineStyle);
+    styleResolver.drawArrowIfNeeded(
+        canvas: canvas, path: path, paint: paint, style: edge.lineStyle);
   }
 
   Offset? _getAnchorOrNodeCenter(String nodeId, String? anchorId) {
@@ -87,7 +99,7 @@ class EdgeRenderer extends CustomPainter {
     if (anchorId != null) {
       final anchor = node.anchors?.firstWhereOrNull((a) => a.id == anchorId);
       if (anchor != null) {
-        return computeAnchorWorldPosition(node, anchor) +
+        return computeAnchorWorldPosition(node, anchor, nodes) +
             Offset(anchor.width / 2, anchor.height / 2);
       }
     }

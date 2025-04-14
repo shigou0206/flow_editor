@@ -2,7 +2,6 @@ import 'package:flutter/widgets.dart';
 import 'package:flow_editor/core/edge/models/edge_model.dart';
 import 'package:flow_editor/core/node/models/node_model.dart';
 import 'package:flow_editor/core/layout/layout_strategy.dart';
-import 'package:flow_editor/core/canvas/utils.dart';
 import 'package:flow_layout/graph/graph.dart';
 import 'package:flow_layout/layout.dart';
 import 'package:collection/collection.dart';

@@ -29,8 +29,8 @@ class EdgeLineStyle extends Equatable {
     this.lineCap = EdgeLineCap.butt,
     this.lineJoin = EdgeLineJoin.miter,
     this.arrowStart = ArrowType.none,
-    this.arrowEnd = ArrowType.none,
-    this.arrowSize = 1.0,
+    this.arrowEnd = ArrowType.arrow,
+    this.arrowSize = 10.0,
     this.arrowAngleDeg = 30.0,
   });
 

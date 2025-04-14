@@ -4,6 +4,7 @@ import 'package:flow_editor/core/node/models/node_model.dart';
 import 'package:flow_editor/core/anchor/models/anchor_model.dart';
 import 'package:flow_editor/core/anchor/models/anchor_enums.dart';
 import 'package:flow_editor/core/types/position_enum.dart';
+import 'package:flow_editor/core/canvas/utils.dart';
 
 /// ---------------------
 /// 1) 计算锚点在节点内部的局部坐标
@@ -51,10 +52,19 @@ Offset computeAnchorLocalPosition(AnchorModel anchor, Size nodeSize) {
 /// ---------------------
 /// 2) 计算锚点在画布(世界)上的坐标
 /// ---------------------
-Offset computeAnchorWorldPosition(NodeModel node, AnchorModel anchor) {
-  final nodePos = Offset(node.position.dx, node.position.dy);
+Offset computeAnchorWorldPosition(
+  NodeModel node,
+  AnchorModel anchor,
+  List<NodeModel>? allNodes,
+) {
   final localAnchorPos = computeAnchorLocalPosition(
-      anchor, Size(node.size.width, node.size.height));
+    anchor,
+    Size(node.size.width, node.size.height),
+  );
+
+  final nodePos =
+      (allNodes == null) ? node.position : node.absolutePosition(allNodes);
+
   return nodePos + localAnchorPos;
 }
 
