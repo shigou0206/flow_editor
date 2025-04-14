@@ -16,7 +16,7 @@ class AnchorPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final center = Offset(size.width / 2, size.height / 2);
-    const double radius = 8;
+    const double radius = 12;
 
     // 1) 决定填充颜色
     final Color fillColor = _resolveFillColor();
@@ -45,7 +45,7 @@ class AnchorPainter extends CustomPainter {
       case AnchorShape.square:
         final rect = Rect.fromCenter(
           center: center,
-          width: radius * 2,
+          width: radius,
           height: radius * 2,
         );
         canvas.drawRect(rect, fillPaint);
