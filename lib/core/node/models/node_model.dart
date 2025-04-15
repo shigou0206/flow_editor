@@ -49,7 +49,7 @@ class NodeModel extends BaseNodeModel {
 
   NodeModel({
     required super.id,
-    required super.position,
+    super.position = const Offset(0, 0),
     required super.size,
     this.dragMode = DragMode.full,
     this.type = "",

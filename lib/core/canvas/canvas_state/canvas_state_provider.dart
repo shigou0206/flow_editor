@@ -11,7 +11,6 @@ import 'package:flow_editor/core/anchor/models/anchor_model.dart';
 import 'package:flow_editor/core/anchor/utils/anchor_position_utils.dart';
 import 'package:flow_editor/core/edge/utils/hit_test_utils.dart';
 import 'package:flow_editor/core/edge/edge_renderer/path_generators/flexible_path_generator.dart';
-import 'package:flow_editor/core/types/position_enum.dart';
 import 'package:flow_editor/core/logic/strategy/workflow_mode.dart';
 import 'package:flow_editor/core/logic/strategy/workflow_strategy.dart';
 import 'package:flow_editor/core/logic/strategy/generic_flow_strategy.dart';
@@ -118,12 +117,13 @@ class MultiCanvasStateNotifier extends StateNotifier<MultiWorkflowCanvasState> {
 
   void endDrag() {
     debugPrint('endDrag 被调用');
+
+    final workflowId = state.activeWorkflowId;
+    final edgeNotifier = _ref.read(edgeStateProvider(workflowId).notifier);
+
     if (_isCreatingEdge) {
       final targetAnchor = _detectTargetAnchor();
-      final edgeNotifier =
-          _ref.read(edgeStateProvider(state.activeWorkflowId).notifier);
 
-      final workflowId = state.activeWorkflowId; // ⚠️ 确认这一行的值
       debugPrint('endDrag 当前workflowId: $workflowId');
 
       if (targetAnchor != null) {
@@ -144,9 +144,23 @@ class MultiCanvasStateNotifier extends StateNotifier<MultiWorkflowCanvasState> {
       _isCreatingEdge = false;
       _edgeDragCurrentCanvas = null;
       _creatingEdgeId = null;
-    } else {
+    } else if (_isDraggingNode && _draggingNodeId != null) {
+      // 🚩 节点插入到边的逻辑
+      if (_potentialInsertEdge != null) {
+        _insertNodeIntoEdge(_draggingNodeId!, _potentialInsertEdge!);
+        _potentialInsertEdge = null;
+      }
+
       _isDraggingNode = false;
       _draggingNodeId = null;
+    } else {
+      // 没有任何有效拖动操作的情况下，重置状态
+      _isDraggingNode = false;
+      _draggingNodeId = null;
+      _isCreatingEdge = false;
+      _edgeDragCurrentCanvas = null;
+      _creatingEdgeId = null;
+      _potentialInsertEdge = null;
     }
   }
 
@@ -481,34 +495,6 @@ class MultiCanvasStateNotifier extends StateNotifier<MultiWorkflowCanvasState> {
   void resetCanvas() {
     _updateActiveCanvas(
         (canvas) => CanvasState(interactionConfig: canvas.interactionConfig));
-  }
-
-  (Offset?, Position?) _getAnchorWorldInfo(String nodeId, String? anchorId) {
-    final wfId = state.activeWorkflowId;
-    final nodeSt = _ref.read(nodeStateProvider(wfId));
-    NodeModel? node;
-    for (final n in nodeSt.nodesOf(wfId)) {
-      if (n.id == nodeId) {
-        node = n;
-        break;
-      }
-    }
-    AnchorModel? anchor;
-    if (anchorId == null) return (null, null);
-    if (node != null) {
-      for (final a in node.anchors ?? []) {
-        if (a.id == anchorId) {
-          anchor = a;
-          break;
-        }
-      }
-    }
-    if (node == null || anchor == null) return (null, null);
-
-    final worldPos =
-        computeAnchorWorldPosition(node, anchor, nodeSt.nodesOf(wfId)) +
-            Offset(anchor.width / 2, anchor.height / 2);
-    return (worldPos, anchor.position);
   }
 
   EdgeModel? findNearestEdgeToRect(Rect nodeRect, double threshold) {
