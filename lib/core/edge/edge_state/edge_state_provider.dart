@@ -11,6 +11,10 @@ class EdgeStateNotifier extends StateNotifier<EdgeState> {
   // 获取当前工作流的所有边
   List<EdgeModel> getEdges() => state.edgesOf(workflowId);
 
+  void updateEdges(List<EdgeModel> edges) {
+    state = state.updateWorkflowEdges(workflowId, edges);
+  }
+
   void upsertEdge(EdgeModel edge) {
     final oldList = state.edgesOf(workflowId);
     final updatedList = [
@@ -131,6 +135,12 @@ class EdgeStateNotifier extends StateNotifier<EdgeState> {
     if (updatedList.length != oldList.length) {
       state = state.updateWorkflowEdges(workflowId, updatedList);
     }
+  }
+
+  void addEdges(List<EdgeModel> edges) {
+    final oldList = state.edgesOf(workflowId);
+    final updatedList = [...oldList, ...edges];
+    state = state.updateWorkflowEdges(workflowId, updatedList);
   }
 
   // --- 路由点（Waypoints）操作 ---

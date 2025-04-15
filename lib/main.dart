@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'core/canvas/models/canvas_visual_config.dart';
-import 'core/graph_editor/graph_editor.dart';
+import 'graph_editor/graph_editor.dart';
 import 'core/node/controllers/node_controller.dart';
 import 'core/edge/controllers/edge_controller.dart';
 import 'core/canvas/controllers/canvas_controller.dart';

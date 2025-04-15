@@ -16,6 +16,8 @@ import 'package:flow_editor/core/logic/strategy/workflow_mode.dart';
 import 'package:flow_editor/core/logic/strategy/workflow_strategy.dart';
 import 'package:flow_editor/core/logic/strategy/generic_flow_strategy.dart';
 import 'package:flow_editor/core/logic/strategy/state_machine_strategy.dart';
+import 'package:flow_editor/core/canvas/utils.dart';
+import 'package:flow_editor/core/layout/sugiyama_layout.dart';
 
 final multiCanvasStateProvider =
     StateNotifierProvider<MultiCanvasStateNotifier, MultiWorkflowCanvasState>(
@@ -34,6 +36,8 @@ class MultiCanvasStateNotifier extends StateNotifier<MultiWorkflowCanvasState> {
 
   String? _hoveredEdgeId;
   String? get hoveredEdgeId => _hoveredEdgeId;
+
+  EdgeModel? _potentialInsertEdge;
 
   MultiCanvasStateNotifier(
     this._ref, {
@@ -270,13 +274,20 @@ class MultiCanvasStateNotifier extends StateNotifier<MultiWorkflowCanvasState> {
     final nodeNotifier = _ref.read(nodeStateProvider(wfId).notifier);
     final nid = _draggingNodeId;
     if (nid == null) return;
+
     final node = nodeNotifier.getNode(nid);
     if (node == null) return;
+
     final canvasSt = state.activeState;
     final dx = deltaGlobal.dx / canvasSt.scale;
     final dy = deltaGlobal.dy / canvasSt.scale;
-    final updated = node.copyWith(position: node.position + Offset(dx, dy));
-    nodeNotifier.upsertNode(updated);
+    final updatedPosition = node.position + Offset(dx, dy);
+
+    final updatedNode = node.copyWith(position: updatedPosition);
+    nodeNotifier.upsertNode(updatedNode);
+
+    final nodeRect = updatedNode.rect; // 确保 NodeModel 提供了rect getter方法
+    _potentialInsertEdge = findNearestEdgeToRect(nodeRect, 30.0);
   }
 
   void _panCanvas(Offset deltaGlobal) {
@@ -498,6 +509,83 @@ class MultiCanvasStateNotifier extends StateNotifier<MultiWorkflowCanvasState> {
         computeAnchorWorldPosition(node, anchor, nodeSt.nodesOf(wfId)) +
             Offset(anchor.width / 2, anchor.height / 2);
     return (worldPos, anchor.position);
+  }
+
+  EdgeModel? findNearestEdgeToRect(Rect nodeRect, double threshold) {
+    final wfId = state.activeWorkflowId;
+    final edges = _ref.read(edgeStateProvider(wfId)).edgesOf(wfId);
+    final nodes = _ref.read(nodeStateProvider(wfId)).nodesOf(wfId);
+    final pathGenerator = FlexiblePathGenerator(nodes);
+
+    EdgeModel? nearestEdge;
+    double minDistance = threshold;
+
+    for (final edge in edges) {
+      if (edge.targetNodeId == null) continue;
+      final pathResult =
+          pathGenerator.generate(edge, type: edge.lineStyle.edgeMode);
+      if (pathResult == null) continue;
+
+      final dist = rectToPathDistance(nodeRect, pathResult.path);
+      if (dist < minDistance) {
+        nearestEdge = edge;
+        minDistance = dist;
+      }
+    }
+
+    return nearestEdge;
+  }
+
+  void _insertNodeIntoEdge(String nodeId, EdgeModel edge) {
+    final wfId = state.activeWorkflowId;
+    final edgeNotifier = _ref.read(edgeStateProvider(wfId).notifier);
+
+    // 删除原边
+    edgeNotifier.removeEdge(edge.id);
+
+    // 创建两条新边连接插入节点 (不显式指定 anchorId 和 edgeId)
+    final newEdge1 = EdgeModel(
+      sourceNodeId: edge.sourceNodeId,
+      targetNodeId: nodeId,
+      isConnected: true,
+    );
+
+    final newEdge2 = EdgeModel(
+      sourceNodeId: nodeId,
+      targetNodeId: edge.targetNodeId,
+      isConnected: true,
+    );
+
+    edgeNotifier.addEdges([newEdge1, newEdge2]);
+
+    // 调用自动布局算法重新布局
+    _performAutoLayout();
+  }
+
+  void _performAutoLayout() {
+    final wfId = state.activeWorkflowId;
+
+    final nodeNotifier = _ref.read(nodeStateProvider(wfId).notifier);
+    final edgeNotifier = _ref.read(edgeStateProvider(wfId).notifier);
+
+    final nodes = nodeNotifier.getNodes();
+    final edges = edgeNotifier.state.edgesOf(wfId);
+
+    // 调用布局算法 (假设它直接修改了 nodes 和 edges 的状态)
+    _performLayout(nodes, edges);
+
+    // 更新布局后的节点状态
+    for (var node in nodes) {
+      nodeNotifier.upsertNode(node);
+    }
+
+    // 更新布局后的边状态
+    edgeNotifier.updateEdges(edges);
+  }
+
+  void _performLayout(List<NodeModel> nodes, List<EdgeModel> edges) {
+    final layout = SugiyamaLayoutStrategy();
+    layout.performLayout(nodes, edges);
   }
 
   void setState(void Function() fn) {
