@@ -26,8 +26,8 @@ import 'package:flow_editor/core/anchor/models/anchor_enums.dart';
 import 'package:flow_editor/core/types/position_enum.dart';
 
 // ------------------- UI Widgets -------------------
-import 'node_list_widget.dart';
-import 'node_widget_registry_initializer.dart';
+import '../node_list_widget.dart';
+import '../node_widget_registry_initializer.dart';
 
 /// GraphEditor：去除 AnimatedContainer，直接使用固定宽度的 Container 来验证折叠/展开逻辑
 class GraphEditor extends ConsumerStatefulWidget {

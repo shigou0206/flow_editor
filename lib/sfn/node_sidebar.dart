@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'models.dart';
 import 'providers.dart';
-import 'step_function_canvas.dart';
+import 'step_function_canvas_bk.dart';
 
 class NodeSidebar extends ConsumerWidget {
   const NodeSidebar({super.key});

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'sfn/node_sidebar.dart';
-import 'sfn/step_function_canvas.dart';
+import 'sfn/step_function_canvas_bk.dart';
 
 void main() {
   runApp(const ProviderScope(child: StepFunctionLayoutApp()));
