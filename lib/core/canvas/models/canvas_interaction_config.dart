@@ -6,6 +6,7 @@ class CanvasInteractionConfig {
   final double maxScale;
   final bool allowPan;
   final bool allowZoom;
+  final bool dropOnEdgeOnly;
 
   const CanvasInteractionConfig({
     this.snapToGrid = true,
@@ -14,6 +15,7 @@ class CanvasInteractionConfig {
     this.maxScale = 10.0,
     this.allowPan = true,
     this.allowZoom = true,
+    this.dropOnEdgeOnly = false,
   });
 
   /// 序列化
@@ -24,6 +26,7 @@ class CanvasInteractionConfig {
         'maxScale': maxScale,
         'allowPan': allowPan,
         'allowZoom': allowZoom,
+        'dropOnEdgeOnly': dropOnEdgeOnly,
       };
 
   /// 反序列化
@@ -44,6 +47,7 @@ class CanvasInteractionConfig {
       maxScale: parseDouble(json['maxScale'], 10.0),
       allowPan: json['allowPan'] as bool? ?? true,
       allowZoom: json['allowZoom'] as bool? ?? true,
+      dropOnEdgeOnly: json['dropOnEdgeOnly'] as bool? ?? false,
     );
   }
 
@@ -55,6 +59,7 @@ class CanvasInteractionConfig {
     double? maxScale,
     bool? allowPan,
     bool? allowZoom,
+    bool? dropOnEdgeOnly,
   }) {
     return CanvasInteractionConfig(
       snapToGrid: snapToGrid ?? this.snapToGrid,
@@ -63,6 +68,7 @@ class CanvasInteractionConfig {
       maxScale: maxScale ?? this.maxScale,
       allowPan: allowPan ?? this.allowPan,
       allowZoom: allowZoom ?? this.allowZoom,
+      dropOnEdgeOnly: dropOnEdgeOnly ?? this.dropOnEdgeOnly,
     );
   }
 }
