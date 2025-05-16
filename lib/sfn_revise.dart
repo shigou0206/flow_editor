@@ -111,7 +111,7 @@ class _LayoutDemoPageState extends ConsumerState<LayoutDemoPage> {
         NodeModel(
             id: 'node24',
             title: 'Node 2.4',
-            parentId: 'group2',
+            parentId: 'group1',
             position: const Offset(16, 68),
             size: const Size(100, 40)),
         NodeModel(
@@ -128,10 +128,10 @@ class _LayoutDemoPageState extends ConsumerState<LayoutDemoPage> {
         EdgeModel(sourceNodeId: 'node11', targetNodeId: 'group2'),
         EdgeModel(sourceNodeId: 'node21', targetNodeId: 'node22'),
         EdgeModel(sourceNodeId: 'node21', targetNodeId: 'node23'),
-        EdgeModel(sourceNodeId: 'node24', targetNodeId: 'node23'),
-        EdgeModel(sourceNodeId: 'group2', targetNodeId: 'nodeend'),
+        // EdgeModel(sourceNodeId: 'node24', targetNodeId: 'node23'),
+        EdgeModel(sourceNodeId: 'group2', targetNodeId: 'node24'),
         EdgeModel(sourceNodeId: 'node12', targetNodeId: 'nodeend'),
-        EdgeModel(sourceNodeId: 'node11', targetNodeId: 'nodeend'),
+        EdgeModel(sourceNodeId: 'node24', targetNodeId: 'nodeend'),
       ];
 
   void _performLayout(List<NodeModel> nodes, List<EdgeModel> edges) {
