@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:flow_editor/core/node/models/node_model.dart';
-import 'package:flow_editor/core/node/behaviors/node_behavior.dart';
-import 'package:flow_editor/core/anchor/behaviors/anchor_behavior.dart';
-import 'package:flow_editor/core/anchor/utils/anchor_position_utils.dart';
+import 'package:flow_editor/v1/core/node/models/node_model.dart';
+import 'package:flow_editor/v1/core/node/behaviors/node_behavior.dart';
+import 'package:flow_editor/v1/core/anchor/behaviors/anchor_behavior.dart';
+import 'package:flow_editor/v1/core/anchor/utils/anchor_position_utils.dart';
 import 'package:flow_editor/domain/workflows/base/node_block.dart';
 import 'package:flow_editor/domain/workflows/base/node_anchors.dart';
-import 'package:flow_editor/core/node/plugins/node_action_callbacks.dart';
+import 'package:flow_editor/v1/core/node/plugins/node_action_callbacks.dart';
 
 class NodeWidget extends StatelessWidget {
   final NodeModel node;

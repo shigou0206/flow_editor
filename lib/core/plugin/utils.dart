@@ -1,4 +1,4 @@
-import 'package:flow_editor/core/node/models/node_model.dart';
+import 'package:flow_editor/core/models/node_model.dart';
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
 

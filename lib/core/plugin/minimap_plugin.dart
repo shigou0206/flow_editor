@@ -2,8 +2,8 @@
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flow_editor/core/canvas/canvas_state/canvas_state_provider.dart';
-import 'package:flow_editor/core/node/node_state/node_state_provider.dart';
+import 'package:flow_editor/core/state_management/providers/node_state_provider.dart';
+import 'package:flow_editor/core/state_management/providers/canvas_state_provider.dart';
 import 'package:flow_editor/core/plugin/utils.dart';
 
 class MinimapPlugin extends ConsumerWidget {
@@ -29,7 +29,7 @@ class MinimapPlugin extends ConsumerWidget {
     final Offset contentOrigin = contentBounds.topLeft;
 
     // 获取当前缩放 & 偏移
-    final canvasState = ref.watch(multiCanvasStateProvider).activeState;
+    final canvasState = ref.watch(canvasGeomProvider(workflowId));
     final Offset controllerOffset = canvasState.offset;
     final double controllerScale = canvasState.scale;
 
@@ -40,10 +40,8 @@ class MinimapPlugin extends ConsumerWidget {
     );
 
     // 计算 Minimap 视口
-    final double logicalViewportWidth =
-        canvasState.visualConfig.width / controllerScale;
-    final double logicalViewportHeight =
-        canvasState.visualConfig.height / controllerScale;
+    final double logicalViewportWidth = minimapWidth / controllerScale;
+    final double logicalViewportHeight = minimapHeight / controllerScale;
     final Offset logicalViewportOrigin = controllerOffset - contentOrigin;
 
     double miniOffsetX = logicalViewportOrigin.dx * scaleFactor;
@@ -69,7 +67,7 @@ class MinimapPlugin extends ConsumerWidget {
             borderRadius: BorderRadius.circular(8),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.1), 
+                color: Colors.black.withOpacity(0.1),
                 blurRadius: 8,
                 offset: const Offset(0, 2),
               ),

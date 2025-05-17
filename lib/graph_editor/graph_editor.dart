@@ -2,37 +2,37 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 // ------------------- Core & FlowEditor Imports -------------------
-import 'package:flow_editor/core/node/behaviors/node_behavior.dart';
-import 'package:flow_editor/core/edge/behaviors/edge_behavior.dart';
-import 'package:flow_editor/core/anchor/behaviors/anchor_behavior.dart';
-import 'package:flow_editor/core/canvas/behaviors/canvas_behavior.dart';
-import 'package:flow_editor/core/canvas/models/canvas_visual_config.dart';
-import 'package:flow_editor/core/canvas/interaction/gesture_event_handler.dart';
-import 'package:flow_editor/core/canvas/interaction/mouse_event_handler.dart';
-import 'package:flow_editor/core/canvas/widgets/canvas_widget.dart';
-import 'package:flow_editor/core/canvas/canvas_state/canvas_state_provider.dart';
-import 'package:flow_editor/core/canvas/canvas_state/canvas_state.dart';
-import 'package:flow_editor/core/node/plugins/node_action_callbacks.dart';
+import 'package:flow_editor/v1/core/node/behaviors/node_behavior.dart';
+import 'package:flow_editor/v1/core/edge/behaviors/edge_behavior.dart';
+import 'package:flow_editor/v1/core/anchor/behaviors/anchor_behavior.dart';
+import 'package:flow_editor/v1/core/canvas/behaviors/canvas_behavior.dart';
+import 'package:flow_editor/v1/core/canvas/models/canvas_visual_config.dart';
+import 'package:flow_editor/v1/core/canvas/interaction/gesture_event_handler.dart';
+import 'package:flow_editor/v1/core/canvas/interaction/mouse_event_handler.dart';
+import 'package:flow_editor/v1/core/canvas/widgets/canvas_widget.dart';
+import 'package:flow_editor/v1/core/canvas/canvas_state/canvas_state_provider.dart';
+import 'package:flow_editor/v1/core/canvas/canvas_state/canvas_state.dart';
+import 'package:flow_editor/v1/core/node/plugins/node_action_callbacks.dart';
 
 // ------------------- Node-Related Imports -------------------
-import 'package:flow_editor/core/node/models/node_model.dart';
-import 'package:flow_editor/core/anchor/models/anchor_model.dart';
-import 'package:flow_editor/core/node/factories/node_widget_factory.dart';
-import 'package:flow_editor/core/node/factories/node_widget_factory_impl.dart';
+import 'package:flow_editor/v1/core/node/models/node_model.dart';
+import 'package:flow_editor/v1/core/anchor/models/anchor_model.dart';
+import 'package:flow_editor/v1/core/node/factories/node_widget_factory.dart';
+import 'package:flow_editor/v1/core/node/factories/node_widget_factory_impl.dart';
 
 // ------------------- Logic -------------------
-import 'package:flow_editor/core/logic/strategy/workflow_mode.dart';
-import 'package:flow_editor/core/node/models/node_enums.dart';
-import 'package:flow_editor/core/anchor/models/anchor_enums.dart';
-import 'package:flow_editor/core/types/position_enum.dart';
+import 'package:flow_editor/v1/core/logic/strategy/workflow_mode.dart';
+import 'package:flow_editor/v1/core/node/models/node_enums.dart';
+import 'package:flow_editor/v1/core/anchor/models/anchor_enums.dart';
+import 'package:flow_editor/v1/core/types/position_enum.dart';
 
 // ------------------- UI Widgets -------------------
 import 'node_list_widget.dart';
 import 'node_widget_registry_initializer.dart';
 
 // ------------------- Plugins -------------------
-import 'package:flow_editor/core/plugin/tools_plugin.dart';
-import 'package:flow_editor/core/plugin/minimap_plugin.dart';
+import 'package:flow_editor/v1/core/plugin/tools_plugin.dart';
+import 'package:flow_editor/v1/core/plugin/minimap_plugin.dart';
 
 /// GraphEditor：当侧边栏收起时，不能拖拽节点；展开时才可拖拽
 class GraphEditor extends ConsumerStatefulWidget {

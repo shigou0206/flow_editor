@@ -36,6 +36,7 @@ dependencies:
   json_annotation: ^4.8.1
   http: ^1.1.0
   collection: ^1.18.0
+  shared_preferences: ^2.2.2
 
   flow_layout:
     path: ../flow_layout

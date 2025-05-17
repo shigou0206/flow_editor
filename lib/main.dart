@@ -1,18 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'core/canvas/models/canvas_visual_config.dart';
+import 'v1/core/canvas/models/canvas_visual_config.dart';
 import 'graph_editor/graph_editor.dart';
-import 'core/node/controllers/node_controller.dart';
-import 'core/edge/controllers/edge_controller.dart';
-import 'core/canvas/controllers/canvas_controller.dart';
-import 'core/canvas/behaviors/default_canvas_behavior.dart';
-import 'core/edge/behaviors/default_edge_behavior.dart';
-import 'core/node/behaviors/default_node_behavior.dart';
-import 'core/anchor/behaviors/default_anchor_behavior.dart';
+import 'v1/core/node/controllers/node_controller.dart';
+import 'v1/core/edge/controllers/edge_controller.dart';
+import 'v1/core/canvas/controllers/canvas_controller.dart';
+import 'v1/core/canvas/behaviors/default_canvas_behavior.dart';
+import 'v1/core/edge/behaviors/default_edge_behavior.dart';
+import 'v1/core/node/behaviors/default_node_behavior.dart';
+import 'v1/core/anchor/behaviors/default_anchor_behavior.dart';
 
 // ------------------- Providers -------------------
-import 'package:flow_editor/core/plugin/tools_plugin.dart';
+import 'package:flow_editor/v1/core/plugin/tools_plugin.dart';
 
 void main() {
   runApp(

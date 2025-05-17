@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flow_layout/graph/graph.dart';
 import 'package:flow_layout/layout/layout.dart';
-import 'package:flow_editor/core/edge/models/edge_model.dart';
-import 'package:flow_editor/core/node/models/node_model.dart';
+import 'package:flow_editor/v1/core/edge/models/edge_model.dart';
+import 'package:flow_editor/v1/core/node/models/node_model.dart';
 import 'package:collection/collection.dart';
 import 'dart:math' show pi, cos, sin;
 

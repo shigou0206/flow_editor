@@ -1,4 +1,4 @@
-import 'package:flow_editor/core/node/models/node_model.dart';
+import 'package:flow_editor/core/models/node_model.dart';
 import 'package:flow_editor/core/plugin/plugin_state/minimap_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
