@@ -3,9 +3,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flow_editor/core/models/node_model.dart';
 import 'package:flow_editor/core/models/edge_model.dart';
 import 'package:flow_editor/core/layout/sugiyama_layout.dart';
-import 'package:flow_editor/core/canvas/utils.dart';
-import 'package:flow_editor/core/edge/edge_renderer/edge_renderer.dart';
-import 'package:flow_editor/core/edge/edge_renderer/path_generators/flexible_path_generator.dart';
+import 'package:flow_editor/core/utils/canvas_utils.dart';
+import 'package:flow_editor/core/painters/edge_renderer.dart';
+import 'package:flow_editor/core/painters/path_generators/flexible_path_generator.dart';
 import 'package:flow_editor/core/edge/style/edge_style_resolver.dart';
 
 void main() {

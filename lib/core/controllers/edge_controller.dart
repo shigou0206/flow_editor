@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:riverpod/riverpod.dart';
 
-import 'package:flow_editor/core/edge/edge_state/edge_state_provider.dart';
+import 'package:flow_editor/core/state_management/providers/edge_state_provider.dart';
 import 'package:flow_editor/core/models/edge_model.dart';
 import 'package:flow_editor/core/models/state/edge_state.dart';
 import 'package:flow_editor/core/controllers/edge_controller_interface.dart';

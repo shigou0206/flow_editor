@@ -2,11 +2,11 @@
 
 import 'dart:ui';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flow_editor/core/edge/edge_state/edge_state_provider.dart';
-import 'package:flow_editor/core/node/node_state/node_state_provider.dart';
-import 'package:flow_editor/core/edge/edge_renderer/path_generators/flexible_path_generator.dart';
-import 'package:flow_editor/core/edge/utils/hit_test_utils.dart';
-import 'package:flow_editor/core/canvas/canvas_state/canvas_state_provider.dart';
+import 'package:flow_editor/core/state_management/providers/edge_state_provider.dart';
+import 'package:flow_editor/core/state_management/providers/node_state_provider.dart';
+import 'package:flow_editor/core/painters/path_generators/flexible_path_generator.dart';
+import 'package:flow_editor/core/utils/hit_test_utils.dart';
+import 'package:flow_editor/core/state_management/providers/canvas_state_provider.dart';
 import 'drag_policy.dart';
 
 /// 只允许把外部节点放到已有连线上

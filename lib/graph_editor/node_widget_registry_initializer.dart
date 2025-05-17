@@ -1,6 +1,6 @@
 // node_widget_registry_initializer.dart
 
-import 'package:flow_editor/core/node/node_widget_registry.dart';
+import 'package:flow_editor/core/widgets/node_widget_registry.dart';
 import 'package:flow_editor/core/models/node_model.dart';
 
 // 这里引入你各种节点的自定义Widget

@@ -1,7 +1,7 @@
 // core/canvas/controllers/canvas_viewport_controller.dart
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/material.dart';
-import 'package:flow_editor/core/canvas/canvas_state/canvas_state_provider.dart';
+import 'package:flow_editor/core/state_management/providers/canvas_state_provider.dart';
 
 class CanvasViewportController {
   final Ref ref;

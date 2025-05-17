@@ -1,7 +1,7 @@
 import 'package:flow_editor/core/models/node_model.dart';
 import 'package:flow_editor/core/models/edge_model.dart';
-import 'package:flow_editor/core/node/node_state/node_state_provider.dart';
-import 'package:flow_editor/core/edge/edge_state/edge_state_provider.dart';
+import 'package:flow_editor/core/state_management/providers/node_state_provider.dart';
+import 'package:flow_editor/core/state_management/providers/edge_state_provider.dart';
 
 abstract class WorkflowModeStrategy {
   void onNodeDeleted({

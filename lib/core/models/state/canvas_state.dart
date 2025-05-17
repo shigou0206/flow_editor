@@ -1,7 +1,7 @@
 import 'dart:ui';
-import 'package:flow_editor/core/canvas/models/canvas_interaction_mode.dart';
-import 'package:flow_editor/core/canvas/models/canvas_visual_config.dart';
-import 'package:flow_editor/core/canvas/models/canvas_interaction_config.dart';
+import 'package:flow_editor/core/models/enums/canvas_interaction_mode.dart';
+import 'package:flow_editor/core/models/styles/canvas_visual_config.dart';
+import 'package:flow_editor/core/models/styles/canvas_interaction_config.dart';
 import 'package:flow_editor/core/logic/strategy/workflow_mode.dart';
 
 /// 单个画布状态（单个 workflow）

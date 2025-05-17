@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'package:flow_editor/core/canvas/canvas_state/canvas_state_provider.dart';
+import 'package:flow_editor/core/state_management/providers/canvas_state_provider.dart';
 import 'package:flow_editor/core/controllers/canvas_controller_interface.dart';
 
 /// CanvasController 实现 ICanvasController

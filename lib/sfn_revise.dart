@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flow_editor/core/models/node_model.dart';
 import 'package:flow_editor/core/models/edge_model.dart';
 import 'package:flow_editor/core/layout/sugiyama_layout.dart';
-import 'package:flow_editor/core/canvas/utils.dart';
+import 'package:flow_editor/core/utils/canvas_utils.dart';
 import 'dart:math' show pi, cos, sin;
 
 void main() {

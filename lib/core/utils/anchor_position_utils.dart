@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flow_editor/core/models/node_model.dart';
 import 'package:flow_editor/core/models/anchor_model.dart';
 import 'package:flow_editor/core/models/enums/anchor_enums.dart';
-import 'package:flow_editor/core/types/position_enum.dart';
-import 'package:flow_editor/core/canvas/utils.dart';
+import 'package:flow_editor/core/models/enums/position_enum.dart';
+import 'package:flow_editor/core/utils/canvas_utils.dart';
 
 /// ---------------------
 /// 1) 计算锚点在节点内部的局部坐标

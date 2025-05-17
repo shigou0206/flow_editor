@@ -1,4 +1,4 @@
-import 'package:flow_editor/core/types/position_enum.dart';
+import 'package:flow_editor/core/models/enums/position_enum.dart';
 import 'package:flow_editor/core/models/enums/anchor_enums.dart';
 
 class AnchorModel {

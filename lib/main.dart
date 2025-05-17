@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'core/canvas/models/canvas_visual_config.dart';
+import 'core/models/styles/canvas_visual_config.dart';
 import 'graph_editor/graph_editor.dart';
 import 'core/controllers/node_controller.dart';
 import 'core/controllers/edge_controller.dart';
@@ -12,7 +12,7 @@ import 'core/behaviors/default_node_behavior.dart';
 import 'core/behaviors/default_anchor_behavior.dart';
 
 // ------------------- Providers -------------------
-import 'package:flow_editor/core/plugin/tools_plugin.dart';
+import 'package:flow_editor/core/plugins/tools_plugin.dart';
 
 void main() {
   runApp(

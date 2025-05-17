@@ -2,12 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flow_editor/core/utils/anchor_position_utils.dart';
 import 'package:flow_editor/core/models/anchor_model.dart';
-import 'package:flow_editor/core/node/node_state/node_state_provider.dart';
+import 'package:flow_editor/core/state_management/providers/node_state_provider.dart';
 import 'package:flow_editor/core/models/state/node_state.dart';
 import 'package:flow_editor/core/models/node_model.dart';
 import 'package:flow_editor/core/controllers/node_controller_interface.dart';
 import 'package:flow_editor/core/controllers/events.dart';
-import 'package:flow_editor/core/canvas/canvas_state/canvas_state_provider.dart';
+import 'package:flow_editor/core/state_management/providers/canvas_state_provider.dart';
 
 class NodeController implements INodeController {
   final ProviderContainer container;

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flow_editor/core/node/painter/configurable_border_painter.dart';
+import 'package:flow_editor/core/painters/configurable_border_painter.dart';
 
 class NodeBody extends StatelessWidget {
   final BorderPainterConfig? config;
