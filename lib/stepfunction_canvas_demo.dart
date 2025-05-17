@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flow_editor/v1/core/node/models/node_model.dart';
-import 'package:flow_editor/v1/core/edge/models/edge_model.dart';
-import 'package:flow_editor/v1/core/layout/sugiyama_layout.dart';
-import 'package:flow_editor/v1/core/canvas/utils.dart';
-import 'package:flow_editor/v1/core/edge/edge_renderer/edge_renderer.dart';
-import 'package:flow_editor/v1/core/edge/edge_renderer/path_generators/flexible_path_generator.dart';
-import 'package:flow_editor/v1/core/edge/style/edge_style_resolver.dart';
+import 'package:flow_editor/core/models/node_model.dart';
+import 'package:flow_editor/core/models/edge_model.dart';
+import 'package:flow_editor/core/layout/sugiyama_layout.dart';
+import 'package:flow_editor/core/canvas/utils.dart';
+import 'package:flow_editor/core/edge/edge_renderer/edge_renderer.dart';
+import 'package:flow_editor/core/edge/edge_renderer/path_generators/flexible_path_generator.dart';
+import 'package:flow_editor/core/edge/style/edge_style_resolver.dart';
 
 void main() {
   runApp(const ProviderScope(child: MaterialApp(home: LayoutDemoPage())));

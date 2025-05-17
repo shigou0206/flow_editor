@@ -1,10 +1,10 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:flow_editor/v1/core/node/models/node_model.dart';
-import 'package:flow_editor/v1/core/node/behaviors/node_behavior.dart';
+import 'package:flow_editor/core/models/node_model.dart';
+import 'package:flow_editor/core/behaviors/node_behavior.dart';
 
 // 引入我们刚才的三段式容器
-import 'package:flow_editor/v1/core/node/widgets/components/three_parts_layout.dart';
+import 'package:flow_editor/core/node/widgets/components/three_parts_layout.dart';
 // 注意：此路径仅作示例，请根据你实际文件结构修改
 
 /// NodeBlock：三段式节点，可响应单击 / 双击 / 右键 / 悬浮 / 删除 等行为

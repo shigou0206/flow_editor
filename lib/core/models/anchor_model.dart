@@ -1,4 +1,5 @@
-import 'package:flow_editor/core/models/enums.dart';
+import 'package:flow_editor/core/types/position_enum.dart';
+import 'package:flow_editor/core/models/enums/anchor_enums.dart';
 
 class AnchorModel {
   final String id;
@@ -137,8 +138,8 @@ class AnchorModel {
   factory AnchorModel.fromJson(Map<String, dynamic> json) {
     return AnchorModel(
       id: json['id']?.toString() ?? '',
-      width: json['width'] is num ? (json['width'] as num).toDouble() : 12.0,
-      height: json['height'] is num ? (json['height'] as num).toDouble() : 12.0,
+      width: json['width'] is num ? (json['width'] as num).toDouble() : 24.0,
+      height: json['height'] is num ? (json['height'] as num).toDouble() : 24.0,
       position: _parsePosition(json['position']),
       ratio: _parseRatio(json['ratio']),
       direction: _parseAnchorDirection(json['direction']),

@@ -1,244 +1,225 @@
-import 'package:flutter/material.dart';
-import 'package:flow_editor/core/models/style/edge_line_style.dart';
-import 'package:flow_editor/core/models/style/edge_animation_config.dart';
-import 'package:flow_editor/core/utils/edge_utils.dart';
-import 'package:flow_editor/core/models/edge_attachment_model.dart';
+import 'package:flow_editor/core/models/styles/edge_animation_config.dart';
+import 'package:flow_editor/core/models/styles/edge_line_style.dart';
+import 'package:flow_layout/graph/graph.dart';
 
-/// 坐标空间：
-/// * world     – 画布绝对坐标
-/// * workflow  – 工作流根局部坐标，parentId = workflowId
-/// * group     – 任意分组/子图局部坐标，parentId = groupNodeId
-enum CoordSpace { world, workflow, group }
-
-/// 通用 Edge 模型：
-/// * `start / end` 必填，始终保存 **当前 coordSpace 下的坐标**
-/// * 若填写 source/targetNodeId，则表示工作流连线；否则就是自由几何线
 class EdgeModel {
-  // ======= 基本几何 =======
+  // ===== 基本连接信息 =====
   final String id;
-  final Offset? start;
-  final Offset? end;
-
-  final List<EdgeAttachmentModel> attachments;
-
-  // 坐标空间 & 归属父级
-  final CoordSpace coordSpace;
-  final String? parentId; // 当 coordSpace != world 时必填
-
-  // ===== 绑定节点（可选） =====
-  final String? sourceNodeId;
+  final String sourceNodeId;
   final String? sourceAnchorId;
   final String? targetNodeId;
   final String? targetAnchorId;
   final bool isConnected;
-
-  // ===== 样式 / 路径 =====
   final bool isDirected;
-  final List<Offset>? waypoints; // 同样处于 coordSpace
-  final EdgeLineStyle lineStyle;
-  final EdgeAnimationConfig animConfig;
 
-  // ===== 业务字段 =====
-  final String edgeType;
-  final String? status;
-  final int zIndex;
+  // ===== 分类 / 状态 / 协作 =====
+  final String edgeType; // "flow", "dependency", ...
+  final String? status; // "none", "running", "error"...
   final bool locked;
   final String? lockedByUser;
   final int version;
+  final int zIndex;
 
-  // ===== 标签 / 扩展 =====
+  // ===== 折线/waypoints =====
+  List<List<double>>? waypoints;
+
+  // ===== 样式 & 动画 =====
+  final EdgeLineStyle lineStyle;
+  final EdgeAnimationConfig animConfig;
+
+  // ===== label / tag =====
   final String? label;
   final Map<String, dynamic>? labelStyle;
+
+  // ===== 额外数据 =====
   final Map<String, dynamic> data;
 
-  // ------------ ctor ------------
   EdgeModel({
-    // geometry
-    this.start,
-    this.end,
-    this.attachments = const [],
-    // space
-    this.coordSpace = CoordSpace.world,
-    this.parentId,
-
-    // node bind (optional)
-    this.sourceNodeId,
+    String? id,
+    required this.sourceNodeId,
     this.sourceAnchorId,
-    this.targetNodeId,
-    this.targetAnchorId,
+    this.targetNodeId = "none",
+    this.targetAnchorId = "none",
     this.isConnected = false,
-
-    // style
     this.isDirected = true,
-    this.waypoints,
-    this.lineStyle = const EdgeLineStyle(),
-    this.animConfig = const EdgeAnimationConfig(),
-
-    // business
-    this.edgeType = 'default',
+    this.edgeType = "default",
     this.status,
-    this.zIndex = 0,
     this.locked = false,
     this.lockedByUser,
     this.version = 1,
-
-    // label / extra
+    this.zIndex = 0,
+    this.waypoints,
+    this.lineStyle = const EdgeLineStyle(),
+    this.animConfig = const EdgeAnimationConfig(),
     this.label,
     this.labelStyle,
     this.data = const {},
-
-    // id override
-    String? id,
   }) : id = id ??
-            _genId(
-              sourceNodeId,
-              targetNodeId,
-              sourceAnchorId,
-              targetAnchorId,
-              label,
-              isDirected,
-            );
+            generateEdgeId(sourceNodeId, targetNodeId, sourceAnchorId,
+                targetAnchorId, label,
+                isDirected: isDirected);
 
-  static String _genId(
-    String? sid,
-    String? tid,
-    String? sa,
-    String? ta,
-    String? label,
-    bool isDirected,
-  ) {
-    if (sid != null && tid != null) {
-      return EdgeIdFactory.generateEdgeId(
-        sid,
-        tid,
-        sa,
-        ta,
-        label,
-        isDirected: isDirected,
-      );
+  static String generateEdgeId(String sourceNodeId, String? targetNodeId,
+      String? sourceAnchorId, String? targetAnchorId, String? name,
+      {bool isDirected = true}) {
+    final sourceAnchor = sourceAnchorId ?? "";
+    final targetAnchor = targetAnchorId ?? "";
+    final source = sourceNodeId;
+    final target = targetNodeId ?? "";
+
+    String? anchorName;
+    if (sourceAnchorId != null && targetAnchorId != null) {
+      if (sourceAnchorId.compareTo(targetAnchorId) <= 0) {
+        anchorName = "$sourceAnchor\u0001$targetAnchor";
+      } else {
+        anchorName = "$targetAnchor\u0001$sourceAnchor";
+      }
     }
-    return DateTime.now().microsecondsSinceEpoch.toString();
+    if (anchorName != null && name != null) {
+      name = "$anchorName\u0001$name";
+    }
+
+    if (name != null) {
+      return createEdgeId(source, target, name, isDirected);
+    }
+    return createEdgeId(source, target, null, isDirected);
   }
 
-  // ------------ copyWith ------------
+  // copyWith
   EdgeModel copyWith({
-    Offset? start,
-    Offset? end,
-    List<EdgeAttachmentModel>? attachments,
-    CoordSpace? coordSpace,
-    String? parentId,
+    String? id,
     String? sourceNodeId,
     String? sourceAnchorId,
     String? targetNodeId,
     String? targetAnchorId,
     bool? isConnected,
-    bool? isDirected,
-    List<Offset>? waypoints,
-    EdgeLineStyle? lineStyle,
-    EdgeAnimationConfig? animConfig,
     String? edgeType,
     String? status,
-    int? zIndex,
     bool? locked,
     String? lockedByUser,
     int? version,
+    int? zIndex,
+    List<List<double>>? waypoints,
+    EdgeLineStyle? lineStyle,
+    EdgeAnimationConfig? animConfig,
     String? label,
     Map<String, dynamic>? labelStyle,
     Map<String, dynamic>? data,
   }) {
     return EdgeModel(
-      id: id,
-      start: start ?? this.start,
-      end: end ?? this.end,
-      attachments: attachments ?? this.attachments,
-      coordSpace: coordSpace ?? this.coordSpace,
-      parentId: parentId ?? this.parentId,
+      id: id ?? this.id,
       sourceNodeId: sourceNodeId ?? this.sourceNodeId,
       sourceAnchorId: sourceAnchorId ?? this.sourceAnchorId,
       targetNodeId: targetNodeId ?? this.targetNodeId,
       targetAnchorId: targetAnchorId ?? this.targetAnchorId,
       isConnected: isConnected ?? this.isConnected,
-      isDirected: isDirected ?? this.isDirected,
-      waypoints: waypoints ?? this.waypoints,
-      lineStyle: lineStyle ?? this.lineStyle,
-      animConfig: animConfig ?? this.animConfig,
       edgeType: edgeType ?? this.edgeType,
       status: status ?? this.status,
-      zIndex: zIndex ?? this.zIndex,
       locked: locked ?? this.locked,
       lockedByUser: lockedByUser ?? this.lockedByUser,
       version: version ?? this.version,
+      zIndex: zIndex ?? this.zIndex,
+      waypoints: waypoints ?? this.waypoints,
+      lineStyle: lineStyle ?? this.lineStyle,
+      animConfig: animConfig ?? this.animConfig,
       label: label ?? this.label,
       labelStyle: labelStyle ?? this.labelStyle,
       data: data ?? this.data,
     );
   }
 
-  // ------------ JSON ------------
-  Map<String, dynamic> toJson() => {
-        'id': id,
-        'start': [start?.dx, start?.dy],
-        'end': [end?.dx, end?.dy],
-        'attachments': attachments.map((a) => a.toJson()).toList(),
-        'coordSpace': coordSpace.name,
-        'parentId': parentId,
-        'sourceNodeId': sourceNodeId,
-        'sourceAnchorId': sourceAnchorId,
-        'targetNodeId': targetNodeId,
-        'targetAnchorId': targetAnchorId,
-        'isConnected': isConnected,
-        'isDirected': isDirected,
-        'waypoints': waypoints?.map((o) => [o.dx, o.dy]).toList(),
-        'lineStyle': lineStyle.toJson(),
-        'animConfig': animConfig.toJson(),
-        'edgeType': edgeType,
-        'status': status,
-        'zIndex': zIndex,
-        'locked': locked,
-        'lockedByUser': lockedByUser,
-        'version': version,
-        'label': label,
-        'labelStyle': labelStyle,
-        'data': data,
-      };
+  // toJson
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'sourceNodeId': sourceNodeId,
+      'sourceAnchorId': sourceAnchorId,
+      'targetNodeId': targetNodeId,
+      'targetAnchorId': targetAnchorId,
+      'isConnected': isConnected,
+      'edgeType': edgeType,
+      'status': status,
+      'locked': locked,
+      'lockedByUser': lockedByUser,
+      'version': version,
+      'zIndex': zIndex,
+      'waypoints': waypoints,
+      'lineStyle': lineStyle.toJson(),
+      'animConfig': animConfig.toJson(),
+      'label': label,
+      'labelStyle': labelStyle,
+      'data': data,
+    };
+  }
 
-  factory EdgeModel.fromJson(Map<String, dynamic> j) => EdgeModel(
-        id: j['id'] as String?,
-        start: _off(j['start']),
-        end: _off(j['end']),
-        attachments: (j['attachments'] as List?)
-                ?.map((a) => EdgeAttachmentModel.fromJson(a))
-                .toList() ??
-            [],
-        coordSpace: CoordSpace.values.firstWhere(
-          (e) => e.name == (j['coordSpace'] ?? 'world'),
-          orElse: () => CoordSpace.world,
-        ),
-        parentId: j['parentId'] as String?,
-        sourceNodeId: j['sourceNodeId'] as String?,
-        sourceAnchorId: j['sourceAnchorId'] as String?,
-        targetNodeId: j['targetNodeId'] as String?,
-        targetAnchorId: j['targetAnchorId'] as String?,
-        isConnected: j['isConnected'] as bool? ?? false,
-        isDirected: j['isDirected'] as bool? ?? true,
-        waypoints: (j['waypoints'] as List?)?.map(_off).toList(),
-        lineStyle: j['lineStyle'] is Map<String, dynamic>
-            ? EdgeLineStyle.fromJson(j['lineStyle'])
-            : const EdgeLineStyle(),
-        animConfig: j['animConfig'] is Map<String, dynamic>
-            ? EdgeAnimationConfig.fromJson(j['animConfig'])
-            : const EdgeAnimationConfig(),
-        edgeType: j['edgeType'] as String? ?? 'default',
-        status: j['status'] as String?,
-        zIndex: (j['zIndex'] as num?)?.toInt() ?? 0,
-        locked: j['locked'] as bool? ?? false,
-        lockedByUser: j['lockedByUser'] as String?,
-        version: (j['version'] as num?)?.toInt() ?? 1,
-        label: j['label'] as String?,
-        labelStyle: j['labelStyle'] as Map<String, dynamic>?,
-        data: j['data'] as Map<String, dynamic>? ?? {},
-      );
+  // fromJson
+  factory EdgeModel.fromJson(Map<String, dynamic> json) {
+    return EdgeModel(
+      id: json['id'] as String,
+      sourceNodeId: json['sourceNodeId'] as String,
+      sourceAnchorId: json['sourceAnchorId'] as String,
+      targetNodeId: json['targetNodeId'] as String?,
+      targetAnchorId: json['targetAnchorId'] as String?,
+      isConnected: _asBool(json['isConnected'], false),
+      edgeType: json['edgeType'] as String? ?? "default",
+      status: json['status'] as String?,
+      locked: _asBool(json['locked'], false),
+      lockedByUser: json['lockedByUser'] as String?,
+      version: _asInt(json['version'], 1),
+      zIndex: _asInt(json['zIndex'], 0),
+      waypoints: _parseWaypoints(json['waypoints']),
+      lineStyle: (json['lineStyle'] is Map<String, dynamic>)
+          ? EdgeLineStyle.fromJson(json['lineStyle'])
+          : const EdgeLineStyle(),
+      animConfig: (json['animConfig'] is Map<String, dynamic>)
+          ? EdgeAnimationConfig.fromJson(json['animConfig'])
+          : const EdgeAnimationConfig(),
+      label: json['label'] as String?,
+      labelStyle: _mapOrNull(json['labelStyle']),
+      data: _mapOrEmpty(json['data']),
+    );
+  }
 
-  static Offset _off(dynamic v) =>
-      Offset((v[0] as num).toDouble(), (v[1] as num).toDouble());
+  // =========== 内部解析函数 ===========
+
+  static bool _asBool(dynamic val, bool fallback) {
+    if (val is bool) return val;
+    return fallback;
+  }
+
+  static int _asInt(dynamic val, int fallback) {
+    if (val is num) return val.toInt();
+    return fallback;
+  }
+
+  // static double? _asDouble(dynamic val) {
+  //   if (val is num) return val.toDouble();
+  //   return null;
+  // }
+
+  static List<List<double>>? _parseWaypoints(dynamic val) {
+    if (val is List) {
+      return val.map((point) {
+        if (point is List && point.length == 2) {
+          final x = (point[0] as num).toDouble();
+          final y = (point[1] as num).toDouble();
+          return [x, y];
+        }
+        return <double>[]; // or skip
+      }).toList();
+    }
+    return null;
+  }
+
+  static Map<String, dynamic>? _mapOrNull(dynamic obj) {
+    if (obj is Map<String, dynamic>) return obj;
+    return null;
+  }
+
+  static Map<String, dynamic> _mapOrEmpty(dynamic obj) {
+    if (obj is Map<String, dynamic>) {
+      return obj;
+    }
+    return {};
+  }
 }

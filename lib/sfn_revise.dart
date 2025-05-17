@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flow_editor/v1/core/node/models/node_model.dart';
-import 'package:flow_editor/v1/core/edge/models/edge_model.dart';
-import 'package:flow_editor/v1/core/layout/sugiyama_layout.dart';
-import 'package:flow_editor/v1/core/canvas/utils.dart';
+import 'package:flow_editor/core/models/node_model.dart';
+import 'package:flow_editor/core/models/edge_model.dart';
+import 'package:flow_editor/core/layout/sugiyama_layout.dart';
+import 'package:flow_editor/core/canvas/utils.dart';
 import 'dart:math' show pi, cos, sin;
 
 void main() {

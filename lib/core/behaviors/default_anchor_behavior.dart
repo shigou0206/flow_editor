@@ -3,9 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:flow_editor/core/behaviors/anchor_behavior.dart';
 import 'package:flow_editor/core/models/anchor_model.dart';
 import 'package:flow_editor/core/controllers/edge_controller_interface.dart';
+
+import 'package:flow_editor/core/models/enums/edge_enums.dart';
+import 'package:flow_editor/core/models/styles/edge_line_style.dart';
 import 'package:flow_editor/core/models/edge_model.dart';
-import 'package:flow_editor/core/models/enums.dart';
-import 'package:flow_editor/core/models/style/edge_line_style.dart';
 import 'package:flow_editor/core/controllers/node_controller_interface.dart';
 
 /// DefaultAnchorBehavior：通过 EdgeController 操作 ghost edge，

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flow_editor/core/models/anchor_model.dart';
-import 'package:flow_editor/core/models/enums.dart';
+import 'package:flow_editor/core/models/enums/anchor_enums.dart';
 
 class AnchorPainter extends CustomPainter {
   final AnchorModel anchor;

@@ -1,7 +1,7 @@
 import 'dart:ui';
 import 'package:flow_editor/core/models/node_model.dart';
-import 'package:flow_editor/core/controllers/node_controller_interface.dart';
 import 'package:flow_editor/core/behaviors/node_behavior.dart';
+import 'package:flow_editor/core/controllers/node_controller_interface.dart';
 
 /// DefaultNodeBehavior
 /// 提供一个空实现或简单的Debug实现
