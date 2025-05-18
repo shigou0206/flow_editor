@@ -16,8 +16,8 @@ class CanvasInteractionState {
     this.isPanning = false,
     this.panStartPos,
     this.isDraggingNode = false,
-    this.isDraggingEdge = false,
     this.draggingNodeId,
+    this.isDraggingEdge = false,
     this.nodeDragStartPos,
     this.marqueeRect,
     this.hoverNodeId,
@@ -33,6 +33,7 @@ class CanvasInteractionState {
     bool? isDraggingEdge,
     Offset? nodeDragStartPos,
     Rect? marqueeRect,
+    bool resetMarquee = false,
     String? hoverNodeId,
     String? hoverEdgeId,
     String? drawingFromAnchorId,
@@ -44,7 +45,9 @@ class CanvasInteractionState {
       draggingNodeId: draggingNodeId ?? this.draggingNodeId,
       isDraggingEdge: isDraggingEdge ?? this.isDraggingEdge,
       nodeDragStartPos: nodeDragStartPos ?? this.nodeDragStartPos,
-      marqueeRect: marqueeRect ?? this.marqueeRect,
+      marqueeRect: resetMarquee
+          ? null
+          : (marqueeRect != null ? marqueeRect : this.marqueeRect),
       hoverNodeId: hoverNodeId ?? this.hoverNodeId,
       hoverEdgeId: hoverEdgeId ?? this.hoverEdgeId,
       drawingFromAnchorId: drawingFromAnchorId ?? this.drawingFromAnchorId,

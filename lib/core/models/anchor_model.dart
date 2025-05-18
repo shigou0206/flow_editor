@@ -1,5 +1,6 @@
 import 'package:flow_editor/core/models/enums/position_enum.dart';
 import 'package:flow_editor/core/models/enums/anchor_enums.dart';
+import 'package:flow_editor/core/models/extensions/geometry_extensions.dart';
 import 'package:flutter/material.dart';
 
 class AnchorModel {
@@ -109,6 +110,7 @@ class AnchorModel {
   Map<String, dynamic> toJson() {
     return {
       'id': id,
+      'size': size.toJson(),
       'position': position.toString().split('.').last,
       'ratio': ratio,
       'direction': direction.toString().split('.').last,

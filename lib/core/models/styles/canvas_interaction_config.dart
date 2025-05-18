@@ -4,8 +4,9 @@ class CanvasInteractionConfig {
   final bool showGuides;
   final double minScale;
   final double maxScale;
-  final bool allowPan;
-  final bool allowZoom;
+  final bool enablePan;
+  final bool enableZoom;
+  final bool enableMarqueeSelect;
   final bool dropOnEdgeOnly;
 
   const CanvasInteractionConfig({
@@ -13,8 +14,9 @@ class CanvasInteractionConfig {
     this.showGuides = true,
     this.minScale = 0.1,
     this.maxScale = 10.0,
-    this.allowPan = true,
-    this.allowZoom = true,
+    this.enablePan = true,
+    this.enableZoom = true,
+    this.enableMarqueeSelect = true,
     this.dropOnEdgeOnly = false,
   });
 
@@ -24,8 +26,9 @@ class CanvasInteractionConfig {
         'showGuides': showGuides,
         'minScale': minScale,
         'maxScale': maxScale,
-        'allowPan': allowPan,
-        'allowZoom': allowZoom,
+        'enablePan': enablePan,
+        'enableZoom': enableZoom,
+        'enableMarqueeSelect': enableMarqueeSelect,
         'dropOnEdgeOnly': dropOnEdgeOnly,
       };
 
@@ -45,8 +48,9 @@ class CanvasInteractionConfig {
       showGuides: json['showGuides'] as bool? ?? true,
       minScale: parseDouble(json['minScale'], 0.1),
       maxScale: parseDouble(json['maxScale'], 10.0),
-      allowPan: json['allowPan'] as bool? ?? true,
-      allowZoom: json['allowZoom'] as bool? ?? true,
+      enablePan: json['enablePan'] as bool? ?? true,
+      enableZoom: json['enableZoom'] as bool? ?? true,
+      enableMarqueeSelect: json['enableMarqueeSelect'] as bool? ?? true,
       dropOnEdgeOnly: json['dropOnEdgeOnly'] as bool? ?? false,
     );
   }
@@ -57,8 +61,9 @@ class CanvasInteractionConfig {
     bool? showGuides,
     double? minScale,
     double? maxScale,
-    bool? allowPan,
-    bool? allowZoom,
+    bool? enablePan,
+    bool? enableZoom,
+    bool? enableMarqueeSelect,
     bool? dropOnEdgeOnly,
   }) {
     return CanvasInteractionConfig(
@@ -66,8 +71,9 @@ class CanvasInteractionConfig {
       showGuides: showGuides ?? this.showGuides,
       minScale: minScale ?? this.minScale,
       maxScale: maxScale ?? this.maxScale,
-      allowPan: allowPan ?? this.allowPan,
-      allowZoom: allowZoom ?? this.allowZoom,
+      enablePan: enablePan ?? this.enablePan,
+      enableZoom: enableZoom ?? this.enableZoom,
+      enableMarqueeSelect: enableMarqueeSelect ?? this.enableMarqueeSelect,
       dropOnEdgeOnly: dropOnEdgeOnly ?? this.dropOnEdgeOnly,
     );
   }

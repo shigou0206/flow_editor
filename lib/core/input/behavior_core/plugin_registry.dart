@@ -1,3 +1,6 @@
+// core/input/behavior_core/plugin_registry.dart
+
+import 'package:flow_editor/core/input/behavior_core/canvas_behavior.dart';
 import 'package:flow_editor/core/input/behavior_core/behavior_context.dart';
 import 'package:flow_editor/core/input/behavior_plugins/canvas_pan_behavior.dart';
 import 'package:flow_editor/core/input/behavior_plugins/canvas_zoom_behavior.dart';
@@ -8,11 +11,8 @@ import 'package:flow_editor/core/input/behavior_plugins/delete_key_behavior.dart
 import 'package:flow_editor/core/input/behavior_plugins/copy_paste_behavior.dart';
 import 'package:flow_editor/core/input/behavior_plugins/undo_redo_behavior.dart';
 
-import 'canvas_behavior.dart';
-
-/// 注册所有默认行为插件
 List<CanvasBehavior> registerDefaultBehaviors(BehaviorContext context) {
-  return [
+  final behaviors = <CanvasBehavior>[
     CanvasPanBehavior(context),
     CanvasZoomBehavior(context),
     NodeDragBehavior(context),
@@ -22,4 +22,7 @@ List<CanvasBehavior> registerDefaultBehaviors(BehaviorContext context) {
     CopyPasteBehavior(context),
     UndoRedoBehavior(context),
   ];
+
+  behaviors.sort((a, b) => a.priority.compareTo(b.priority));
+  return behaviors;
 }

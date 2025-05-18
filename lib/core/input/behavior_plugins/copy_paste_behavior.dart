@@ -13,20 +13,28 @@ class CopyPasteBehavior implements CanvasBehavior {
   @override
   int get priority => 90;
 
+  bool _isControlPressed(dynamic raw) {
+    // ignore: deprecated_member_use
+    if (raw is RawKeyEvent && raw.data is RawKeyEventDataMacOs) {
+      // ignore: deprecated_member_use
+      final mods = (raw.data as RawKeyEventDataMacOs).modifiers;
+      // ignore: deprecated_member_use
+      return (mods & RawKeyEventDataMacOs.modifierControl) != 0;
+    }
+    return false;
+  }
+
   @override
-  bool canHandle(InputEvent ev, CanvasState _) {
+  bool canHandle(InputEvent ev, CanvasState state) {
     if (ev.type != InputEventType.keyDown) return false;
-    final ctrl = ev.raw.isControlPressed();
-    return ctrl &&
+    return _isControlPressed(ev.raw) &&
         (ev.key == LogicalKeyboardKey.keyC ||
             ev.key == LogicalKeyboardKey.keyV);
   }
 
   @override
   void handle(InputEvent ev, BehaviorContext context) {
-    final ctrl = ev.raw.isControlPressed();
-    if (!ctrl) return;
-
+    if (!_isControlPressed(ev.raw)) return;
     if (ev.key == LogicalKeyboardKey.keyC) {
       context.controller.copySelection();
     } else if (ev.key == LogicalKeyboardKey.keyV) {

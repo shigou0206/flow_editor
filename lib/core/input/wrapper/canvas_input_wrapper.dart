@@ -1,10 +1,12 @@
+// lib/core/input/wrapper/canvas_input_wrapper.dart
+
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-import 'package:flow_editor/core/input/behavior_core/behavior_context.dart';
 import 'package:flow_editor/core/input/behavior_core/behavior_manager.dart';
 import 'package:flow_editor/core/input/behavior_core/plugin_registry.dart';
+import 'package:flow_editor/core/input/behavior_core/behavior_context.dart';
 import 'package:flow_editor/core/input/event/input_event.dart';
 import 'package:flow_editor/core/input/event/input_event_type.dart';
 import 'package:flow_editor/core/input/config/config.dart';
@@ -16,17 +18,17 @@ class CanvasInputWrapper extends StatefulWidget {
   final Widget child;
   final CoordinateFn toCanvas;
   final InputConfig config;
-  final BehaviorContext context; // 注入进来
+  final BehaviorContext context;
   final BehaviorManager? manager;
 
   const CanvasInputWrapper({
-    super.key,
+    Key? key,
     required this.child,
     required this.toCanvas,
     required this.context,
     this.config = const InputConfig(),
     this.manager,
-  });
+  }) : super(key: key);
 
   @override
   State<CanvasInputWrapper> createState() => _CanvasInputWrapperState();
@@ -37,7 +39,7 @@ class _CanvasInputWrapperState extends State<CanvasInputWrapper> {
       BehaviorManager(registerDefaultBehaviors(widget.context));
 
   final FocusNode _focusNode = FocusNode();
-  late RenderBox _box;
+  final GlobalKey _childKey = GlobalKey(); // ← added GlobalKey
   Offset? _lastCanvasPos;
 
   @override
@@ -78,10 +80,10 @@ class _CanvasInputWrapperState extends State<CanvasInputWrapper> {
             raw: null,
             canvasPos: null,
           )),
-          child: Builder(builder: (ctx) {
-            _box = ctx.findRenderObject() as RenderBox;
-            return widget.child;
-          }),
+          child: Container(
+            key: _childKey, // ← wrap child in keyed Container
+            child: widget.child,
+          ),
         ),
       ),
     );
@@ -89,7 +91,10 @@ class _CanvasInputWrapperState extends State<CanvasInputWrapper> {
 
   PointerEventListener _onPointer(InputEventType type) {
     return (PointerEvent e) {
-      final local = _box.globalToLocal(e.position);
+      // delay render box lookup until event time
+      final render = _childKey.currentContext?.findRenderObject();
+      if (render is! RenderBox) return;
+      final local = render.globalToLocal(e.position);
       final canvasPos = widget.toCanvas(local);
 
       Offset? delta;

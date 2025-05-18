@@ -293,7 +293,7 @@ class MultiCanvasStateNotifier extends StateNotifier<MultiWorkflowCanvasState> {
 
   void _panCanvas(Offset deltaGlobal) {
     final canvasSt = state.activeState;
-    if (!canvasSt.interactionConfig.allowPan) return;
+    if (!canvasSt.interactionConfig.enablePan) return;
     final oldOffset = canvasSt.offset;
     final newOffset = oldOffset + (deltaGlobal / canvasSt.scale);
     _updateActiveCanvas((c) => c.copyWith(offset: newOffset));
@@ -420,7 +420,7 @@ class MultiCanvasStateNotifier extends StateNotifier<MultiWorkflowCanvasState> {
 
   void setOffset(Offset offset) {
     _updateActiveCanvas(
-      (canvas) => canvas.interactionConfig.allowPan
+      (canvas) => canvas.interactionConfig.enablePan
           ? canvas.copyWith(offset: offset)
           : canvas,
     );
@@ -428,7 +428,7 @@ class MultiCanvasStateNotifier extends StateNotifier<MultiWorkflowCanvasState> {
 
   void panBy(double dx, double dy) {
     _updateActiveCanvas(
-      (canvas) => canvas.interactionConfig.allowPan
+      (canvas) => canvas.interactionConfig.enablePan
           ? canvas.copyWith(offset: canvas.offset.translate(dx, dy))
           : canvas,
     );
@@ -436,7 +436,7 @@ class MultiCanvasStateNotifier extends StateNotifier<MultiWorkflowCanvasState> {
 
   void setScale(double scale) {
     _updateActiveCanvas((canvas) {
-      if (!canvas.interactionConfig.allowZoom) return canvas;
+      if (!canvas.interactionConfig.enableZoom) return canvas;
       final clamped = scale.clamp(
         canvas.interactionConfig.minScale,
         canvas.interactionConfig.maxScale,
@@ -447,7 +447,7 @@ class MultiCanvasStateNotifier extends StateNotifier<MultiWorkflowCanvasState> {
 
   void zoomAtPoint(double scaleFactor, Offset focalPoint) {
     _updateActiveCanvas((canvas) {
-      if (!canvas.interactionConfig.allowZoom) return canvas;
+      if (!canvas.interactionConfig.enableZoom) return canvas;
       final oldScale = canvas.scale;
       final newScale = (oldScale * scaleFactor).clamp(
         canvas.interactionConfig.minScale,

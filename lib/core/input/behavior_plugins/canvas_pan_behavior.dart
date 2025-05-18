@@ -16,7 +16,7 @@ class CanvasPanBehavior implements CanvasBehavior {
   bool canHandle(InputEvent ev, CanvasState state) {
     // 开始拖动：点击空白区域
     if (ev.type == InputEventType.pointerDown && ev.canvasPos != null) {
-      return state.interactionConfig.allowPan &&
+      return state.interactionConfig.enablePan &&
           context.hitTester.hitTestElement(ev.canvasPos!) == null;
     }
 

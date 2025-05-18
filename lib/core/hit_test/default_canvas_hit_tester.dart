@@ -1,24 +1,35 @@
 import 'dart:ui';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flow_editor/core/hit_test/canvas_hit_tester.dart';
-import 'package:flow_editor/core/state_management/providers/node_state_provider.dart';
-import 'package:flow_editor/core/state_management/providers/edge_state_provider.dart';
-import 'package:flow_editor/core/state_management/providers/canvas_state_provider.dart';
+import 'package:flow_editor/core/models/node_model.dart';
+import 'package:flow_editor/core/models/anchor_model.dart';
+import 'package:flow_editor/core/models/edge_model.dart';
 import 'package:flow_editor/core/painters/path_generators/flexible_path_generator.dart';
 import 'package:flow_editor/core/utils/hit_test_utils.dart';
-import 'package:flow_editor/core/utils/anchor_position_utils.dart';
 
-/// 默认命中检测实现，基于 Provider 中的业务模型状态
 class DefaultCanvasHitTester implements CanvasHitTester {
-  final WidgetRef _ref;
+  final List<NodeModel> Function() getNodes;
+  final List<EdgeModel> Function() getEdges;
+  final List<AnchorModel> Function() getAnchors;
 
-  DefaultCanvasHitTester(this._ref);
+  /// 由外部提供：给定节点与它的某个 AnchorModel，根据业务逻辑返回锚点的全局中心坐标
+  final Offset Function(
+          NodeModel node, AnchorModel anchor, List<NodeModel> allNodes)
+      computeAnchorWorldPosition;
 
-  String get _wfId => _ref.read(multiCanvasStateProvider).activeWorkflowId;
+  /// 锚点命中阈值
+  final double anchorThreshold;
+
+  DefaultCanvasHitTester({
+    required this.getNodes,
+    required this.getEdges,
+    required this.getAnchors,
+    required this.computeAnchorWorldPosition,
+    this.anchorThreshold = 20.0,
+  });
 
   @override
   String? hitTestNode(Offset pos) {
-    final nodes = _ref.read(nodeStateProvider(_wfId)).nodesOf(_wfId);
+    final nodes = getNodes();
     for (final node in nodes.reversed) {
       final rect = Rect.fromLTWH(
         node.position.dx,
@@ -33,17 +44,11 @@ class DefaultCanvasHitTester implements CanvasHitTester {
 
   @override
   String? hitTestAnchor(Offset pos) {
-    const double threshold = 20.0;
-    final nodes = _ref.read(nodeStateProvider(_wfId)).nodesOf(_wfId);
+    final nodes = getNodes();
     for (final node in nodes) {
       for (final anchor in node.anchors ?? []) {
-        final anchorPos = computeAnchorWorldPosition(
-          node,
-          anchor,
-          nodes,
-        );
-        final center = anchorPos + Offset(anchor.width / 2, anchor.height / 2);
-        if ((pos - center).distance < threshold) {
+        final center = computeAnchorWorldPosition(node, anchor, nodes);
+        if ((pos - center).distance < anchorThreshold) {
           return anchor.id;
         }
       }
@@ -55,8 +60,8 @@ class DefaultCanvasHitTester implements CanvasHitTester {
   String? hitTestEdge(Offset pos) {
     double minDist = double.infinity;
     String? hitEdgeId;
-    final edges = _ref.read(edgeStateProvider(_wfId)).edgesOf(_wfId);
-    final nodes = _ref.read(nodeStateProvider(_wfId)).nodesOf(_wfId);
+    final edges = getEdges();
+    final nodes = getNodes();
     final generator = FlexiblePathGenerator(nodes);
 
     for (final edge in edges) {
