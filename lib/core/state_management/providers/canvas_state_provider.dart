@@ -37,6 +37,7 @@ class MultiCanvasStateNotifier extends StateNotifier<MultiWorkflowCanvasState> {
   String? _hoveredEdgeId;
   String? get hoveredEdgeId => _hoveredEdgeId;
 
+  // ignore: unused_field
   EdgeModel? _potentialInsertEdge;
 
   MultiCanvasStateNotifier(
@@ -507,7 +508,7 @@ class MultiCanvasStateNotifier extends StateNotifier<MultiWorkflowCanvasState> {
 
     final worldPos =
         computeAnchorWorldPosition(node, anchor, nodeSt.nodesOf(wfId)) +
-            Offset(anchor.width / 2, anchor.height / 2);
+            Offset(anchor.size.width / 2, anchor.size.height / 2);
     return (worldPos, anchor.position);
   }
 

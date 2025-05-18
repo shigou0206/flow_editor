@@ -9,8 +9,8 @@ class AnchorWidget extends StatefulWidget {
   final AnchorModel anchor;
   final bool isHover;
   final bool isSelected;
-  final double width;
-  final double height;
+  final Size size;
+
   final VoidCallback? onTap;
   final VoidCallback? onHoverEnter;
   final VoidCallback? onHoverExit;
@@ -22,8 +22,7 @@ class AnchorWidget extends StatefulWidget {
     required this.anchor,
     this.isHover = false,
     this.isSelected = false,
-    this.width = 24.0,
-    this.height = 24.0,
+    this.size = const Size(24.0, 24.0),
     this.onTap,
     this.onHoverEnter,
     this.onHoverExit,
@@ -41,8 +40,8 @@ class _AnchorWidgetState extends State<AnchorWidget> {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      width: widget.width,
-      height: widget.height,
+      width: widget.size.width,
+      height: widget.size.height,
       child: MouseRegion(
         cursor: widget.cursor,
         onEnter: (_) {

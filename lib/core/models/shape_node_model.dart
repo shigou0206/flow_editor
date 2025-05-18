@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flow_editor/core/models/node_model.dart';
 import 'package:flow_editor/core/models/anchor_model.dart';
 import 'package:flow_editor/core/utils/anchor_position_utils.dart';
-import 'package:flow_editor/core/models/node_enums.dart';
+import 'package:flow_editor/core/models/enums/node_enums.dart';
 import 'package:flow_editor/core/models/styles/node_style.dart';
 
 enum ShapeType { rectangle, circle, diamond, ellipse }

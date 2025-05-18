@@ -262,7 +262,7 @@ class _CanvasRendererState extends State<CanvasRenderer>
 
     final worldPos = computeAnchorWorldPosition(
             node, anchor, widget.nodeState.nodesOf(widget.workflowId)) +
-        Offset(anchor.width / 2, anchor.height / 2);
+        Offset(anchor.size.width / 2, anchor.size.height / 2);
     return (worldPos, anchor.position);
   }
 }

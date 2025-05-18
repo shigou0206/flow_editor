@@ -3,8 +3,8 @@ import 'package:flow_editor/core/models/enums/canvas_interaction_mode.dart';
 import 'package:flow_editor/core/models/styles/canvas_visual_config.dart';
 import 'package:flow_editor/core/models/styles/canvas_interaction_config.dart';
 import 'package:flow_editor/core/logic/strategy/workflow_mode.dart';
+import 'package:flow_editor/core/models/state/canvas_interaction_state.dart';
 
-/// 单个画布状态（单个 workflow）
 class CanvasState {
   final Offset offset;
   final double scale;
@@ -12,6 +12,7 @@ class CanvasState {
   final CanvasInteractionMode interactionMode;
   final CanvasVisualConfig visualConfig;
   final CanvasInteractionConfig interactionConfig;
+  final CanvasInteractionState interactionState;
   final int version;
   final String? focusItemId;
 
@@ -22,6 +23,7 @@ class CanvasState {
     this.interactionMode = CanvasInteractionMode.panCanvas,
     this.visualConfig = const CanvasVisualConfig(),
     this.interactionConfig = const CanvasInteractionConfig(),
+    this.interactionState = const CanvasInteractionState(),
     this.version = 1,
     this.focusItemId,
   });
@@ -33,6 +35,7 @@ class CanvasState {
     CanvasInteractionMode? interactionMode,
     CanvasVisualConfig? visualConfig,
     CanvasInteractionConfig? interactionConfig,
+    CanvasInteractionState? interactionState,
     int? version,
     String? focusItemId,
   }) {
@@ -48,6 +51,7 @@ class CanvasState {
       interactionMode: interactionMode ?? this.interactionMode,
       visualConfig: visualConfig ?? this.visualConfig,
       interactionConfig: effectiveInteractionConfig,
+      interactionState: interactionState ?? this.interactionState,
       version: version ?? this.version,
       focusItemId: focusItemId ?? this.focusItemId,
     );
@@ -61,6 +65,7 @@ class CanvasState {
         'interactionMode': interactionMode.name,
         'visualConfig': visualConfig.toJson(),
         'interactionConfig': interactionConfig.toJson(),
+        'interactionState': interactionState.toJson(),
         'version': version,
         'focusItemId': focusItemId,
       };
@@ -115,13 +120,15 @@ class CanvasState {
       interactionConfig: json['interactionConfig'] is Map
           ? CanvasInteractionConfig.fromJson(json['interactionConfig'])
           : const CanvasInteractionConfig(),
+      interactionState: json['interactionState'] is Map
+          ? CanvasInteractionState.fromJson(json['interactionState'])
+          : const CanvasInteractionState(),
       version: version,
       focusItemId: json['focusItemId'] as String?,
     );
   }
 }
 
-/// 支持多 workflow 的状态管理
 class MultiWorkflowCanvasState {
   final String activeWorkflowId;
   final Map<String, CanvasState> workflows;
@@ -149,6 +156,7 @@ class MultiWorkflowCanvasState {
 
   Map<String, dynamic> toJson() => {
         'activeWorkflowId': activeWorkflowId,
+        'hoveredEdgeId': hoveredEdgeId,
         'workflows':
             workflows.map((key, state) => MapEntry(key, state.toJson())),
       };
@@ -160,8 +168,8 @@ class MultiWorkflowCanvasState {
     );
     return MultiWorkflowCanvasState(
       activeWorkflowId: json['activeWorkflowId'] as String,
-      workflows: workflows,
       hoveredEdgeId: json['hoveredEdgeId'] as String?,
+      workflows: workflows,
     );
   }
 }

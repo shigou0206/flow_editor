@@ -40,12 +40,12 @@ class FlexiblePathGenerator implements PathGenerator {
     final start = sourceAnchor == null
         ? sourceNode.position
         : computeAnchorWorldPosition(sourceNode, sourceAnchor, nodes) +
-            Offset(sourceAnchor.width / 2, sourceAnchor.height / 2);
+            Offset(sourceAnchor.size.width / 2, sourceAnchor.size.height / 2);
 
     final end = targetAnchor == null
         ? targetNode.position
         : computeAnchorWorldPosition(targetNode, targetAnchor, nodes) +
-            Offset(targetAnchor.width / 2, targetAnchor.height / 2);
+            Offset(targetAnchor.size.width / 2, targetAnchor.size.height / 2);
 
     return EdgePath(
         edge.id,
@@ -68,7 +68,7 @@ class FlexiblePathGenerator implements PathGenerator {
     final start = sourceAnchor == null
         ? sourceNode.position
         : computeAnchorWorldPosition(sourceNode, sourceAnchor, nodes) +
-            Offset(sourceAnchor.width / 2, sourceAnchor.height / 2);
+            Offset(sourceAnchor.size.width / 2, sourceAnchor.size.height / 2);
 
     return EdgePath(
         edge.id,

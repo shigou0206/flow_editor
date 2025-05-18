@@ -22,7 +22,7 @@ import 'package:flow_editor/core/widgets/factories/node_widget_factory_impl.dart
 
 // ------------------- Logic -------------------
 import 'package:flow_editor/core/logic/strategy/workflow_mode.dart';
-import 'package:flow_editor/core/models/node_enums.dart';
+import 'package:flow_editor/core/models/enums/node_enums.dart';
 import 'package:flow_editor/core/models/enums/anchor_enums.dart';
 import 'package:flow_editor/core/models/enums/position_enum.dart';
 
@@ -280,8 +280,7 @@ class _GraphEditorState extends ConsumerState<GraphEditor> {
                     placement: AnchorPlacement.border,
                     offsetDistance: 0,
                     ratio: 0.5,
-                    width: 24,
-                    height: 24,
+                    size: const Size(24, 24),
                     shape: AnchorShape.diamond,
                   ),
                   AnchorModel(
@@ -291,8 +290,7 @@ class _GraphEditorState extends ConsumerState<GraphEditor> {
                     placement: AnchorPlacement.border,
                     offsetDistance: 0,
                     ratio: 0.5,
-                    width: 24,
-                    height: 24,
+                    size: const Size(24, 24),
                     shape: AnchorShape.square,
                   ),
                 ],

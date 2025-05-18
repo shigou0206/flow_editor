@@ -3,7 +3,7 @@ import 'package:flow_editor/core/models/node_model.dart';
 import 'package:flow_editor/core/models/edge_model.dart';
 import 'package:flow_editor/core/state_management/providers/node_state_provider.dart';
 import 'package:flow_editor/core/state_management/providers/edge_state_provider.dart';
-import 'package:flow_editor/core/models/node_enums.dart';
+import 'package:flow_editor/core/models/enums/node_enums.dart';
 
 class GenericFlowStrategy implements WorkflowModeStrategy {
   final String workflowId;

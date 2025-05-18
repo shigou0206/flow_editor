@@ -33,8 +33,7 @@ class NodeAnchors extends StatelessWidget {
                 top: localPos.dy + padding.top,
                 child: AnchorWidget(
                   anchor: anchor,
-                  width: anchor.width,
-                  height: anchor.height,
+                  size: anchor.size,
                   anchorBehavior: anchorBehavior,
                 ),
               );

@@ -100,7 +100,7 @@ class EdgeRenderer extends CustomPainter {
       final anchor = node.anchors?.firstWhereOrNull((a) => a.id == anchorId);
       if (anchor != null) {
         return computeAnchorWorldPosition(node, anchor, nodes) +
-            Offset(anchor.width / 2, anchor.height / 2);
+            Offset(anchor.size.width / 2, anchor.size.height / 2);
       }
     }
 

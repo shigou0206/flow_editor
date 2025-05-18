@@ -44,8 +44,10 @@ Offset computeAnchorLocalPosition(AnchorModel anchor, Size nodeSize) {
   // 5) position
 
   // 6) 最终局部坐标 = 基准点 + (rotatedNormal * effectiveDistance)
-  final dx = baseX + rotatedNormal.dx * effectiveDistance - anchor.width / 2;
-  final dy = baseY + rotatedNormal.dy * effectiveDistance - anchor.height / 2;
+  final dx =
+      baseX + rotatedNormal.dx * effectiveDistance - anchor.size.width / 2;
+  final dy =
+      baseY + rotatedNormal.dy * effectiveDistance - anchor.size.height / 2;
   return Offset(dx, dy);
 }
 
@@ -82,10 +84,11 @@ AnchorPadding computeAnchorPadding(
   for (final anchor in anchors) {
     final localPos = computeAnchorLocalPosition(anchor, nodeSize);
     expandLeft = max(expandLeft, -localPos.dx);
-    expandRight = max(expandRight, localPos.dx + anchor.width - nodeSize.width);
+    expandRight =
+        max(expandRight, localPos.dx + anchor.size.width - nodeSize.width);
     expandTop = max(expandTop, -localPos.dy);
     expandBottom =
-        max(expandBottom, localPos.dy + anchor.height - nodeSize.height);
+        max(expandBottom, localPos.dy + anchor.size.height - nodeSize.height);
   }
 
   return AnchorPadding(

@@ -2,7 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart'; // for Rect, Offset
 import 'package:flow_editor/core/models/anchor_model.dart';
 import 'package:flow_editor/core/utils/anchor_position_utils.dart';
-import 'package:flow_editor/core/models/node_enums.dart';
+import 'package:flow_editor/core/models/enums/node_enums.dart';
 import 'package:flow_editor/core/models/base_node_model.dart';
 import 'package:flow_editor/core/models/styles/node_style.dart';
 import 'package:flutter/rendering.dart';
