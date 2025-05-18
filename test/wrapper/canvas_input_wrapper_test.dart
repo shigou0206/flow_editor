@@ -11,12 +11,12 @@ import 'package:flow_editor/core/input/behavior_core/behavior_context.dart';
 import 'package:flow_editor/core/input/event/input_event.dart';
 import 'package:flow_editor/core/input/event/input_event_type.dart';
 import 'package:flow_editor/core/input/config/config.dart';
-import 'package:flow_editor/core/input/controller/canvas_controller.dart';
 import 'package:flow_editor/core/hit_test/canvas_hit_tester.dart';
 import 'package:flow_editor/core/models/state/canvas_state.dart';
 import 'package:flow_editor/core/models/state/canvas_interaction_state.dart';
 import 'package:flow_editor/core/models/styles/canvas_interaction_config.dart';
 import 'package:flow_editor/core/models/styles/canvas_visual_config.dart';
+import 'package:flow_editor/test/_helpers/fake_canvas_controller.dart';
 
 // Fake BehaviorManager to capture events
 class FakeManager extends BehaviorManager {
@@ -49,7 +49,7 @@ void main() {
   setUp(() {
     fakeManager = FakeManager();
     context = BehaviorContext(
-      controller: CanvasController(),
+      controller: FakeCanvasController(),
       getState: () => const CanvasState(
         interactionConfig: CanvasInteractionConfig(),
         visualConfig: CanvasVisualConfig(),

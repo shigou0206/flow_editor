@@ -11,12 +11,12 @@ import 'package:flow_editor/core/input/behavior_plugins/marquee_select_behavior.
 import 'package:flow_editor/core/input/behavior_plugins/delete_key_behavior.dart';
 import 'package:flow_editor/core/input/behavior_plugins/copy_paste_behavior.dart';
 import 'package:flow_editor/core/input/behavior_plugins/undo_redo_behavior.dart';
-import 'package:flow_editor/core/input/controller/canvas_controller.dart';
 import 'package:flow_editor/core/hit_test/canvas_hit_tester.dart';
 import 'package:flow_editor/core/models/state/canvas_state.dart';
 import 'package:flow_editor/core/models/state/canvas_interaction_state.dart';
 import 'package:flow_editor/core/models/styles/canvas_interaction_config.dart';
 import 'package:flow_editor/core/models/styles/canvas_visual_config.dart';
+import 'package:flow_editor/test/_helpers/fake_canvas_controller.dart';
 
 /// A no-op hit tester just to satisfy BehaviorContext
 class _DummyHitTester implements CanvasHitTester {
@@ -36,7 +36,7 @@ void main() {
   setUp(() {
     // Construct a minimal-but-valid BehaviorContext
     context = BehaviorContext(
-      controller: CanvasController(),
+      controller: FakeCanvasController(),
       getState: () => const CanvasState(
         interactionConfig: CanvasInteractionConfig(),
         visualConfig: CanvasVisualConfig(),

@@ -5,7 +5,6 @@ import 'dart:ui';
 
 import 'package:flow_editor/core/input/behavior_core/behavior_context.dart';
 import 'package:flow_editor/core/input/behavior_plugins/canvas_pan_behavior.dart';
-import 'package:flow_editor/core/input/controller/canvas_controller.dart';
 import 'package:flow_editor/core/input/event/input_event.dart';
 import 'package:flow_editor/core/input/event/input_event_type.dart';
 import 'package:flow_editor/core/models/state/canvas_state.dart';
@@ -13,15 +12,8 @@ import 'package:flow_editor/core/models/state/canvas_interaction_state.dart';
 import 'package:flow_editor/core/models/styles/canvas_interaction_config.dart';
 import 'package:flow_editor/core/models/styles/canvas_visual_config.dart';
 import 'package:flow_editor/core/hit_test/canvas_hit_tester.dart';
-
-// 1. Fake CanvasController：记录 panBy 调用
-class FakeController extends CanvasController {
-  Offset? lastPanDelta;
-  @override
-  void panBy(Offset delta) {
-    lastPanDelta = delta;
-  }
-}
+import 'package:flow_editor/core/controller/canvas_controller_interface.dart';
+import 'package:flow_editor/test/_helpers/fake_canvas_controller.dart';
 
 // 2. Dummy HitTester：始终不命中任何元素，以便测试纯 pan 逻辑
 class DummyHitTester implements CanvasHitTester {
@@ -37,7 +29,7 @@ class DummyHitTester implements CanvasHitTester {
 
 // 3. 创建 BehaviorContext 工厂
 BehaviorContext makeContext({
-  required CanvasController controller,
+  required ICanvasController controller,
   required CanvasState Function() getState,
   required void Function(CanvasState) updateState,
 }) {
@@ -50,7 +42,7 @@ BehaviorContext makeContext({
 }
 
 void main() {
-  late FakeController ctrl;
+  late FakeCanvasController ctrl;
   late CanvasState state;
   late CanvasState Function() getState;
   late void Function(CanvasState) setState;
@@ -58,7 +50,7 @@ void main() {
   late CanvasPanBehavior behavior;
 
   setUp(() {
-    ctrl = FakeController();
+    ctrl = FakeCanvasController();
     state = const CanvasState(
       interactionConfig: CanvasInteractionConfig(enablePan: true),
       visualConfig: CanvasVisualConfig(),

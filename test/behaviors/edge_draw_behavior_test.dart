@@ -12,6 +12,8 @@ import 'package:flow_editor/core/models/state/canvas_interaction_state.dart';
 import 'package:flow_editor/core/models/styles/canvas_interaction_config.dart';
 import 'package:flow_editor/core/models/styles/canvas_visual_config.dart';
 import 'package:flow_editor/core/hit_test/canvas_hit_tester.dart';
+import 'package:flow_editor/test/_helpers/fake_canvas_controller.dart';
+import 'package:flow_editor/core/controller/canvas_controller_interface.dart';
 
 // Fake controller to capture edge drag calls
 class FakeController extends CanvasController {
@@ -52,7 +54,7 @@ class DummyHitTester implements CanvasHitTester {
 }
 
 BehaviorContext makeContext({
-  required CanvasController controller,
+  required ICanvasController controller,
   required CanvasState Function() getState,
   required void Function(CanvasState) updateState,
   required CanvasHitTester hitTester,
@@ -66,7 +68,7 @@ BehaviorContext makeContext({
 }
 
 void main() {
-  late FakeController ctrl;
+  late FakeCanvasController ctrl;
   late CanvasState state;
   late CanvasState Function() getState;
   late void Function(CanvasState) setState;
@@ -75,7 +77,7 @@ void main() {
   const testAnchorId = 'anchorA';
 
   setUp(() {
-    ctrl = FakeController();
+    ctrl = FakeCanvasController();
     state = const CanvasState(
       interactionConfig: CanvasInteractionConfig(),
       visualConfig: CanvasVisualConfig(),

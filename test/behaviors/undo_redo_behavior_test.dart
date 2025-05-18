@@ -4,7 +4,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flow_editor/core/input/behavior_plugins/undo_redo_behavior.dart';
 import 'package:flow_editor/core/input/behavior_core/behavior_context.dart';
-import 'package:flow_editor/core/input/controller/canvas_controller.dart';
 import 'package:flow_editor/core/input/event/input_event.dart';
 import 'package:flow_editor/core/input/event/input_event_type.dart';
 import 'package:flow_editor/core/models/state/canvas_state.dart';
@@ -12,15 +11,7 @@ import 'package:flow_editor/core/models/state/canvas_interaction_state.dart';
 import 'package:flow_editor/core/models/styles/canvas_interaction_config.dart';
 import 'package:flow_editor/core/models/styles/canvas_visual_config.dart';
 import 'package:flow_editor/core/hit_test/canvas_hit_tester.dart';
-
-class FakeController extends CanvasController {
-  bool didUndo = false;
-  bool didRedo = false;
-  @override
-  void undo() => didUndo = true;
-  @override
-  void redo() => didRedo = true;
-}
+import 'package:flow_editor/test/_helpers/fake_canvas_controller.dart';
 
 class DummyHitTester implements CanvasHitTester {
   @override
@@ -36,13 +27,13 @@ class DummyHitTester implements CanvasHitTester {
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
-  late FakeController controller;
+  late FakeCanvasController controller;
   late BehaviorContext context;
   late CanvasState dummyState;
   late UndoRedoBehavior behavior;
 
   setUp(() {
-    controller = FakeController();
+    controller = FakeCanvasController();
     dummyState = const CanvasState(
       interactionConfig: CanvasInteractionConfig(),
       visualConfig: CanvasVisualConfig(),

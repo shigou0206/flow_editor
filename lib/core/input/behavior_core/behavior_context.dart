@@ -1,10 +1,10 @@
 import 'package:flow_editor/core/hit_test/canvas_hit_tester.dart';
-import 'package:flow_editor/core/input/controller/canvas_controller.dart';
+import 'package:flow_editor/core/controller/canvas_controller_interface.dart';
 import 'package:flow_editor/core/models/state/canvas_interaction_state.dart';
 import 'package:flow_editor/core/models/state/canvas_state.dart';
 
 class BehaviorContext {
-  final CanvasController controller;
+  final ICanvasController controller;
   final CanvasState Function() getState;
   final void Function(CanvasState) updateState;
 

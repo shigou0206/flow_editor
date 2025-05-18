@@ -3,7 +3,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flow_editor/core/input/behavior_core/behavior_context.dart';
 import 'package:flow_editor/core/input/behavior_plugins/node_drag_behavior.dart';
-import 'package:flow_editor/core/input/controller/canvas_controller.dart';
 import 'package:flow_editor/core/input/event/input_event.dart';
 import 'package:flow_editor/core/input/event/input_event_type.dart';
 import 'package:flow_editor/core/models/state/canvas_state.dart';
@@ -11,28 +10,8 @@ import 'package:flow_editor/core/models/state/canvas_interaction_state.dart';
 import 'package:flow_editor/core/models/styles/canvas_interaction_config.dart';
 import 'package:flow_editor/core/models/styles/canvas_visual_config.dart';
 import 'package:flow_editor/core/hit_test/canvas_hit_tester.dart';
-
-// Fake controller to capture drag calls
-class FakeController extends CanvasController {
-  String? startedNodeId;
-  Offset? lastDelta;
-  bool endCalled = false;
-
-  @override
-  void startNodeDrag(String nodeId) {
-    startedNodeId = nodeId;
-  }
-
-  @override
-  void updateNodeDrag(Offset delta) {
-    lastDelta = delta;
-  }
-
-  @override
-  void endNodeDrag() {
-    endCalled = true;
-  }
-}
+import 'package:flow_editor/test/_helpers/fake_canvas_controller.dart';
+import 'package:flow_editor/core/controller/canvas_controller_interface.dart';
 
 // Dummy hit tester returning a node id on hitTestNode
 class DummyHitTester implements CanvasHitTester {
@@ -51,7 +30,7 @@ class DummyHitTester implements CanvasHitTester {
 }
 
 BehaviorContext makeContext({
-  required CanvasController controller,
+  required ICanvasController controller,
   required CanvasState Function() getState,
   required void Function(CanvasState) updateState,
   required CanvasHitTester hitTester,
@@ -65,7 +44,7 @@ BehaviorContext makeContext({
 }
 
 void main() {
-  late FakeController ctrl;
+  late FakeCanvasController ctrl;
   late CanvasState state;
   late CanvasState Function() getState;
   late void Function(CanvasState) setState;
@@ -74,7 +53,7 @@ void main() {
   const testNodeId = 'node123';
 
   setUp(() {
-    ctrl = FakeController();
+    ctrl = FakeCanvasController();
     state = const CanvasState(
       interactionConfig: CanvasInteractionConfig(),
       visualConfig: CanvasVisualConfig(),
@@ -147,7 +126,7 @@ void main() {
       canvasPosDelta: const Offset(5, 5),
     );
     behavior.handle(evMove, context);
-    expect(ctrl.lastDelta, const Offset(5, 5));
+    expect(ctrl.dragDelta, const Offset(5, 5));
   });
 
   test('handle pointerUp ends node drag', () {

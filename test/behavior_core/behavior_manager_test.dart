@@ -13,7 +13,7 @@ import 'package:flow_editor/core/models/styles/canvas_interaction_config.dart';
 import 'package:flow_editor/core/models/styles/canvas_visual_config.dart';
 import 'package:flow_editor/core/models/state/canvas_interaction_state.dart';
 import 'package:flow_editor/core/hit_test/canvas_hit_tester.dart';
-import 'package:flow_editor/core/input/controller/canvas_controller.dart';
+import 'package:flow_editor/test/_helpers/fake_canvas_controller.dart';
 
 /// 一个简单的假行为，用来测试调度逻辑
 class FakeBehavior implements CanvasBehavior {
@@ -63,7 +63,7 @@ void main() {
       interactionState: CanvasInteractionState(),
     );
     context = BehaviorContext(
-      controller: CanvasController(),
+      controller: FakeCanvasController(),
       getState: () => state,
       updateState: (s) => state = s,
       hitTester: DummyHitTester(),
