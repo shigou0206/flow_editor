@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flow_editor/core/behaviors/node_behavior.dart';
-import 'package:flow_editor/core/behaviors/anchor_behavior.dart';
-import 'package:flow_editor/core/behaviors/canvas_behavior.dart';
-import 'package:flow_editor/core/behaviors/edge_behavior.dart';
+import 'package:flow_editor/del/behaviors/node_behavior.dart';
+import 'package:flow_editor/del/behaviors/anchor_behavior.dart';
+import 'package:flow_editor/del/behaviors/canvas_behavior.dart';
+import 'package:flow_editor/del/behaviors/edge_behavior.dart';
 import 'package:flow_editor/core/utils/anchor_position_utils.dart';
 import 'package:flow_editor/core/models/state/node_state.dart';
 import 'package:flow_editor/core/widgets/factories/node_widget_factory.dart';
@@ -124,10 +124,10 @@ class _CanvasRendererState extends State<CanvasRenderer>
     // 只取 "完整连接" 边
     final validEdges = edgeList.where((edge) {
       return edge.isConnected &&
-          edge.sourceNodeId.isNotEmpty &&
+          edge.sourceNodeId?.isNotEmpty == true &&
           edge.sourceAnchorId?.isNotEmpty == true &&
-          edge.targetNodeId != null &&
-          edge.targetAnchorId != null;
+          edge.targetNodeId?.isNotEmpty == true &&
+          edge.targetAnchorId?.isNotEmpty == true;
     }).toList();
 
     return Stack(
@@ -188,12 +188,12 @@ class _CanvasRendererState extends State<CanvasRenderer>
               // 4) 边上的 Overlay
               ...validEdges.map((edge) {
                 final (sourceWorld, sourcePos) = _getAnchorWorldInfo(
-                  edge.sourceNodeId,
+                  edge.sourceNodeId ?? '',
                   edge.sourceAnchorId,
                 );
                 final (targetWorld, targetPos) = _getAnchorWorldInfo(
-                  edge.targetNodeId!,
-                  edge.targetAnchorId!,
+                  edge.targetNodeId ?? '',
+                  edge.targetAnchorId,
                 );
                 if (sourceWorld == null ||
                     sourcePos == null ||

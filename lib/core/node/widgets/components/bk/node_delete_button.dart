@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flow_editor/core/models/node_model.dart';
-import 'package:flow_editor/core/behaviors/node_behavior.dart';
+import 'package:flow_editor/del/behaviors/node_behavior.dart';
 
 /// NodeDeleteButton 组件用于在节点右上角显示一个删除按钮。
 ///

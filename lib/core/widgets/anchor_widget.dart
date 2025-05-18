@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flow_editor/core/models/anchor_model.dart';
 import 'package:flow_editor/core/painters/anchor_painter.dart';
-import 'package:flow_editor/core/behaviors/anchor_behavior.dart';
+import 'package:flow_editor/del/behaviors/anchor_behavior.dart';
 
 /// AnchorWidget：展示单个锚点的 UI 和 hover 效果
 /// 修改后删除了拖拽相关的手势事件，避免与父层的 ghost edge 拖拽逻辑冲突

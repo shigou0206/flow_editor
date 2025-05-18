@@ -2,7 +2,7 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flow_editor/core/state_management/providers/canvas_state_provider.dart';
-import 'package:flow_editor/core/behaviors/node_behavior.dart';
+import 'package:flow_editor/del/behaviors/node_behavior.dart';
 
 /// ZoomAndFitViewPlugin：
 /// - 提供"Zoom In / Zoom Out / Fit View"按键

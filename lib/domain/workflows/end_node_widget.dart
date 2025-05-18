@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flow_editor/core/models/node_model.dart';
-import 'package:flow_editor/core/behaviors/node_behavior.dart';
-import 'package:flow_editor/core/behaviors/anchor_behavior.dart';
+import 'package:flow_editor/del/behaviors/node_behavior.dart';
+import 'package:flow_editor/del/behaviors/anchor_behavior.dart';
 import 'package:flow_editor/core/models/enums/node_enums.dart';
 import 'package:flow_editor/domain/workflows/base/node_widget.dart';
 import 'package:flow_editor/core/node/plugins/node_action_callbacks.dart';

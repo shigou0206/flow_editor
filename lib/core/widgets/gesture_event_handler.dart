@@ -1,4 +1,4 @@
-import 'package:flow_editor/core/behaviors/canvas_behavior.dart';
+import 'package:flow_editor/del/behaviors/canvas_behavior.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 

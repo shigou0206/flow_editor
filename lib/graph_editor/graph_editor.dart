@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 // ------------------- Core & FlowEditor Imports -------------------
-import 'package:flow_editor/core/behaviors/node_behavior.dart';
-import 'package:flow_editor/core/behaviors/edge_behavior.dart';
-import 'package:flow_editor/core/behaviors/anchor_behavior.dart';
-import 'package:flow_editor/core/behaviors/canvas_behavior.dart';
+import 'package:flow_editor/del/behaviors/node_behavior.dart';
+import 'package:flow_editor/del/behaviors/edge_behavior.dart';
+import 'package:flow_editor/del/behaviors/anchor_behavior.dart';
+import 'package:flow_editor/del/behaviors/canvas_behavior.dart';
 import 'package:flow_editor/core/models/styles/canvas_visual_config.dart';
 import 'package:flow_editor/core/widgets/gesture_event_handler.dart';
 import 'package:flow_editor/core/widgets/mouse_event_handler.dart';

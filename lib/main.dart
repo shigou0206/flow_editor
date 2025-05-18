@@ -3,13 +3,13 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'core/models/styles/canvas_visual_config.dart';
 import 'graph_editor/graph_editor.dart';
-import 'core/controllers/node_controller.dart';
-import 'core/controllers/edge_controller.dart';
-import 'core/controllers/canvas_controller.dart';
-import 'core/behaviors/default_canvas_behavior.dart';
-import 'core/behaviors/default_edge_behavior.dart';
-import 'core/behaviors/default_node_behavior.dart';
-import 'core/behaviors/default_anchor_behavior.dart';
+import 'del/controllers/node_controller.dart';
+import 'del/controllers/edge_controller.dart';
+import 'del/controllers/canvas_controller.dart';
+import 'del/behaviors/default_canvas_behavior.dart';
+import 'del/behaviors/default_edge_behavior.dart';
+import 'del/behaviors/default_node_behavior.dart';
+import 'del/behaviors/default_anchor_behavior.dart';
 
 // ------------------- Providers -------------------
 import 'package:flow_editor/core/plugins/tools_plugin.dart';

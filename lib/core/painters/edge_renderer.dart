@@ -75,7 +75,7 @@ class EdgeRenderer extends CustomPainter {
     if (edge == null) return;
 
     final source =
-        _getAnchorOrNodeCenter(edge.sourceNodeId, edge.sourceAnchorId);
+        _getAnchorOrNodeCenter(edge.sourceNodeId ?? '', edge.sourceAnchorId);
     if (source == null) return;
 
     // 生成拖拽过程中的临时路径

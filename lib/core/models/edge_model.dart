@@ -1,11 +1,12 @@
 import 'package:flow_editor/core/models/styles/edge_animation_config.dart';
 import 'package:flow_editor/core/models/styles/edge_line_style.dart';
 import 'package:flow_layout/graph/graph.dart';
+import 'package:flutter/material.dart';
 
 class EdgeModel {
   // ===== 基本连接信息 =====
   final String id;
-  final String sourceNodeId;
+  final String? sourceNodeId;
   final String? sourceAnchorId;
   final String? targetNodeId;
   final String? targetAnchorId;
@@ -21,7 +22,7 @@ class EdgeModel {
   final int zIndex;
 
   // ===== 折线/waypoints =====
-  List<List<double>>? waypoints;
+  List<Offset>? waypoints;
 
   // ===== 样式 & 动画 =====
   final EdgeLineStyle lineStyle;
@@ -36,7 +37,7 @@ class EdgeModel {
 
   EdgeModel({
     String? id,
-    required this.sourceNodeId,
+    this.sourceNodeId,
     this.sourceAnchorId,
     this.targetNodeId = "none",
     this.targetAnchorId = "none",
@@ -59,12 +60,12 @@ class EdgeModel {
                 targetAnchorId, label,
                 isDirected: isDirected);
 
-  static String generateEdgeId(String sourceNodeId, String? targetNodeId,
+  static String generateEdgeId(String? sourceNodeId, String? targetNodeId,
       String? sourceAnchorId, String? targetAnchorId, String? name,
       {bool isDirected = true}) {
     final sourceAnchor = sourceAnchorId ?? "";
     final targetAnchor = targetAnchorId ?? "";
-    final source = sourceNodeId;
+    final source = sourceNodeId ?? "";
     final target = targetNodeId ?? "";
 
     String? anchorName;
@@ -99,7 +100,7 @@ class EdgeModel {
     String? lockedByUser,
     int? version,
     int? zIndex,
-    List<List<double>>? waypoints,
+    List<Offset>? waypoints,
     EdgeLineStyle? lineStyle,
     EdgeAnimationConfig? animConfig,
     String? label,
@@ -143,7 +144,7 @@ class EdgeModel {
       'lockedByUser': lockedByUser,
       'version': version,
       'zIndex': zIndex,
-      'waypoints': waypoints,
+      'waypoints': waypoints?.map((offset) => [offset.dx, offset.dy]).toList(),
       'lineStyle': lineStyle.toJson(),
       'animConfig': animConfig.toJson(),
       'label': label,
@@ -197,15 +198,15 @@ class EdgeModel {
   //   return null;
   // }
 
-  static List<List<double>>? _parseWaypoints(dynamic val) {
+  static List<Offset>? _parseWaypoints(dynamic val) {
     if (val is List) {
       return val.map((point) {
         if (point is List && point.length == 2) {
           final x = (point[0] as num).toDouble();
           final y = (point[1] as num).toDouble();
-          return [x, y];
+          return Offset(x, y);
         }
-        return <double>[]; // or skip
+        return Offset.zero; // or handle this case differently
       }).toList();
     }
     return null;

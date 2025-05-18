@@ -4,6 +4,7 @@ import 'package:flow_editor/core/models/styles/canvas_visual_config.dart';
 import 'package:flow_editor/core/models/styles/canvas_interaction_config.dart';
 import 'package:flow_editor/core/logic/strategy/workflow_mode.dart';
 import 'package:flow_editor/core/models/state/canvas_interaction_state.dart';
+import 'package:flow_editor/core/models/enums/execution_status.dart';
 
 class CanvasState {
   final Offset offset;
@@ -15,6 +16,8 @@ class CanvasState {
   final CanvasInteractionState interactionState;
   final int version;
   final String? focusItemId;
+  final WorkflowStatus workflowStatus;
+  final Map<String, dynamic>? data;
 
   const CanvasState({
     this.offset = Offset.zero,
@@ -26,6 +29,8 @@ class CanvasState {
     this.interactionState = const CanvasInteractionState(),
     this.version = 1,
     this.focusItemId,
+    this.workflowStatus = WorkflowStatus.pending,
+    this.data,
   });
 
   CanvasState copyWith({
@@ -38,6 +43,8 @@ class CanvasState {
     CanvasInteractionState? interactionState,
     int? version,
     String? focusItemId,
+    WorkflowStatus? workflowStatus,
+    Map<String, dynamic>? data,
   }) {
     final effectiveInteractionConfig =
         interactionConfig ?? this.interactionConfig;
@@ -54,6 +61,8 @@ class CanvasState {
       interactionState: interactionState ?? this.interactionState,
       version: version ?? this.version,
       focusItemId: focusItemId ?? this.focusItemId,
+      workflowStatus: workflowStatus ?? this.workflowStatus,
+      data: data ?? this.data,
     );
   }
 
@@ -68,6 +77,8 @@ class CanvasState {
         'interactionState': interactionState.toJson(),
         'version': version,
         'focusItemId': focusItemId,
+        'workflowStatus': workflowStatus.name,
+        'data': data,
       };
 
   factory CanvasState.fromJson(Map<String, dynamic> json) {
@@ -125,6 +136,13 @@ class CanvasState {
           : const CanvasInteractionState(),
       version: version,
       focusItemId: json['focusItemId'] as String?,
+      workflowStatus: json['workflowStatus'] is String
+          ? WorkflowStatus.values.firstWhere(
+              (m) => m.name == json['workflowStatus'],
+              orElse: () => WorkflowStatus.pending,
+            )
+          : WorkflowStatus.pending,
+      data: json['data'] as Map<String, dynamic>?,
     );
   }
 }

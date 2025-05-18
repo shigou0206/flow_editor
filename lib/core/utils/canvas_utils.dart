@@ -25,21 +25,21 @@ List<Offset> mapEdgeWaypointsToAbsolute(
 
   // 如果源节点没有父组件，则认为其路由点已经是绝对坐标
   if (source.parentId == null) {
-    return edge.waypoints!.map((pt) => Offset(pt[0], pt[1])).toList();
+    return edge.waypoints ?? [];
   }
 
   // 查找源节点的父组件
   final NodeModel? group =
       allNodes.firstWhereOrNull((n) => n.id == source.parentId);
   if (group == null) {
-    return edge.waypoints!.map((pt) => Offset(pt[0], pt[1])).toList();
+    return edge.waypoints ?? [];
   }
 
   // 计算该 group 的绝对位置
   final Offset groupAbs = group.absolutePosition(allNodes);
   // 将边的每个相对路由点映射到绝对坐标
   return edge.waypoints!
-      .map((pt) => Offset(pt[0] + groupAbs.dx, pt[1] + groupAbs.dy))
+      .map((pt) => Offset(pt.dx + groupAbs.dx, pt.dy + groupAbs.dy))
       .toList();
 }
 

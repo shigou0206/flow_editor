@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flow_editor/core/models/node_model.dart';
 import 'package:flow_editor/core/widgets/anchor_widget.dart';
 import 'package:flow_editor/core/utils/anchor_position_utils.dart';
-import 'package:flow_editor/core/behaviors/anchor_behavior.dart';
+import 'package:flow_editor/del/behaviors/anchor_behavior.dart';
 
 class NodeAnchors extends StatelessWidget {
   final NodeModel node;

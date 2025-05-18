@@ -192,7 +192,7 @@ class MultiCanvasStateNotifier extends StateNotifier<MultiWorkflowCanvasState> {
     // 上游：所有指向该节点的节点
     final upstream = allEdges
         .where((e) => e.targetNodeId == nodeId)
-        .map((e) => nodeNotifier.getNode(e.sourceNodeId))
+        .map((e) => nodeNotifier.getNode(e.sourceNodeId ?? ''))
         .whereType<NodeModel>()
         .toList();
 

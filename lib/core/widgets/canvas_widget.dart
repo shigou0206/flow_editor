@@ -6,10 +6,10 @@ import 'package:flow_editor/core/state_management/providers/edge_state_provider.
 import 'package:flow_editor/core/state_management/providers/canvas_state_provider.dart';
 import 'package:flow_editor/core/models/styles/canvas_visual_config.dart';
 import 'package:flow_editor/core/widgets/canvas_renderer.dart';
-import 'package:flow_editor/core/behaviors/node_behavior.dart';
-import 'package:flow_editor/core/behaviors/anchor_behavior.dart';
-import 'package:flow_editor/core/behaviors/canvas_behavior.dart';
-import 'package:flow_editor/core/behaviors/edge_behavior.dart';
+import 'package:flow_editor/del/behaviors/node_behavior.dart';
+import 'package:flow_editor/del/behaviors/anchor_behavior.dart';
+import 'package:flow_editor/del/behaviors/canvas_behavior.dart';
+import 'package:flow_editor/del/behaviors/edge_behavior.dart';
 import 'package:flow_editor/core/widgets/factories/node_widget_factory.dart';
 import 'package:flow_editor/core/plugins/edge_overlay_plugin.dart';
 

@@ -36,6 +36,27 @@ class NodeState extends Equatable {
     return copyWith(nodesByWorkflow: updated, version: version + 1);
   }
 
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> json = {};
+    json['nodes'] = nodesByWorkflow.map((workflowId, nodes) =>
+        MapEntry(workflowId, nodes.map((node) => node.toJson()).toList()));
+    return json;
+  }
+
+  factory NodeState.fromJson(Map<String, dynamic> json) {
+    final nodesJson = json['nodes'] as Map<String, dynamic>;
+    final nodesByWorkflow = <String, List<NodeModel>>{};
+
+    nodesJson.forEach((workflowId, nodesList) {
+      nodesByWorkflow[workflowId] = (nodesList as List<dynamic>)
+          .map((nodeJson) =>
+              NodeModel.fromJson(nodeJson as Map<String, dynamic>))
+          .toList();
+    });
+
+    return NodeState(nodesByWorkflow: nodesByWorkflow);
+  }
+
   @override
   List<Object?> get props => [nodesByWorkflow, version];
 }

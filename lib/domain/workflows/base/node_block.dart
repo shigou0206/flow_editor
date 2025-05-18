@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flow_editor/core/models/node_model.dart';
-import 'package:flow_editor/core/behaviors/node_behavior.dart';
+import 'package:flow_editor/del/behaviors/node_behavior.dart';
 
 // 引入我们刚才的三段式容器
 import 'package:flow_editor/core/node/widgets/components/three_parts_layout.dart';

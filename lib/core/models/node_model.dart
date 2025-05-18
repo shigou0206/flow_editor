@@ -27,6 +27,10 @@ class NodeModel extends BaseNodeModel {
   final bool isGroup;
   final bool isGroupRoot;
 
+  final List<NodeModel>? children;
+  final List<String>? outgoingEdgeIds;
+  final List<String>? incomingEdgeIds;
+
   // ========== 扩展字段 ==========
   final NodeStatus? status;
   final String? parentId;
@@ -58,6 +62,9 @@ class NodeModel extends BaseNodeModel {
     this.anchors = const [],
     this.isGroup = false,
     this.isGroupRoot = false,
+    this.children = const [],
+    this.outgoingEdgeIds = const [],
+    this.incomingEdgeIds = const [],
     this.status = NodeStatus.none,
     this.parentId,
     this.zIndex = 0,
@@ -101,6 +108,9 @@ class NodeModel extends BaseNodeModel {
     List<AnchorModel>? anchors,
     bool? isGroup,
     bool? isGroupRoot,
+    List<NodeModel>? children,
+    List<String>? outgoingEdgeIds,
+    List<String>? incomingEdgeIds,
     AnchorPadding? anchorPadding,
     NodeStatus? status,
     String? parentId,
@@ -128,6 +138,9 @@ class NodeModel extends BaseNodeModel {
       anchors: anchors ?? this.anchors,
       isGroup: isGroup ?? this.isGroup,
       isGroupRoot: isGroupRoot ?? this.isGroupRoot,
+      children: children ?? this.children,
+      outgoingEdgeIds: outgoingEdgeIds ?? this.outgoingEdgeIds,
+      incomingEdgeIds: incomingEdgeIds ?? this.incomingEdgeIds,
       status: status ?? this.status,
       parentId: parentId ?? this.parentId,
       zIndex: zIndex ?? this.zIndex,
@@ -158,6 +171,9 @@ class NodeModel extends BaseNodeModel {
       'anchors': anchors?.map((a) => a.toJson()).toList() ?? [],
       'isGroup': isGroup,
       'isGroupRoot': isGroupRoot,
+      'children': children?.map((c) => c.toJson()).toList() ?? [],
+      'outgoingEdgeIds': outgoingEdgeIds,
+      'incomingEdgeIds': incomingEdgeIds,
       'anchorPadding': anchorPadding.toJson(),
       'status': status.toString(), // e.g. "NodeStatus.running"
       'parentId': parentId,
@@ -198,6 +214,12 @@ class NodeModel extends BaseNodeModel {
           .toList(),
       isGroup: json['isGroup'] ?? false,
       isGroupRoot: json['isGroupRoot'] ?? false,
+      children: (json['children'] as List)
+          .cast<Map<String, dynamic>>()
+          .map((c) => NodeModel.fromJson(c))
+          .toList(),
+      outgoingEdgeIds: json['outgoingEdgeIds'] as List<String>?,
+      incomingEdgeIds: json['incomingEdgeIds'] as List<String>?,
       status: _parseNodeStatus(json['status']),
       parentId: json['parentId'] as String?,
       zIndex: _parseZIndex(json['zIndex']),
@@ -255,8 +277,18 @@ class NodeModel extends BaseNodeModel {
           return NodeStatus.running;
         case 'NodeStatus.completed':
           return NodeStatus.completed;
-        case 'NodeStatus.error':
-          return NodeStatus.error;
+        case 'NodeStatus.cancelled':
+          return NodeStatus.cancelled;
+        case 'NodeStatus.failed':
+          return NodeStatus.failed;
+        case 'NodeStatus.pending':
+          return NodeStatus.pending;
+        case 'NodeStatus.orphaned':
+          return NodeStatus.orphaned;
+        case 'NodeStatus.unlinked':
+          return NodeStatus.unlinked;
+        case 'NodeStatus.normal':
+          return NodeStatus.normal;
         default:
           return NodeStatus.none;
       }

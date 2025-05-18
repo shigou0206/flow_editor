@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flow_editor/core/models/node_model.dart';
-import 'package:flow_editor/core/behaviors/node_behavior.dart';
+import 'package:flow_editor/del/behaviors/node_behavior.dart';
 
 /// NodeGestureHandler 封装了节点的手势处理逻辑，
 /// 包括单击、双击以及右键点击（上下文菜单）的事件处理。

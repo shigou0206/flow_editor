@@ -96,7 +96,7 @@ class SugiyamaLayoutStrategy implements LayoutStrategy {
           offsetPoints.add(Offset(px, py));
           debugPrint('    点: ($px, $py)');
         }
-        e.waypoints = offsetPoints.map((p) => [p.dx, p.dy]).toList();
+        e.waypoints = offsetPoints;
       }
     }
   }

@@ -148,8 +148,7 @@ class EdgeStateNotifier extends StateNotifier<EdgeState> {
     final edges = state.edgesOf(workflowId);
     final updatedEdges = edges.map((edge) {
       if (routes.containsKey(edge.id)) {
-        final points =
-            routes[edge.id]!.map((offset) => [offset.dx, offset.dy]).toList();
+        final points = routes[edge.id];
         return edge.copyWith(waypoints: points);
       }
       return edge;

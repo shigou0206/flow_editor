@@ -91,6 +91,31 @@ class EdgeState extends Equatable {
     );
   }
 
+  Map<String, dynamic> toJson() {
+    // Convert your edge state to a JSON map
+    final Map<String, dynamic> json = {};
+    // Example implementation - adjust based on your actual data structure:
+    json['edges'] = edgesByWorkflow.map((workflowId, edges) =>
+        MapEntry(workflowId, edges.map((edge) => edge.toJson()).toList()));
+    return json;
+  }
+
+  factory EdgeState.fromJson(Map<String, dynamic> json) {
+    // Create an EdgeState from JSON
+    // Example implementation - adjust based on your actual data structure:
+    final edgesJson = json['edges'] as Map<String, dynamic>;
+    final edges = <String, List<EdgeModel>>{};
+
+    edgesJson.forEach((workflowId, edgesMap) {
+      edges[workflowId] = (edgesMap as List<dynamic>)
+          .map((edgeJson) =>
+              EdgeModel.fromJson(edgeJson as Map<String, dynamic>))
+          .toList();
+    });
+
+    return EdgeState(edgesByWorkflow: edges);
+  }
+
   @override
   List<Object?> get props => [
         edgesByWorkflow,
