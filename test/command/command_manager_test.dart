@@ -1,138 +1,158 @@
-// // test/command/command_manager_test.dart
+// test/command/command_manager_test.dart
 
-// import 'dart:ui';
+import 'dart:ui';
 
-// import 'package:flutter_test/flutter_test.dart';
-// import 'package:flow_editor/core/command/command_context.dart';
-// import 'package:flow_editor/core/command/command_manager.dart';
-// import 'package:flow_editor/core/command/i_command.dart';
-// import 'package:flow_editor/core/input/controller/canvas_controller.dart';
-// import 'package:flow_editor/core/models/state/canvas_state.dart';
-// import 'package:flow_editor/core/models/state/canvas_interaction_state.dart';
-// import 'package:flow_editor/core/models/styles/canvas_interaction_config.dart';
-// import 'package:flow_editor/core/models/styles/canvas_visual_config.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:flow_editor/core/command/command_context.dart';
+import 'package:flow_editor/core/command/command_manager.dart';
+import 'package:flow_editor/core/command/i_command.dart';
+import 'package:flow_editor/core/models/state/canvas_state.dart';
+import 'package:flow_editor/core/models/state/canvas_interaction_state.dart';
+import 'package:flow_editor/core/models/styles/canvas_interaction_config.dart';
+import 'package:flow_editor/core/models/styles/canvas_visual_config.dart';
+import 'package:flow_editor/test/_helpers/fake_canvas_controller.dart';
+import 'package:flow_editor/core/state_management/state_store/editor_state.dart';
+import 'package:flow_editor/core/models/state/node_state.dart';
+import 'package:flow_editor/core/models/state/edge_state.dart';
+import 'package:flow_editor/core/models/state/canvas_viewport_state.dart';
+import 'package:flow_editor/core/models/state/selection_state.dart';
 
-// /// 测试用：将 interactionState.marqueeRect.width 当作 counter，加一
-// class IncrementCommand implements ICommand {
-//   final CommandContext ctx;
-//   int before = 0;
+/// 一个"+"命令，把 interactionState.marqueeRect.width +1
+class IncrementCommand implements ICommand {
+  final CommandContext ctx;
+  late int before;
+  IncrementCommand(this.ctx);
 
-//   IncrementCommand(this.ctx);
+  @override
+  String get description => 'increment';
+  @override
+  Future<void> execute() async {
+    final st = ctx.getState();
+    final wfId = st.activeWorkflowId;
+    final canvas = st.canvases[wfId]!;
+    final w = canvas.interactionState.marqueeRect?.width.toInt() ?? 0;
+    before = w;
+    final newRect = Rect.fromLTWH(0, 0, (w + 1).toDouble(), 0);
 
-//   @override
-//   String get description => 'increment';
+    ctx.updateState(
+      st.copyWith(
+        canvases: {
+          ...st.canvases,
+          wfId: canvas.copyWith(
+              interactionState:
+                  canvas.interactionState.copyWith(marqueeRect: newRect))
+        },
+      ),
+    );
+  }
 
-//   @override
-//   Future<void> execute() async {
-//     final st = ctx.getState();
-//     final currentRect = st.interactionState.marqueeRect;
-//     before = currentRect != null ? currentRect.width.toInt() : 0;
+  @override
+  Future<void> undo() async {
+    final st = ctx.getState();
+    final wfId = st.activeWorkflowId;
+    final canvas = st.canvases[wfId]!;
+    final rect = Rect.fromLTWH(0, 0, before.toDouble(), 0);
 
-//     final newRect = Rect.fromLTWH(0, 0, (before + 1).toDouble(), 0);
-//     final updated = st.copyWith(
-//       interactionState: st.interactionState.copyWith(
-//         marqueeRect: newRect,
-//       ),
-//     );
-//     ctx.updateState(updated);
-//   }
+    ctx.updateState(
+      st.copyWith(
+        canvases: {
+          ...st.canvases,
+          wfId: canvas.copyWith(
+              interactionState:
+                  canvas.interactionState.copyWith(marqueeRect: rect))
+        },
+      ),
+    );
+  }
+}
 
-//   @override
-//   Future<void> undo() async {
-//     final st = ctx.getState();
-//     final undoRect = Rect.fromLTWH(0, 0, before.toDouble(), 0);
-//     ctx.updateState(
-//       st.copyWith(
-//         interactionState: st.interactionState.copyWith(
-//           marqueeRect: undoRect,
-//         ),
-//       ),
-//     );
-//   }
-// }
+/// 一个永远抛错的命令
+class BadCommand implements ICommand {
+  @override
+  String get description => 'bad';
+  @override
+  Future<void> execute() async {
+    throw Exception('fail');
+  }
 
-// /// 测试用：一个执行时抛异常的“坏”命令
-// class BadCommand implements ICommand {
-//   @override
-//   String get description => 'bad';
+  @override
+  Future<void> undo() async {
+    fail('undo() should not be called for failed commands');
+  }
+}
 
-//   @override
-//   Future<void> execute() async {
-//     throw Exception('fail');
-//   }
+void main() {
+  late EditorState state;
+  late CommandContext ctx;
+  late CommandManager mgr;
 
-//   @override
-//   Future<void> undo() async {
-//     fail('undo should not be called on failed execute');
-//   }
-// }
+  setUp(() {
+    const canvasState = CanvasState(
+      interactionConfig: CanvasInteractionConfig(),
+      visualConfig: CanvasVisualConfig(),
+      interactionState: CanvasInteractionState(),
+    );
 
-// void main() {
-//   late CommandContext ctx;
-//   late CanvasState state;
-//   late CommandManager mgr;
+    state = const EditorState(
+      activeWorkflowId: 'default',
+      canvases: {'default': canvasState},
+      nodes: NodeState(),
+      edges: EdgeState(),
+      viewport: CanvasViewportState(),
+      selection: SelectionState(),
+    );
 
-//   setUp(() {
-//     state = const CanvasState(
-//       interactionConfig: CanvasInteractionConfig(),
-//       visualConfig: CanvasVisualConfig(),
-//       interactionState: CanvasInteractionState(),
-//     );
-//     ctx = CommandContext(
-//       controller: CanvasController(),
-//       getState: () => state,
-//       updateState: (s) => state = s,
-//     );
-//     mgr = CommandManager(ctx);
-//   });
+    ctx = CommandContext(
+      controller: FakeCanvasController(),
+      getState: () => state,
+      updateState: (s) => state = s,
+    );
+    mgr = CommandManager(ctx);
+  });
 
-//   test('initially cannot undo/redo', () {
-//     expect(mgr.canUndo, isFalse);
-//     expect(mgr.canRedo, isFalse);
-//   });
+  test('initially cannot undo/redo', () {
+    expect(mgr.canUndo, isFalse);
+    expect(mgr.canRedo, isFalse);
+  });
 
-//   test('executeCommand pushes onto undo stack and updates state', () async {
-//     final cmd = IncrementCommand(ctx);
-//     await mgr.executeCommand(cmd);
-//     expect(mgr.canUndo, isTrue);
-//     expect(mgr.canRedo, isFalse);
-//     expect(state.interactionState.marqueeRect!.width, equals(1.0));
-//   });
+  test('executeCommand updates state and enables undo', () async {
+    await mgr.executeCommand(IncrementCommand(ctx));
+    expect(state.canvases['default']!.interactionState.marqueeRect!.width, 1.0);
+    expect(mgr.canUndo, isTrue);
+    expect(mgr.canRedo, isFalse);
+  });
 
-//   test('undo reverts state and enables redo', () async {
-//     final cmd = IncrementCommand(ctx);
-//     await mgr.executeCommand(cmd);
-//     await mgr.undo();
-//     expect(state.interactionState.marqueeRect!.width, equals(0.0));
-//     expect(mgr.canRedo, isTrue);
-//     expect(mgr.canUndo, isFalse);
-//   });
+  test('undo reverts and enables redo', () async {
+    await mgr.executeCommand(IncrementCommand(ctx));
+    await mgr.undo();
+    expect(state.canvases['default']!.interactionState.marqueeRect!.width, 0.0);
+    expect(mgr.canUndo, isFalse);
+    expect(mgr.canRedo, isTrue);
+  });
 
-//   test('redo reapplies command', () async {
-//     final cmd = IncrementCommand(ctx);
-//     await mgr.executeCommand(cmd);
-//     await mgr.undo();
-//     await mgr.redo();
-//     expect(state.interactionState.marqueeRect!.width, equals(1.0));
-//     expect(mgr.canUndo, isTrue);
-//     expect(mgr.canRedo, isFalse);
-//   });
+  test('redo re‐applies and restores undo', () async {
+    await mgr.executeCommand(IncrementCommand(ctx));
+    await mgr.undo();
+    await mgr.redo();
+    expect(state.canvases['default']!.interactionState.marqueeRect!.width, 1.0);
+    expect(mgr.canUndo, isTrue);
+    expect(mgr.canRedo, isFalse);
+  });
 
-//   test('clearHistory resets undo/redo stacks', () async {
-//     await mgr.executeCommand(IncrementCommand(ctx));
-//     await mgr.executeCommand(IncrementCommand(ctx));
-//     mgr.clearHistory();
-//     expect(mgr.canUndo, isFalse);
-//     expect(mgr.canRedo, isFalse);
-//   });
+  test('clearHistory resets both stacks', () async {
+    await mgr.executeCommand(IncrementCommand(ctx));
+    await mgr.executeCommand(IncrementCommand(ctx));
+    mgr.clearHistory();
+    expect(mgr.canUndo, isFalse);
+    expect(mgr.canRedo, isFalse);
+  });
 
-//   test('failed execute does not push to history', () async {
-//     // 直接测试 BadCommand
-//     await expectLater(
-//       mgr.executeCommand(BadCommand()),
-//       throwsException,
-//     );
-//     expect(mgr.canUndo, isFalse);
-//     expect(mgr.canRedo, isFalse);
-//   });
-// }
+  test('failed execute does not push to history', () async {
+    await expectLater(
+      mgr.executeCommand(BadCommand()),
+      throwsException,
+    );
+    expect(mgr.canUndo, isFalse);
+    expect(mgr.canRedo, isFalse);
+  });
+}

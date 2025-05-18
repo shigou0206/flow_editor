@@ -1,33 +1,45 @@
-// import 'package:flutter_test/flutter_test.dart';
-// import 'package:flow_editor/core/command/command_context.dart';
-// import 'package:flow_editor/core/input/controller/canvas_controller.dart';
-// import 'package:flow_editor/core/models/state/canvas_state.dart';
-// import 'package:flow_editor/core/models/state/canvas_interaction_state.dart';
-// import 'package:flow_editor/core/models/styles/canvas_interaction_config.dart';
-// import 'package:flow_editor/core/models/styles/canvas_visual_config.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:flow_editor/core/command/command_context.dart';
+import 'package:flow_editor/core/models/state/canvas_state.dart';
+import 'package:flow_editor/core/state_management/state_store/editor_state.dart';
+import 'package:flow_editor/test/_helpers/fake_canvas_controller.dart';
+import 'package:flow_editor/core/models/state/node_state.dart';
+import 'package:flow_editor/core/models/state/edge_state.dart';
+import 'package:flow_editor/core/models/state/canvas_viewport_state.dart';
 
-// void main() {
-//   test('CommandContext forwards getState and updateState', () {
-//     // initial state and controller
-//     CanvasState state = const CanvasState(
-//       interactionConfig: CanvasInteractionConfig(),
-//       visualConfig: CanvasVisualConfig(),
-//       interactionState: CanvasInteractionState(),
-//     );
-//     final ctrl = CanvasController();
-//     final ctx = CommandContext(
-//       controller: ctrl,
-//       getState: () => state,
-//       updateState: (s) => state = s,
-//     );
+void main() {
+  test('CommandContext preserves controller and delegates state', () {
+    // 用一个简单的 EditorState 作测试数据
+    var holder = const EditorState(
+      canvases: {'w': CanvasState()},
+      activeWorkflowId: 'w',
+      nodes: NodeState(),
+      edges: EdgeState(),
+      viewport: CanvasViewportState(),
+    );
 
-//     // getState should return the same instance
-//     expect(ctx.getState(), same(state));
+    // 1) 构造 context 时传入 FakeCanvasController
+    final fakeCtrl = FakeCanvasController();
+    final ctx = CommandContext(
+      controller: fakeCtrl,
+      getState: () => holder,
+      updateState: (newState) {
+        holder = newState;
+      },
+    );
 
-//     // updateState should overwrite our local state
-//     final newState = state.copyWith(scale: 2.5);
-//     ctx.updateState(newState);
-//     expect(state.scale, 2.5);
-//     expect(ctx.getState(), same(newState));
-//   });
-// }
+    // controller 应该是同一个实例
+    expect(ctx.controller, same(fakeCtrl));
+
+    // getState 取到的应该就是当前 holder
+    expect(ctx.getState(), equals(holder));
+
+    // 2) 调用 updateState 应该能修改外部 holder
+    final modified = holder.copyWith(activeWorkflowId: 'newWF');
+    ctx.updateState(modified);
+    expect(holder.activeWorkflowId, equals('newWF'));
+
+    // 3) 再次 getState 应该反映出新的 holder
+    expect(ctx.getState().activeWorkflowId, equals('newWF'));
+  });
+}
