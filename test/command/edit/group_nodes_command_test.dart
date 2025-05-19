@@ -14,8 +14,6 @@ import 'package:flow_editor/core/models/enums/canvas_interaction_mode.dart';
 import 'package:flow_editor/core/models/styles/canvas_visual_config.dart';
 import 'package:flow_editor/core/models/styles/canvas_interaction_config.dart';
 import 'package:flow_editor/core/state_management/state_store/editor_state.dart';
-import 'package:flow_editor/core/controller/impl/canvas_controller_impl.dart';
-import 'package:flow_editor/test/_helpers/fake_canvas_controller.dart';
 
 void main() {
   const wf = 'w1';
@@ -50,11 +48,6 @@ void main() {
     );
 
     ctx = CommandContext(
-      controller: CanvasController(CommandContext(
-        controller: FakeCanvasController(),
-        getState: () => holder.toEditorState(),
-        updateState: (st) => holder.fromEditorState(st),
-      )),
       getState: () => holder.toEditorState(),
       updateState: (st) => holder.fromEditorState(st),
     );

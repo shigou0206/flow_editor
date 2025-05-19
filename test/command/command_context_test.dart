@@ -2,7 +2,6 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:flow_editor/core/command/command_context.dart';
 import 'package:flow_editor/core/models/state/canvas_state.dart';
 import 'package:flow_editor/core/state_management/state_store/editor_state.dart';
-import 'package:flow_editor/test/_helpers/fake_canvas_controller.dart';
 import 'package:flow_editor/core/models/state/node_state.dart';
 import 'package:flow_editor/core/models/state/edge_state.dart';
 import 'package:flow_editor/core/models/state/canvas_viewport_state.dart';
@@ -19,17 +18,13 @@ void main() {
     );
 
     // 1) 构造 context 时传入 FakeCanvasController
-    final fakeCtrl = FakeCanvasController();
+
     final ctx = CommandContext(
-      controller: fakeCtrl,
       getState: () => holder,
       updateState: (newState) {
         holder = newState;
       },
     );
-
-    // controller 应该是同一个实例
-    expect(ctx.controller, same(fakeCtrl));
 
     // getState 取到的应该就是当前 holder
     expect(ctx.getState(), equals(holder));

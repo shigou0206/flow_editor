@@ -9,14 +9,11 @@ import 'package:flow_editor/core/models/state/node_state.dart';
 import 'package:flow_editor/core/models/state/edge_state.dart';
 import 'package:flow_editor/core/models/state/selection_state.dart';
 import 'package:flow_editor/core/models/state/canvas_viewport_state.dart';
-import 'package:flow_editor/core/controller/impl/canvas_controller_impl.dart';
 import 'package:flow_editor/core/state_management/state_store/editor_state.dart';
-import 'package:flow_editor/test/_helpers/fake_canvas_controller.dart';
 
 void main() {
   const wfId = 'wf1';
 
-  late CanvasController controller;
   late CanvasState canvState;
   late NodeState nodeState;
   late EdgeState edgeState;
@@ -26,18 +23,6 @@ void main() {
   late CommandManager mgr;
 
   setUp(() {
-    controller = CanvasController(CommandContext(
-      controller: FakeCanvasController(),
-      getState: () => EditorState(
-        canvases: {wfId: canvState},
-        activeWorkflowId: wfId,
-        nodes: nodeState,
-        edges: edgeState,
-        viewport: viewportState,
-      ),
-      updateState: (st) => {},
-    ));
-
     canvState = const CanvasState();
     nodeState = const NodeState(nodesByWorkflow: {wfId: []});
     edgeState = const EdgeState(edgesByWorkflow: {wfId: []});
@@ -53,7 +38,6 @@ void main() {
     );
 
     ctx = CommandContext(
-      controller: controller,
       getState: () => holder.toEditorState(),
       updateState: (st) => holder.fromEditorState(st),
     );

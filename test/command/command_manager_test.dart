@@ -10,7 +10,6 @@ import 'package:flow_editor/core/models/state/canvas_state.dart';
 import 'package:flow_editor/core/models/state/canvas_interaction_state.dart';
 import 'package:flow_editor/core/models/styles/canvas_interaction_config.dart';
 import 'package:flow_editor/core/models/styles/canvas_visual_config.dart';
-import 'package:flow_editor/test/_helpers/fake_canvas_controller.dart';
 import 'package:flow_editor/core/state_management/state_store/editor_state.dart';
 import 'package:flow_editor/core/models/state/node_state.dart';
 import 'package:flow_editor/core/models/state/edge_state.dart';
@@ -103,7 +102,6 @@ void main() {
     );
 
     ctx = CommandContext(
-      controller: FakeCanvasController(),
       getState: () => state,
       updateState: (s) => state = s,
     );

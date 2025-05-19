@@ -4,10 +4,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flow_editor/core/command/command_context.dart';
 import 'package:flow_editor/core/command/command_manager.dart';
 import 'package:flow_editor/core/command/i_command.dart';
-import 'package:flow_editor/core/controller/impl/canvas_controller_impl.dart';
 import 'package:flow_editor/core/models/state/selection_state.dart';
 import 'package:flow_editor/core/state_management/state_store/editor_state.dart';
-import 'package:flow_editor/core/controller/canvas_controller_interface.dart';
 
 /// StateNotifier for EditorState, integrating undo/redo via CommandManager.
 class EditorStoreNotifier extends StateNotifier<EditorState> {
@@ -17,7 +15,6 @@ class EditorStoreNotifier extends StateNotifier<EditorState> {
   /// 构造时，传入一个包含所有必需字段的 [initialState]（尤其要带上 selection）
   EditorStoreNotifier(super.initialState) {
     _commandContext = CommandContext(
-      controller: CanvasController(_commandContext), // 只要一个 ctx
       getState: () => state,
       updateState: (newState) => state = newState,
     );
@@ -26,9 +23,6 @@ class EditorStoreNotifier extends StateNotifier<EditorState> {
 
   /// 如果你需要更底层的能力，可以拿到整个 CommandContext
   CommandContext get commandContext => _commandContext;
-
-  /// 最常用的入口：直接拿到聚合后的 CanvasController
-  ICanvasController get controller => _commandContext.controller;
 
   // ———— 选区 相关 ————
 

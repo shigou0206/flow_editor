@@ -13,15 +13,12 @@ import 'package:flow_editor/core/logic/strategy/workflow_mode.dart';
 import 'package:flow_editor/core/models/enums/canvas_interaction_mode.dart';
 import 'package:flow_editor/core/models/styles/canvas_visual_config.dart';
 import 'package:flow_editor/core/models/styles/canvas_interaction_config.dart';
-import 'package:flow_editor/core/controller/impl/canvas_controller_impl.dart';
 import 'package:flow_editor/core/state_management/state_store/editor_state.dart';
-import 'package:flow_editor/test/_helpers/fake_canvas_controller.dart';
 
 void main() {
   const wfId = 'wf1';
   const edgeId = 'e1';
 
-  late CanvasController controller;
   late CanvasState canvState;
   late NodeState nodeState;
   late EdgeState edgeState;
@@ -39,17 +36,7 @@ void main() {
       interactionConfig: CanvasInteractionConfig(),
     );
 
-    controller = CanvasController(CommandContext(
-      controller: FakeCanvasController(),
-      getState: () => EditorState(
-        canvases: {wfId: canvState},
-        activeWorkflowId: wfId,
-        nodes: nodeState,
-        edges: edgeState,
-        viewport: viewportState,
-      ),
-      updateState: (st) => {},
-    ));
+    nodeState = const NodeState(nodesByWorkflow: {wfId: []});
 
     nodeState = const NodeState(nodesByWorkflow: {wfId: []});
 
@@ -75,7 +62,6 @@ void main() {
     );
 
     ctx = CommandContext(
-      controller: controller,
       getState: () => holder.toEditorState(),
       updateState: (newState) => holder.fromEditorState(newState),
     );

@@ -5,14 +5,12 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:flow_editor/core/command/command_manager.dart';
 import 'package:flow_editor/core/command/command_context.dart';
 import 'package:flow_editor/core/command/edit/bring_to_front_command.dart';
-import 'package:flow_editor/core/controller/impl/canvas_controller_impl.dart';
 import 'package:flow_editor/core/models/node_model.dart';
 import 'package:flow_editor/core/models/state/canvas_state.dart';
 import 'package:flow_editor/core/models/state/edge_state.dart';
 import 'package:flow_editor/core/models/state/node_state.dart';
 import 'package:flow_editor/core/models/state/canvas_viewport_state.dart';
 import 'package:flow_editor/core/state_management/state_store/editor_state.dart';
-import 'package:flow_editor/test/_helpers/fake_canvas_controller.dart';
 
 /// 简易的 holder，用于桥接 EditorState 与 CommandContext
 class EditorStateHolder {
@@ -64,11 +62,6 @@ void main() {
 
     // 构造 CommandContext
     ctx = CommandContext(
-      controller: CanvasController(CommandContext(
-        controller: FakeCanvasController(),
-        getState: holder.toEditorState,
-        updateState: holder.fromEditorState,
-      )),
       getState: holder.toEditorState,
       updateState: holder.fromEditorState,
     );

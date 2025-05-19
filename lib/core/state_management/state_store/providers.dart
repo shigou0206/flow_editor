@@ -2,7 +2,6 @@
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flow_editor/core/state_management/state_store/editor_state.dart';
-import 'package:flow_editor/core/controller/impl/canvas_controller_impl.dart';
 import 'package:flow_editor/core/models/state/canvas_state.dart';
 import 'package:flow_editor/core/models/node_model.dart';
 import 'package:flow_editor/core/models/edge_model.dart';
@@ -48,12 +47,6 @@ final activeEdgesProvider = Provider<List<EdgeModel>>(
 /// A convenience provider for the global viewport state.
 final viewportProvider = Provider<CanvasViewportState>(
   (ref) => ref.watch(editorStoreProvider).viewport,
-);
-
-/// Provider to expose the CanvasController if you need direct access.
-final canvasControllerProvider = Provider<CanvasController>(
-  (ref) =>
-      ref.read(editorStoreProvider.notifier).controller as CanvasController,
 );
 
 final canUndoProvider = Provider<bool>(
