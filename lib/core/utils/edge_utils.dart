@@ -1,64 +1,13 @@
+// file: edge_utils.dart
+
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
-import 'package:flow_editor/core/models/enums.dart';
-import 'package:flow_editor/core/models/style/edge_animation_config.dart';
-import 'package:flow_editor/core/models/style/edge_line_style.dart';
-import 'package:flow_editor/core/models/edge_model.dart';
-import 'package:flow_editor/core/models/edge_attachment_model.dart';
 
-/// EdgeIdFactory 专门负责生成 EdgeModel 的唯一 ID
-class EdgeIdFactory {
-  /// 默认分隔符
-  static const String separator = '\u0001';
-
-  /// 基础的 createEdgeId 方法，保持与现有布局兼容
-  static String createEdgeId(
-    String v,
-    String w,
-    String? name,
-    bool isDirected,
-  ) {
-    if (isDirected || v.compareTo(w) <= 0) {
-      return name != null
-          ? '\$v\$separator\$w\$separator\$name'
-          : '\$v\$separator\$w\$separator\$separator';
-    } else {
-      return name != null
-          ? '\$w\$separator\$v\$separator\$name'
-          : '\$w\$separator\$v\$separator\$separator';
-    }
-  }
-
-  /// 把节点 ID、锚点 ID 和可选 label 组合成复合 ID
-  static String generateEdgeId(
-    String? sourceNodeId,
-    String? targetNodeId,
-    String? sourceAnchorId,
-    String? targetAnchorId,
-    String? name, {
-    bool isDirected = true,
-  }) {
-    final source = sourceNodeId ?? '';
-    final target = targetNodeId ?? '';
-
-    String? anchorName;
-    if (sourceAnchorId != null && targetAnchorId != null) {
-      final a = sourceAnchorId;
-      final b = targetAnchorId;
-      anchorName =
-          (a.compareTo(b) <= 0) ? '\$a\$separator\$b' : '\$b\$separator\$a';
-    }
-
-    String? finalName;
-    if (anchorName != null && name != null) {
-      finalName = '\$anchorName\$separator\$name';
-    } else {
-      finalName = name;
-    }
-
-    return createEdgeId(source, target, finalName, isDirected);
-  }
-}
+import 'package:flow_editor/core/models/enums/position_enum.dart';
+import 'package:flow_editor/core/models/styles/edge_line_style.dart';
+import 'package:flow_editor/core/models/enums/edge_enums.dart';
+import 'package:flow_editor/core/models/styles/edge_animation_config.dart';
+// (EdgeMode, ArrowType, etc.)
 
 /// ========== buildEdgePaint ========== //
 /// 用于构建 Paint(颜色,线宽,选中态...), 你也可把它放别处
@@ -568,46 +517,4 @@ Path simpleLinePath(Offset start, Offset end) {
 
 Position guessPosStandard(double sx, double sy, double tx, double ty) {
   return Position.left; // 根据具体需求实现
-}
-
-class BezierUtils {
-  static void lockAttachments(EdgeModel edge, Path path) {
-    if (edge.attachments.isEmpty) return;
-
-    final ms = path.computeMetrics().toList();
-    if (ms.isEmpty) return;
-
-    Offset _world(EdgeAttachmentModel a) {
-      final seg = a.seg.clamp(0, ms.length - 1);
-      return ms[seg].getTangentForOffset(ms[seg].length * a.t)!.position +
-          a.offset;
-    }
-
-    for (final a in edge.attachments) {
-      final world = _world(a);
-      // 最近点
-      double best = double.infinity;
-      int bestSeg = 0;
-      double bestT = 0;
-      for (var i = 0; i < ms.length; i++) {
-        final m = ms[i];
-        const sample = 60;
-        for (var s = 0; s <= sample; s++) {
-          final t = s / sample;
-          final d =
-              (m.getTangentForOffset(m.length * t)!.position - world).distance;
-          if (d < best) {
-            best = d;
-            bestSeg = i;
-            bestT = t;
-          }
-        }
-      }
-      a.seg = bestSeg;
-      a.t = bestT;
-      final base =
-          ms[a.seg].getTangentForOffset(ms[a.seg].length * a.t)!.position;
-      a.offset = world - base;
-    }
-  }
 }

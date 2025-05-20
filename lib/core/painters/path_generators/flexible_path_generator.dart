@@ -1,50 +1,56 @@
 import 'package:flutter/material.dart';
-import 'package:flow_editor/core/models/edge_model.dart';
+import 'dart:math' show pi;
 import 'package:flow_editor/core/models/node_model.dart';
-import 'package:flow_editor/core/models/enums.dart';
-import 'package:flow_editor/core/painters/path_generators/path_generator.dart';
-import 'package:flow_editor/core/painters/path_generators/edge_path.dart';
-import 'package:flow_editor/core/transform/transform_service.dart';
-import 'package:flow_editor/core/types/coordinate_typedefs.dart';
+import 'package:flow_editor/core/models/edge_model.dart';
+import 'package:flow_editor/core/models/enums/edge_enums.dart';
+import 'package:flow_editor/core/utils/anchor_position_utils.dart';
 import 'package:flow_editor/core/utils/edge_utils.dart';
+import 'package:flow_editor/core/utils/canvas_utils.dart';
+import 'package:flow_editor/core/models/enums/position_enum.dart';
+import 'package:flow_editor/core/painters/path_generators/path_generator.dart';
+import 'package:flow_editor/core/models/edge_path.dart';
 
 class FlexiblePathGenerator implements PathGenerator {
   final List<NodeModel> nodes;
-  final TransformService transform;
-  final AnchorResolver anchorWorld;
 
-  FlexiblePathGenerator(
-    this.nodes, {
-    required this.transform,
-    required this.anchorWorld,
-  });
+  FlexiblePathGenerator(this.nodes);
 
-  // ──────────────────────────────────────────
   @override
-  EdgePath? generate(
-    EdgeModel edge, {
-    EdgeMode type = EdgeMode.bezier,
-    bool smooth = true,
-    double smoothRadius = 10,
-  }) {
-    // ① world 端点
-    final pts = _edgeWorldPoints(edge);
-    if (pts.length < 2) return null;
+  EdgePath? generate(EdgeModel edge,
+      {EdgeMode type = EdgeMode.bezier,
+      bool smooth = true,
+      double smoothRadius = 10.0}) {
+    final sourceNode = nodes.firstWhereOrNull((n) => n.id == edge.sourceNodeId);
+    final targetNode = nodes.firstWhereOrNull((n) => n.id == edge.targetNodeId);
+    if (sourceNode == null || targetNode == null) return null;
 
-    // ② 若自带 waypoints 就按折线 / 圆滑生成
     if (edge.waypoints != null && edge.waypoints!.isNotEmpty) {
-      final path = _generateFromWaypoints(pts,
-          smooth: smooth, smoothRadius: smoothRadius);
-      return EdgePath(edge.id, path);
+      final waypoints = mapEdgeWaypointsToAbsolute(edge, nodes);
+      return EdgePath(
+          edge.id,
+          _generateFromWaypoints(waypoints,
+              smooth: smooth, smoothRadius: smoothRadius));
     }
 
-    // ③ 按风格生成（起点终点）
-    final path = _createPath(
-        pts.first, pts.last, type, _sourcePos(edge), _targetPos(edge));
-    if (edge.attachments.isNotEmpty) {
-      BezierUtils.lockAttachments(edge, path);
-    }
-    return EdgePath(edge.id, path);
+    final sourceAnchor =
+        sourceNode.anchors.firstWhereOrNull((a) => a.id == edge.sourceAnchorId);
+    final targetAnchor =
+        targetNode.anchors.firstWhereOrNull((a) => a.id == edge.targetAnchorId);
+
+    final start = sourceAnchor == null
+        ? sourceNode.position
+        : computeAnchorWorldPosition(sourceNode, sourceAnchor, nodes) +
+            Offset(sourceAnchor.size.width / 2, sourceAnchor.size.height / 2);
+
+    final end = targetAnchor == null
+        ? targetNode.position
+        : computeAnchorWorldPosition(targetNode, targetAnchor, nodes) +
+            Offset(targetAnchor.size.width / 2, targetAnchor.size.height / 2);
+
+    return EdgePath(
+        edge.id,
+        _createPath(
+            start, end, type, sourceAnchor?.position, targetAnchor?.position));
   }
 
   @override
@@ -53,170 +59,136 @@ class FlexiblePathGenerator implements PathGenerator {
     Offset draggingEnd, {
     EdgeMode type = EdgeMode.bezier,
   }) {
-    final p0 = _edgeWorldPoints(edge).first;
-    final path = _createPath(
-      p0,
-      draggingEnd,
-      type,
-      _sourcePos(edge),
-      _revisePos(_sourcePos(edge)),
-    );
-    return EdgePath(edge.id, path);
+    final sourceNode = nodes.firstWhereOrNull((n) => n.id == edge.sourceNodeId);
+    if (sourceNode == null) return EdgePath(edge.id, Path());
+
+    final sourceAnchor =
+        sourceNode.anchors.firstWhereOrNull((a) => a.id == edge.sourceAnchorId);
+
+    final start = sourceAnchor == null
+        ? sourceNode.position
+        : computeAnchorWorldPosition(sourceNode, sourceAnchor, nodes) +
+            Offset(sourceAnchor.size.width / 2, sourceAnchor.size.height / 2);
+
+    return EdgePath(
+        edge.id,
+        _createPath(start, draggingEnd, type, sourceAnchor?.position,
+            revisePosition(sourceAnchor?.position)));
   }
 
-  // ───────── helpers ─────────
-  List<Offset> _edgeWorldPoints(EdgeModel e) {
-    final list = <Offset>[];
+  Path _createPath(Offset start, Offset end, EdgeMode type, Position? sourcePos,
+      Position? targetPos) {
+    Path path;
 
-    // 起点
-    if (e.sourceNodeId != null) {
-      final srcNode = nodes.firstWhereOrNull((n) => n.id == e.sourceNodeId);
-      if (srcNode != null) {
-        final anchor =
-            srcNode.anchors.firstWhereOrNull((a) => a.id == e.sourceAnchorId);
-        list.add(anchorWorld(srcNode.id, anchor?.id));
-      }
-    } else {
-      list.add(
-          transform.toWorld(e.start ?? Offset.zero, e.coordSpace, e.parentId));
-    }
-
-    // waypoints
-    if (e.waypoints != null) {
-      list.addAll(e.waypoints!
-          .map((p) => transform.toWorld(p, e.coordSpace, e.parentId)));
-    }
-
-    // 终点
-    if (e.targetNodeId != null) {
-      final tgtNode = nodes.firstWhereOrNull((n) => n.id == e.targetNodeId);
-      if (tgtNode != null) {
-        final anchor =
-            tgtNode.anchors.firstWhereOrNull((a) => a.id == e.targetAnchorId);
-        list.add(anchorWorld(tgtNode.id, anchor?.id));
-      }
-    } else {
-      list.add(
-          transform.toWorld(e.end ?? Offset.zero, e.coordSpace, e.parentId));
-    }
-
-    return list;
-  }
-
-  // 起终锚点的方位
-  Position? _sourcePos(EdgeModel e) => nodes
-      .firstWhereOrNull((n) => n.id == e.sourceNodeId)
-      ?.anchors
-      .firstWhereOrNull((a) => a.id == e.sourceAnchorId)
-      ?.position;
-
-  Position? _targetPos(EdgeModel e) => nodes
-      .firstWhereOrNull((n) => n.id == e.targetNodeId)
-      ?.anchors
-      .firstWhereOrNull((a) => a.id == e.targetAnchorId)
-      ?.position;
-
-  // 若为 null 给个对称方位
-  Position _revisePos(Position? p) => switch (p) {
-        Position.left => Position.right,
-        Position.right => Position.left,
-        Position.top => Position.bottom,
-        _ => Position.top
-      };
-
-  // 生成各模式的 Path
-  Path _createPath(
-    Offset start,
-    Offset end,
-    EdgeMode mode,
-    Position? srcPos,
-    Position? tgtPos,
-  ) {
-    switch (mode) {
+    switch (type) {
       case EdgeMode.bezier:
-        return getBezierPath(
-            sourceX: start.dx,
-            sourceY: start.dy,
-            sourcePos: srcPos ?? Position.right,
-            targetX: end.dx,
-            targetY: end.dy,
-            targetPos: tgtPos ?? Position.left,
-            curvature: .25)[0];
-
+        path = getBezierPath(
+          sourceX: start.dx,
+          sourceY: start.dy,
+          sourcePos: sourcePos ?? Position.right,
+          targetX: end.dx,
+          targetY: end.dy,
+          targetPos: targetPos ?? Position.left,
+          curvature: 0.25,
+        )[0];
+        break;
       case EdgeMode.hvBezier:
-        return getHVBezierPath(
-            sourceX: start.dx,
-            sourceY: start.dy,
-            sourcePos: srcPos ?? Position.right,
-            targetX: end.dx,
-            targetY: end.dy,
-            targetPos: tgtPos ?? Position.left,
-            offset: 50)[0];
-
+        path = getHVBezierPath(
+          sourceX: start.dx,
+          sourceY: start.dy,
+          sourcePos: sourcePos ?? Position.right,
+          targetX: end.dx,
+          targetY: end.dy,
+          targetPos: targetPos ?? Position.left,
+          offset: 50.0,
+        )[0];
+        break;
       case EdgeMode.orthogonal3:
-        return getOrthogonalPath3Segments(
-            sx: start.dx,
-            sy: start.dy,
-            tx: end.dx,
-            ty: end.dy,
-            sourcePos: srcPos,
-            targetPos: tgtPos,
-            offsetDist: 40);
-
+        path = getOrthogonalPath3Segments(
+          sx: start.dx,
+          sy: start.dy,
+          sourcePos: sourcePos,
+          tx: end.dx,
+          ty: end.dy,
+          targetPos: targetPos,
+          offsetDist: 40,
+        );
+        break;
       case EdgeMode.orthogonal5:
-        return getOrthogonalPath5Segments(
-            sx: start.dx,
-            sy: start.dy,
-            tx: end.dx,
-            ty: end.dy,
-            sourcePos: srcPos,
-            targetPos: tgtPos,
-            offsetDist: 40);
-
+        path = getOrthogonalPath5Segments(
+          sx: start.dx,
+          sy: start.dy,
+          sourcePos: sourcePos,
+          tx: end.dx,
+          ty: end.dy,
+          targetPos: targetPos,
+          offsetDist: 40,
+        );
+        break;
       case EdgeMode.line:
       default:
-        return simpleLinePath(start, end);
-    }
-  }
-
-  // 折线路径 (支持 smooth)
-  Path _generateFromWaypoints(
-    List<Offset> pts, {
-    bool smooth = false,
-    double smoothRadius = 10,
-  }) {
-    final path = Path()..moveTo(pts.first.dx, pts.first.dy);
-    if (!smooth || pts.length < 3) {
-      for (final p in pts.skip(1)) {
-        path.lineTo(p.dx, p.dy);
-      }
-      return path;
+        path = simpleLinePath(start, end);
     }
 
-    for (var i = 1; i < pts.length - 1; i++) {
-      final prev = pts[i - 1], cur = pts[i], next = pts[i + 1];
-      final vIn = (prev - cur).direction;
-      final vOut = (next - cur).direction;
-      final pIn = cur + Offset.fromDirection(vIn, smoothRadius);
-      final pOut = cur + Offset.fromDirection(vOut, smoothRadius);
-      if (i == 1) {
-        path.lineTo(pIn.dx, pIn.dy);
-      } else {
-        path.lineTo(pIn.dx, pIn.dy);
-      }
-      path.quadraticBezierTo(cur.dx, cur.dy, pOut.dx, pOut.dy);
-    }
-    path.lineTo(pts.last.dx, pts.last.dy);
     return path;
   }
+
+  Path _generateFromWaypoints(
+    List<Offset> waypoints, {
+    bool smooth = false,
+    double smoothRadius = 10.0,
+  }) {
+    final path = Path();
+    if (waypoints.length < 2) return path;
+
+    path.moveTo(waypoints.first.dx, waypoints.first.dy);
+
+    if (!smooth || waypoints.length < 3) {
+      for (int i = 1; i < waypoints.length; i++) {
+        path.lineTo(waypoints[i].dx, waypoints[i].dy);
+      }
+    } else {
+      for (int i = 1; i < waypoints.length - 1; i++) {
+        final prev = waypoints[i - 1];
+        final current = waypoints[i];
+        final next = waypoints[i + 1];
+
+        // 计算进入和出去的向量
+        final toPrev = (prev - current).direction;
+        final toNext = (next - current).direction;
+
+        // 计算圆滑的起始和结束点
+        final startSmoothPoint =
+            current + Offset.fromDirection(toPrev, smoothRadius);
+        final endSmoothPoint =
+            current + Offset.fromDirection(toNext, smoothRadius);
+
+        if (i == 1) {
+          // 第一个折点特殊处理
+          path.lineTo(startSmoothPoint.dx, startSmoothPoint.dy);
+        } else {
+          path.lineTo(startSmoothPoint.dx, startSmoothPoint.dy);
+        }
+
+        // 使用二次贝塞尔曲线做圆滑处理
+        path.quadraticBezierTo(
+          current.dx,
+          current.dy,
+          endSmoothPoint.dx,
+          endSmoothPoint.dy,
+        );
+      }
+      // 最后一段直线
+      path.lineTo(waypoints.last.dx, waypoints.last.dy);
+    }
+
+    return path;
+  }
+
+  double radians(double degrees) => degrees * pi / 180;
 }
 
-// small helpers
-extension IterableX<E> on Iterable<E> {
-  E? firstWhereOrNull(bool Function(E) test) {
-    for (final e in this) {
-      if (test(e)) return e;
-    }
-    return null;
-  }
+extension FirstWhereOrNull<E> on Iterable<E> {
+  E? firstWhereOrNull(bool Function(E e) test) =>
+      cast<E?>().firstWhere((x) => x != null && test(x), orElse: () => null);
 }

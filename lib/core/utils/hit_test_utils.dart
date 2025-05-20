@@ -1,42 +1,50 @@
-// lib/core/utils/hit_test_utils.dart
-
-import 'dart:ui';
 import 'package:flutter/material.dart';
-import 'package:flow_editor/core/models/node_model.dart';
+import 'package:flow_editor/core/models/edge_model.dart';
+import 'package:flow_editor/core/models/hit_test_result.dart';
 
-class HitTestUtils {
-  /// 节点命中：判断 worldPos 是否落在 node.rect 内
-  static bool hitTestNode(Offset worldPos, NodeModel node) {
-    return node.rect.contains(worldPos);
+double distanceToPath(Path path, Offset pointer, {int sampleCount = 80}) {
+  double minDist = double.infinity;
+
+  for (final metric in path.computeMetrics()) {
+    final length = metric.length;
+    for (int i = 0; i < sampleCount; i++) {
+      final t = i / (sampleCount - 1);
+      final pos = metric.getTangentForOffset(length * t)?.position;
+      if (pos != null) {
+        final dist = (pos - pointer).distance;
+        if (dist < minDist) {
+          minDist = dist;
+        }
+      }
+    }
+  }
+  return minDist;
+}
+
+Offset computeHandlePosition(Rect rect, ResizeHandlePosition handle) {
+  return switch (handle) {
+    ResizeHandlePosition.topLeft => rect.topLeft,
+    ResizeHandlePosition.topRight => rect.topRight,
+    ResizeHandlePosition.bottomLeft => rect.bottomLeft,
+    ResizeHandlePosition.bottomRight => rect.bottomRight,
+    ResizeHandlePosition.left => Offset(rect.left, rect.center.dy),
+    ResizeHandlePosition.right => Offset(rect.right, rect.center.dy),
+    ResizeHandlePosition.top => Offset(rect.center.dx, rect.top),
+    ResizeHandlePosition.bottom => Offset(rect.center.dx, rect.bottom),
+  };
+}
+
+Offset computeEdgeMidpoint(EdgeModel edge) {
+  final pts = edge.waypoints;
+  if (pts != null && pts.length >= 2) {
+    return Offset.lerp(pts.first, pts.last, 0.5)!;
   }
 
-  /// 锚点命中：判断 worldPos 是否落在 anchor 的包围盒内
-  /// [anchorPos] 是 world 坐标下的锚点中心位置
-  static bool hitTestAnchor(
-    Offset worldPos,
-    Offset anchorPos,
-    double width,
-    double height, {
-    double padding = 4.0,
-  }) {
-    final halfW = width / 2 + padding;
-    final halfH = height / 2 + padding;
-    final rect =
-        Rect.fromCenter(center: anchorPos, width: halfW * 2, height: halfH * 2);
-    return rect.contains(worldPos);
+  final p1 = edge.sourcePosition;
+  final p2 = edge.targetPosition;
+  if (p1 != null && p2 != null) {
+    return Offset.lerp(p1, p2, 0.5)!;
   }
 
-  /// 计算点 P 到线段 AB 的最短距离
-  static double distanceToSegment(Offset a, Offset b, Offset p) {
-    final ab = b - a;
-    final ap = p - a;
-    final ab2 = ab.dx * ab.dx + ab.dy * ab.dy;
-    if (ab2 == 0) return (p - a).distance;
-    // 投影系数
-    final t = (ap.dx * ab.dx + ap.dy * ab.dy) / ab2;
-    if (t < 0.0) return (p - a).distance;
-    if (t > 1.0) return (p - b).distance;
-    final proj = Offset(a.dx + ab.dx * t, a.dy + ab.dy * t);
-    return (p - proj).distance;
-  }
+  return Offset.zero;
 }
