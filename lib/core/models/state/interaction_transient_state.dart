@@ -13,13 +13,17 @@ class InteractionState with _$InteractionState {
 
   const factory InteractionState.idle() = Idle;
 
+  /// 拖节点：记录拖开始的画布坐标 startCanvas，和最新的 lastCanvas
   const factory InteractionState.dragNode({
     required String nodeId,
+    @OffsetConverter() required Offset startCanvas,
     @OffsetConverter() required Offset lastCanvas,
   }) = DragNode;
 
+  /// 拖边：同理记录起点，以及最新的临时终点
   const factory InteractionState.dragEdge({
     required String edgeId,
+    @OffsetConverter() required Offset startCanvas,
     @OffsetConverter() required Offset lastCanvas,
     required AnchorModel sourceAnchor,
   }) = DragEdge;
@@ -27,10 +31,12 @@ class InteractionState with _$InteractionState {
   const factory InteractionState.dragWaypoint({
     required String edgeId,
     required int pointIndex,
+    @OffsetConverter() required Offset startCanvas,
     @OffsetConverter() required Offset lastCanvas,
   }) = DragWaypoint;
 
   const factory InteractionState.panCanvas({
+    @OffsetConverter() required Offset startGlobal,
     @OffsetConverter() required Offset lastGlobal,
   }) = PanCanvas;
 
@@ -40,17 +46,20 @@ class InteractionState with _$InteractionState {
 
   const factory InteractionState.insertingNode({
     required String nodeType,
+    @OffsetConverter() required Offset startCanvas,
     @OffsetConverter() required Offset lastCanvas,
   }) = InsertingNode;
 
   const factory InteractionState.insertNodeToEdge({
     required String edgeId,
+    @OffsetConverter() required Offset startCanvas,
     @OffsetConverter() required Offset lastCanvas,
   }) = InsertNodeToEdge;
 
   const factory InteractionState.resizingNode({
     required String nodeId,
     @OffsetConverter() required Offset handlePosition,
+    @OffsetConverter() required Offset startCanvas,
     @OffsetConverter() required Offset lastCanvas,
   }) = ResizingNode;
 

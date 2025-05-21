@@ -55,25 +55,40 @@ mixin _$InteractionState {
   TResult when<TResult extends Object?>({
     required TResult Function() idle,
     required TResult Function(
-            String nodeId, @OffsetConverter() Offset lastCanvas)
+            String nodeId,
+            @OffsetConverter() Offset startCanvas,
+            @OffsetConverter() Offset lastCanvas)
         dragNode,
-    required TResult Function(String edgeId,
-            @OffsetConverter() Offset lastCanvas, AnchorModel sourceAnchor)
+    required TResult Function(
+            String edgeId,
+            @OffsetConverter() Offset startCanvas,
+            @OffsetConverter() Offset lastCanvas,
+            AnchorModel sourceAnchor)
         dragEdge,
     required TResult Function(
-            String edgeId, int pointIndex, @OffsetConverter() Offset lastCanvas)
+            String edgeId,
+            int pointIndex,
+            @OffsetConverter() Offset startCanvas,
+            @OffsetConverter() Offset lastCanvas)
         dragWaypoint,
-    required TResult Function(@OffsetConverter() Offset lastGlobal) panCanvas,
+    required TResult Function(@OffsetConverter() Offset startGlobal,
+            @OffsetConverter() Offset lastGlobal)
+        panCanvas,
     required TResult Function(@RectConverter() Rect selectionBox) selectingArea,
     required TResult Function(
-            String nodeType, @OffsetConverter() Offset lastCanvas)
+            String nodeType,
+            @OffsetConverter() Offset startCanvas,
+            @OffsetConverter() Offset lastCanvas)
         insertingNode,
     required TResult Function(
-            String edgeId, @OffsetConverter() Offset lastCanvas)
+            String edgeId,
+            @OffsetConverter() Offset startCanvas,
+            @OffsetConverter() Offset lastCanvas)
         insertNodeToEdge,
     required TResult Function(
             String nodeId,
             @OffsetConverter() Offset handlePosition,
+            @OffsetConverter() Offset startCanvas,
             @OffsetConverter() Offset lastCanvas)
         resizingNode,
     required TResult Function(String nodeId) hoveringNode,
@@ -87,21 +102,32 @@ mixin _$InteractionState {
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? idle,
-    TResult? Function(String nodeId, @OffsetConverter() Offset lastCanvas)?
+    TResult? Function(String nodeId, @OffsetConverter() Offset startCanvas,
+            @OffsetConverter() Offset lastCanvas)?
         dragNode,
-    TResult? Function(String edgeId, @OffsetConverter() Offset lastCanvas,
-            AnchorModel sourceAnchor)?
+    TResult? Function(String edgeId, @OffsetConverter() Offset startCanvas,
+            @OffsetConverter() Offset lastCanvas, AnchorModel sourceAnchor)?
         dragEdge,
-    TResult? Function(String edgeId, int pointIndex,
+    TResult? Function(
+            String edgeId,
+            int pointIndex,
+            @OffsetConverter() Offset startCanvas,
             @OffsetConverter() Offset lastCanvas)?
         dragWaypoint,
-    TResult? Function(@OffsetConverter() Offset lastGlobal)? panCanvas,
+    TResult? Function(@OffsetConverter() Offset startGlobal,
+            @OffsetConverter() Offset lastGlobal)?
+        panCanvas,
     TResult? Function(@RectConverter() Rect selectionBox)? selectingArea,
-    TResult? Function(String nodeType, @OffsetConverter() Offset lastCanvas)?
+    TResult? Function(String nodeType, @OffsetConverter() Offset startCanvas,
+            @OffsetConverter() Offset lastCanvas)?
         insertingNode,
-    TResult? Function(String edgeId, @OffsetConverter() Offset lastCanvas)?
+    TResult? Function(String edgeId, @OffsetConverter() Offset startCanvas,
+            @OffsetConverter() Offset lastCanvas)?
         insertNodeToEdge,
-    TResult? Function(String nodeId, @OffsetConverter() Offset handlePosition,
+    TResult? Function(
+            String nodeId,
+            @OffsetConverter() Offset handlePosition,
+            @OffsetConverter() Offset startCanvas,
             @OffsetConverter() Offset lastCanvas)?
         resizingNode,
     TResult? Function(String nodeId)? hoveringNode,
@@ -115,21 +141,32 @@ mixin _$InteractionState {
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? idle,
-    TResult Function(String nodeId, @OffsetConverter() Offset lastCanvas)?
+    TResult Function(String nodeId, @OffsetConverter() Offset startCanvas,
+            @OffsetConverter() Offset lastCanvas)?
         dragNode,
-    TResult Function(String edgeId, @OffsetConverter() Offset lastCanvas,
-            AnchorModel sourceAnchor)?
+    TResult Function(String edgeId, @OffsetConverter() Offset startCanvas,
+            @OffsetConverter() Offset lastCanvas, AnchorModel sourceAnchor)?
         dragEdge,
-    TResult Function(String edgeId, int pointIndex,
+    TResult Function(
+            String edgeId,
+            int pointIndex,
+            @OffsetConverter() Offset startCanvas,
             @OffsetConverter() Offset lastCanvas)?
         dragWaypoint,
-    TResult Function(@OffsetConverter() Offset lastGlobal)? panCanvas,
+    TResult Function(@OffsetConverter() Offset startGlobal,
+            @OffsetConverter() Offset lastGlobal)?
+        panCanvas,
     TResult Function(@RectConverter() Rect selectionBox)? selectingArea,
-    TResult Function(String nodeType, @OffsetConverter() Offset lastCanvas)?
+    TResult Function(String nodeType, @OffsetConverter() Offset startCanvas,
+            @OffsetConverter() Offset lastCanvas)?
         insertingNode,
-    TResult Function(String edgeId, @OffsetConverter() Offset lastCanvas)?
+    TResult Function(String edgeId, @OffsetConverter() Offset startCanvas,
+            @OffsetConverter() Offset lastCanvas)?
         insertNodeToEdge,
-    TResult Function(String nodeId, @OffsetConverter() Offset handlePosition,
+    TResult Function(
+            String nodeId,
+            @OffsetConverter() Offset handlePosition,
+            @OffsetConverter() Offset startCanvas,
             @OffsetConverter() Offset lastCanvas)?
         resizingNode,
     TResult Function(String nodeId)? hoveringNode,
@@ -262,25 +299,40 @@ class _$IdleImpl extends Idle {
   TResult when<TResult extends Object?>({
     required TResult Function() idle,
     required TResult Function(
-            String nodeId, @OffsetConverter() Offset lastCanvas)
+            String nodeId,
+            @OffsetConverter() Offset startCanvas,
+            @OffsetConverter() Offset lastCanvas)
         dragNode,
-    required TResult Function(String edgeId,
-            @OffsetConverter() Offset lastCanvas, AnchorModel sourceAnchor)
+    required TResult Function(
+            String edgeId,
+            @OffsetConverter() Offset startCanvas,
+            @OffsetConverter() Offset lastCanvas,
+            AnchorModel sourceAnchor)
         dragEdge,
     required TResult Function(
-            String edgeId, int pointIndex, @OffsetConverter() Offset lastCanvas)
+            String edgeId,
+            int pointIndex,
+            @OffsetConverter() Offset startCanvas,
+            @OffsetConverter() Offset lastCanvas)
         dragWaypoint,
-    required TResult Function(@OffsetConverter() Offset lastGlobal) panCanvas,
+    required TResult Function(@OffsetConverter() Offset startGlobal,
+            @OffsetConverter() Offset lastGlobal)
+        panCanvas,
     required TResult Function(@RectConverter() Rect selectionBox) selectingArea,
     required TResult Function(
-            String nodeType, @OffsetConverter() Offset lastCanvas)
+            String nodeType,
+            @OffsetConverter() Offset startCanvas,
+            @OffsetConverter() Offset lastCanvas)
         insertingNode,
     required TResult Function(
-            String edgeId, @OffsetConverter() Offset lastCanvas)
+            String edgeId,
+            @OffsetConverter() Offset startCanvas,
+            @OffsetConverter() Offset lastCanvas)
         insertNodeToEdge,
     required TResult Function(
             String nodeId,
             @OffsetConverter() Offset handlePosition,
+            @OffsetConverter() Offset startCanvas,
             @OffsetConverter() Offset lastCanvas)
         resizingNode,
     required TResult Function(String nodeId) hoveringNode,
@@ -297,21 +349,32 @@ class _$IdleImpl extends Idle {
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? idle,
-    TResult? Function(String nodeId, @OffsetConverter() Offset lastCanvas)?
+    TResult? Function(String nodeId, @OffsetConverter() Offset startCanvas,
+            @OffsetConverter() Offset lastCanvas)?
         dragNode,
-    TResult? Function(String edgeId, @OffsetConverter() Offset lastCanvas,
-            AnchorModel sourceAnchor)?
+    TResult? Function(String edgeId, @OffsetConverter() Offset startCanvas,
+            @OffsetConverter() Offset lastCanvas, AnchorModel sourceAnchor)?
         dragEdge,
-    TResult? Function(String edgeId, int pointIndex,
+    TResult? Function(
+            String edgeId,
+            int pointIndex,
+            @OffsetConverter() Offset startCanvas,
             @OffsetConverter() Offset lastCanvas)?
         dragWaypoint,
-    TResult? Function(@OffsetConverter() Offset lastGlobal)? panCanvas,
+    TResult? Function(@OffsetConverter() Offset startGlobal,
+            @OffsetConverter() Offset lastGlobal)?
+        panCanvas,
     TResult? Function(@RectConverter() Rect selectionBox)? selectingArea,
-    TResult? Function(String nodeType, @OffsetConverter() Offset lastCanvas)?
+    TResult? Function(String nodeType, @OffsetConverter() Offset startCanvas,
+            @OffsetConverter() Offset lastCanvas)?
         insertingNode,
-    TResult? Function(String edgeId, @OffsetConverter() Offset lastCanvas)?
+    TResult? Function(String edgeId, @OffsetConverter() Offset startCanvas,
+            @OffsetConverter() Offset lastCanvas)?
         insertNodeToEdge,
-    TResult? Function(String nodeId, @OffsetConverter() Offset handlePosition,
+    TResult? Function(
+            String nodeId,
+            @OffsetConverter() Offset handlePosition,
+            @OffsetConverter() Offset startCanvas,
             @OffsetConverter() Offset lastCanvas)?
         resizingNode,
     TResult? Function(String nodeId)? hoveringNode,
@@ -328,21 +391,32 @@ class _$IdleImpl extends Idle {
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? idle,
-    TResult Function(String nodeId, @OffsetConverter() Offset lastCanvas)?
+    TResult Function(String nodeId, @OffsetConverter() Offset startCanvas,
+            @OffsetConverter() Offset lastCanvas)?
         dragNode,
-    TResult Function(String edgeId, @OffsetConverter() Offset lastCanvas,
-            AnchorModel sourceAnchor)?
+    TResult Function(String edgeId, @OffsetConverter() Offset startCanvas,
+            @OffsetConverter() Offset lastCanvas, AnchorModel sourceAnchor)?
         dragEdge,
-    TResult Function(String edgeId, int pointIndex,
+    TResult Function(
+            String edgeId,
+            int pointIndex,
+            @OffsetConverter() Offset startCanvas,
             @OffsetConverter() Offset lastCanvas)?
         dragWaypoint,
-    TResult Function(@OffsetConverter() Offset lastGlobal)? panCanvas,
+    TResult Function(@OffsetConverter() Offset startGlobal,
+            @OffsetConverter() Offset lastGlobal)?
+        panCanvas,
     TResult Function(@RectConverter() Rect selectionBox)? selectingArea,
-    TResult Function(String nodeType, @OffsetConverter() Offset lastCanvas)?
+    TResult Function(String nodeType, @OffsetConverter() Offset startCanvas,
+            @OffsetConverter() Offset lastCanvas)?
         insertingNode,
-    TResult Function(String edgeId, @OffsetConverter() Offset lastCanvas)?
+    TResult Function(String edgeId, @OffsetConverter() Offset startCanvas,
+            @OffsetConverter() Offset lastCanvas)?
         insertNodeToEdge,
-    TResult Function(String nodeId, @OffsetConverter() Offset handlePosition,
+    TResult Function(
+            String nodeId,
+            @OffsetConverter() Offset handlePosition,
+            @OffsetConverter() Offset startCanvas,
             @OffsetConverter() Offset lastCanvas)?
         resizingNode,
     TResult Function(String nodeId)? hoveringNode,
@@ -444,7 +518,10 @@ abstract class _$$DragNodeImplCopyWith<$Res> {
           _$DragNodeImpl value, $Res Function(_$DragNodeImpl) then) =
       __$$DragNodeImplCopyWithImpl<$Res>;
   @useResult
-  $Res call({String nodeId, @OffsetConverter() Offset lastCanvas});
+  $Res call(
+      {String nodeId,
+      @OffsetConverter() Offset startCanvas,
+      @OffsetConverter() Offset lastCanvas});
 }
 
 /// @nodoc
@@ -459,6 +536,7 @@ class __$$DragNodeImplCopyWithImpl<$Res>
   @override
   $Res call({
     Object? nodeId = null,
+    Object? startCanvas = null,
     Object? lastCanvas = null,
   }) {
     return _then(_$DragNodeImpl(
@@ -466,6 +544,10 @@ class __$$DragNodeImplCopyWithImpl<$Res>
           ? _value.nodeId
           : nodeId // ignore: cast_nullable_to_non_nullable
               as String,
+      startCanvas: null == startCanvas
+          ? _value.startCanvas
+          : startCanvas // ignore: cast_nullable_to_non_nullable
+              as Offset,
       lastCanvas: null == lastCanvas
           ? _value.lastCanvas
           : lastCanvas // ignore: cast_nullable_to_non_nullable
@@ -479,6 +561,7 @@ class __$$DragNodeImplCopyWithImpl<$Res>
 class _$DragNodeImpl extends DragNode {
   const _$DragNodeImpl(
       {required this.nodeId,
+      @OffsetConverter() required this.startCanvas,
       @OffsetConverter() required this.lastCanvas,
       final String? $type})
       : $type = $type ?? 'drag_node',
@@ -491,6 +574,9 @@ class _$DragNodeImpl extends DragNode {
   final String nodeId;
   @override
   @OffsetConverter()
+  final Offset startCanvas;
+  @override
+  @OffsetConverter()
   final Offset lastCanvas;
 
   @JsonKey(name: 'type')
@@ -498,7 +584,7 @@ class _$DragNodeImpl extends DragNode {
 
   @override
   String toString() {
-    return 'InteractionState.dragNode(nodeId: $nodeId, lastCanvas: $lastCanvas)';
+    return 'InteractionState.dragNode(nodeId: $nodeId, startCanvas: $startCanvas, lastCanvas: $lastCanvas)';
   }
 
   @override
@@ -507,13 +593,15 @@ class _$DragNodeImpl extends DragNode {
         (other.runtimeType == runtimeType &&
             other is _$DragNodeImpl &&
             (identical(other.nodeId, nodeId) || other.nodeId == nodeId) &&
+            (identical(other.startCanvas, startCanvas) ||
+                other.startCanvas == startCanvas) &&
             (identical(other.lastCanvas, lastCanvas) ||
                 other.lastCanvas == lastCanvas));
   }
 
   @JsonKey(ignore: true)
   @override
-  int get hashCode => Object.hash(runtimeType, nodeId, lastCanvas);
+  int get hashCode => Object.hash(runtimeType, nodeId, startCanvas, lastCanvas);
 
   @JsonKey(ignore: true)
   @override
@@ -526,25 +614,40 @@ class _$DragNodeImpl extends DragNode {
   TResult when<TResult extends Object?>({
     required TResult Function() idle,
     required TResult Function(
-            String nodeId, @OffsetConverter() Offset lastCanvas)
+            String nodeId,
+            @OffsetConverter() Offset startCanvas,
+            @OffsetConverter() Offset lastCanvas)
         dragNode,
-    required TResult Function(String edgeId,
-            @OffsetConverter() Offset lastCanvas, AnchorModel sourceAnchor)
+    required TResult Function(
+            String edgeId,
+            @OffsetConverter() Offset startCanvas,
+            @OffsetConverter() Offset lastCanvas,
+            AnchorModel sourceAnchor)
         dragEdge,
     required TResult Function(
-            String edgeId, int pointIndex, @OffsetConverter() Offset lastCanvas)
+            String edgeId,
+            int pointIndex,
+            @OffsetConverter() Offset startCanvas,
+            @OffsetConverter() Offset lastCanvas)
         dragWaypoint,
-    required TResult Function(@OffsetConverter() Offset lastGlobal) panCanvas,
+    required TResult Function(@OffsetConverter() Offset startGlobal,
+            @OffsetConverter() Offset lastGlobal)
+        panCanvas,
     required TResult Function(@RectConverter() Rect selectionBox) selectingArea,
     required TResult Function(
-            String nodeType, @OffsetConverter() Offset lastCanvas)
+            String nodeType,
+            @OffsetConverter() Offset startCanvas,
+            @OffsetConverter() Offset lastCanvas)
         insertingNode,
     required TResult Function(
-            String edgeId, @OffsetConverter() Offset lastCanvas)
+            String edgeId,
+            @OffsetConverter() Offset startCanvas,
+            @OffsetConverter() Offset lastCanvas)
         insertNodeToEdge,
     required TResult Function(
             String nodeId,
             @OffsetConverter() Offset handlePosition,
+            @OffsetConverter() Offset startCanvas,
             @OffsetConverter() Offset lastCanvas)
         resizingNode,
     required TResult Function(String nodeId) hoveringNode,
@@ -554,28 +657,39 @@ class _$DragNodeImpl extends DragNode {
             @OffsetConverter() Offset globalPosition, String? targetId)
         contextMenuOpen,
   }) {
-    return dragNode(nodeId, lastCanvas);
+    return dragNode(nodeId, startCanvas, lastCanvas);
   }
 
   @override
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? idle,
-    TResult? Function(String nodeId, @OffsetConverter() Offset lastCanvas)?
+    TResult? Function(String nodeId, @OffsetConverter() Offset startCanvas,
+            @OffsetConverter() Offset lastCanvas)?
         dragNode,
-    TResult? Function(String edgeId, @OffsetConverter() Offset lastCanvas,
-            AnchorModel sourceAnchor)?
+    TResult? Function(String edgeId, @OffsetConverter() Offset startCanvas,
+            @OffsetConverter() Offset lastCanvas, AnchorModel sourceAnchor)?
         dragEdge,
-    TResult? Function(String edgeId, int pointIndex,
+    TResult? Function(
+            String edgeId,
+            int pointIndex,
+            @OffsetConverter() Offset startCanvas,
             @OffsetConverter() Offset lastCanvas)?
         dragWaypoint,
-    TResult? Function(@OffsetConverter() Offset lastGlobal)? panCanvas,
+    TResult? Function(@OffsetConverter() Offset startGlobal,
+            @OffsetConverter() Offset lastGlobal)?
+        panCanvas,
     TResult? Function(@RectConverter() Rect selectionBox)? selectingArea,
-    TResult? Function(String nodeType, @OffsetConverter() Offset lastCanvas)?
+    TResult? Function(String nodeType, @OffsetConverter() Offset startCanvas,
+            @OffsetConverter() Offset lastCanvas)?
         insertingNode,
-    TResult? Function(String edgeId, @OffsetConverter() Offset lastCanvas)?
+    TResult? Function(String edgeId, @OffsetConverter() Offset startCanvas,
+            @OffsetConverter() Offset lastCanvas)?
         insertNodeToEdge,
-    TResult? Function(String nodeId, @OffsetConverter() Offset handlePosition,
+    TResult? Function(
+            String nodeId,
+            @OffsetConverter() Offset handlePosition,
+            @OffsetConverter() Offset startCanvas,
             @OffsetConverter() Offset lastCanvas)?
         resizingNode,
     TResult? Function(String nodeId)? hoveringNode,
@@ -585,28 +699,39 @@ class _$DragNodeImpl extends DragNode {
             @OffsetConverter() Offset globalPosition, String? targetId)?
         contextMenuOpen,
   }) {
-    return dragNode?.call(nodeId, lastCanvas);
+    return dragNode?.call(nodeId, startCanvas, lastCanvas);
   }
 
   @override
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? idle,
-    TResult Function(String nodeId, @OffsetConverter() Offset lastCanvas)?
+    TResult Function(String nodeId, @OffsetConverter() Offset startCanvas,
+            @OffsetConverter() Offset lastCanvas)?
         dragNode,
-    TResult Function(String edgeId, @OffsetConverter() Offset lastCanvas,
-            AnchorModel sourceAnchor)?
+    TResult Function(String edgeId, @OffsetConverter() Offset startCanvas,
+            @OffsetConverter() Offset lastCanvas, AnchorModel sourceAnchor)?
         dragEdge,
-    TResult Function(String edgeId, int pointIndex,
+    TResult Function(
+            String edgeId,
+            int pointIndex,
+            @OffsetConverter() Offset startCanvas,
             @OffsetConverter() Offset lastCanvas)?
         dragWaypoint,
-    TResult Function(@OffsetConverter() Offset lastGlobal)? panCanvas,
+    TResult Function(@OffsetConverter() Offset startGlobal,
+            @OffsetConverter() Offset lastGlobal)?
+        panCanvas,
     TResult Function(@RectConverter() Rect selectionBox)? selectingArea,
-    TResult Function(String nodeType, @OffsetConverter() Offset lastCanvas)?
+    TResult Function(String nodeType, @OffsetConverter() Offset startCanvas,
+            @OffsetConverter() Offset lastCanvas)?
         insertingNode,
-    TResult Function(String edgeId, @OffsetConverter() Offset lastCanvas)?
+    TResult Function(String edgeId, @OffsetConverter() Offset startCanvas,
+            @OffsetConverter() Offset lastCanvas)?
         insertNodeToEdge,
-    TResult Function(String nodeId, @OffsetConverter() Offset handlePosition,
+    TResult Function(
+            String nodeId,
+            @OffsetConverter() Offset handlePosition,
+            @OffsetConverter() Offset startCanvas,
             @OffsetConverter() Offset lastCanvas)?
         resizingNode,
     TResult Function(String nodeId)? hoveringNode,
@@ -618,7 +743,7 @@ class _$DragNodeImpl extends DragNode {
     required TResult orElse(),
   }) {
     if (dragNode != null) {
-      return dragNode(nodeId, lastCanvas);
+      return dragNode(nodeId, startCanvas, lastCanvas);
     }
     return orElse();
   }
@@ -698,6 +823,7 @@ class _$DragNodeImpl extends DragNode {
 abstract class DragNode extends InteractionState {
   const factory DragNode(
       {required final String nodeId,
+      @OffsetConverter() required final Offset startCanvas,
       @OffsetConverter() required final Offset lastCanvas}) = _$DragNodeImpl;
   const DragNode._() : super._();
 
@@ -705,6 +831,8 @@ abstract class DragNode extends InteractionState {
       _$DragNodeImpl.fromJson;
 
   String get nodeId;
+  @OffsetConverter()
+  Offset get startCanvas;
   @OffsetConverter()
   Offset get lastCanvas;
   @JsonKey(ignore: true)
@@ -720,6 +848,7 @@ abstract class _$$DragEdgeImplCopyWith<$Res> {
   @useResult
   $Res call(
       {String edgeId,
+      @OffsetConverter() Offset startCanvas,
       @OffsetConverter() Offset lastCanvas,
       AnchorModel sourceAnchor});
 
@@ -738,6 +867,7 @@ class __$$DragEdgeImplCopyWithImpl<$Res>
   @override
   $Res call({
     Object? edgeId = null,
+    Object? startCanvas = null,
     Object? lastCanvas = null,
     Object? sourceAnchor = null,
   }) {
@@ -746,6 +876,10 @@ class __$$DragEdgeImplCopyWithImpl<$Res>
           ? _value.edgeId
           : edgeId // ignore: cast_nullable_to_non_nullable
               as String,
+      startCanvas: null == startCanvas
+          ? _value.startCanvas
+          : startCanvas // ignore: cast_nullable_to_non_nullable
+              as Offset,
       lastCanvas: null == lastCanvas
           ? _value.lastCanvas
           : lastCanvas // ignore: cast_nullable_to_non_nullable
@@ -771,6 +905,7 @@ class __$$DragEdgeImplCopyWithImpl<$Res>
 class _$DragEdgeImpl extends DragEdge {
   const _$DragEdgeImpl(
       {required this.edgeId,
+      @OffsetConverter() required this.startCanvas,
       @OffsetConverter() required this.lastCanvas,
       required this.sourceAnchor,
       final String? $type})
@@ -784,6 +919,9 @@ class _$DragEdgeImpl extends DragEdge {
   final String edgeId;
   @override
   @OffsetConverter()
+  final Offset startCanvas;
+  @override
+  @OffsetConverter()
   final Offset lastCanvas;
   @override
   final AnchorModel sourceAnchor;
@@ -793,7 +931,7 @@ class _$DragEdgeImpl extends DragEdge {
 
   @override
   String toString() {
-    return 'InteractionState.dragEdge(edgeId: $edgeId, lastCanvas: $lastCanvas, sourceAnchor: $sourceAnchor)';
+    return 'InteractionState.dragEdge(edgeId: $edgeId, startCanvas: $startCanvas, lastCanvas: $lastCanvas, sourceAnchor: $sourceAnchor)';
   }
 
   @override
@@ -802,6 +940,8 @@ class _$DragEdgeImpl extends DragEdge {
         (other.runtimeType == runtimeType &&
             other is _$DragEdgeImpl &&
             (identical(other.edgeId, edgeId) || other.edgeId == edgeId) &&
+            (identical(other.startCanvas, startCanvas) ||
+                other.startCanvas == startCanvas) &&
             (identical(other.lastCanvas, lastCanvas) ||
                 other.lastCanvas == lastCanvas) &&
             (identical(other.sourceAnchor, sourceAnchor) ||
@@ -811,7 +951,7 @@ class _$DragEdgeImpl extends DragEdge {
   @JsonKey(ignore: true)
   @override
   int get hashCode =>
-      Object.hash(runtimeType, edgeId, lastCanvas, sourceAnchor);
+      Object.hash(runtimeType, edgeId, startCanvas, lastCanvas, sourceAnchor);
 
   @JsonKey(ignore: true)
   @override
@@ -824,25 +964,40 @@ class _$DragEdgeImpl extends DragEdge {
   TResult when<TResult extends Object?>({
     required TResult Function() idle,
     required TResult Function(
-            String nodeId, @OffsetConverter() Offset lastCanvas)
+            String nodeId,
+            @OffsetConverter() Offset startCanvas,
+            @OffsetConverter() Offset lastCanvas)
         dragNode,
-    required TResult Function(String edgeId,
-            @OffsetConverter() Offset lastCanvas, AnchorModel sourceAnchor)
+    required TResult Function(
+            String edgeId,
+            @OffsetConverter() Offset startCanvas,
+            @OffsetConverter() Offset lastCanvas,
+            AnchorModel sourceAnchor)
         dragEdge,
     required TResult Function(
-            String edgeId, int pointIndex, @OffsetConverter() Offset lastCanvas)
+            String edgeId,
+            int pointIndex,
+            @OffsetConverter() Offset startCanvas,
+            @OffsetConverter() Offset lastCanvas)
         dragWaypoint,
-    required TResult Function(@OffsetConverter() Offset lastGlobal) panCanvas,
+    required TResult Function(@OffsetConverter() Offset startGlobal,
+            @OffsetConverter() Offset lastGlobal)
+        panCanvas,
     required TResult Function(@RectConverter() Rect selectionBox) selectingArea,
     required TResult Function(
-            String nodeType, @OffsetConverter() Offset lastCanvas)
+            String nodeType,
+            @OffsetConverter() Offset startCanvas,
+            @OffsetConverter() Offset lastCanvas)
         insertingNode,
     required TResult Function(
-            String edgeId, @OffsetConverter() Offset lastCanvas)
+            String edgeId,
+            @OffsetConverter() Offset startCanvas,
+            @OffsetConverter() Offset lastCanvas)
         insertNodeToEdge,
     required TResult Function(
             String nodeId,
             @OffsetConverter() Offset handlePosition,
+            @OffsetConverter() Offset startCanvas,
             @OffsetConverter() Offset lastCanvas)
         resizingNode,
     required TResult Function(String nodeId) hoveringNode,
@@ -852,28 +1007,39 @@ class _$DragEdgeImpl extends DragEdge {
             @OffsetConverter() Offset globalPosition, String? targetId)
         contextMenuOpen,
   }) {
-    return dragEdge(edgeId, lastCanvas, sourceAnchor);
+    return dragEdge(edgeId, startCanvas, lastCanvas, sourceAnchor);
   }
 
   @override
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? idle,
-    TResult? Function(String nodeId, @OffsetConverter() Offset lastCanvas)?
+    TResult? Function(String nodeId, @OffsetConverter() Offset startCanvas,
+            @OffsetConverter() Offset lastCanvas)?
         dragNode,
-    TResult? Function(String edgeId, @OffsetConverter() Offset lastCanvas,
-            AnchorModel sourceAnchor)?
+    TResult? Function(String edgeId, @OffsetConverter() Offset startCanvas,
+            @OffsetConverter() Offset lastCanvas, AnchorModel sourceAnchor)?
         dragEdge,
-    TResult? Function(String edgeId, int pointIndex,
+    TResult? Function(
+            String edgeId,
+            int pointIndex,
+            @OffsetConverter() Offset startCanvas,
             @OffsetConverter() Offset lastCanvas)?
         dragWaypoint,
-    TResult? Function(@OffsetConverter() Offset lastGlobal)? panCanvas,
+    TResult? Function(@OffsetConverter() Offset startGlobal,
+            @OffsetConverter() Offset lastGlobal)?
+        panCanvas,
     TResult? Function(@RectConverter() Rect selectionBox)? selectingArea,
-    TResult? Function(String nodeType, @OffsetConverter() Offset lastCanvas)?
+    TResult? Function(String nodeType, @OffsetConverter() Offset startCanvas,
+            @OffsetConverter() Offset lastCanvas)?
         insertingNode,
-    TResult? Function(String edgeId, @OffsetConverter() Offset lastCanvas)?
+    TResult? Function(String edgeId, @OffsetConverter() Offset startCanvas,
+            @OffsetConverter() Offset lastCanvas)?
         insertNodeToEdge,
-    TResult? Function(String nodeId, @OffsetConverter() Offset handlePosition,
+    TResult? Function(
+            String nodeId,
+            @OffsetConverter() Offset handlePosition,
+            @OffsetConverter() Offset startCanvas,
             @OffsetConverter() Offset lastCanvas)?
         resizingNode,
     TResult? Function(String nodeId)? hoveringNode,
@@ -883,28 +1049,39 @@ class _$DragEdgeImpl extends DragEdge {
             @OffsetConverter() Offset globalPosition, String? targetId)?
         contextMenuOpen,
   }) {
-    return dragEdge?.call(edgeId, lastCanvas, sourceAnchor);
+    return dragEdge?.call(edgeId, startCanvas, lastCanvas, sourceAnchor);
   }
 
   @override
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? idle,
-    TResult Function(String nodeId, @OffsetConverter() Offset lastCanvas)?
+    TResult Function(String nodeId, @OffsetConverter() Offset startCanvas,
+            @OffsetConverter() Offset lastCanvas)?
         dragNode,
-    TResult Function(String edgeId, @OffsetConverter() Offset lastCanvas,
-            AnchorModel sourceAnchor)?
+    TResult Function(String edgeId, @OffsetConverter() Offset startCanvas,
+            @OffsetConverter() Offset lastCanvas, AnchorModel sourceAnchor)?
         dragEdge,
-    TResult Function(String edgeId, int pointIndex,
+    TResult Function(
+            String edgeId,
+            int pointIndex,
+            @OffsetConverter() Offset startCanvas,
             @OffsetConverter() Offset lastCanvas)?
         dragWaypoint,
-    TResult Function(@OffsetConverter() Offset lastGlobal)? panCanvas,
+    TResult Function(@OffsetConverter() Offset startGlobal,
+            @OffsetConverter() Offset lastGlobal)?
+        panCanvas,
     TResult Function(@RectConverter() Rect selectionBox)? selectingArea,
-    TResult Function(String nodeType, @OffsetConverter() Offset lastCanvas)?
+    TResult Function(String nodeType, @OffsetConverter() Offset startCanvas,
+            @OffsetConverter() Offset lastCanvas)?
         insertingNode,
-    TResult Function(String edgeId, @OffsetConverter() Offset lastCanvas)?
+    TResult Function(String edgeId, @OffsetConverter() Offset startCanvas,
+            @OffsetConverter() Offset lastCanvas)?
         insertNodeToEdge,
-    TResult Function(String nodeId, @OffsetConverter() Offset handlePosition,
+    TResult Function(
+            String nodeId,
+            @OffsetConverter() Offset handlePosition,
+            @OffsetConverter() Offset startCanvas,
             @OffsetConverter() Offset lastCanvas)?
         resizingNode,
     TResult Function(String nodeId)? hoveringNode,
@@ -916,7 +1093,7 @@ class _$DragEdgeImpl extends DragEdge {
     required TResult orElse(),
   }) {
     if (dragEdge != null) {
-      return dragEdge(edgeId, lastCanvas, sourceAnchor);
+      return dragEdge(edgeId, startCanvas, lastCanvas, sourceAnchor);
     }
     return orElse();
   }
@@ -996,6 +1173,7 @@ class _$DragEdgeImpl extends DragEdge {
 abstract class DragEdge extends InteractionState {
   const factory DragEdge(
       {required final String edgeId,
+      @OffsetConverter() required final Offset startCanvas,
       @OffsetConverter() required final Offset lastCanvas,
       required final AnchorModel sourceAnchor}) = _$DragEdgeImpl;
   const DragEdge._() : super._();
@@ -1004,6 +1182,8 @@ abstract class DragEdge extends InteractionState {
       _$DragEdgeImpl.fromJson;
 
   String get edgeId;
+  @OffsetConverter()
+  Offset get startCanvas;
   @OffsetConverter()
   Offset get lastCanvas;
   AnchorModel get sourceAnchor;
@@ -1019,7 +1199,10 @@ abstract class _$$DragWaypointImplCopyWith<$Res> {
       __$$DragWaypointImplCopyWithImpl<$Res>;
   @useResult
   $Res call(
-      {String edgeId, int pointIndex, @OffsetConverter() Offset lastCanvas});
+      {String edgeId,
+      int pointIndex,
+      @OffsetConverter() Offset startCanvas,
+      @OffsetConverter() Offset lastCanvas});
 }
 
 /// @nodoc
@@ -1035,6 +1218,7 @@ class __$$DragWaypointImplCopyWithImpl<$Res>
   $Res call({
     Object? edgeId = null,
     Object? pointIndex = null,
+    Object? startCanvas = null,
     Object? lastCanvas = null,
   }) {
     return _then(_$DragWaypointImpl(
@@ -1046,6 +1230,10 @@ class __$$DragWaypointImplCopyWithImpl<$Res>
           ? _value.pointIndex
           : pointIndex // ignore: cast_nullable_to_non_nullable
               as int,
+      startCanvas: null == startCanvas
+          ? _value.startCanvas
+          : startCanvas // ignore: cast_nullable_to_non_nullable
+              as Offset,
       lastCanvas: null == lastCanvas
           ? _value.lastCanvas
           : lastCanvas // ignore: cast_nullable_to_non_nullable
@@ -1060,6 +1248,7 @@ class _$DragWaypointImpl extends DragWaypoint {
   const _$DragWaypointImpl(
       {required this.edgeId,
       required this.pointIndex,
+      @OffsetConverter() required this.startCanvas,
       @OffsetConverter() required this.lastCanvas,
       final String? $type})
       : $type = $type ?? 'drag_waypoint',
@@ -1074,6 +1263,9 @@ class _$DragWaypointImpl extends DragWaypoint {
   final int pointIndex;
   @override
   @OffsetConverter()
+  final Offset startCanvas;
+  @override
+  @OffsetConverter()
   final Offset lastCanvas;
 
   @JsonKey(name: 'type')
@@ -1081,7 +1273,7 @@ class _$DragWaypointImpl extends DragWaypoint {
 
   @override
   String toString() {
-    return 'InteractionState.dragWaypoint(edgeId: $edgeId, pointIndex: $pointIndex, lastCanvas: $lastCanvas)';
+    return 'InteractionState.dragWaypoint(edgeId: $edgeId, pointIndex: $pointIndex, startCanvas: $startCanvas, lastCanvas: $lastCanvas)';
   }
 
   @override
@@ -1092,13 +1284,16 @@ class _$DragWaypointImpl extends DragWaypoint {
             (identical(other.edgeId, edgeId) || other.edgeId == edgeId) &&
             (identical(other.pointIndex, pointIndex) ||
                 other.pointIndex == pointIndex) &&
+            (identical(other.startCanvas, startCanvas) ||
+                other.startCanvas == startCanvas) &&
             (identical(other.lastCanvas, lastCanvas) ||
                 other.lastCanvas == lastCanvas));
   }
 
   @JsonKey(ignore: true)
   @override
-  int get hashCode => Object.hash(runtimeType, edgeId, pointIndex, lastCanvas);
+  int get hashCode =>
+      Object.hash(runtimeType, edgeId, pointIndex, startCanvas, lastCanvas);
 
   @JsonKey(ignore: true)
   @override
@@ -1111,25 +1306,40 @@ class _$DragWaypointImpl extends DragWaypoint {
   TResult when<TResult extends Object?>({
     required TResult Function() idle,
     required TResult Function(
-            String nodeId, @OffsetConverter() Offset lastCanvas)
+            String nodeId,
+            @OffsetConverter() Offset startCanvas,
+            @OffsetConverter() Offset lastCanvas)
         dragNode,
-    required TResult Function(String edgeId,
-            @OffsetConverter() Offset lastCanvas, AnchorModel sourceAnchor)
+    required TResult Function(
+            String edgeId,
+            @OffsetConverter() Offset startCanvas,
+            @OffsetConverter() Offset lastCanvas,
+            AnchorModel sourceAnchor)
         dragEdge,
     required TResult Function(
-            String edgeId, int pointIndex, @OffsetConverter() Offset lastCanvas)
+            String edgeId,
+            int pointIndex,
+            @OffsetConverter() Offset startCanvas,
+            @OffsetConverter() Offset lastCanvas)
         dragWaypoint,
-    required TResult Function(@OffsetConverter() Offset lastGlobal) panCanvas,
+    required TResult Function(@OffsetConverter() Offset startGlobal,
+            @OffsetConverter() Offset lastGlobal)
+        panCanvas,
     required TResult Function(@RectConverter() Rect selectionBox) selectingArea,
     required TResult Function(
-            String nodeType, @OffsetConverter() Offset lastCanvas)
+            String nodeType,
+            @OffsetConverter() Offset startCanvas,
+            @OffsetConverter() Offset lastCanvas)
         insertingNode,
     required TResult Function(
-            String edgeId, @OffsetConverter() Offset lastCanvas)
+            String edgeId,
+            @OffsetConverter() Offset startCanvas,
+            @OffsetConverter() Offset lastCanvas)
         insertNodeToEdge,
     required TResult Function(
             String nodeId,
             @OffsetConverter() Offset handlePosition,
+            @OffsetConverter() Offset startCanvas,
             @OffsetConverter() Offset lastCanvas)
         resizingNode,
     required TResult Function(String nodeId) hoveringNode,
@@ -1139,28 +1349,39 @@ class _$DragWaypointImpl extends DragWaypoint {
             @OffsetConverter() Offset globalPosition, String? targetId)
         contextMenuOpen,
   }) {
-    return dragWaypoint(edgeId, pointIndex, lastCanvas);
+    return dragWaypoint(edgeId, pointIndex, startCanvas, lastCanvas);
   }
 
   @override
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? idle,
-    TResult? Function(String nodeId, @OffsetConverter() Offset lastCanvas)?
+    TResult? Function(String nodeId, @OffsetConverter() Offset startCanvas,
+            @OffsetConverter() Offset lastCanvas)?
         dragNode,
-    TResult? Function(String edgeId, @OffsetConverter() Offset lastCanvas,
-            AnchorModel sourceAnchor)?
+    TResult? Function(String edgeId, @OffsetConverter() Offset startCanvas,
+            @OffsetConverter() Offset lastCanvas, AnchorModel sourceAnchor)?
         dragEdge,
-    TResult? Function(String edgeId, int pointIndex,
+    TResult? Function(
+            String edgeId,
+            int pointIndex,
+            @OffsetConverter() Offset startCanvas,
             @OffsetConverter() Offset lastCanvas)?
         dragWaypoint,
-    TResult? Function(@OffsetConverter() Offset lastGlobal)? panCanvas,
+    TResult? Function(@OffsetConverter() Offset startGlobal,
+            @OffsetConverter() Offset lastGlobal)?
+        panCanvas,
     TResult? Function(@RectConverter() Rect selectionBox)? selectingArea,
-    TResult? Function(String nodeType, @OffsetConverter() Offset lastCanvas)?
+    TResult? Function(String nodeType, @OffsetConverter() Offset startCanvas,
+            @OffsetConverter() Offset lastCanvas)?
         insertingNode,
-    TResult? Function(String edgeId, @OffsetConverter() Offset lastCanvas)?
+    TResult? Function(String edgeId, @OffsetConverter() Offset startCanvas,
+            @OffsetConverter() Offset lastCanvas)?
         insertNodeToEdge,
-    TResult? Function(String nodeId, @OffsetConverter() Offset handlePosition,
+    TResult? Function(
+            String nodeId,
+            @OffsetConverter() Offset handlePosition,
+            @OffsetConverter() Offset startCanvas,
             @OffsetConverter() Offset lastCanvas)?
         resizingNode,
     TResult? Function(String nodeId)? hoveringNode,
@@ -1170,28 +1391,39 @@ class _$DragWaypointImpl extends DragWaypoint {
             @OffsetConverter() Offset globalPosition, String? targetId)?
         contextMenuOpen,
   }) {
-    return dragWaypoint?.call(edgeId, pointIndex, lastCanvas);
+    return dragWaypoint?.call(edgeId, pointIndex, startCanvas, lastCanvas);
   }
 
   @override
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? idle,
-    TResult Function(String nodeId, @OffsetConverter() Offset lastCanvas)?
+    TResult Function(String nodeId, @OffsetConverter() Offset startCanvas,
+            @OffsetConverter() Offset lastCanvas)?
         dragNode,
-    TResult Function(String edgeId, @OffsetConverter() Offset lastCanvas,
-            AnchorModel sourceAnchor)?
+    TResult Function(String edgeId, @OffsetConverter() Offset startCanvas,
+            @OffsetConverter() Offset lastCanvas, AnchorModel sourceAnchor)?
         dragEdge,
-    TResult Function(String edgeId, int pointIndex,
+    TResult Function(
+            String edgeId,
+            int pointIndex,
+            @OffsetConverter() Offset startCanvas,
             @OffsetConverter() Offset lastCanvas)?
         dragWaypoint,
-    TResult Function(@OffsetConverter() Offset lastGlobal)? panCanvas,
+    TResult Function(@OffsetConverter() Offset startGlobal,
+            @OffsetConverter() Offset lastGlobal)?
+        panCanvas,
     TResult Function(@RectConverter() Rect selectionBox)? selectingArea,
-    TResult Function(String nodeType, @OffsetConverter() Offset lastCanvas)?
+    TResult Function(String nodeType, @OffsetConverter() Offset startCanvas,
+            @OffsetConverter() Offset lastCanvas)?
         insertingNode,
-    TResult Function(String edgeId, @OffsetConverter() Offset lastCanvas)?
+    TResult Function(String edgeId, @OffsetConverter() Offset startCanvas,
+            @OffsetConverter() Offset lastCanvas)?
         insertNodeToEdge,
-    TResult Function(String nodeId, @OffsetConverter() Offset handlePosition,
+    TResult Function(
+            String nodeId,
+            @OffsetConverter() Offset handlePosition,
+            @OffsetConverter() Offset startCanvas,
             @OffsetConverter() Offset lastCanvas)?
         resizingNode,
     TResult Function(String nodeId)? hoveringNode,
@@ -1203,7 +1435,7 @@ class _$DragWaypointImpl extends DragWaypoint {
     required TResult orElse(),
   }) {
     if (dragWaypoint != null) {
-      return dragWaypoint(edgeId, pointIndex, lastCanvas);
+      return dragWaypoint(edgeId, pointIndex, startCanvas, lastCanvas);
     }
     return orElse();
   }
@@ -1284,6 +1516,7 @@ abstract class DragWaypoint extends InteractionState {
   const factory DragWaypoint(
           {required final String edgeId,
           required final int pointIndex,
+          @OffsetConverter() required final Offset startCanvas,
           @OffsetConverter() required final Offset lastCanvas}) =
       _$DragWaypointImpl;
   const DragWaypoint._() : super._();
@@ -1293,6 +1526,8 @@ abstract class DragWaypoint extends InteractionState {
 
   String get edgeId;
   int get pointIndex;
+  @OffsetConverter()
+  Offset get startCanvas;
   @OffsetConverter()
   Offset get lastCanvas;
   @JsonKey(ignore: true)
@@ -1306,7 +1541,9 @@ abstract class _$$PanCanvasImplCopyWith<$Res> {
           _$PanCanvasImpl value, $Res Function(_$PanCanvasImpl) then) =
       __$$PanCanvasImplCopyWithImpl<$Res>;
   @useResult
-  $Res call({@OffsetConverter() Offset lastGlobal});
+  $Res call(
+      {@OffsetConverter() Offset startGlobal,
+      @OffsetConverter() Offset lastGlobal});
 }
 
 /// @nodoc
@@ -1320,9 +1557,14 @@ class __$$PanCanvasImplCopyWithImpl<$Res>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
+    Object? startGlobal = null,
     Object? lastGlobal = null,
   }) {
     return _then(_$PanCanvasImpl(
+      startGlobal: null == startGlobal
+          ? _value.startGlobal
+          : startGlobal // ignore: cast_nullable_to_non_nullable
+              as Offset,
       lastGlobal: null == lastGlobal
           ? _value.lastGlobal
           : lastGlobal // ignore: cast_nullable_to_non_nullable
@@ -1335,13 +1577,18 @@ class __$$PanCanvasImplCopyWithImpl<$Res>
 @JsonSerializable()
 class _$PanCanvasImpl extends PanCanvas {
   const _$PanCanvasImpl(
-      {@OffsetConverter() required this.lastGlobal, final String? $type})
+      {@OffsetConverter() required this.startGlobal,
+      @OffsetConverter() required this.lastGlobal,
+      final String? $type})
       : $type = $type ?? 'pan_canvas',
         super._();
 
   factory _$PanCanvasImpl.fromJson(Map<String, dynamic> json) =>
       _$$PanCanvasImplFromJson(json);
 
+  @override
+  @OffsetConverter()
+  final Offset startGlobal;
   @override
   @OffsetConverter()
   final Offset lastGlobal;
@@ -1351,7 +1598,7 @@ class _$PanCanvasImpl extends PanCanvas {
 
   @override
   String toString() {
-    return 'InteractionState.panCanvas(lastGlobal: $lastGlobal)';
+    return 'InteractionState.panCanvas(startGlobal: $startGlobal, lastGlobal: $lastGlobal)';
   }
 
   @override
@@ -1359,13 +1606,15 @@ class _$PanCanvasImpl extends PanCanvas {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$PanCanvasImpl &&
+            (identical(other.startGlobal, startGlobal) ||
+                other.startGlobal == startGlobal) &&
             (identical(other.lastGlobal, lastGlobal) ||
                 other.lastGlobal == lastGlobal));
   }
 
   @JsonKey(ignore: true)
   @override
-  int get hashCode => Object.hash(runtimeType, lastGlobal);
+  int get hashCode => Object.hash(runtimeType, startGlobal, lastGlobal);
 
   @JsonKey(ignore: true)
   @override
@@ -1378,25 +1627,40 @@ class _$PanCanvasImpl extends PanCanvas {
   TResult when<TResult extends Object?>({
     required TResult Function() idle,
     required TResult Function(
-            String nodeId, @OffsetConverter() Offset lastCanvas)
+            String nodeId,
+            @OffsetConverter() Offset startCanvas,
+            @OffsetConverter() Offset lastCanvas)
         dragNode,
-    required TResult Function(String edgeId,
-            @OffsetConverter() Offset lastCanvas, AnchorModel sourceAnchor)
+    required TResult Function(
+            String edgeId,
+            @OffsetConverter() Offset startCanvas,
+            @OffsetConverter() Offset lastCanvas,
+            AnchorModel sourceAnchor)
         dragEdge,
     required TResult Function(
-            String edgeId, int pointIndex, @OffsetConverter() Offset lastCanvas)
+            String edgeId,
+            int pointIndex,
+            @OffsetConverter() Offset startCanvas,
+            @OffsetConverter() Offset lastCanvas)
         dragWaypoint,
-    required TResult Function(@OffsetConverter() Offset lastGlobal) panCanvas,
+    required TResult Function(@OffsetConverter() Offset startGlobal,
+            @OffsetConverter() Offset lastGlobal)
+        panCanvas,
     required TResult Function(@RectConverter() Rect selectionBox) selectingArea,
     required TResult Function(
-            String nodeType, @OffsetConverter() Offset lastCanvas)
+            String nodeType,
+            @OffsetConverter() Offset startCanvas,
+            @OffsetConverter() Offset lastCanvas)
         insertingNode,
     required TResult Function(
-            String edgeId, @OffsetConverter() Offset lastCanvas)
+            String edgeId,
+            @OffsetConverter() Offset startCanvas,
+            @OffsetConverter() Offset lastCanvas)
         insertNodeToEdge,
     required TResult Function(
             String nodeId,
             @OffsetConverter() Offset handlePosition,
+            @OffsetConverter() Offset startCanvas,
             @OffsetConverter() Offset lastCanvas)
         resizingNode,
     required TResult Function(String nodeId) hoveringNode,
@@ -1406,28 +1670,39 @@ class _$PanCanvasImpl extends PanCanvas {
             @OffsetConverter() Offset globalPosition, String? targetId)
         contextMenuOpen,
   }) {
-    return panCanvas(lastGlobal);
+    return panCanvas(startGlobal, lastGlobal);
   }
 
   @override
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? idle,
-    TResult? Function(String nodeId, @OffsetConverter() Offset lastCanvas)?
+    TResult? Function(String nodeId, @OffsetConverter() Offset startCanvas,
+            @OffsetConverter() Offset lastCanvas)?
         dragNode,
-    TResult? Function(String edgeId, @OffsetConverter() Offset lastCanvas,
-            AnchorModel sourceAnchor)?
+    TResult? Function(String edgeId, @OffsetConverter() Offset startCanvas,
+            @OffsetConverter() Offset lastCanvas, AnchorModel sourceAnchor)?
         dragEdge,
-    TResult? Function(String edgeId, int pointIndex,
+    TResult? Function(
+            String edgeId,
+            int pointIndex,
+            @OffsetConverter() Offset startCanvas,
             @OffsetConverter() Offset lastCanvas)?
         dragWaypoint,
-    TResult? Function(@OffsetConverter() Offset lastGlobal)? panCanvas,
+    TResult? Function(@OffsetConverter() Offset startGlobal,
+            @OffsetConverter() Offset lastGlobal)?
+        panCanvas,
     TResult? Function(@RectConverter() Rect selectionBox)? selectingArea,
-    TResult? Function(String nodeType, @OffsetConverter() Offset lastCanvas)?
+    TResult? Function(String nodeType, @OffsetConverter() Offset startCanvas,
+            @OffsetConverter() Offset lastCanvas)?
         insertingNode,
-    TResult? Function(String edgeId, @OffsetConverter() Offset lastCanvas)?
+    TResult? Function(String edgeId, @OffsetConverter() Offset startCanvas,
+            @OffsetConverter() Offset lastCanvas)?
         insertNodeToEdge,
-    TResult? Function(String nodeId, @OffsetConverter() Offset handlePosition,
+    TResult? Function(
+            String nodeId,
+            @OffsetConverter() Offset handlePosition,
+            @OffsetConverter() Offset startCanvas,
             @OffsetConverter() Offset lastCanvas)?
         resizingNode,
     TResult? Function(String nodeId)? hoveringNode,
@@ -1437,28 +1712,39 @@ class _$PanCanvasImpl extends PanCanvas {
             @OffsetConverter() Offset globalPosition, String? targetId)?
         contextMenuOpen,
   }) {
-    return panCanvas?.call(lastGlobal);
+    return panCanvas?.call(startGlobal, lastGlobal);
   }
 
   @override
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? idle,
-    TResult Function(String nodeId, @OffsetConverter() Offset lastCanvas)?
+    TResult Function(String nodeId, @OffsetConverter() Offset startCanvas,
+            @OffsetConverter() Offset lastCanvas)?
         dragNode,
-    TResult Function(String edgeId, @OffsetConverter() Offset lastCanvas,
-            AnchorModel sourceAnchor)?
+    TResult Function(String edgeId, @OffsetConverter() Offset startCanvas,
+            @OffsetConverter() Offset lastCanvas, AnchorModel sourceAnchor)?
         dragEdge,
-    TResult Function(String edgeId, int pointIndex,
+    TResult Function(
+            String edgeId,
+            int pointIndex,
+            @OffsetConverter() Offset startCanvas,
             @OffsetConverter() Offset lastCanvas)?
         dragWaypoint,
-    TResult Function(@OffsetConverter() Offset lastGlobal)? panCanvas,
+    TResult Function(@OffsetConverter() Offset startGlobal,
+            @OffsetConverter() Offset lastGlobal)?
+        panCanvas,
     TResult Function(@RectConverter() Rect selectionBox)? selectingArea,
-    TResult Function(String nodeType, @OffsetConverter() Offset lastCanvas)?
+    TResult Function(String nodeType, @OffsetConverter() Offset startCanvas,
+            @OffsetConverter() Offset lastCanvas)?
         insertingNode,
-    TResult Function(String edgeId, @OffsetConverter() Offset lastCanvas)?
+    TResult Function(String edgeId, @OffsetConverter() Offset startCanvas,
+            @OffsetConverter() Offset lastCanvas)?
         insertNodeToEdge,
-    TResult Function(String nodeId, @OffsetConverter() Offset handlePosition,
+    TResult Function(
+            String nodeId,
+            @OffsetConverter() Offset handlePosition,
+            @OffsetConverter() Offset startCanvas,
             @OffsetConverter() Offset lastCanvas)?
         resizingNode,
     TResult Function(String nodeId)? hoveringNode,
@@ -1470,7 +1756,7 @@ class _$PanCanvasImpl extends PanCanvas {
     required TResult orElse(),
   }) {
     if (panCanvas != null) {
-      return panCanvas(lastGlobal);
+      return panCanvas(startGlobal, lastGlobal);
     }
     return orElse();
   }
@@ -1549,12 +1835,15 @@ class _$PanCanvasImpl extends PanCanvas {
 
 abstract class PanCanvas extends InteractionState {
   const factory PanCanvas(
-      {@OffsetConverter() required final Offset lastGlobal}) = _$PanCanvasImpl;
+      {@OffsetConverter() required final Offset startGlobal,
+      @OffsetConverter() required final Offset lastGlobal}) = _$PanCanvasImpl;
   const PanCanvas._() : super._();
 
   factory PanCanvas.fromJson(Map<String, dynamic> json) =
       _$PanCanvasImpl.fromJson;
 
+  @OffsetConverter()
+  Offset get startGlobal;
   @OffsetConverter()
   Offset get lastGlobal;
   @JsonKey(ignore: true)
@@ -1640,25 +1929,40 @@ class _$SelectingAreaImpl extends SelectingArea {
   TResult when<TResult extends Object?>({
     required TResult Function() idle,
     required TResult Function(
-            String nodeId, @OffsetConverter() Offset lastCanvas)
+            String nodeId,
+            @OffsetConverter() Offset startCanvas,
+            @OffsetConverter() Offset lastCanvas)
         dragNode,
-    required TResult Function(String edgeId,
-            @OffsetConverter() Offset lastCanvas, AnchorModel sourceAnchor)
+    required TResult Function(
+            String edgeId,
+            @OffsetConverter() Offset startCanvas,
+            @OffsetConverter() Offset lastCanvas,
+            AnchorModel sourceAnchor)
         dragEdge,
     required TResult Function(
-            String edgeId, int pointIndex, @OffsetConverter() Offset lastCanvas)
+            String edgeId,
+            int pointIndex,
+            @OffsetConverter() Offset startCanvas,
+            @OffsetConverter() Offset lastCanvas)
         dragWaypoint,
-    required TResult Function(@OffsetConverter() Offset lastGlobal) panCanvas,
+    required TResult Function(@OffsetConverter() Offset startGlobal,
+            @OffsetConverter() Offset lastGlobal)
+        panCanvas,
     required TResult Function(@RectConverter() Rect selectionBox) selectingArea,
     required TResult Function(
-            String nodeType, @OffsetConverter() Offset lastCanvas)
+            String nodeType,
+            @OffsetConverter() Offset startCanvas,
+            @OffsetConverter() Offset lastCanvas)
         insertingNode,
     required TResult Function(
-            String edgeId, @OffsetConverter() Offset lastCanvas)
+            String edgeId,
+            @OffsetConverter() Offset startCanvas,
+            @OffsetConverter() Offset lastCanvas)
         insertNodeToEdge,
     required TResult Function(
             String nodeId,
             @OffsetConverter() Offset handlePosition,
+            @OffsetConverter() Offset startCanvas,
             @OffsetConverter() Offset lastCanvas)
         resizingNode,
     required TResult Function(String nodeId) hoveringNode,
@@ -1675,21 +1979,32 @@ class _$SelectingAreaImpl extends SelectingArea {
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? idle,
-    TResult? Function(String nodeId, @OffsetConverter() Offset lastCanvas)?
+    TResult? Function(String nodeId, @OffsetConverter() Offset startCanvas,
+            @OffsetConverter() Offset lastCanvas)?
         dragNode,
-    TResult? Function(String edgeId, @OffsetConverter() Offset lastCanvas,
-            AnchorModel sourceAnchor)?
+    TResult? Function(String edgeId, @OffsetConverter() Offset startCanvas,
+            @OffsetConverter() Offset lastCanvas, AnchorModel sourceAnchor)?
         dragEdge,
-    TResult? Function(String edgeId, int pointIndex,
+    TResult? Function(
+            String edgeId,
+            int pointIndex,
+            @OffsetConverter() Offset startCanvas,
             @OffsetConverter() Offset lastCanvas)?
         dragWaypoint,
-    TResult? Function(@OffsetConverter() Offset lastGlobal)? panCanvas,
+    TResult? Function(@OffsetConverter() Offset startGlobal,
+            @OffsetConverter() Offset lastGlobal)?
+        panCanvas,
     TResult? Function(@RectConverter() Rect selectionBox)? selectingArea,
-    TResult? Function(String nodeType, @OffsetConverter() Offset lastCanvas)?
+    TResult? Function(String nodeType, @OffsetConverter() Offset startCanvas,
+            @OffsetConverter() Offset lastCanvas)?
         insertingNode,
-    TResult? Function(String edgeId, @OffsetConverter() Offset lastCanvas)?
+    TResult? Function(String edgeId, @OffsetConverter() Offset startCanvas,
+            @OffsetConverter() Offset lastCanvas)?
         insertNodeToEdge,
-    TResult? Function(String nodeId, @OffsetConverter() Offset handlePosition,
+    TResult? Function(
+            String nodeId,
+            @OffsetConverter() Offset handlePosition,
+            @OffsetConverter() Offset startCanvas,
             @OffsetConverter() Offset lastCanvas)?
         resizingNode,
     TResult? Function(String nodeId)? hoveringNode,
@@ -1706,21 +2021,32 @@ class _$SelectingAreaImpl extends SelectingArea {
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? idle,
-    TResult Function(String nodeId, @OffsetConverter() Offset lastCanvas)?
+    TResult Function(String nodeId, @OffsetConverter() Offset startCanvas,
+            @OffsetConverter() Offset lastCanvas)?
         dragNode,
-    TResult Function(String edgeId, @OffsetConverter() Offset lastCanvas,
-            AnchorModel sourceAnchor)?
+    TResult Function(String edgeId, @OffsetConverter() Offset startCanvas,
+            @OffsetConverter() Offset lastCanvas, AnchorModel sourceAnchor)?
         dragEdge,
-    TResult Function(String edgeId, int pointIndex,
+    TResult Function(
+            String edgeId,
+            int pointIndex,
+            @OffsetConverter() Offset startCanvas,
             @OffsetConverter() Offset lastCanvas)?
         dragWaypoint,
-    TResult Function(@OffsetConverter() Offset lastGlobal)? panCanvas,
+    TResult Function(@OffsetConverter() Offset startGlobal,
+            @OffsetConverter() Offset lastGlobal)?
+        panCanvas,
     TResult Function(@RectConverter() Rect selectionBox)? selectingArea,
-    TResult Function(String nodeType, @OffsetConverter() Offset lastCanvas)?
+    TResult Function(String nodeType, @OffsetConverter() Offset startCanvas,
+            @OffsetConverter() Offset lastCanvas)?
         insertingNode,
-    TResult Function(String edgeId, @OffsetConverter() Offset lastCanvas)?
+    TResult Function(String edgeId, @OffsetConverter() Offset startCanvas,
+            @OffsetConverter() Offset lastCanvas)?
         insertNodeToEdge,
-    TResult Function(String nodeId, @OffsetConverter() Offset handlePosition,
+    TResult Function(
+            String nodeId,
+            @OffsetConverter() Offset handlePosition,
+            @OffsetConverter() Offset startCanvas,
             @OffsetConverter() Offset lastCanvas)?
         resizingNode,
     TResult Function(String nodeId)? hoveringNode,
@@ -1831,7 +2157,10 @@ abstract class _$$InsertingNodeImplCopyWith<$Res> {
           _$InsertingNodeImpl value, $Res Function(_$InsertingNodeImpl) then) =
       __$$InsertingNodeImplCopyWithImpl<$Res>;
   @useResult
-  $Res call({String nodeType, @OffsetConverter() Offset lastCanvas});
+  $Res call(
+      {String nodeType,
+      @OffsetConverter() Offset startCanvas,
+      @OffsetConverter() Offset lastCanvas});
 }
 
 /// @nodoc
@@ -1846,6 +2175,7 @@ class __$$InsertingNodeImplCopyWithImpl<$Res>
   @override
   $Res call({
     Object? nodeType = null,
+    Object? startCanvas = null,
     Object? lastCanvas = null,
   }) {
     return _then(_$InsertingNodeImpl(
@@ -1853,6 +2183,10 @@ class __$$InsertingNodeImplCopyWithImpl<$Res>
           ? _value.nodeType
           : nodeType // ignore: cast_nullable_to_non_nullable
               as String,
+      startCanvas: null == startCanvas
+          ? _value.startCanvas
+          : startCanvas // ignore: cast_nullable_to_non_nullable
+              as Offset,
       lastCanvas: null == lastCanvas
           ? _value.lastCanvas
           : lastCanvas // ignore: cast_nullable_to_non_nullable
@@ -1866,6 +2200,7 @@ class __$$InsertingNodeImplCopyWithImpl<$Res>
 class _$InsertingNodeImpl extends InsertingNode {
   const _$InsertingNodeImpl(
       {required this.nodeType,
+      @OffsetConverter() required this.startCanvas,
       @OffsetConverter() required this.lastCanvas,
       final String? $type})
       : $type = $type ?? 'inserting_node',
@@ -1878,6 +2213,9 @@ class _$InsertingNodeImpl extends InsertingNode {
   final String nodeType;
   @override
   @OffsetConverter()
+  final Offset startCanvas;
+  @override
+  @OffsetConverter()
   final Offset lastCanvas;
 
   @JsonKey(name: 'type')
@@ -1885,7 +2223,7 @@ class _$InsertingNodeImpl extends InsertingNode {
 
   @override
   String toString() {
-    return 'InteractionState.insertingNode(nodeType: $nodeType, lastCanvas: $lastCanvas)';
+    return 'InteractionState.insertingNode(nodeType: $nodeType, startCanvas: $startCanvas, lastCanvas: $lastCanvas)';
   }
 
   @override
@@ -1895,13 +2233,16 @@ class _$InsertingNodeImpl extends InsertingNode {
             other is _$InsertingNodeImpl &&
             (identical(other.nodeType, nodeType) ||
                 other.nodeType == nodeType) &&
+            (identical(other.startCanvas, startCanvas) ||
+                other.startCanvas == startCanvas) &&
             (identical(other.lastCanvas, lastCanvas) ||
                 other.lastCanvas == lastCanvas));
   }
 
   @JsonKey(ignore: true)
   @override
-  int get hashCode => Object.hash(runtimeType, nodeType, lastCanvas);
+  int get hashCode =>
+      Object.hash(runtimeType, nodeType, startCanvas, lastCanvas);
 
   @JsonKey(ignore: true)
   @override
@@ -1914,25 +2255,40 @@ class _$InsertingNodeImpl extends InsertingNode {
   TResult when<TResult extends Object?>({
     required TResult Function() idle,
     required TResult Function(
-            String nodeId, @OffsetConverter() Offset lastCanvas)
+            String nodeId,
+            @OffsetConverter() Offset startCanvas,
+            @OffsetConverter() Offset lastCanvas)
         dragNode,
-    required TResult Function(String edgeId,
-            @OffsetConverter() Offset lastCanvas, AnchorModel sourceAnchor)
+    required TResult Function(
+            String edgeId,
+            @OffsetConverter() Offset startCanvas,
+            @OffsetConverter() Offset lastCanvas,
+            AnchorModel sourceAnchor)
         dragEdge,
     required TResult Function(
-            String edgeId, int pointIndex, @OffsetConverter() Offset lastCanvas)
+            String edgeId,
+            int pointIndex,
+            @OffsetConverter() Offset startCanvas,
+            @OffsetConverter() Offset lastCanvas)
         dragWaypoint,
-    required TResult Function(@OffsetConverter() Offset lastGlobal) panCanvas,
+    required TResult Function(@OffsetConverter() Offset startGlobal,
+            @OffsetConverter() Offset lastGlobal)
+        panCanvas,
     required TResult Function(@RectConverter() Rect selectionBox) selectingArea,
     required TResult Function(
-            String nodeType, @OffsetConverter() Offset lastCanvas)
+            String nodeType,
+            @OffsetConverter() Offset startCanvas,
+            @OffsetConverter() Offset lastCanvas)
         insertingNode,
     required TResult Function(
-            String edgeId, @OffsetConverter() Offset lastCanvas)
+            String edgeId,
+            @OffsetConverter() Offset startCanvas,
+            @OffsetConverter() Offset lastCanvas)
         insertNodeToEdge,
     required TResult Function(
             String nodeId,
             @OffsetConverter() Offset handlePosition,
+            @OffsetConverter() Offset startCanvas,
             @OffsetConverter() Offset lastCanvas)
         resizingNode,
     required TResult Function(String nodeId) hoveringNode,
@@ -1942,28 +2298,39 @@ class _$InsertingNodeImpl extends InsertingNode {
             @OffsetConverter() Offset globalPosition, String? targetId)
         contextMenuOpen,
   }) {
-    return insertingNode(nodeType, lastCanvas);
+    return insertingNode(nodeType, startCanvas, lastCanvas);
   }
 
   @override
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? idle,
-    TResult? Function(String nodeId, @OffsetConverter() Offset lastCanvas)?
+    TResult? Function(String nodeId, @OffsetConverter() Offset startCanvas,
+            @OffsetConverter() Offset lastCanvas)?
         dragNode,
-    TResult? Function(String edgeId, @OffsetConverter() Offset lastCanvas,
-            AnchorModel sourceAnchor)?
+    TResult? Function(String edgeId, @OffsetConverter() Offset startCanvas,
+            @OffsetConverter() Offset lastCanvas, AnchorModel sourceAnchor)?
         dragEdge,
-    TResult? Function(String edgeId, int pointIndex,
+    TResult? Function(
+            String edgeId,
+            int pointIndex,
+            @OffsetConverter() Offset startCanvas,
             @OffsetConverter() Offset lastCanvas)?
         dragWaypoint,
-    TResult? Function(@OffsetConverter() Offset lastGlobal)? panCanvas,
+    TResult? Function(@OffsetConverter() Offset startGlobal,
+            @OffsetConverter() Offset lastGlobal)?
+        panCanvas,
     TResult? Function(@RectConverter() Rect selectionBox)? selectingArea,
-    TResult? Function(String nodeType, @OffsetConverter() Offset lastCanvas)?
+    TResult? Function(String nodeType, @OffsetConverter() Offset startCanvas,
+            @OffsetConverter() Offset lastCanvas)?
         insertingNode,
-    TResult? Function(String edgeId, @OffsetConverter() Offset lastCanvas)?
+    TResult? Function(String edgeId, @OffsetConverter() Offset startCanvas,
+            @OffsetConverter() Offset lastCanvas)?
         insertNodeToEdge,
-    TResult? Function(String nodeId, @OffsetConverter() Offset handlePosition,
+    TResult? Function(
+            String nodeId,
+            @OffsetConverter() Offset handlePosition,
+            @OffsetConverter() Offset startCanvas,
             @OffsetConverter() Offset lastCanvas)?
         resizingNode,
     TResult? Function(String nodeId)? hoveringNode,
@@ -1973,28 +2340,39 @@ class _$InsertingNodeImpl extends InsertingNode {
             @OffsetConverter() Offset globalPosition, String? targetId)?
         contextMenuOpen,
   }) {
-    return insertingNode?.call(nodeType, lastCanvas);
+    return insertingNode?.call(nodeType, startCanvas, lastCanvas);
   }
 
   @override
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? idle,
-    TResult Function(String nodeId, @OffsetConverter() Offset lastCanvas)?
+    TResult Function(String nodeId, @OffsetConverter() Offset startCanvas,
+            @OffsetConverter() Offset lastCanvas)?
         dragNode,
-    TResult Function(String edgeId, @OffsetConverter() Offset lastCanvas,
-            AnchorModel sourceAnchor)?
+    TResult Function(String edgeId, @OffsetConverter() Offset startCanvas,
+            @OffsetConverter() Offset lastCanvas, AnchorModel sourceAnchor)?
         dragEdge,
-    TResult Function(String edgeId, int pointIndex,
+    TResult Function(
+            String edgeId,
+            int pointIndex,
+            @OffsetConverter() Offset startCanvas,
             @OffsetConverter() Offset lastCanvas)?
         dragWaypoint,
-    TResult Function(@OffsetConverter() Offset lastGlobal)? panCanvas,
+    TResult Function(@OffsetConverter() Offset startGlobal,
+            @OffsetConverter() Offset lastGlobal)?
+        panCanvas,
     TResult Function(@RectConverter() Rect selectionBox)? selectingArea,
-    TResult Function(String nodeType, @OffsetConverter() Offset lastCanvas)?
+    TResult Function(String nodeType, @OffsetConverter() Offset startCanvas,
+            @OffsetConverter() Offset lastCanvas)?
         insertingNode,
-    TResult Function(String edgeId, @OffsetConverter() Offset lastCanvas)?
+    TResult Function(String edgeId, @OffsetConverter() Offset startCanvas,
+            @OffsetConverter() Offset lastCanvas)?
         insertNodeToEdge,
-    TResult Function(String nodeId, @OffsetConverter() Offset handlePosition,
+    TResult Function(
+            String nodeId,
+            @OffsetConverter() Offset handlePosition,
+            @OffsetConverter() Offset startCanvas,
             @OffsetConverter() Offset lastCanvas)?
         resizingNode,
     TResult Function(String nodeId)? hoveringNode,
@@ -2006,7 +2384,7 @@ class _$InsertingNodeImpl extends InsertingNode {
     required TResult orElse(),
   }) {
     if (insertingNode != null) {
-      return insertingNode(nodeType, lastCanvas);
+      return insertingNode(nodeType, startCanvas, lastCanvas);
     }
     return orElse();
   }
@@ -2086,6 +2464,7 @@ class _$InsertingNodeImpl extends InsertingNode {
 abstract class InsertingNode extends InteractionState {
   const factory InsertingNode(
           {required final String nodeType,
+          @OffsetConverter() required final Offset startCanvas,
           @OffsetConverter() required final Offset lastCanvas}) =
       _$InsertingNodeImpl;
   const InsertingNode._() : super._();
@@ -2094,6 +2473,8 @@ abstract class InsertingNode extends InteractionState {
       _$InsertingNodeImpl.fromJson;
 
   String get nodeType;
+  @OffsetConverter()
+  Offset get startCanvas;
   @OffsetConverter()
   Offset get lastCanvas;
   @JsonKey(ignore: true)
@@ -2107,7 +2488,10 @@ abstract class _$$InsertNodeToEdgeImplCopyWith<$Res> {
           $Res Function(_$InsertNodeToEdgeImpl) then) =
       __$$InsertNodeToEdgeImplCopyWithImpl<$Res>;
   @useResult
-  $Res call({String edgeId, @OffsetConverter() Offset lastCanvas});
+  $Res call(
+      {String edgeId,
+      @OffsetConverter() Offset startCanvas,
+      @OffsetConverter() Offset lastCanvas});
 }
 
 /// @nodoc
@@ -2122,6 +2506,7 @@ class __$$InsertNodeToEdgeImplCopyWithImpl<$Res>
   @override
   $Res call({
     Object? edgeId = null,
+    Object? startCanvas = null,
     Object? lastCanvas = null,
   }) {
     return _then(_$InsertNodeToEdgeImpl(
@@ -2129,6 +2514,10 @@ class __$$InsertNodeToEdgeImplCopyWithImpl<$Res>
           ? _value.edgeId
           : edgeId // ignore: cast_nullable_to_non_nullable
               as String,
+      startCanvas: null == startCanvas
+          ? _value.startCanvas
+          : startCanvas // ignore: cast_nullable_to_non_nullable
+              as Offset,
       lastCanvas: null == lastCanvas
           ? _value.lastCanvas
           : lastCanvas // ignore: cast_nullable_to_non_nullable
@@ -2142,6 +2531,7 @@ class __$$InsertNodeToEdgeImplCopyWithImpl<$Res>
 class _$InsertNodeToEdgeImpl extends InsertNodeToEdge {
   const _$InsertNodeToEdgeImpl(
       {required this.edgeId,
+      @OffsetConverter() required this.startCanvas,
       @OffsetConverter() required this.lastCanvas,
       final String? $type})
       : $type = $type ?? 'insert_node_to_edge',
@@ -2154,6 +2544,9 @@ class _$InsertNodeToEdgeImpl extends InsertNodeToEdge {
   final String edgeId;
   @override
   @OffsetConverter()
+  final Offset startCanvas;
+  @override
+  @OffsetConverter()
   final Offset lastCanvas;
 
   @JsonKey(name: 'type')
@@ -2161,7 +2554,7 @@ class _$InsertNodeToEdgeImpl extends InsertNodeToEdge {
 
   @override
   String toString() {
-    return 'InteractionState.insertNodeToEdge(edgeId: $edgeId, lastCanvas: $lastCanvas)';
+    return 'InteractionState.insertNodeToEdge(edgeId: $edgeId, startCanvas: $startCanvas, lastCanvas: $lastCanvas)';
   }
 
   @override
@@ -2170,13 +2563,15 @@ class _$InsertNodeToEdgeImpl extends InsertNodeToEdge {
         (other.runtimeType == runtimeType &&
             other is _$InsertNodeToEdgeImpl &&
             (identical(other.edgeId, edgeId) || other.edgeId == edgeId) &&
+            (identical(other.startCanvas, startCanvas) ||
+                other.startCanvas == startCanvas) &&
             (identical(other.lastCanvas, lastCanvas) ||
                 other.lastCanvas == lastCanvas));
   }
 
   @JsonKey(ignore: true)
   @override
-  int get hashCode => Object.hash(runtimeType, edgeId, lastCanvas);
+  int get hashCode => Object.hash(runtimeType, edgeId, startCanvas, lastCanvas);
 
   @JsonKey(ignore: true)
   @override
@@ -2190,25 +2585,40 @@ class _$InsertNodeToEdgeImpl extends InsertNodeToEdge {
   TResult when<TResult extends Object?>({
     required TResult Function() idle,
     required TResult Function(
-            String nodeId, @OffsetConverter() Offset lastCanvas)
+            String nodeId,
+            @OffsetConverter() Offset startCanvas,
+            @OffsetConverter() Offset lastCanvas)
         dragNode,
-    required TResult Function(String edgeId,
-            @OffsetConverter() Offset lastCanvas, AnchorModel sourceAnchor)
+    required TResult Function(
+            String edgeId,
+            @OffsetConverter() Offset startCanvas,
+            @OffsetConverter() Offset lastCanvas,
+            AnchorModel sourceAnchor)
         dragEdge,
     required TResult Function(
-            String edgeId, int pointIndex, @OffsetConverter() Offset lastCanvas)
+            String edgeId,
+            int pointIndex,
+            @OffsetConverter() Offset startCanvas,
+            @OffsetConverter() Offset lastCanvas)
         dragWaypoint,
-    required TResult Function(@OffsetConverter() Offset lastGlobal) panCanvas,
+    required TResult Function(@OffsetConverter() Offset startGlobal,
+            @OffsetConverter() Offset lastGlobal)
+        panCanvas,
     required TResult Function(@RectConverter() Rect selectionBox) selectingArea,
     required TResult Function(
-            String nodeType, @OffsetConverter() Offset lastCanvas)
+            String nodeType,
+            @OffsetConverter() Offset startCanvas,
+            @OffsetConverter() Offset lastCanvas)
         insertingNode,
     required TResult Function(
-            String edgeId, @OffsetConverter() Offset lastCanvas)
+            String edgeId,
+            @OffsetConverter() Offset startCanvas,
+            @OffsetConverter() Offset lastCanvas)
         insertNodeToEdge,
     required TResult Function(
             String nodeId,
             @OffsetConverter() Offset handlePosition,
+            @OffsetConverter() Offset startCanvas,
             @OffsetConverter() Offset lastCanvas)
         resizingNode,
     required TResult Function(String nodeId) hoveringNode,
@@ -2218,28 +2628,39 @@ class _$InsertNodeToEdgeImpl extends InsertNodeToEdge {
             @OffsetConverter() Offset globalPosition, String? targetId)
         contextMenuOpen,
   }) {
-    return insertNodeToEdge(edgeId, lastCanvas);
+    return insertNodeToEdge(edgeId, startCanvas, lastCanvas);
   }
 
   @override
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? idle,
-    TResult? Function(String nodeId, @OffsetConverter() Offset lastCanvas)?
+    TResult? Function(String nodeId, @OffsetConverter() Offset startCanvas,
+            @OffsetConverter() Offset lastCanvas)?
         dragNode,
-    TResult? Function(String edgeId, @OffsetConverter() Offset lastCanvas,
-            AnchorModel sourceAnchor)?
+    TResult? Function(String edgeId, @OffsetConverter() Offset startCanvas,
+            @OffsetConverter() Offset lastCanvas, AnchorModel sourceAnchor)?
         dragEdge,
-    TResult? Function(String edgeId, int pointIndex,
+    TResult? Function(
+            String edgeId,
+            int pointIndex,
+            @OffsetConverter() Offset startCanvas,
             @OffsetConverter() Offset lastCanvas)?
         dragWaypoint,
-    TResult? Function(@OffsetConverter() Offset lastGlobal)? panCanvas,
+    TResult? Function(@OffsetConverter() Offset startGlobal,
+            @OffsetConverter() Offset lastGlobal)?
+        panCanvas,
     TResult? Function(@RectConverter() Rect selectionBox)? selectingArea,
-    TResult? Function(String nodeType, @OffsetConverter() Offset lastCanvas)?
+    TResult? Function(String nodeType, @OffsetConverter() Offset startCanvas,
+            @OffsetConverter() Offset lastCanvas)?
         insertingNode,
-    TResult? Function(String edgeId, @OffsetConverter() Offset lastCanvas)?
+    TResult? Function(String edgeId, @OffsetConverter() Offset startCanvas,
+            @OffsetConverter() Offset lastCanvas)?
         insertNodeToEdge,
-    TResult? Function(String nodeId, @OffsetConverter() Offset handlePosition,
+    TResult? Function(
+            String nodeId,
+            @OffsetConverter() Offset handlePosition,
+            @OffsetConverter() Offset startCanvas,
             @OffsetConverter() Offset lastCanvas)?
         resizingNode,
     TResult? Function(String nodeId)? hoveringNode,
@@ -2249,28 +2670,39 @@ class _$InsertNodeToEdgeImpl extends InsertNodeToEdge {
             @OffsetConverter() Offset globalPosition, String? targetId)?
         contextMenuOpen,
   }) {
-    return insertNodeToEdge?.call(edgeId, lastCanvas);
+    return insertNodeToEdge?.call(edgeId, startCanvas, lastCanvas);
   }
 
   @override
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? idle,
-    TResult Function(String nodeId, @OffsetConverter() Offset lastCanvas)?
+    TResult Function(String nodeId, @OffsetConverter() Offset startCanvas,
+            @OffsetConverter() Offset lastCanvas)?
         dragNode,
-    TResult Function(String edgeId, @OffsetConverter() Offset lastCanvas,
-            AnchorModel sourceAnchor)?
+    TResult Function(String edgeId, @OffsetConverter() Offset startCanvas,
+            @OffsetConverter() Offset lastCanvas, AnchorModel sourceAnchor)?
         dragEdge,
-    TResult Function(String edgeId, int pointIndex,
+    TResult Function(
+            String edgeId,
+            int pointIndex,
+            @OffsetConverter() Offset startCanvas,
             @OffsetConverter() Offset lastCanvas)?
         dragWaypoint,
-    TResult Function(@OffsetConverter() Offset lastGlobal)? panCanvas,
+    TResult Function(@OffsetConverter() Offset startGlobal,
+            @OffsetConverter() Offset lastGlobal)?
+        panCanvas,
     TResult Function(@RectConverter() Rect selectionBox)? selectingArea,
-    TResult Function(String nodeType, @OffsetConverter() Offset lastCanvas)?
+    TResult Function(String nodeType, @OffsetConverter() Offset startCanvas,
+            @OffsetConverter() Offset lastCanvas)?
         insertingNode,
-    TResult Function(String edgeId, @OffsetConverter() Offset lastCanvas)?
+    TResult Function(String edgeId, @OffsetConverter() Offset startCanvas,
+            @OffsetConverter() Offset lastCanvas)?
         insertNodeToEdge,
-    TResult Function(String nodeId, @OffsetConverter() Offset handlePosition,
+    TResult Function(
+            String nodeId,
+            @OffsetConverter() Offset handlePosition,
+            @OffsetConverter() Offset startCanvas,
             @OffsetConverter() Offset lastCanvas)?
         resizingNode,
     TResult Function(String nodeId)? hoveringNode,
@@ -2282,7 +2714,7 @@ class _$InsertNodeToEdgeImpl extends InsertNodeToEdge {
     required TResult orElse(),
   }) {
     if (insertNodeToEdge != null) {
-      return insertNodeToEdge(edgeId, lastCanvas);
+      return insertNodeToEdge(edgeId, startCanvas, lastCanvas);
     }
     return orElse();
   }
@@ -2362,6 +2794,7 @@ class _$InsertNodeToEdgeImpl extends InsertNodeToEdge {
 abstract class InsertNodeToEdge extends InteractionState {
   const factory InsertNodeToEdge(
           {required final String edgeId,
+          @OffsetConverter() required final Offset startCanvas,
           @OffsetConverter() required final Offset lastCanvas}) =
       _$InsertNodeToEdgeImpl;
   const InsertNodeToEdge._() : super._();
@@ -2370,6 +2803,8 @@ abstract class InsertNodeToEdge extends InteractionState {
       _$InsertNodeToEdgeImpl.fromJson;
 
   String get edgeId;
+  @OffsetConverter()
+  Offset get startCanvas;
   @OffsetConverter()
   Offset get lastCanvas;
   @JsonKey(ignore: true)
@@ -2386,6 +2821,7 @@ abstract class _$$ResizingNodeImplCopyWith<$Res> {
   $Res call(
       {String nodeId,
       @OffsetConverter() Offset handlePosition,
+      @OffsetConverter() Offset startCanvas,
       @OffsetConverter() Offset lastCanvas});
 }
 
@@ -2402,6 +2838,7 @@ class __$$ResizingNodeImplCopyWithImpl<$Res>
   $Res call({
     Object? nodeId = null,
     Object? handlePosition = null,
+    Object? startCanvas = null,
     Object? lastCanvas = null,
   }) {
     return _then(_$ResizingNodeImpl(
@@ -2412,6 +2849,10 @@ class __$$ResizingNodeImplCopyWithImpl<$Res>
       handlePosition: null == handlePosition
           ? _value.handlePosition
           : handlePosition // ignore: cast_nullable_to_non_nullable
+              as Offset,
+      startCanvas: null == startCanvas
+          ? _value.startCanvas
+          : startCanvas // ignore: cast_nullable_to_non_nullable
               as Offset,
       lastCanvas: null == lastCanvas
           ? _value.lastCanvas
@@ -2427,6 +2868,7 @@ class _$ResizingNodeImpl extends ResizingNode {
   const _$ResizingNodeImpl(
       {required this.nodeId,
       @OffsetConverter() required this.handlePosition,
+      @OffsetConverter() required this.startCanvas,
       @OffsetConverter() required this.lastCanvas,
       final String? $type})
       : $type = $type ?? 'resizing_node',
@@ -2442,6 +2884,9 @@ class _$ResizingNodeImpl extends ResizingNode {
   final Offset handlePosition;
   @override
   @OffsetConverter()
+  final Offset startCanvas;
+  @override
+  @OffsetConverter()
   final Offset lastCanvas;
 
   @JsonKey(name: 'type')
@@ -2449,7 +2894,7 @@ class _$ResizingNodeImpl extends ResizingNode {
 
   @override
   String toString() {
-    return 'InteractionState.resizingNode(nodeId: $nodeId, handlePosition: $handlePosition, lastCanvas: $lastCanvas)';
+    return 'InteractionState.resizingNode(nodeId: $nodeId, handlePosition: $handlePosition, startCanvas: $startCanvas, lastCanvas: $lastCanvas)';
   }
 
   @override
@@ -2460,6 +2905,8 @@ class _$ResizingNodeImpl extends ResizingNode {
             (identical(other.nodeId, nodeId) || other.nodeId == nodeId) &&
             (identical(other.handlePosition, handlePosition) ||
                 other.handlePosition == handlePosition) &&
+            (identical(other.startCanvas, startCanvas) ||
+                other.startCanvas == startCanvas) &&
             (identical(other.lastCanvas, lastCanvas) ||
                 other.lastCanvas == lastCanvas));
   }
@@ -2467,7 +2914,7 @@ class _$ResizingNodeImpl extends ResizingNode {
   @JsonKey(ignore: true)
   @override
   int get hashCode =>
-      Object.hash(runtimeType, nodeId, handlePosition, lastCanvas);
+      Object.hash(runtimeType, nodeId, handlePosition, startCanvas, lastCanvas);
 
   @JsonKey(ignore: true)
   @override
@@ -2480,25 +2927,40 @@ class _$ResizingNodeImpl extends ResizingNode {
   TResult when<TResult extends Object?>({
     required TResult Function() idle,
     required TResult Function(
-            String nodeId, @OffsetConverter() Offset lastCanvas)
+            String nodeId,
+            @OffsetConverter() Offset startCanvas,
+            @OffsetConverter() Offset lastCanvas)
         dragNode,
-    required TResult Function(String edgeId,
-            @OffsetConverter() Offset lastCanvas, AnchorModel sourceAnchor)
+    required TResult Function(
+            String edgeId,
+            @OffsetConverter() Offset startCanvas,
+            @OffsetConverter() Offset lastCanvas,
+            AnchorModel sourceAnchor)
         dragEdge,
     required TResult Function(
-            String edgeId, int pointIndex, @OffsetConverter() Offset lastCanvas)
+            String edgeId,
+            int pointIndex,
+            @OffsetConverter() Offset startCanvas,
+            @OffsetConverter() Offset lastCanvas)
         dragWaypoint,
-    required TResult Function(@OffsetConverter() Offset lastGlobal) panCanvas,
+    required TResult Function(@OffsetConverter() Offset startGlobal,
+            @OffsetConverter() Offset lastGlobal)
+        panCanvas,
     required TResult Function(@RectConverter() Rect selectionBox) selectingArea,
     required TResult Function(
-            String nodeType, @OffsetConverter() Offset lastCanvas)
+            String nodeType,
+            @OffsetConverter() Offset startCanvas,
+            @OffsetConverter() Offset lastCanvas)
         insertingNode,
     required TResult Function(
-            String edgeId, @OffsetConverter() Offset lastCanvas)
+            String edgeId,
+            @OffsetConverter() Offset startCanvas,
+            @OffsetConverter() Offset lastCanvas)
         insertNodeToEdge,
     required TResult Function(
             String nodeId,
             @OffsetConverter() Offset handlePosition,
+            @OffsetConverter() Offset startCanvas,
             @OffsetConverter() Offset lastCanvas)
         resizingNode,
     required TResult Function(String nodeId) hoveringNode,
@@ -2508,28 +2970,39 @@ class _$ResizingNodeImpl extends ResizingNode {
             @OffsetConverter() Offset globalPosition, String? targetId)
         contextMenuOpen,
   }) {
-    return resizingNode(nodeId, handlePosition, lastCanvas);
+    return resizingNode(nodeId, handlePosition, startCanvas, lastCanvas);
   }
 
   @override
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? idle,
-    TResult? Function(String nodeId, @OffsetConverter() Offset lastCanvas)?
+    TResult? Function(String nodeId, @OffsetConverter() Offset startCanvas,
+            @OffsetConverter() Offset lastCanvas)?
         dragNode,
-    TResult? Function(String edgeId, @OffsetConverter() Offset lastCanvas,
-            AnchorModel sourceAnchor)?
+    TResult? Function(String edgeId, @OffsetConverter() Offset startCanvas,
+            @OffsetConverter() Offset lastCanvas, AnchorModel sourceAnchor)?
         dragEdge,
-    TResult? Function(String edgeId, int pointIndex,
+    TResult? Function(
+            String edgeId,
+            int pointIndex,
+            @OffsetConverter() Offset startCanvas,
             @OffsetConverter() Offset lastCanvas)?
         dragWaypoint,
-    TResult? Function(@OffsetConverter() Offset lastGlobal)? panCanvas,
+    TResult? Function(@OffsetConverter() Offset startGlobal,
+            @OffsetConverter() Offset lastGlobal)?
+        panCanvas,
     TResult? Function(@RectConverter() Rect selectionBox)? selectingArea,
-    TResult? Function(String nodeType, @OffsetConverter() Offset lastCanvas)?
+    TResult? Function(String nodeType, @OffsetConverter() Offset startCanvas,
+            @OffsetConverter() Offset lastCanvas)?
         insertingNode,
-    TResult? Function(String edgeId, @OffsetConverter() Offset lastCanvas)?
+    TResult? Function(String edgeId, @OffsetConverter() Offset startCanvas,
+            @OffsetConverter() Offset lastCanvas)?
         insertNodeToEdge,
-    TResult? Function(String nodeId, @OffsetConverter() Offset handlePosition,
+    TResult? Function(
+            String nodeId,
+            @OffsetConverter() Offset handlePosition,
+            @OffsetConverter() Offset startCanvas,
             @OffsetConverter() Offset lastCanvas)?
         resizingNode,
     TResult? Function(String nodeId)? hoveringNode,
@@ -2539,28 +3012,39 @@ class _$ResizingNodeImpl extends ResizingNode {
             @OffsetConverter() Offset globalPosition, String? targetId)?
         contextMenuOpen,
   }) {
-    return resizingNode?.call(nodeId, handlePosition, lastCanvas);
+    return resizingNode?.call(nodeId, handlePosition, startCanvas, lastCanvas);
   }
 
   @override
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? idle,
-    TResult Function(String nodeId, @OffsetConverter() Offset lastCanvas)?
+    TResult Function(String nodeId, @OffsetConverter() Offset startCanvas,
+            @OffsetConverter() Offset lastCanvas)?
         dragNode,
-    TResult Function(String edgeId, @OffsetConverter() Offset lastCanvas,
-            AnchorModel sourceAnchor)?
+    TResult Function(String edgeId, @OffsetConverter() Offset startCanvas,
+            @OffsetConverter() Offset lastCanvas, AnchorModel sourceAnchor)?
         dragEdge,
-    TResult Function(String edgeId, int pointIndex,
+    TResult Function(
+            String edgeId,
+            int pointIndex,
+            @OffsetConverter() Offset startCanvas,
             @OffsetConverter() Offset lastCanvas)?
         dragWaypoint,
-    TResult Function(@OffsetConverter() Offset lastGlobal)? panCanvas,
+    TResult Function(@OffsetConverter() Offset startGlobal,
+            @OffsetConverter() Offset lastGlobal)?
+        panCanvas,
     TResult Function(@RectConverter() Rect selectionBox)? selectingArea,
-    TResult Function(String nodeType, @OffsetConverter() Offset lastCanvas)?
+    TResult Function(String nodeType, @OffsetConverter() Offset startCanvas,
+            @OffsetConverter() Offset lastCanvas)?
         insertingNode,
-    TResult Function(String edgeId, @OffsetConverter() Offset lastCanvas)?
+    TResult Function(String edgeId, @OffsetConverter() Offset startCanvas,
+            @OffsetConverter() Offset lastCanvas)?
         insertNodeToEdge,
-    TResult Function(String nodeId, @OffsetConverter() Offset handlePosition,
+    TResult Function(
+            String nodeId,
+            @OffsetConverter() Offset handlePosition,
+            @OffsetConverter() Offset startCanvas,
             @OffsetConverter() Offset lastCanvas)?
         resizingNode,
     TResult Function(String nodeId)? hoveringNode,
@@ -2572,7 +3056,7 @@ class _$ResizingNodeImpl extends ResizingNode {
     required TResult orElse(),
   }) {
     if (resizingNode != null) {
-      return resizingNode(nodeId, handlePosition, lastCanvas);
+      return resizingNode(nodeId, handlePosition, startCanvas, lastCanvas);
     }
     return orElse();
   }
@@ -2653,6 +3137,7 @@ abstract class ResizingNode extends InteractionState {
   const factory ResizingNode(
           {required final String nodeId,
           @OffsetConverter() required final Offset handlePosition,
+          @OffsetConverter() required final Offset startCanvas,
           @OffsetConverter() required final Offset lastCanvas}) =
       _$ResizingNodeImpl;
   const ResizingNode._() : super._();
@@ -2663,6 +3148,8 @@ abstract class ResizingNode extends InteractionState {
   String get nodeId;
   @OffsetConverter()
   Offset get handlePosition;
+  @OffsetConverter()
+  Offset get startCanvas;
   @OffsetConverter()
   Offset get lastCanvas;
   @JsonKey(ignore: true)
@@ -2745,25 +3232,40 @@ class _$HoveringNodeImpl extends HoveringNode {
   TResult when<TResult extends Object?>({
     required TResult Function() idle,
     required TResult Function(
-            String nodeId, @OffsetConverter() Offset lastCanvas)
+            String nodeId,
+            @OffsetConverter() Offset startCanvas,
+            @OffsetConverter() Offset lastCanvas)
         dragNode,
-    required TResult Function(String edgeId,
-            @OffsetConverter() Offset lastCanvas, AnchorModel sourceAnchor)
+    required TResult Function(
+            String edgeId,
+            @OffsetConverter() Offset startCanvas,
+            @OffsetConverter() Offset lastCanvas,
+            AnchorModel sourceAnchor)
         dragEdge,
     required TResult Function(
-            String edgeId, int pointIndex, @OffsetConverter() Offset lastCanvas)
+            String edgeId,
+            int pointIndex,
+            @OffsetConverter() Offset startCanvas,
+            @OffsetConverter() Offset lastCanvas)
         dragWaypoint,
-    required TResult Function(@OffsetConverter() Offset lastGlobal) panCanvas,
+    required TResult Function(@OffsetConverter() Offset startGlobal,
+            @OffsetConverter() Offset lastGlobal)
+        panCanvas,
     required TResult Function(@RectConverter() Rect selectionBox) selectingArea,
     required TResult Function(
-            String nodeType, @OffsetConverter() Offset lastCanvas)
+            String nodeType,
+            @OffsetConverter() Offset startCanvas,
+            @OffsetConverter() Offset lastCanvas)
         insertingNode,
     required TResult Function(
-            String edgeId, @OffsetConverter() Offset lastCanvas)
+            String edgeId,
+            @OffsetConverter() Offset startCanvas,
+            @OffsetConverter() Offset lastCanvas)
         insertNodeToEdge,
     required TResult Function(
             String nodeId,
             @OffsetConverter() Offset handlePosition,
+            @OffsetConverter() Offset startCanvas,
             @OffsetConverter() Offset lastCanvas)
         resizingNode,
     required TResult Function(String nodeId) hoveringNode,
@@ -2780,21 +3282,32 @@ class _$HoveringNodeImpl extends HoveringNode {
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? idle,
-    TResult? Function(String nodeId, @OffsetConverter() Offset lastCanvas)?
+    TResult? Function(String nodeId, @OffsetConverter() Offset startCanvas,
+            @OffsetConverter() Offset lastCanvas)?
         dragNode,
-    TResult? Function(String edgeId, @OffsetConverter() Offset lastCanvas,
-            AnchorModel sourceAnchor)?
+    TResult? Function(String edgeId, @OffsetConverter() Offset startCanvas,
+            @OffsetConverter() Offset lastCanvas, AnchorModel sourceAnchor)?
         dragEdge,
-    TResult? Function(String edgeId, int pointIndex,
+    TResult? Function(
+            String edgeId,
+            int pointIndex,
+            @OffsetConverter() Offset startCanvas,
             @OffsetConverter() Offset lastCanvas)?
         dragWaypoint,
-    TResult? Function(@OffsetConverter() Offset lastGlobal)? panCanvas,
+    TResult? Function(@OffsetConverter() Offset startGlobal,
+            @OffsetConverter() Offset lastGlobal)?
+        panCanvas,
     TResult? Function(@RectConverter() Rect selectionBox)? selectingArea,
-    TResult? Function(String nodeType, @OffsetConverter() Offset lastCanvas)?
+    TResult? Function(String nodeType, @OffsetConverter() Offset startCanvas,
+            @OffsetConverter() Offset lastCanvas)?
         insertingNode,
-    TResult? Function(String edgeId, @OffsetConverter() Offset lastCanvas)?
+    TResult? Function(String edgeId, @OffsetConverter() Offset startCanvas,
+            @OffsetConverter() Offset lastCanvas)?
         insertNodeToEdge,
-    TResult? Function(String nodeId, @OffsetConverter() Offset handlePosition,
+    TResult? Function(
+            String nodeId,
+            @OffsetConverter() Offset handlePosition,
+            @OffsetConverter() Offset startCanvas,
             @OffsetConverter() Offset lastCanvas)?
         resizingNode,
     TResult? Function(String nodeId)? hoveringNode,
@@ -2811,21 +3324,32 @@ class _$HoveringNodeImpl extends HoveringNode {
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? idle,
-    TResult Function(String nodeId, @OffsetConverter() Offset lastCanvas)?
+    TResult Function(String nodeId, @OffsetConverter() Offset startCanvas,
+            @OffsetConverter() Offset lastCanvas)?
         dragNode,
-    TResult Function(String edgeId, @OffsetConverter() Offset lastCanvas,
-            AnchorModel sourceAnchor)?
+    TResult Function(String edgeId, @OffsetConverter() Offset startCanvas,
+            @OffsetConverter() Offset lastCanvas, AnchorModel sourceAnchor)?
         dragEdge,
-    TResult Function(String edgeId, int pointIndex,
+    TResult Function(
+            String edgeId,
+            int pointIndex,
+            @OffsetConverter() Offset startCanvas,
             @OffsetConverter() Offset lastCanvas)?
         dragWaypoint,
-    TResult Function(@OffsetConverter() Offset lastGlobal)? panCanvas,
+    TResult Function(@OffsetConverter() Offset startGlobal,
+            @OffsetConverter() Offset lastGlobal)?
+        panCanvas,
     TResult Function(@RectConverter() Rect selectionBox)? selectingArea,
-    TResult Function(String nodeType, @OffsetConverter() Offset lastCanvas)?
+    TResult Function(String nodeType, @OffsetConverter() Offset startCanvas,
+            @OffsetConverter() Offset lastCanvas)?
         insertingNode,
-    TResult Function(String edgeId, @OffsetConverter() Offset lastCanvas)?
+    TResult Function(String edgeId, @OffsetConverter() Offset startCanvas,
+            @OffsetConverter() Offset lastCanvas)?
         insertNodeToEdge,
-    TResult Function(String nodeId, @OffsetConverter() Offset handlePosition,
+    TResult Function(
+            String nodeId,
+            @OffsetConverter() Offset handlePosition,
+            @OffsetConverter() Offset startCanvas,
             @OffsetConverter() Offset lastCanvas)?
         resizingNode,
     TResult Function(String nodeId)? hoveringNode,
@@ -3005,25 +3529,40 @@ class _$HoveringAnchorImpl extends HoveringAnchor {
   TResult when<TResult extends Object?>({
     required TResult Function() idle,
     required TResult Function(
-            String nodeId, @OffsetConverter() Offset lastCanvas)
+            String nodeId,
+            @OffsetConverter() Offset startCanvas,
+            @OffsetConverter() Offset lastCanvas)
         dragNode,
-    required TResult Function(String edgeId,
-            @OffsetConverter() Offset lastCanvas, AnchorModel sourceAnchor)
+    required TResult Function(
+            String edgeId,
+            @OffsetConverter() Offset startCanvas,
+            @OffsetConverter() Offset lastCanvas,
+            AnchorModel sourceAnchor)
         dragEdge,
     required TResult Function(
-            String edgeId, int pointIndex, @OffsetConverter() Offset lastCanvas)
+            String edgeId,
+            int pointIndex,
+            @OffsetConverter() Offset startCanvas,
+            @OffsetConverter() Offset lastCanvas)
         dragWaypoint,
-    required TResult Function(@OffsetConverter() Offset lastGlobal) panCanvas,
+    required TResult Function(@OffsetConverter() Offset startGlobal,
+            @OffsetConverter() Offset lastGlobal)
+        panCanvas,
     required TResult Function(@RectConverter() Rect selectionBox) selectingArea,
     required TResult Function(
-            String nodeType, @OffsetConverter() Offset lastCanvas)
+            String nodeType,
+            @OffsetConverter() Offset startCanvas,
+            @OffsetConverter() Offset lastCanvas)
         insertingNode,
     required TResult Function(
-            String edgeId, @OffsetConverter() Offset lastCanvas)
+            String edgeId,
+            @OffsetConverter() Offset startCanvas,
+            @OffsetConverter() Offset lastCanvas)
         insertNodeToEdge,
     required TResult Function(
             String nodeId,
             @OffsetConverter() Offset handlePosition,
+            @OffsetConverter() Offset startCanvas,
             @OffsetConverter() Offset lastCanvas)
         resizingNode,
     required TResult Function(String nodeId) hoveringNode,
@@ -3040,21 +3579,32 @@ class _$HoveringAnchorImpl extends HoveringAnchor {
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? idle,
-    TResult? Function(String nodeId, @OffsetConverter() Offset lastCanvas)?
+    TResult? Function(String nodeId, @OffsetConverter() Offset startCanvas,
+            @OffsetConverter() Offset lastCanvas)?
         dragNode,
-    TResult? Function(String edgeId, @OffsetConverter() Offset lastCanvas,
-            AnchorModel sourceAnchor)?
+    TResult? Function(String edgeId, @OffsetConverter() Offset startCanvas,
+            @OffsetConverter() Offset lastCanvas, AnchorModel sourceAnchor)?
         dragEdge,
-    TResult? Function(String edgeId, int pointIndex,
+    TResult? Function(
+            String edgeId,
+            int pointIndex,
+            @OffsetConverter() Offset startCanvas,
             @OffsetConverter() Offset lastCanvas)?
         dragWaypoint,
-    TResult? Function(@OffsetConverter() Offset lastGlobal)? panCanvas,
+    TResult? Function(@OffsetConverter() Offset startGlobal,
+            @OffsetConverter() Offset lastGlobal)?
+        panCanvas,
     TResult? Function(@RectConverter() Rect selectionBox)? selectingArea,
-    TResult? Function(String nodeType, @OffsetConverter() Offset lastCanvas)?
+    TResult? Function(String nodeType, @OffsetConverter() Offset startCanvas,
+            @OffsetConverter() Offset lastCanvas)?
         insertingNode,
-    TResult? Function(String edgeId, @OffsetConverter() Offset lastCanvas)?
+    TResult? Function(String edgeId, @OffsetConverter() Offset startCanvas,
+            @OffsetConverter() Offset lastCanvas)?
         insertNodeToEdge,
-    TResult? Function(String nodeId, @OffsetConverter() Offset handlePosition,
+    TResult? Function(
+            String nodeId,
+            @OffsetConverter() Offset handlePosition,
+            @OffsetConverter() Offset startCanvas,
             @OffsetConverter() Offset lastCanvas)?
         resizingNode,
     TResult? Function(String nodeId)? hoveringNode,
@@ -3071,21 +3621,32 @@ class _$HoveringAnchorImpl extends HoveringAnchor {
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? idle,
-    TResult Function(String nodeId, @OffsetConverter() Offset lastCanvas)?
+    TResult Function(String nodeId, @OffsetConverter() Offset startCanvas,
+            @OffsetConverter() Offset lastCanvas)?
         dragNode,
-    TResult Function(String edgeId, @OffsetConverter() Offset lastCanvas,
-            AnchorModel sourceAnchor)?
+    TResult Function(String edgeId, @OffsetConverter() Offset startCanvas,
+            @OffsetConverter() Offset lastCanvas, AnchorModel sourceAnchor)?
         dragEdge,
-    TResult Function(String edgeId, int pointIndex,
+    TResult Function(
+            String edgeId,
+            int pointIndex,
+            @OffsetConverter() Offset startCanvas,
             @OffsetConverter() Offset lastCanvas)?
         dragWaypoint,
-    TResult Function(@OffsetConverter() Offset lastGlobal)? panCanvas,
+    TResult Function(@OffsetConverter() Offset startGlobal,
+            @OffsetConverter() Offset lastGlobal)?
+        panCanvas,
     TResult Function(@RectConverter() Rect selectionBox)? selectingArea,
-    TResult Function(String nodeType, @OffsetConverter() Offset lastCanvas)?
+    TResult Function(String nodeType, @OffsetConverter() Offset startCanvas,
+            @OffsetConverter() Offset lastCanvas)?
         insertingNode,
-    TResult Function(String edgeId, @OffsetConverter() Offset lastCanvas)?
+    TResult Function(String edgeId, @OffsetConverter() Offset startCanvas,
+            @OffsetConverter() Offset lastCanvas)?
         insertNodeToEdge,
-    TResult Function(String nodeId, @OffsetConverter() Offset handlePosition,
+    TResult Function(
+            String nodeId,
+            @OffsetConverter() Offset handlePosition,
+            @OffsetConverter() Offset startCanvas,
             @OffsetConverter() Offset lastCanvas)?
         resizingNode,
     TResult Function(String nodeId)? hoveringNode,
@@ -3263,25 +3824,40 @@ class _$HoveringEdgeImpl extends HoveringEdge {
   TResult when<TResult extends Object?>({
     required TResult Function() idle,
     required TResult Function(
-            String nodeId, @OffsetConverter() Offset lastCanvas)
+            String nodeId,
+            @OffsetConverter() Offset startCanvas,
+            @OffsetConverter() Offset lastCanvas)
         dragNode,
-    required TResult Function(String edgeId,
-            @OffsetConverter() Offset lastCanvas, AnchorModel sourceAnchor)
+    required TResult Function(
+            String edgeId,
+            @OffsetConverter() Offset startCanvas,
+            @OffsetConverter() Offset lastCanvas,
+            AnchorModel sourceAnchor)
         dragEdge,
     required TResult Function(
-            String edgeId, int pointIndex, @OffsetConverter() Offset lastCanvas)
+            String edgeId,
+            int pointIndex,
+            @OffsetConverter() Offset startCanvas,
+            @OffsetConverter() Offset lastCanvas)
         dragWaypoint,
-    required TResult Function(@OffsetConverter() Offset lastGlobal) panCanvas,
+    required TResult Function(@OffsetConverter() Offset startGlobal,
+            @OffsetConverter() Offset lastGlobal)
+        panCanvas,
     required TResult Function(@RectConverter() Rect selectionBox) selectingArea,
     required TResult Function(
-            String nodeType, @OffsetConverter() Offset lastCanvas)
+            String nodeType,
+            @OffsetConverter() Offset startCanvas,
+            @OffsetConverter() Offset lastCanvas)
         insertingNode,
     required TResult Function(
-            String edgeId, @OffsetConverter() Offset lastCanvas)
+            String edgeId,
+            @OffsetConverter() Offset startCanvas,
+            @OffsetConverter() Offset lastCanvas)
         insertNodeToEdge,
     required TResult Function(
             String nodeId,
             @OffsetConverter() Offset handlePosition,
+            @OffsetConverter() Offset startCanvas,
             @OffsetConverter() Offset lastCanvas)
         resizingNode,
     required TResult Function(String nodeId) hoveringNode,
@@ -3298,21 +3874,32 @@ class _$HoveringEdgeImpl extends HoveringEdge {
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? idle,
-    TResult? Function(String nodeId, @OffsetConverter() Offset lastCanvas)?
+    TResult? Function(String nodeId, @OffsetConverter() Offset startCanvas,
+            @OffsetConverter() Offset lastCanvas)?
         dragNode,
-    TResult? Function(String edgeId, @OffsetConverter() Offset lastCanvas,
-            AnchorModel sourceAnchor)?
+    TResult? Function(String edgeId, @OffsetConverter() Offset startCanvas,
+            @OffsetConverter() Offset lastCanvas, AnchorModel sourceAnchor)?
         dragEdge,
-    TResult? Function(String edgeId, int pointIndex,
+    TResult? Function(
+            String edgeId,
+            int pointIndex,
+            @OffsetConverter() Offset startCanvas,
             @OffsetConverter() Offset lastCanvas)?
         dragWaypoint,
-    TResult? Function(@OffsetConverter() Offset lastGlobal)? panCanvas,
+    TResult? Function(@OffsetConverter() Offset startGlobal,
+            @OffsetConverter() Offset lastGlobal)?
+        panCanvas,
     TResult? Function(@RectConverter() Rect selectionBox)? selectingArea,
-    TResult? Function(String nodeType, @OffsetConverter() Offset lastCanvas)?
+    TResult? Function(String nodeType, @OffsetConverter() Offset startCanvas,
+            @OffsetConverter() Offset lastCanvas)?
         insertingNode,
-    TResult? Function(String edgeId, @OffsetConverter() Offset lastCanvas)?
+    TResult? Function(String edgeId, @OffsetConverter() Offset startCanvas,
+            @OffsetConverter() Offset lastCanvas)?
         insertNodeToEdge,
-    TResult? Function(String nodeId, @OffsetConverter() Offset handlePosition,
+    TResult? Function(
+            String nodeId,
+            @OffsetConverter() Offset handlePosition,
+            @OffsetConverter() Offset startCanvas,
             @OffsetConverter() Offset lastCanvas)?
         resizingNode,
     TResult? Function(String nodeId)? hoveringNode,
@@ -3329,21 +3916,32 @@ class _$HoveringEdgeImpl extends HoveringEdge {
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? idle,
-    TResult Function(String nodeId, @OffsetConverter() Offset lastCanvas)?
+    TResult Function(String nodeId, @OffsetConverter() Offset startCanvas,
+            @OffsetConverter() Offset lastCanvas)?
         dragNode,
-    TResult Function(String edgeId, @OffsetConverter() Offset lastCanvas,
-            AnchorModel sourceAnchor)?
+    TResult Function(String edgeId, @OffsetConverter() Offset startCanvas,
+            @OffsetConverter() Offset lastCanvas, AnchorModel sourceAnchor)?
         dragEdge,
-    TResult Function(String edgeId, int pointIndex,
+    TResult Function(
+            String edgeId,
+            int pointIndex,
+            @OffsetConverter() Offset startCanvas,
             @OffsetConverter() Offset lastCanvas)?
         dragWaypoint,
-    TResult Function(@OffsetConverter() Offset lastGlobal)? panCanvas,
+    TResult Function(@OffsetConverter() Offset startGlobal,
+            @OffsetConverter() Offset lastGlobal)?
+        panCanvas,
     TResult Function(@RectConverter() Rect selectionBox)? selectingArea,
-    TResult Function(String nodeType, @OffsetConverter() Offset lastCanvas)?
+    TResult Function(String nodeType, @OffsetConverter() Offset startCanvas,
+            @OffsetConverter() Offset lastCanvas)?
         insertingNode,
-    TResult Function(String edgeId, @OffsetConverter() Offset lastCanvas)?
+    TResult Function(String edgeId, @OffsetConverter() Offset startCanvas,
+            @OffsetConverter() Offset lastCanvas)?
         insertNodeToEdge,
-    TResult Function(String nodeId, @OffsetConverter() Offset handlePosition,
+    TResult Function(
+            String nodeId,
+            @OffsetConverter() Offset handlePosition,
+            @OffsetConverter() Offset startCanvas,
             @OffsetConverter() Offset lastCanvas)?
         resizingNode,
     TResult Function(String nodeId)? hoveringNode,
@@ -3536,25 +4134,40 @@ class _$ContextMenuOpenImpl extends ContextMenuOpen {
   TResult when<TResult extends Object?>({
     required TResult Function() idle,
     required TResult Function(
-            String nodeId, @OffsetConverter() Offset lastCanvas)
+            String nodeId,
+            @OffsetConverter() Offset startCanvas,
+            @OffsetConverter() Offset lastCanvas)
         dragNode,
-    required TResult Function(String edgeId,
-            @OffsetConverter() Offset lastCanvas, AnchorModel sourceAnchor)
+    required TResult Function(
+            String edgeId,
+            @OffsetConverter() Offset startCanvas,
+            @OffsetConverter() Offset lastCanvas,
+            AnchorModel sourceAnchor)
         dragEdge,
     required TResult Function(
-            String edgeId, int pointIndex, @OffsetConverter() Offset lastCanvas)
+            String edgeId,
+            int pointIndex,
+            @OffsetConverter() Offset startCanvas,
+            @OffsetConverter() Offset lastCanvas)
         dragWaypoint,
-    required TResult Function(@OffsetConverter() Offset lastGlobal) panCanvas,
+    required TResult Function(@OffsetConverter() Offset startGlobal,
+            @OffsetConverter() Offset lastGlobal)
+        panCanvas,
     required TResult Function(@RectConverter() Rect selectionBox) selectingArea,
     required TResult Function(
-            String nodeType, @OffsetConverter() Offset lastCanvas)
+            String nodeType,
+            @OffsetConverter() Offset startCanvas,
+            @OffsetConverter() Offset lastCanvas)
         insertingNode,
     required TResult Function(
-            String edgeId, @OffsetConverter() Offset lastCanvas)
+            String edgeId,
+            @OffsetConverter() Offset startCanvas,
+            @OffsetConverter() Offset lastCanvas)
         insertNodeToEdge,
     required TResult Function(
             String nodeId,
             @OffsetConverter() Offset handlePosition,
+            @OffsetConverter() Offset startCanvas,
             @OffsetConverter() Offset lastCanvas)
         resizingNode,
     required TResult Function(String nodeId) hoveringNode,
@@ -3571,21 +4184,32 @@ class _$ContextMenuOpenImpl extends ContextMenuOpen {
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? idle,
-    TResult? Function(String nodeId, @OffsetConverter() Offset lastCanvas)?
+    TResult? Function(String nodeId, @OffsetConverter() Offset startCanvas,
+            @OffsetConverter() Offset lastCanvas)?
         dragNode,
-    TResult? Function(String edgeId, @OffsetConverter() Offset lastCanvas,
-            AnchorModel sourceAnchor)?
+    TResult? Function(String edgeId, @OffsetConverter() Offset startCanvas,
+            @OffsetConverter() Offset lastCanvas, AnchorModel sourceAnchor)?
         dragEdge,
-    TResult? Function(String edgeId, int pointIndex,
+    TResult? Function(
+            String edgeId,
+            int pointIndex,
+            @OffsetConverter() Offset startCanvas,
             @OffsetConverter() Offset lastCanvas)?
         dragWaypoint,
-    TResult? Function(@OffsetConverter() Offset lastGlobal)? panCanvas,
+    TResult? Function(@OffsetConverter() Offset startGlobal,
+            @OffsetConverter() Offset lastGlobal)?
+        panCanvas,
     TResult? Function(@RectConverter() Rect selectionBox)? selectingArea,
-    TResult? Function(String nodeType, @OffsetConverter() Offset lastCanvas)?
+    TResult? Function(String nodeType, @OffsetConverter() Offset startCanvas,
+            @OffsetConverter() Offset lastCanvas)?
         insertingNode,
-    TResult? Function(String edgeId, @OffsetConverter() Offset lastCanvas)?
+    TResult? Function(String edgeId, @OffsetConverter() Offset startCanvas,
+            @OffsetConverter() Offset lastCanvas)?
         insertNodeToEdge,
-    TResult? Function(String nodeId, @OffsetConverter() Offset handlePosition,
+    TResult? Function(
+            String nodeId,
+            @OffsetConverter() Offset handlePosition,
+            @OffsetConverter() Offset startCanvas,
             @OffsetConverter() Offset lastCanvas)?
         resizingNode,
     TResult? Function(String nodeId)? hoveringNode,
@@ -3602,21 +4226,32 @@ class _$ContextMenuOpenImpl extends ContextMenuOpen {
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? idle,
-    TResult Function(String nodeId, @OffsetConverter() Offset lastCanvas)?
+    TResult Function(String nodeId, @OffsetConverter() Offset startCanvas,
+            @OffsetConverter() Offset lastCanvas)?
         dragNode,
-    TResult Function(String edgeId, @OffsetConverter() Offset lastCanvas,
-            AnchorModel sourceAnchor)?
+    TResult Function(String edgeId, @OffsetConverter() Offset startCanvas,
+            @OffsetConverter() Offset lastCanvas, AnchorModel sourceAnchor)?
         dragEdge,
-    TResult Function(String edgeId, int pointIndex,
+    TResult Function(
+            String edgeId,
+            int pointIndex,
+            @OffsetConverter() Offset startCanvas,
             @OffsetConverter() Offset lastCanvas)?
         dragWaypoint,
-    TResult Function(@OffsetConverter() Offset lastGlobal)? panCanvas,
+    TResult Function(@OffsetConverter() Offset startGlobal,
+            @OffsetConverter() Offset lastGlobal)?
+        panCanvas,
     TResult Function(@RectConverter() Rect selectionBox)? selectingArea,
-    TResult Function(String nodeType, @OffsetConverter() Offset lastCanvas)?
+    TResult Function(String nodeType, @OffsetConverter() Offset startCanvas,
+            @OffsetConverter() Offset lastCanvas)?
         insertingNode,
-    TResult Function(String edgeId, @OffsetConverter() Offset lastCanvas)?
+    TResult Function(String edgeId, @OffsetConverter() Offset startCanvas,
+            @OffsetConverter() Offset lastCanvas)?
         insertNodeToEdge,
-    TResult Function(String nodeId, @OffsetConverter() Offset handlePosition,
+    TResult Function(
+            String nodeId,
+            @OffsetConverter() Offset handlePosition,
+            @OffsetConverter() Offset startCanvas,
             @OffsetConverter() Offset lastCanvas)?
         resizingNode,
     TResult Function(String nodeId)? hoveringNode,

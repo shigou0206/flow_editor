@@ -18,6 +18,8 @@ Map<String, dynamic> _$$IdleImplToJson(_$IdleImpl instance) =>
 _$DragNodeImpl _$$DragNodeImplFromJson(Map<String, dynamic> json) =>
     _$DragNodeImpl(
       nodeId: json['nodeId'] as String,
+      startCanvas: const OffsetConverter()
+          .fromJson(json['startCanvas'] as Map<String, dynamic>),
       lastCanvas: const OffsetConverter()
           .fromJson(json['lastCanvas'] as Map<String, dynamic>),
       $type: json['type'] as String?,
@@ -26,6 +28,7 @@ _$DragNodeImpl _$$DragNodeImplFromJson(Map<String, dynamic> json) =>
 Map<String, dynamic> _$$DragNodeImplToJson(_$DragNodeImpl instance) =>
     <String, dynamic>{
       'nodeId': instance.nodeId,
+      'startCanvas': const OffsetConverter().toJson(instance.startCanvas),
       'lastCanvas': const OffsetConverter().toJson(instance.lastCanvas),
       'type': instance.$type,
     };
@@ -33,6 +36,8 @@ Map<String, dynamic> _$$DragNodeImplToJson(_$DragNodeImpl instance) =>
 _$DragEdgeImpl _$$DragEdgeImplFromJson(Map<String, dynamic> json) =>
     _$DragEdgeImpl(
       edgeId: json['edgeId'] as String,
+      startCanvas: const OffsetConverter()
+          .fromJson(json['startCanvas'] as Map<String, dynamic>),
       lastCanvas: const OffsetConverter()
           .fromJson(json['lastCanvas'] as Map<String, dynamic>),
       sourceAnchor:
@@ -43,6 +48,7 @@ _$DragEdgeImpl _$$DragEdgeImplFromJson(Map<String, dynamic> json) =>
 Map<String, dynamic> _$$DragEdgeImplToJson(_$DragEdgeImpl instance) =>
     <String, dynamic>{
       'edgeId': instance.edgeId,
+      'startCanvas': const OffsetConverter().toJson(instance.startCanvas),
       'lastCanvas': const OffsetConverter().toJson(instance.lastCanvas),
       'sourceAnchor': instance.sourceAnchor,
       'type': instance.$type,
@@ -52,6 +58,8 @@ _$DragWaypointImpl _$$DragWaypointImplFromJson(Map<String, dynamic> json) =>
     _$DragWaypointImpl(
       edgeId: json['edgeId'] as String,
       pointIndex: (json['pointIndex'] as num).toInt(),
+      startCanvas: const OffsetConverter()
+          .fromJson(json['startCanvas'] as Map<String, dynamic>),
       lastCanvas: const OffsetConverter()
           .fromJson(json['lastCanvas'] as Map<String, dynamic>),
       $type: json['type'] as String?,
@@ -61,12 +69,15 @@ Map<String, dynamic> _$$DragWaypointImplToJson(_$DragWaypointImpl instance) =>
     <String, dynamic>{
       'edgeId': instance.edgeId,
       'pointIndex': instance.pointIndex,
+      'startCanvas': const OffsetConverter().toJson(instance.startCanvas),
       'lastCanvas': const OffsetConverter().toJson(instance.lastCanvas),
       'type': instance.$type,
     };
 
 _$PanCanvasImpl _$$PanCanvasImplFromJson(Map<String, dynamic> json) =>
     _$PanCanvasImpl(
+      startGlobal: const OffsetConverter()
+          .fromJson(json['startGlobal'] as Map<String, dynamic>),
       lastGlobal: const OffsetConverter()
           .fromJson(json['lastGlobal'] as Map<String, dynamic>),
       $type: json['type'] as String?,
@@ -74,6 +85,7 @@ _$PanCanvasImpl _$$PanCanvasImplFromJson(Map<String, dynamic> json) =>
 
 Map<String, dynamic> _$$PanCanvasImplToJson(_$PanCanvasImpl instance) =>
     <String, dynamic>{
+      'startGlobal': const OffsetConverter().toJson(instance.startGlobal),
       'lastGlobal': const OffsetConverter().toJson(instance.lastGlobal),
       'type': instance.$type,
     };
@@ -94,6 +106,8 @@ Map<String, dynamic> _$$SelectingAreaImplToJson(_$SelectingAreaImpl instance) =>
 _$InsertingNodeImpl _$$InsertingNodeImplFromJson(Map<String, dynamic> json) =>
     _$InsertingNodeImpl(
       nodeType: json['nodeType'] as String,
+      startCanvas: const OffsetConverter()
+          .fromJson(json['startCanvas'] as Map<String, dynamic>),
       lastCanvas: const OffsetConverter()
           .fromJson(json['lastCanvas'] as Map<String, dynamic>),
       $type: json['type'] as String?,
@@ -102,6 +116,7 @@ _$InsertingNodeImpl _$$InsertingNodeImplFromJson(Map<String, dynamic> json) =>
 Map<String, dynamic> _$$InsertingNodeImplToJson(_$InsertingNodeImpl instance) =>
     <String, dynamic>{
       'nodeType': instance.nodeType,
+      'startCanvas': const OffsetConverter().toJson(instance.startCanvas),
       'lastCanvas': const OffsetConverter().toJson(instance.lastCanvas),
       'type': instance.$type,
     };
@@ -110,6 +125,8 @@ _$InsertNodeToEdgeImpl _$$InsertNodeToEdgeImplFromJson(
         Map<String, dynamic> json) =>
     _$InsertNodeToEdgeImpl(
       edgeId: json['edgeId'] as String,
+      startCanvas: const OffsetConverter()
+          .fromJson(json['startCanvas'] as Map<String, dynamic>),
       lastCanvas: const OffsetConverter()
           .fromJson(json['lastCanvas'] as Map<String, dynamic>),
       $type: json['type'] as String?,
@@ -119,6 +136,7 @@ Map<String, dynamic> _$$InsertNodeToEdgeImplToJson(
         _$InsertNodeToEdgeImpl instance) =>
     <String, dynamic>{
       'edgeId': instance.edgeId,
+      'startCanvas': const OffsetConverter().toJson(instance.startCanvas),
       'lastCanvas': const OffsetConverter().toJson(instance.lastCanvas),
       'type': instance.$type,
     };
@@ -128,6 +146,8 @@ _$ResizingNodeImpl _$$ResizingNodeImplFromJson(Map<String, dynamic> json) =>
       nodeId: json['nodeId'] as String,
       handlePosition: const OffsetConverter()
           .fromJson(json['handlePosition'] as Map<String, dynamic>),
+      startCanvas: const OffsetConverter()
+          .fromJson(json['startCanvas'] as Map<String, dynamic>),
       lastCanvas: const OffsetConverter()
           .fromJson(json['lastCanvas'] as Map<String, dynamic>),
       $type: json['type'] as String?,
@@ -137,6 +157,7 @@ Map<String, dynamic> _$$ResizingNodeImplToJson(_$ResizingNodeImpl instance) =>
     <String, dynamic>{
       'nodeId': instance.nodeId,
       'handlePosition': const OffsetConverter().toJson(instance.handlePosition),
+      'startCanvas': const OffsetConverter().toJson(instance.startCanvas),
       'lastCanvas': const OffsetConverter().toJson(instance.lastCanvas),
       'type': instance.$type,
     };

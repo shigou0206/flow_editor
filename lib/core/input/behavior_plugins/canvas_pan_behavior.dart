@@ -40,7 +40,10 @@ class CanvasPanBehavior implements CanvasBehavior {
       case InputEventType.pointerDown:
         if (ev.canvasPos != null) {
           context.updateInteraction(
-            InteractionState.panCanvas(lastGlobal: ev.canvasPos!),
+            InteractionState.panCanvas(
+              startGlobal: ev.canvasPos!,
+              lastGlobal: ev.canvasPos!,
+            ),
           );
         }
         break;

@@ -43,6 +43,7 @@ class CanvasController implements ICanvasController {
     _st = _st.copyWith(
       interaction: InteractionState.dragNode(
         nodeId: nodeId,
+        startCanvas: Offset.zero,
         lastCanvas: Offset.zero,
       ),
     );
@@ -75,6 +76,7 @@ class CanvasController implements ICanvasController {
     _st = _st.copyWith(
       interaction: InteractionState.dragEdge(
         edgeId: tempEdgeId,
+        startCanvas: Offset.zero,
         lastCanvas: Offset.zero,
         sourceAnchor: anchor,
       ),
@@ -131,7 +133,10 @@ class CanvasController implements ICanvasController {
       );
     } else {
       _st = _st.copyWith(
-        interaction: InteractionState.panCanvas(lastGlobal: delta),
+        interaction: InteractionState.panCanvas(
+          startGlobal: Offset.zero,
+          lastGlobal: delta,
+        ),
       );
     }
     // 同时更新视口状态

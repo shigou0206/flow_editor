@@ -43,6 +43,7 @@ class EdgeDrawBehavior implements CanvasBehavior {
           context.updateInteraction(
             InteractionState.dragEdge(
               edgeId: edgeId,
+              startCanvas: ev.canvasPos!,
               lastCanvas: ev.canvasPos!,
               sourceAnchor: anchor,
             ),
