@@ -8,6 +8,7 @@ import 'package:flow_editor/core/models/hit_test_result.dart';
 import 'package:flow_editor/core/config/hit_test_tolerance.dart';
 import 'package:flow_editor/core/painters/path_generators/flexible_path_generator.dart';
 import 'package:flow_editor/core/utils/hit_test_utils.dart';
+import 'package:flutter/foundation.dart';
 
 class DefaultCanvasHitTester implements CanvasHitTester {
   final List<NodeModel> Function() getNodes;
@@ -32,7 +33,9 @@ class DefaultCanvasHitTester implements CanvasHitTester {
 
   @override
   String? hitTestNode(Offset pos) {
+    debugPrint('nodes: ${getNodes().length}');
     return getNodes().reversed.firstWhereOrNull((node) {
+      debugPrint('hitTestNode: ${node.id}');
       final rect = Rect.fromLTWH(
         node.position.dx,
         node.position.dy,

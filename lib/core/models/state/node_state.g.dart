@@ -8,19 +8,15 @@ part of 'node_state.dart';
 
 _$NodeStateImpl _$$NodeStateImplFromJson(Map<String, dynamic> json) =>
     _$NodeStateImpl(
-      nodesByWorkflow: (json['nodesByWorkflow'] as Map<String, dynamic>?)?.map(
-            (k, e) => MapEntry(
-                k,
-                (e as List<dynamic>)
-                    .map((e) => NodeModel.fromJson(e as Map<String, dynamic>))
-                    .toList()),
-          ) ??
-          const {},
+      nodes: (json['nodes'] as List<dynamic>?)
+              ?.map((e) => NodeModel.fromJson(e as Map<String, dynamic>))
+              .toList() ??
+          const [],
       version: (json['version'] as num?)?.toInt() ?? 1,
     );
 
 Map<String, dynamic> _$$NodeStateImplToJson(_$NodeStateImpl instance) =>
     <String, dynamic>{
-      'nodesByWorkflow': instance.nodesByWorkflow,
+      'nodes': instance.nodes,
       'version': instance.version,
     };

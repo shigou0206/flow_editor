@@ -19,7 +19,7 @@ class MarqueeSelectBehavior implements CanvasBehavior {
     // 1) 开始框选：按下空白区域 + 启用框选
     if (ev.type == InputEventType.pointerDown && ev.canvasPos != null) {
       return context.hitTester.hitTestElement(ev.canvasPos!) == null &&
-          state.activeCanvas.interactionConfig.enableMarqueeSelect;
+          state.canvasState.interactionConfig.enableMarqueeSelect;
     }
 
     // 2) 正在框选中：只要是 SelectingArea 状态

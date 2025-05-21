@@ -20,8 +20,7 @@ EdgeState _$EdgeStateFromJson(Map<String, dynamic> json) {
 
 /// @nodoc
 mixin _$EdgeState {
-  Map<String, List<EdgeModel>> get edgesByWorkflow =>
-      throw _privateConstructorUsedError;
+  List<EdgeModel> get edges => throw _privateConstructorUsedError;
   Map<String, Set<String>> get edgeIdsByType =>
       throw _privateConstructorUsedError;
   int get version => throw _privateConstructorUsedError;
@@ -39,7 +38,7 @@ abstract class $EdgeStateCopyWith<$Res> {
       _$EdgeStateCopyWithImpl<$Res, EdgeState>;
   @useResult
   $Res call(
-      {Map<String, List<EdgeModel>> edgesByWorkflow,
+      {List<EdgeModel> edges,
       Map<String, Set<String>> edgeIdsByType,
       int version,
       Set<String> selectedEdgeIds});
@@ -58,16 +57,16 @@ class _$EdgeStateCopyWithImpl<$Res, $Val extends EdgeState>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? edgesByWorkflow = null,
+    Object? edges = null,
     Object? edgeIdsByType = null,
     Object? version = null,
     Object? selectedEdgeIds = null,
   }) {
     return _then(_value.copyWith(
-      edgesByWorkflow: null == edgesByWorkflow
-          ? _value.edgesByWorkflow
-          : edgesByWorkflow // ignore: cast_nullable_to_non_nullable
-              as Map<String, List<EdgeModel>>,
+      edges: null == edges
+          ? _value.edges
+          : edges // ignore: cast_nullable_to_non_nullable
+              as List<EdgeModel>,
       edgeIdsByType: null == edgeIdsByType
           ? _value.edgeIdsByType
           : edgeIdsByType // ignore: cast_nullable_to_non_nullable
@@ -93,7 +92,7 @@ abstract class _$$EdgeStateImplCopyWith<$Res>
   @override
   @useResult
   $Res call(
-      {Map<String, List<EdgeModel>> edgesByWorkflow,
+      {List<EdgeModel> edges,
       Map<String, Set<String>> edgeIdsByType,
       int version,
       Set<String> selectedEdgeIds});
@@ -110,16 +109,16 @@ class __$$EdgeStateImplCopyWithImpl<$Res>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? edgesByWorkflow = null,
+    Object? edges = null,
     Object? edgeIdsByType = null,
     Object? version = null,
     Object? selectedEdgeIds = null,
   }) {
     return _then(_$EdgeStateImpl(
-      edgesByWorkflow: null == edgesByWorkflow
-          ? _value._edgesByWorkflow
-          : edgesByWorkflow // ignore: cast_nullable_to_non_nullable
-              as Map<String, List<EdgeModel>>,
+      edges: null == edges
+          ? _value._edges
+          : edges // ignore: cast_nullable_to_non_nullable
+              as List<EdgeModel>,
       edgeIdsByType: null == edgeIdsByType
           ? _value._edgeIdsByType
           : edgeIdsByType // ignore: cast_nullable_to_non_nullable
@@ -140,11 +139,11 @@ class __$$EdgeStateImplCopyWithImpl<$Res>
 @JsonSerializable()
 class _$EdgeStateImpl extends _EdgeState {
   const _$EdgeStateImpl(
-      {final Map<String, List<EdgeModel>> edgesByWorkflow = const {},
+      {final List<EdgeModel> edges = const [],
       final Map<String, Set<String>> edgeIdsByType = const {},
       this.version = 1,
       final Set<String> selectedEdgeIds = const {}})
-      : _edgesByWorkflow = edgesByWorkflow,
+      : _edges = edges,
         _edgeIdsByType = edgeIdsByType,
         _selectedEdgeIds = selectedEdgeIds,
         super._();
@@ -152,13 +151,13 @@ class _$EdgeStateImpl extends _EdgeState {
   factory _$EdgeStateImpl.fromJson(Map<String, dynamic> json) =>
       _$$EdgeStateImplFromJson(json);
 
-  final Map<String, List<EdgeModel>> _edgesByWorkflow;
+  final List<EdgeModel> _edges;
   @override
   @JsonKey()
-  Map<String, List<EdgeModel>> get edgesByWorkflow {
-    if (_edgesByWorkflow is EqualUnmodifiableMapView) return _edgesByWorkflow;
+  List<EdgeModel> get edges {
+    if (_edges is EqualUnmodifiableListView) return _edges;
     // ignore: implicit_dynamic_type
-    return EqualUnmodifiableMapView(_edgesByWorkflow);
+    return EqualUnmodifiableListView(_edges);
   }
 
   final Map<String, Set<String>> _edgeIdsByType;
@@ -184,7 +183,7 @@ class _$EdgeStateImpl extends _EdgeState {
 
   @override
   String toString() {
-    return 'EdgeState(edgesByWorkflow: $edgesByWorkflow, edgeIdsByType: $edgeIdsByType, version: $version, selectedEdgeIds: $selectedEdgeIds)';
+    return 'EdgeState(edges: $edges, edgeIdsByType: $edgeIdsByType, version: $version, selectedEdgeIds: $selectedEdgeIds)';
   }
 
   @override
@@ -192,8 +191,7 @@ class _$EdgeStateImpl extends _EdgeState {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$EdgeStateImpl &&
-            const DeepCollectionEquality()
-                .equals(other._edgesByWorkflow, _edgesByWorkflow) &&
+            const DeepCollectionEquality().equals(other._edges, _edges) &&
             const DeepCollectionEquality()
                 .equals(other._edgeIdsByType, _edgeIdsByType) &&
             (identical(other.version, version) || other.version == version) &&
@@ -205,7 +203,7 @@ class _$EdgeStateImpl extends _EdgeState {
   @override
   int get hashCode => Object.hash(
       runtimeType,
-      const DeepCollectionEquality().hash(_edgesByWorkflow),
+      const DeepCollectionEquality().hash(_edges),
       const DeepCollectionEquality().hash(_edgeIdsByType),
       version,
       const DeepCollectionEquality().hash(_selectedEdgeIds));
@@ -226,7 +224,7 @@ class _$EdgeStateImpl extends _EdgeState {
 
 abstract class _EdgeState extends EdgeState {
   const factory _EdgeState(
-      {final Map<String, List<EdgeModel>> edgesByWorkflow,
+      {final List<EdgeModel> edges,
       final Map<String, Set<String>> edgeIdsByType,
       final int version,
       final Set<String> selectedEdgeIds}) = _$EdgeStateImpl;
@@ -236,7 +234,7 @@ abstract class _EdgeState extends EdgeState {
       _$EdgeStateImpl.fromJson;
 
   @override
-  Map<String, List<EdgeModel>> get edgesByWorkflow;
+  List<EdgeModel> get edges;
   @override
   Map<String, Set<String>> get edgeIdsByType;
   @override

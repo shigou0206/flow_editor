@@ -6,6 +6,7 @@ import 'package:flow_editor/core/models/node_model.dart';
 class SendToBackCommand implements ICommand {
   final CommandContext ctx;
   final String nodeId;
+
   late int _beforeIndex;
 
   SendToBackCommand(this.ctx, this.nodeId);
@@ -16,33 +17,30 @@ class SendToBackCommand implements ICommand {
   @override
   Future<void> execute() async {
     final st = ctx.getState();
-    final wfId = st.activeWorkflowId;
-    final oldList = st.nodes.nodesOf(wfId);
+    final oldList = st.nodeState.nodes;
+
     final idx = oldList.indexWhere((n) => n.id == nodeId);
-    if (idx < 0) {
-      throw Exception('Node not found: $nodeId');
-    }
+    if (idx < 0) throw Exception('Node not found: $nodeId');
+
     _beforeIndex = idx;
 
     final moved = List<NodeModel>.from(oldList);
     final node = moved.removeAt(idx);
     moved.insert(0, node);
 
-    final newNodeState = st.nodes.updateWorkflowNodes(wfId, moved);
-    ctx.updateState(st.copyWith(nodes: newNodeState));
+    final updatedState = st.nodeState.updateNodes(moved);
+    ctx.updateState(st.copyWith(nodeState: updatedState));
   }
 
   @override
   Future<void> undo() async {
     final st = ctx.getState();
-    final wfId = st.activeWorkflowId;
-    final curr = st.nodes.nodesOf(wfId);
-    // curr[0] 应为 nodeId
-    final moved = List<NodeModel>.from(curr);
-    final node = moved.removeAt(0);
-    moved.insert(_beforeIndex, node);
+    final list = List<NodeModel>.from(st.nodeState.nodes);
 
-    final newNodeState = st.nodes.updateWorkflowNodes(wfId, moved);
-    ctx.updateState(st.copyWith(nodes: newNodeState));
+    final node = list.removeAt(0);
+    list.insert(_beforeIndex, node);
+
+    final updatedState = st.nodeState.updateNodes(list);
+    ctx.updateState(st.copyWith(nodeState: updatedState));
   }
 }

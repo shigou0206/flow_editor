@@ -16,7 +16,7 @@ class CanvasZoomBehavior implements CanvasBehavior {
   @override
   bool canHandle(InputEvent ev, EditorState state) {
     return ev.type == InputEventType.pointerSignal &&
-        state.activeCanvas.interactionConfig.enableZoom;
+        state.canvasState.interactionConfig.enableZoom;
   }
 
   @override

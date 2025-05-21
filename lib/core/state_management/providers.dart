@@ -1,78 +1,54 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flow_editor/core/models/state/editor_state.dart';
+import 'package:flow_editor/core/models/state/selection_state.dart';
+import 'package:flow_editor/core/models/state/interaction_transient_state.dart';
 import 'package:flow_editor/core/models/state/canvas_state.dart';
-import 'package:flow_editor/core/models/state/canvas_viewport_state.dart';
 import 'package:flow_editor/core/models/state/node_state.dart';
 import 'package:flow_editor/core/models/state/edge_state.dart';
-import 'package:flow_editor/core/models/state/selection_state.dart';
-import 'package:flow_editor/core/models/node_model.dart';
-import 'package:flow_editor/core/models/edge_model.dart';
-import 'package:flow_editor/core/models/state/interaction_transient_state.dart';
 import 'package:flow_editor/core/state_management/editor_store_notifier.dart';
 
-/// 编辑器主状态管理器
-final editorStoreProvider =
-    StateNotifierProvider<EditorStoreNotifier, EditorState>((ref) {
-  return EditorStoreNotifier(const EditorState(
-    canvases: {
-      'default': CanvasState(),
-    },
-    activeWorkflowId: 'default',
-    nodes: NodeState(),
-    edges: EdgeState(),
-    viewport: CanvasViewportState(),
-    selection: SelectionState(),
-  ));
+/// 管理当前活跃 workflowId（用于 tab 切换等）
+final activeWorkflowIdProvider = StateProvider<String>((ref) => 'default');
+
+/// 每个 workflowId 对应一个独立 EditorStore
+final editorStoreFamilyProvider =
+    StateNotifierProvider.family<EditorStoreNotifier, EditorState, String>(
+  (ref, workflowId) {
+    return EditorStoreNotifier(const EditorState(
+      canvasState: CanvasState(),
+      nodeState: NodeState(),
+      edgeState: EdgeState(),
+    ));
+  },
+);
+
+/// 当前激活的 EditorState（方便 UI 直接读）
+final activeEditorStateProvider = Provider<EditorState>((ref) {
+  final id = ref.watch(activeWorkflowIdProvider);
+  return ref.watch(editorStoreFamilyProvider(id));
 });
 
-/// 状态控制器：用于执行命令（undo、drag、add 等）
-final editorStoreNotifierProvider = Provider<EditorStoreNotifier>(
-  (ref) => ref.watch(editorStoreProvider.notifier),
-);
+/// 当前 Editor 的控制器
+final activeEditorNotifierProvider = Provider<EditorStoreNotifier>((ref) {
+  final id = ref.watch(activeWorkflowIdProvider);
+  return ref.watch(editorStoreFamilyProvider(id).notifier);
+});
 
-/// 当前活跃的画布
-final activeCanvasProvider = Provider<CanvasState>(
-  (ref) => ref.watch(editorStoreProvider).activeCanvas,
-);
+/// 当前 workflow 的选区
+final selectionProvider = Provider<SelectionState>((ref) {
+  return ref.watch(activeEditorStateProvider.select((s) => s.selection));
+});
 
-/// 当前活跃节点列表
-final activeNodesProvider = Provider<List<NodeModel>>(
-  (ref) => ref.watch(editorStoreProvider.select((s) => s.activeNodes)),
-);
+/// 当前交互状态
+final interactionProvider = Provider<InteractionState>((ref) {
+  return ref.watch(activeEditorStateProvider.select((s) => s.interaction));
+});
 
-/// 当前活跃边列表
-final activeEdgesProvider = Provider<List<EdgeModel>>(
-  (ref) => ref.watch(editorStoreProvider.select((s) => s.activeEdges)),
-);
+/// 当前是否可撤销 / 重做
+final canUndoProvider = Provider<bool>((ref) {
+  return ref.watch(activeEditorNotifierProvider).canUndo;
+});
 
-/// 当前视口（缩放 + 偏移）
-final viewportProvider = Provider<CanvasViewportState>(
-  (ref) => ref.watch(editorStoreProvider).viewport,
-);
-
-/// 当前交互状态（如 dragNode、dragEdge 等）
-final interactionProvider = Provider<InteractionState>(
-  (ref) => ref.watch(editorStoreProvider).interaction,
-);
-
-/// 当前选择状态（选中节点/边等）
-final selectionProvider = Provider<SelectionState>(
-  (ref) => ref.watch(editorStoreProvider).selection,
-);
-
-/// 当前工作流 ID
-final activeWorkflowIdProvider = Provider<String>(
-  (ref) => ref.watch(editorStoreProvider.select((s) => s.activeWorkflowId)),
-);
-
-/// undo/redo 状态
-final canUndoProvider = Provider<bool>(
-  (ref) => ref.watch(editorStoreProvider.notifier).canUndo,
-);
-
-final canRedoProvider = Provider<bool>(
-  (ref) => ref.watch(editorStoreProvider.notifier).canRedo,
-);
-
-
-// TODO； configProvider、pluginProvider 或特定行为逻辑
+final canRedoProvider = Provider<bool>((ref) {
+  return ref.watch(activeEditorNotifierProvider).canRedo;
+});

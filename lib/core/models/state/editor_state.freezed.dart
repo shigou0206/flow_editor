@@ -20,10 +20,9 @@ EditorState _$EditorStateFromJson(Map<String, dynamic> json) {
 
 /// @nodoc
 mixin _$EditorState {
-  Map<String, CanvasState> get canvases => throw _privateConstructorUsedError;
-  String get activeWorkflowId => throw _privateConstructorUsedError;
-  NodeState get nodes => throw _privateConstructorUsedError;
-  EdgeState get edges => throw _privateConstructorUsedError;
+  CanvasState get canvasState => throw _privateConstructorUsedError;
+  NodeState get nodeState => throw _privateConstructorUsedError;
+  EdgeState get edgeState => throw _privateConstructorUsedError;
   CanvasViewportState get viewport => throw _privateConstructorUsedError;
   SelectionState get selection => throw _privateConstructorUsedError;
   InteractionState get interaction => throw _privateConstructorUsedError;
@@ -41,16 +40,16 @@ abstract class $EditorStateCopyWith<$Res> {
       _$EditorStateCopyWithImpl<$Res, EditorState>;
   @useResult
   $Res call(
-      {Map<String, CanvasState> canvases,
-      String activeWorkflowId,
-      NodeState nodes,
-      EdgeState edges,
+      {CanvasState canvasState,
+      NodeState nodeState,
+      EdgeState edgeState,
       CanvasViewportState viewport,
       SelectionState selection,
       InteractionState interaction});
 
-  $NodeStateCopyWith<$Res> get nodes;
-  $EdgeStateCopyWith<$Res> get edges;
+  $CanvasStateCopyWith<$Res> get canvasState;
+  $NodeStateCopyWith<$Res> get nodeState;
+  $EdgeStateCopyWith<$Res> get edgeState;
   $CanvasViewportStateCopyWith<$Res> get viewport;
   $InteractionStateCopyWith<$Res> get interaction;
 }
@@ -68,30 +67,25 @@ class _$EditorStateCopyWithImpl<$Res, $Val extends EditorState>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? canvases = null,
-    Object? activeWorkflowId = null,
-    Object? nodes = null,
-    Object? edges = null,
+    Object? canvasState = null,
+    Object? nodeState = null,
+    Object? edgeState = null,
     Object? viewport = null,
     Object? selection = null,
     Object? interaction = null,
   }) {
     return _then(_value.copyWith(
-      canvases: null == canvases
-          ? _value.canvases
-          : canvases // ignore: cast_nullable_to_non_nullable
-              as Map<String, CanvasState>,
-      activeWorkflowId: null == activeWorkflowId
-          ? _value.activeWorkflowId
-          : activeWorkflowId // ignore: cast_nullable_to_non_nullable
-              as String,
-      nodes: null == nodes
-          ? _value.nodes
-          : nodes // ignore: cast_nullable_to_non_nullable
+      canvasState: null == canvasState
+          ? _value.canvasState
+          : canvasState // ignore: cast_nullable_to_non_nullable
+              as CanvasState,
+      nodeState: null == nodeState
+          ? _value.nodeState
+          : nodeState // ignore: cast_nullable_to_non_nullable
               as NodeState,
-      edges: null == edges
-          ? _value.edges
-          : edges // ignore: cast_nullable_to_non_nullable
+      edgeState: null == edgeState
+          ? _value.edgeState
+          : edgeState // ignore: cast_nullable_to_non_nullable
               as EdgeState,
       viewport: null == viewport
           ? _value.viewport
@@ -110,17 +104,25 @@ class _$EditorStateCopyWithImpl<$Res, $Val extends EditorState>
 
   @override
   @pragma('vm:prefer-inline')
-  $NodeStateCopyWith<$Res> get nodes {
-    return $NodeStateCopyWith<$Res>(_value.nodes, (value) {
-      return _then(_value.copyWith(nodes: value) as $Val);
+  $CanvasStateCopyWith<$Res> get canvasState {
+    return $CanvasStateCopyWith<$Res>(_value.canvasState, (value) {
+      return _then(_value.copyWith(canvasState: value) as $Val);
     });
   }
 
   @override
   @pragma('vm:prefer-inline')
-  $EdgeStateCopyWith<$Res> get edges {
-    return $EdgeStateCopyWith<$Res>(_value.edges, (value) {
-      return _then(_value.copyWith(edges: value) as $Val);
+  $NodeStateCopyWith<$Res> get nodeState {
+    return $NodeStateCopyWith<$Res>(_value.nodeState, (value) {
+      return _then(_value.copyWith(nodeState: value) as $Val);
+    });
+  }
+
+  @override
+  @pragma('vm:prefer-inline')
+  $EdgeStateCopyWith<$Res> get edgeState {
+    return $EdgeStateCopyWith<$Res>(_value.edgeState, (value) {
+      return _then(_value.copyWith(edgeState: value) as $Val);
     });
   }
 
@@ -150,18 +152,19 @@ abstract class _$$EditorStateImplCopyWith<$Res>
   @override
   @useResult
   $Res call(
-      {Map<String, CanvasState> canvases,
-      String activeWorkflowId,
-      NodeState nodes,
-      EdgeState edges,
+      {CanvasState canvasState,
+      NodeState nodeState,
+      EdgeState edgeState,
       CanvasViewportState viewport,
       SelectionState selection,
       InteractionState interaction});
 
   @override
-  $NodeStateCopyWith<$Res> get nodes;
+  $CanvasStateCopyWith<$Res> get canvasState;
   @override
-  $EdgeStateCopyWith<$Res> get edges;
+  $NodeStateCopyWith<$Res> get nodeState;
+  @override
+  $EdgeStateCopyWith<$Res> get edgeState;
   @override
   $CanvasViewportStateCopyWith<$Res> get viewport;
   @override
@@ -179,30 +182,25 @@ class __$$EditorStateImplCopyWithImpl<$Res>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? canvases = null,
-    Object? activeWorkflowId = null,
-    Object? nodes = null,
-    Object? edges = null,
+    Object? canvasState = null,
+    Object? nodeState = null,
+    Object? edgeState = null,
     Object? viewport = null,
     Object? selection = null,
     Object? interaction = null,
   }) {
     return _then(_$EditorStateImpl(
-      canvases: null == canvases
-          ? _value._canvases
-          : canvases // ignore: cast_nullable_to_non_nullable
-              as Map<String, CanvasState>,
-      activeWorkflowId: null == activeWorkflowId
-          ? _value.activeWorkflowId
-          : activeWorkflowId // ignore: cast_nullable_to_non_nullable
-              as String,
-      nodes: null == nodes
-          ? _value.nodes
-          : nodes // ignore: cast_nullable_to_non_nullable
+      canvasState: null == canvasState
+          ? _value.canvasState
+          : canvasState // ignore: cast_nullable_to_non_nullable
+              as CanvasState,
+      nodeState: null == nodeState
+          ? _value.nodeState
+          : nodeState // ignore: cast_nullable_to_non_nullable
               as NodeState,
-      edges: null == edges
-          ? _value.edges
-          : edges // ignore: cast_nullable_to_non_nullable
+      edgeState: null == edgeState
+          ? _value.edgeState
+          : edgeState // ignore: cast_nullable_to_non_nullable
               as EdgeState,
       viewport: null == viewport
           ? _value.viewport
@@ -224,33 +222,23 @@ class __$$EditorStateImplCopyWithImpl<$Res>
 @JsonSerializable()
 class _$EditorStateImpl extends _EditorState {
   const _$EditorStateImpl(
-      {required final Map<String, CanvasState> canvases,
-      required this.activeWorkflowId,
-      required this.nodes,
-      required this.edges,
+      {required this.canvasState,
+      required this.nodeState,
+      required this.edgeState,
       this.viewport = const CanvasViewportState(),
       this.selection = const SelectionState(),
       this.interaction = const InteractionState.idle()})
-      : _canvases = canvases,
-        super._();
+      : super._();
 
   factory _$EditorStateImpl.fromJson(Map<String, dynamic> json) =>
       _$$EditorStateImplFromJson(json);
 
-  final Map<String, CanvasState> _canvases;
   @override
-  Map<String, CanvasState> get canvases {
-    if (_canvases is EqualUnmodifiableMapView) return _canvases;
-    // ignore: implicit_dynamic_type
-    return EqualUnmodifiableMapView(_canvases);
-  }
-
+  final CanvasState canvasState;
   @override
-  final String activeWorkflowId;
+  final NodeState nodeState;
   @override
-  final NodeState nodes;
-  @override
-  final EdgeState edges;
+  final EdgeState edgeState;
   @override
   @JsonKey()
   final CanvasViewportState viewport;
@@ -263,7 +251,7 @@ class _$EditorStateImpl extends _EditorState {
 
   @override
   String toString() {
-    return 'EditorState(canvases: $canvases, activeWorkflowId: $activeWorkflowId, nodes: $nodes, edges: $edges, viewport: $viewport, selection: $selection, interaction: $interaction)';
+    return 'EditorState(canvasState: $canvasState, nodeState: $nodeState, edgeState: $edgeState, viewport: $viewport, selection: $selection, interaction: $interaction)';
   }
 
   @override
@@ -271,11 +259,12 @@ class _$EditorStateImpl extends _EditorState {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$EditorStateImpl &&
-            const DeepCollectionEquality().equals(other._canvases, _canvases) &&
-            (identical(other.activeWorkflowId, activeWorkflowId) ||
-                other.activeWorkflowId == activeWorkflowId) &&
-            (identical(other.nodes, nodes) || other.nodes == nodes) &&
-            (identical(other.edges, edges) || other.edges == edges) &&
+            (identical(other.canvasState, canvasState) ||
+                other.canvasState == canvasState) &&
+            (identical(other.nodeState, nodeState) ||
+                other.nodeState == nodeState) &&
+            (identical(other.edgeState, edgeState) ||
+                other.edgeState == edgeState) &&
             (identical(other.viewport, viewport) ||
                 other.viewport == viewport) &&
             (identical(other.selection, selection) ||
@@ -286,15 +275,8 @@ class _$EditorStateImpl extends _EditorState {
 
   @JsonKey(ignore: true)
   @override
-  int get hashCode => Object.hash(
-      runtimeType,
-      const DeepCollectionEquality().hash(_canvases),
-      activeWorkflowId,
-      nodes,
-      edges,
-      viewport,
-      selection,
-      interaction);
+  int get hashCode => Object.hash(runtimeType, canvasState, nodeState,
+      edgeState, viewport, selection, interaction);
 
   @JsonKey(ignore: true)
   @override
@@ -312,10 +294,9 @@ class _$EditorStateImpl extends _EditorState {
 
 abstract class _EditorState extends EditorState {
   const factory _EditorState(
-      {required final Map<String, CanvasState> canvases,
-      required final String activeWorkflowId,
-      required final NodeState nodes,
-      required final EdgeState edges,
+      {required final CanvasState canvasState,
+      required final NodeState nodeState,
+      required final EdgeState edgeState,
       final CanvasViewportState viewport,
       final SelectionState selection,
       final InteractionState interaction}) = _$EditorStateImpl;
@@ -325,13 +306,11 @@ abstract class _EditorState extends EditorState {
       _$EditorStateImpl.fromJson;
 
   @override
-  Map<String, CanvasState> get canvases;
+  CanvasState get canvasState;
   @override
-  String get activeWorkflowId;
+  NodeState get nodeState;
   @override
-  NodeState get nodes;
-  @override
-  EdgeState get edges;
+  EdgeState get edgeState;
   @override
   CanvasViewportState get viewport;
   @override

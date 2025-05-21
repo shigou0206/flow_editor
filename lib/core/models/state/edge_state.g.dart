@@ -8,14 +8,10 @@ part of 'edge_state.dart';
 
 _$EdgeStateImpl _$$EdgeStateImplFromJson(Map<String, dynamic> json) =>
     _$EdgeStateImpl(
-      edgesByWorkflow: (json['edgesByWorkflow'] as Map<String, dynamic>?)?.map(
-            (k, e) => MapEntry(
-                k,
-                (e as List<dynamic>)
-                    .map((e) => EdgeModel.fromJson(e as Map<String, dynamic>))
-                    .toList()),
-          ) ??
-          const {},
+      edges: (json['edges'] as List<dynamic>?)
+              ?.map((e) => EdgeModel.fromJson(e as Map<String, dynamic>))
+              .toList() ??
+          const [],
       edgeIdsByType: (json['edgeIdsByType'] as Map<String, dynamic>?)?.map(
             (k, e) => MapEntry(
                 k, (e as List<dynamic>).map((e) => e as String).toSet()),
@@ -30,7 +26,7 @@ _$EdgeStateImpl _$$EdgeStateImplFromJson(Map<String, dynamic> json) =>
 
 Map<String, dynamic> _$$EdgeStateImplToJson(_$EdgeStateImpl instance) =>
     <String, dynamic>{
-      'edgesByWorkflow': instance.edgesByWorkflow,
+      'edges': instance.edges,
       'edgeIdsByType':
           instance.edgeIdsByType.map((k, e) => MapEntry(k, e.toList())),
       'version': instance.version,

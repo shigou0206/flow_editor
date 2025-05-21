@@ -8,12 +8,10 @@ part of 'editor_state.dart';
 
 _$EditorStateImpl _$$EditorStateImplFromJson(Map<String, dynamic> json) =>
     _$EditorStateImpl(
-      canvases: (json['canvases'] as Map<String, dynamic>).map(
-        (k, e) => MapEntry(k, CanvasState.fromJson(e as Map<String, dynamic>)),
-      ),
-      activeWorkflowId: json['activeWorkflowId'] as String,
-      nodes: NodeState.fromJson(json['nodes'] as Map<String, dynamic>),
-      edges: EdgeState.fromJson(json['edges'] as Map<String, dynamic>),
+      canvasState:
+          CanvasState.fromJson(json['canvasState'] as Map<String, dynamic>),
+      nodeState: NodeState.fromJson(json['nodeState'] as Map<String, dynamic>),
+      edgeState: EdgeState.fromJson(json['edgeState'] as Map<String, dynamic>),
       viewport: json['viewport'] == null
           ? const CanvasViewportState()
           : CanvasViewportState.fromJson(
@@ -29,10 +27,9 @@ _$EditorStateImpl _$$EditorStateImplFromJson(Map<String, dynamic> json) =>
 
 Map<String, dynamic> _$$EditorStateImplToJson(_$EditorStateImpl instance) =>
     <String, dynamic>{
-      'canvases': instance.canvases,
-      'activeWorkflowId': instance.activeWorkflowId,
-      'nodes': instance.nodes,
-      'edges': instance.edges,
+      'canvasState': instance.canvasState,
+      'nodeState': instance.nodeState,
+      'edgeState': instance.edgeState,
       'viewport': instance.viewport,
       'selection': instance.selection,
       'interaction': instance.interaction,

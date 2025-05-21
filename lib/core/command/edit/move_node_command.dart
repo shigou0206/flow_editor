@@ -4,7 +4,7 @@ import 'package:flow_editor/core/command/i_command.dart';
 import 'package:flow_editor/core/command/command_context.dart';
 import 'package:flow_editor/core/models/node_model.dart';
 
-/// 在当前活跃工作流中将指定节点按照给定偏移量平移
+/// 将指定节点平移一个 offset
 class MoveNodeCommand implements ICommand {
   final CommandContext ctx;
   final String nodeId;
@@ -21,34 +21,27 @@ class MoveNodeCommand implements ICommand {
   @override
   Future<void> execute() async {
     final st = ctx.getState();
-    final wf = st.activeWorkflowId;
-    final all = st.nodes.nodesOf(wf);
-    final idx = all.indexWhere((n) => n.id == nodeId);
-    if (idx < 0) {
-      throw Exception('Node not found: $nodeId');
-    }
+    final nodes = st.nodeState.nodes;
+
+    final idx = nodes.indexWhere((n) => n.id == nodeId);
+    if (idx < 0) throw Exception('Node not found: $nodeId');
+
     _index = idx;
-    _before = all[idx];
-    // 构造新的 NodeModel，保持其它属性不变，只更新 position
-    final moved = NodeModel(
-      id: _before.id,
-      position: _before.position + delta,
-      size: _before.size,
-      data: _before.data,
-      style: _before.style,
-    );
-    final updated = List<NodeModel>.from(all)..[idx] = moved;
-    final newNodes = st.nodes.updateWorkflowNodes(wf, updated);
-    ctx.updateState(st.copyWith(nodes: newNodes));
+    _before = nodes[idx];
+
+    final moved = _before.copyWith(position: _before.position + delta);
+    final updated = List<NodeModel>.from(nodes)..[idx] = moved;
+    ctx.updateState(st.copyWith(
+      nodeState: st.nodeState.updateNodes(updated),
+    ));
   }
 
   @override
   Future<void> undo() async {
     final st = ctx.getState();
-    final wf = st.activeWorkflowId;
-    final all = st.nodes.nodesOf(wf);
-    final restored = List<NodeModel>.from(all)..[_index] = _before;
-    final newNodes = st.nodes.updateWorkflowNodes(wf, restored);
-    ctx.updateState(st.copyWith(nodes: newNodes));
+    final nodes = List<NodeModel>.from(st.nodeState.nodes)..[_index] = _before;
+    ctx.updateState(st.copyWith(
+      nodeState: st.nodeState.updateNodes(nodes),
+    ));
   }
 }

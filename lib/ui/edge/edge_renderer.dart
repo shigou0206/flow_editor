@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flow_editor/core/models/node_model.dart';
 import 'package:flow_editor/core/models/edge_model.dart';
-import 'package:flow_editor/core/edge/style/edge_style_resolver.dart';
+import 'package:flow_editor/ui/edge/edge_style_resolver.dart';
 import 'package:flow_editor/core/utils/anchor_position_utils.dart';
 import 'package:flow_editor/core/painters/path_generators/path_generator.dart';
 import 'package:flow_editor/core/utils/canvas_utils.dart';

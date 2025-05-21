@@ -20,8 +20,7 @@ NodeState _$NodeStateFromJson(Map<String, dynamic> json) {
 
 /// @nodoc
 mixin _$NodeState {
-  Map<String, List<NodeModel>> get nodesByWorkflow =>
-      throw _privateConstructorUsedError;
+  List<NodeModel> get nodes => throw _privateConstructorUsedError;
   int get version => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -35,7 +34,7 @@ abstract class $NodeStateCopyWith<$Res> {
   factory $NodeStateCopyWith(NodeState value, $Res Function(NodeState) then) =
       _$NodeStateCopyWithImpl<$Res, NodeState>;
   @useResult
-  $Res call({Map<String, List<NodeModel>> nodesByWorkflow, int version});
+  $Res call({List<NodeModel> nodes, int version});
 }
 
 /// @nodoc
@@ -51,14 +50,14 @@ class _$NodeStateCopyWithImpl<$Res, $Val extends NodeState>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? nodesByWorkflow = null,
+    Object? nodes = null,
     Object? version = null,
   }) {
     return _then(_value.copyWith(
-      nodesByWorkflow: null == nodesByWorkflow
-          ? _value.nodesByWorkflow
-          : nodesByWorkflow // ignore: cast_nullable_to_non_nullable
-              as Map<String, List<NodeModel>>,
+      nodes: null == nodes
+          ? _value.nodes
+          : nodes // ignore: cast_nullable_to_non_nullable
+              as List<NodeModel>,
       version: null == version
           ? _value.version
           : version // ignore: cast_nullable_to_non_nullable
@@ -75,7 +74,7 @@ abstract class _$$NodeStateImplCopyWith<$Res>
       __$$NodeStateImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({Map<String, List<NodeModel>> nodesByWorkflow, int version});
+  $Res call({List<NodeModel> nodes, int version});
 }
 
 /// @nodoc
@@ -89,14 +88,14 @@ class __$$NodeStateImplCopyWithImpl<$Res>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? nodesByWorkflow = null,
+    Object? nodes = null,
     Object? version = null,
   }) {
     return _then(_$NodeStateImpl(
-      nodesByWorkflow: null == nodesByWorkflow
-          ? _value._nodesByWorkflow
-          : nodesByWorkflow // ignore: cast_nullable_to_non_nullable
-              as Map<String, List<NodeModel>>,
+      nodes: null == nodes
+          ? _value._nodes
+          : nodes // ignore: cast_nullable_to_non_nullable
+              as List<NodeModel>,
       version: null == version
           ? _value.version
           : version // ignore: cast_nullable_to_non_nullable
@@ -109,21 +108,20 @@ class __$$NodeStateImplCopyWithImpl<$Res>
 @JsonSerializable()
 class _$NodeStateImpl extends _NodeState {
   const _$NodeStateImpl(
-      {final Map<String, List<NodeModel>> nodesByWorkflow = const {},
-      this.version = 1})
-      : _nodesByWorkflow = nodesByWorkflow,
+      {final List<NodeModel> nodes = const [], this.version = 1})
+      : _nodes = nodes,
         super._();
 
   factory _$NodeStateImpl.fromJson(Map<String, dynamic> json) =>
       _$$NodeStateImplFromJson(json);
 
-  final Map<String, List<NodeModel>> _nodesByWorkflow;
+  final List<NodeModel> _nodes;
   @override
   @JsonKey()
-  Map<String, List<NodeModel>> get nodesByWorkflow {
-    if (_nodesByWorkflow is EqualUnmodifiableMapView) return _nodesByWorkflow;
+  List<NodeModel> get nodes {
+    if (_nodes is EqualUnmodifiableListView) return _nodes;
     // ignore: implicit_dynamic_type
-    return EqualUnmodifiableMapView(_nodesByWorkflow);
+    return EqualUnmodifiableListView(_nodes);
   }
 
   @override
@@ -132,7 +130,7 @@ class _$NodeStateImpl extends _NodeState {
 
   @override
   String toString() {
-    return 'NodeState(nodesByWorkflow: $nodesByWorkflow, version: $version)';
+    return 'NodeState(nodes: $nodes, version: $version)';
   }
 
   @override
@@ -140,15 +138,14 @@ class _$NodeStateImpl extends _NodeState {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$NodeStateImpl &&
-            const DeepCollectionEquality()
-                .equals(other._nodesByWorkflow, _nodesByWorkflow) &&
+            const DeepCollectionEquality().equals(other._nodes, _nodes) &&
             (identical(other.version, version) || other.version == version));
   }
 
   @JsonKey(ignore: true)
   @override
-  int get hashCode => Object.hash(runtimeType,
-      const DeepCollectionEquality().hash(_nodesByWorkflow), version);
+  int get hashCode => Object.hash(
+      runtimeType, const DeepCollectionEquality().hash(_nodes), version);
 
   @JsonKey(ignore: true)
   @override
@@ -165,16 +162,15 @@ class _$NodeStateImpl extends _NodeState {
 }
 
 abstract class _NodeState extends NodeState {
-  const factory _NodeState(
-      {final Map<String, List<NodeModel>> nodesByWorkflow,
-      final int version}) = _$NodeStateImpl;
+  const factory _NodeState({final List<NodeModel> nodes, final int version}) =
+      _$NodeStateImpl;
   const _NodeState._() : super._();
 
   factory _NodeState.fromJson(Map<String, dynamic> json) =
       _$NodeStateImpl.fromJson;
 
   @override
-  Map<String, List<NodeModel>> get nodesByWorkflow;
+  List<NodeModel> get nodes;
   @override
   int get version;
   @override

@@ -5,70 +5,144 @@ import 'dart:ui';
 import 'package:flow_editor/core/command/command_context.dart';
 import 'package:flow_editor/core/command/command_manager.dart';
 import 'package:flow_editor/core/controller/canvas_controller_interface.dart';
-import 'package:flow_editor/core/controller/node_controller_interface.dart';
-import 'package:flow_editor/core/controller/edge_controller_interface.dart';
-import 'package:flow_editor/core/controller/viewport_controller_interface.dart';
-import 'package:flow_editor/core/controller/selection_controller_interface.dart';
-import 'package:flow_editor/core/controller/execution_controller_interface.dart';
-import 'package:flow_editor/core/controller/impl/node_controller_impl.dart';
 import 'package:flow_editor/core/controller/impl/edge_controller_impl.dart';
-import 'package:flow_editor/core/controller/impl/viewport_controller_impl.dart';
+import 'package:flow_editor/core/controller/impl/node_controller_impl.dart';
 import 'package:flow_editor/core/controller/impl/selection_controller_impl.dart';
-import 'package:flow_editor/core/controller/impl/execution_controller_impl.dart';
+import 'package:flow_editor/core/controller/impl/viewport_controller_impl.dart';
+import 'package:flow_editor/core/models/anchor_model.dart';
+import 'package:flow_editor/core/models/state/editor_state.dart';
+import 'package:flow_editor/core/models/state/interaction_transient_state.dart';
 import 'package:flow_editor/core/models/node_model.dart';
 import 'package:flow_editor/core/models/edge_model.dart';
-import 'package:flow_editor/core/models/anchor_model.dart';
 
-/// 聚合型 Controller，行为层（Behavior）和命令层（Command）都用同一个实例。
+/// 把“低级行为”（Behavior 层）和“高层命令”都放到一起的统一 Controller
 class CanvasController implements ICanvasController {
   final CommandManager _cmd;
-  final INodeController _nodeCtrl;
-  final IEdgeController _edgeCtrl;
-  final IViewportController _vpCtrl;
-  final ISelectionController _selCtrl;
-  final IExecutionController _execCtrl;
+  final NodeControllerImpl _nodeCtrl;
+  final EdgeControllerImpl _edgeCtrl;
+  final ViewportControllerImpl _vpCtrl;
+  final SelectionControllerImpl _selCtrl;
+  final CommandContext _ctx;
 
-  CanvasController(CommandContext ctx)
-      : _cmd = CommandManager(ctx),
-        _nodeCtrl = NodeControllerImpl(ctx),
-        _edgeCtrl = EdgeControllerImpl(ctx),
-        _vpCtrl = ViewportControllerImpl(ctx),
-        _selCtrl = SelectionControllerImpl(ctx),
-        _execCtrl = ExecutionControllerImpl(ctx);
+  CanvasController(this._ctx)
+      : _cmd = CommandManager(_ctx),
+        _nodeCtrl = NodeControllerImpl(_ctx),
+        _edgeCtrl = EdgeControllerImpl(_ctx),
+        _vpCtrl = ViewportControllerImpl(_ctx),
+        _selCtrl = SelectionControllerImpl(_ctx);
 
-  // ===========================================================================
-  // === Behavior 层要用的“低级画布操作”，留空或更新状态即可，外面用 StateNotifier 驱动重绘
-  // ===========================================================================
+  EditorState get _st => _ctx.getState();
+  set _st(EditorState s) => _ctx.updateState(s);
 
-  @override
-  void startNodeDrag(String nodeId) {}
-
-  @override
-  void updateNodeDrag(Offset delta) {}
+  // ---------------------------------------------------
+  // === 低级画布操作：更新 InteractionState  ===
+  // ---------------------------------------------------
 
   @override
-  void endNodeDrag() {}
+  void startNodeDrag(String nodeId) {
+    _st = _st.copyWith(
+      interaction: InteractionState.dragNode(
+        nodeId: nodeId,
+        lastCanvas: Offset.zero,
+      ),
+    );
+  }
 
   @override
-  void startEdgeDrag(String anchorId) {}
+  void updateNodeDrag(Offset delta) {
+    final it = _st.interaction;
+    if (it is DragNode) {
+      _st = _st.copyWith(
+        interaction: it.copyWith(lastCanvas: it.lastCanvas + delta),
+      );
+    }
+  }
 
   @override
-  void updateEdgeDrag(Offset canvasPos) {}
+  void endNodeDrag() {
+    _st = _st.copyWith(interaction: const InteractionState.idle());
+  }
 
   @override
-  void endEdgeDrag({String? targetNodeId, String? targetAnchorId}) {}
+  void startEdgeDrag(String anchorId) {
+    // 生成一个临时 edgeId
+    final tempEdgeId =
+        'temp_edge_${anchorId}_${DateTime.now().millisecondsSinceEpoch}';
+    // 找到对应 AnchorModel
+    final node = _st.nodeState.nodes
+        .firstWhere((n) => n.id == anchorId.split('_').first);
+    final anchor = node.anchors.firstWhere((a) => a.id == anchorId);
+    _st = _st.copyWith(
+      interaction: InteractionState.dragEdge(
+        edgeId: tempEdgeId,
+        lastCanvas: Offset.zero,
+        sourceAnchor: anchor,
+      ),
+    );
+  }
 
   @override
-  void marqueeSelect(Rect area) {}
+  void updateEdgeDrag(Offset canvasPos) {
+    final it = _st.interaction;
+    if (it is DragEdge) {
+      _st = _st.copyWith(
+        interaction: it.copyWith(lastCanvas: canvasPos),
+      );
+    }
+  }
 
   @override
-  void deleteSelection() {}
+  void endEdgeDrag({String? targetNodeId, String? targetAnchorId}) {
+    // 结束时，如果希望自动新增一条真正的边，可以在这里：
+    // if (targetNodeId != null && targetAnchorId != null) {
+    //   _edgeCtrl.addEdge(EdgeModel.generated(...));
+    // }
+    _st = _st.copyWith(interaction: const InteractionState.idle());
+  }
 
   @override
-  void copySelection() {}
+  void marqueeSelect(Rect area) {
+    _st = _st.copyWith(
+      interaction: InteractionState.selectingArea(selectionBox: area),
+    );
+  }
 
   @override
-  void pasteClipboard() {}
+  void deleteSelection() {
+    // 高层命令会实际删除，此处不变动临时 state
+  }
+
+  @override
+  void copySelection() {
+    // 同上
+  }
+
+  @override
+  void pasteClipboard() {
+    // 同上
+  }
+
+  @override
+  void panBy(Offset delta) {
+    final it = _st.interaction;
+    if (it is PanCanvas) {
+      _st = _st.copyWith(
+        interaction: it.copyWith(lastGlobal: it.lastGlobal + delta),
+      );
+    } else {
+      _st = _st.copyWith(
+        interaction: InteractionState.panCanvas(lastGlobal: delta),
+      );
+    }
+    // 同时更新视口状态
+    _vpCtrl.panBy(delta);
+  }
+
+  @override
+  void zoomAt(Offset focalPoint, double scaleDelta) {
+    // Behavior 层不更新 InteractionState，仅更新视口
+    _vpCtrl.zoomAt(focalPoint, scaleDelta);
+  }
 
   @override
   void undo() => _cmd.undo();
@@ -76,105 +150,65 @@ class CanvasController implements ICanvasController {
   @override
   void redo() => _cmd.redo();
 
-  // ===========================================================================
-  // === 命令层要用的“高层 API”，都直接委托给对应的 ICommand
-  // ===========================================================================
+  // ---------------------------------------------------
+  // === 高层命令：委托给 ICommand 实现层  ===
+  // ---------------------------------------------------
 
-  // Node
   @override
   Future<void> addNode(NodeModel node) => _nodeCtrl.addNode(node);
 
   @override
-  Future<void> deleteNode(String id) => _nodeCtrl.deleteNode(id);
+  Future<void> deleteNode(String nodeId) => _nodeCtrl.deleteNode(nodeId);
 
   @override
-  Future<void> deleteNodeWithEdges(String id) =>
-      _nodeCtrl.deleteNodeWithEdges(id);
+  Future<void> deleteNodeWithEdges(String nodeId) =>
+      _nodeCtrl.deleteNodeWithEdges(nodeId);
 
   @override
-  Future<void> moveNode(String id, Offset to) => _nodeCtrl.moveNode(id, to);
+  Future<void> moveNode(String nodeId, Offset to) =>
+      _nodeCtrl.moveNode(nodeId, to);
 
   @override
   Future<void> updateNodeProperty(
-          String id, NodeModel Function(NodeModel) fn) =>
-      _nodeCtrl.updateNodeProperty(id, fn);
+          String nodeId, NodeModel Function(NodeModel) updateFn) =>
+      _nodeCtrl.updateNodeProperty(nodeId, updateFn);
 
   @override
-  Future<void> groupNodes(List<String> ids) => _nodeCtrl.groupNodes(ids);
+  Future<void> groupNodes(List<String> nodeIds) =>
+      _nodeCtrl.groupNodes(nodeIds);
 
   @override
-  Future<void> ungroupNodes(String id) => _nodeCtrl.ungroupNodes(id);
+  Future<void> ungroupNodes(String groupId) => _nodeCtrl.ungroupNodes(groupId);
 
-  // Edge
   @override
   Future<void> addEdge(EdgeModel edge) => _edgeCtrl.addEdge(edge);
 
   @override
-  Future<void> deleteEdge(String id) => _edgeCtrl.deleteEdge(id);
+  Future<void> deleteEdge(String edgeId) => _edgeCtrl.deleteEdge(edgeId);
 
   @override
-  Future<void> moveEdge(String id, Offset from, Offset to) =>
-      _edgeCtrl.moveEdge(id, from, to);
+  Future<void> moveEdge(String edgeId, Offset from, Offset to) =>
+      _edgeCtrl.moveEdge(edgeId, from, to);
 
   @override
   Future<void> updateEdgeProperty(
-          String id, EdgeModel Function(EdgeModel) fn) =>
-      _edgeCtrl.updateEdgeProperty(id, fn);
-
-  // Selection
-  @override
-  Future<void> selectNodes(Set<String> ids) => _selCtrl.selectNodes(ids);
+          String edgeId, EdgeModel Function(EdgeModel) updateFn) =>
+      _edgeCtrl.updateEdgeProperty(edgeId, updateFn);
 
   @override
-  Future<void> selectEdges(Set<String> ids) => _selCtrl.selectEdges(ids);
+  Future<void> selectNodes(Set<String> nodeIds) =>
+      _selCtrl.selectNodes(nodeIds);
+
+  @override
+  Future<void> selectEdges(Set<String> edgeIds) =>
+      _selCtrl.selectEdges(edgeIds);
 
   @override
   Future<void> clearSelection() => _selCtrl.clearSelection();
 
-  // Viewport
-  @override
-  Future<void> panBy(Offset pos) => _vpCtrl.panBy(pos);
-
-  @override
-  Future<void> zoomAt(Offset focalPoint, double scaleDelta) =>
-      _vpCtrl.zoomAt(focalPoint, scaleDelta);
-
   @override
   String generateTempEdgeId(AnchorModel sourceAnchor) {
     final now = DateTime.now().millisecondsSinceEpoch;
-    return 'tempEdge_${sourceAnchor.nodeId}_${sourceAnchor.id}_$now';
+    return 'temp_edge_${sourceAnchor.nodeId}_${sourceAnchor.id}_$now';
   }
-
-  // Execution
-  @override
-  Future<void> runNode(String id, {Map<String, dynamic>? data}) =>
-      _execCtrl.runNode(id, data: data);
-
-  @override
-  Future<void> stopNode(String id, {Map<String, dynamic>? data}) =>
-      _execCtrl.stopNode(id, data: data);
-
-  @override
-  Future<void> failNode(String id, {Map<String, dynamic>? data}) =>
-      _execCtrl.failNode(id, data: data);
-
-  @override
-  Future<void> completeNode(String id, {Map<String, dynamic>? data}) =>
-      _execCtrl.completeNode(id, data: data);
-
-  @override
-  Future<void> runWorkflow({Map<String, dynamic>? data}) =>
-      _execCtrl.runWorkflow(data: data);
-
-  @override
-  Future<void> cancelWorkflow({Map<String, dynamic>? data}) =>
-      _execCtrl.cancelWorkflow(data: data);
-
-  @override
-  Future<void> failWorkflow({Map<String, dynamic>? data}) =>
-      _execCtrl.failWorkflow(data: data);
-
-  @override
-  Future<void> completeWorkflow({Map<String, dynamic>? data}) =>
-      _execCtrl.completeWorkflow(data: data);
 }
