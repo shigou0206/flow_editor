@@ -33,17 +33,18 @@ class DefaultCanvasHitTester implements CanvasHitTester {
 
   @override
   String? hitTestNode(Offset pos) {
-    debugPrint('nodes: ${getNodes().length}');
-    return getNodes().reversed.firstWhereOrNull((node) {
-      debugPrint('hitTestNode: ${node.id}');
-      final rect = Rect.fromLTWH(
-        node.position.dx,
-        node.position.dy,
-        node.size.width,
-        node.size.height,
-      );
-      return rect.contains(pos);
-    })?.id;
+    for (final node in getNodes().reversed) {
+      final x = node.position.dx;
+      final y = node.position.dy;
+      final w = node.size.width;
+      final h = node.size.height;
+      debugPrint('pos: $pos');
+      debugPrint('hitTestNode: $x $y $w $h');
+
+      final rect = Rect.fromLTWH(x, y, w, h);
+      if (rect.contains(pos)) return node.id;
+    }
+    return null;
   }
 
   @override

@@ -30,27 +30,32 @@ class FlowEditorPage extends ConsumerWidget {
 
     final canvas = editor.canvasState; // CanvasState
     final nodes = editor.nodeState.nodes; // List<NodeModel>
-    final edges = editor.edgeState.edges; // List<EdgeModel>
+    debugPrint('nodes length: ${nodes.length}');
 
-    // ─────────────── Hit-tester & BehaviorContext ─────────────
-    final hitTester = DefaultCanvasHitTester(
-      getNodes: () => nodes,
-      getEdges: () => edges,
-      getAnchors: () => nodes.expand((n) => n.anchors).toList(),
-      computeAnchorWorldPosition: computeAnchorWorldPosition,
-    );
-    final behaviorCtx = BehaviorContext(
+    late final BehaviorContext behaviorCtx;
+    behaviorCtx = BehaviorContext(
       controller: ctrl,
       getState: () => ref.read(activeEditorStateProvider),
       updateState: (s) => store.replaceState(s),
-      hitTester: hitTester,
+      hitTester: DefaultCanvasHitTester(
+        // 🔑 从 behaviorCtx.getState() 拿最新 state
+        getNodes: () => behaviorCtx.getState().nodeState.nodes,
+        getEdges: () => behaviorCtx.getState().edgeState.edges,
+        getAnchors: () => behaviorCtx
+            .getState()
+            .nodeState
+            .nodes
+            .expand((n) => n.anchors)
+            .toList(),
+        computeAnchorWorldPosition: computeAnchorWorldPosition,
+      ),
     );
 
     // ─────────────── UI ───────────────────────────────────────
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.background,
 
-      // “+” 按钮：随机位置添加一个节点
+      // "+" 按钮：随机位置添加一个节点
       floatingActionButton: FloatingActionButton(
         child: const Icon(Icons.add),
         onPressed: () {

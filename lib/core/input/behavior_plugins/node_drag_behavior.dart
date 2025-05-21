@@ -22,7 +22,8 @@ class NodeDragBehavior implements CanvasBehavior {
 
     // 1) pointerDown 且命中了节点：可以开始 dragNode
     if (ev.type == InputEventType.pointerDown && ev.canvasPos != null) {
-      debugPrint('canHandle: ${context.hitTester.hitTestNode(ev.canvasPos!)}');
+      debugPrint(
+          'canHandle pointerDown : ${context.hitTester.hitTestNode(ev.canvasPos!)}');
       return context.hitTester.hitTestNode(ev.canvasPos!) != null;
     }
 
