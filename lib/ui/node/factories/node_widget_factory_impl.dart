@@ -1,6 +1,6 @@
 import 'package:flutter/widgets.dart';
 import 'package:flow_editor/core/models/node_model.dart';
-import 'package:flow_editor/ui/node/node_widget.dart';
+import 'package:flow_editor/ui/node/workflow/base/node_widget.dart';
 import 'package:flow_editor/ui/node/node_widget_registry.dart';
 import 'package:flow_editor/ui/node/factories/node_widget_factory.dart';
 

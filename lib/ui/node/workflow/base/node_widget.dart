@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flow_editor/core/models/node_model.dart';
 import 'package:flow_editor/core/utils/anchor_position_utils.dart';
-import 'package:flow_editor/ui/node/node_block.dart';
-import 'package:flow_editor/ui/node/node_anchors.dart';
+import 'package:flow_editor/ui/node/workflow/base/node_block.dart';
+import 'package:flow_editor/ui/node/workflow/base/node_anchors.dart';
 
 class NodeWidget extends StatelessWidget {
   final NodeModel node;
@@ -36,7 +36,7 @@ class NodeWidget extends StatelessWidget {
             top: padding.top,
             child: NodeBlock(
               node: node,
-              child: child,
+              body: child,
             ),
           ),
           // 3.2 锚点层, 放在 (0,0), 里面再根据padding排布

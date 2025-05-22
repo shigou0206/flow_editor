@@ -2,7 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flow_editor/ui/flow_editor.dart';
+import 'package:flow_editor/ui/flow_editor_test.dart';
 
 void main() {
   runApp(const ProviderScope(child: MyApp()));

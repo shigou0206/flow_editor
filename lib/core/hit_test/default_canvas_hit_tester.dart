@@ -5,7 +5,7 @@ import 'package:flow_editor/core/models/node_model.dart';
 import 'package:flow_editor/core/models/anchor_model.dart';
 import 'package:flow_editor/core/models/edge_model.dart';
 import 'package:flow_editor/core/models/hit_test_result.dart';
-import 'package:flow_editor/core/config/hit_test_tolerance.dart';
+import 'package:flow_editor/core/models/config/hit_test_tolerance.dart';
 import 'package:flow_editor/core/painters/path_generators/flexible_path_generator.dart';
 import 'package:flow_editor/core/utils/hit_test_utils.dart';
 import 'package:flutter/foundation.dart';

@@ -1,22 +1,19 @@
 // lib/ui/pages/flow_editor_page.dart
 import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-
 import 'package:flow_editor/core/state_management/providers.dart';
 import 'package:flow_editor/core/state_management/canvas_controller_provider.dart';
-
 import 'package:flow_editor/core/input/wrapper/canvas_input_wrapper.dart';
 import 'package:flow_editor/core/input/behavior_core/behavior_context.dart';
-
 import 'package:flow_editor/core/hit_test/default_canvas_hit_tester.dart';
 import 'package:flow_editor/core/utils/anchor_position_utils.dart';
-
 import 'package:flow_editor/ui/canvas/canvas_renderer.dart';
-import 'package:flow_editor/ui/node/factories/default_node_factory.dart';
-
 import 'package:flow_editor/core/models/node_model.dart';
+import 'package:flow_editor/core/models/anchor_model.dart';
+import 'package:flow_editor/ui/node/node_widget_registry_initializer.dart';
+import 'package:flow_editor/ui/node/factories/node_widget_factory_impl.dart';
+import 'package:flow_editor/core/models/enums/position_enum.dart';
 
 class FlowEditorPage extends ConsumerWidget {
   const FlowEditorPage({super.key});
@@ -56,6 +53,46 @@ class FlowEditorPage extends ConsumerWidget {
       orElse: () => Offset.zero,
     );
 
+    final registry = initNodeWidgetRegistry();
+    final nodeFactory = NodeWidgetFactoryImpl(
+      registry: registry,
+    );
+
+    late final availableNodes = [
+      const NodeModel(
+        id: 'start_template',
+        type: 'start',
+        position: Offset(0, 0),
+        size: Size(100, 80),
+        title: 'Start',
+        anchors: [],
+      ),
+      const NodeModel(
+        id: 'end_template',
+        type: 'end',
+        position: Offset(0, 0),
+        size: Size(100, 80),
+        title: 'End',
+        anchors: [],
+      ),
+      const NodeModel(
+        id: 'placeholder_template',
+        type: 'placeholder',
+        position: Offset(0, 0),
+        size: Size(100, 80),
+        title: 'Placeholder',
+        anchors: [],
+      ),
+      const NodeModel(
+        id: 'middle_template',
+        type: 'middle',
+        position: Offset(0, 0),
+        size: Size(100, 80),
+        title: 'Middle',
+        anchors: [],
+      ),
+    ];
+
     // ─────────────── UI ───────────────────────────────────────
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.surface,
@@ -65,15 +102,25 @@ class FlowEditorPage extends ConsumerWidget {
         child: const Icon(Icons.add),
         onPressed: () {
           final id = 'node_${DateTime.now().millisecondsSinceEpoch}';
+
           final rnd = Random();
           final x = rnd.nextDouble() * 200.0 + 50;
           final y = rnd.nextDouble() * 200.0 + 50;
 
           final newNode = NodeModel(
+            type: 'start',
             id: id,
             position: Offset(x, y),
             size: const Size(120, 60),
             title: 'Node $id',
+            anchors: [
+              AnchorModel(
+                id: 'anchor_${DateTime.now().millisecondsSinceEpoch}',
+                position: Position.right,
+                size: const Size(5, 5),
+                nodeId: id,
+              ),
+            ],
           );
           ctrl.addNode(newNode);
         },
@@ -93,7 +140,7 @@ class FlowEditorPage extends ConsumerWidget {
               nodeState: editor.nodeState,
               edgeState: editor.edgeState,
               interaction: editor.interaction,
-              nodeWidgetFactory: const DefaultNodeFactory(),
+              nodeWidgetFactory: nodeFactory,
             ),
           ),
         ),
