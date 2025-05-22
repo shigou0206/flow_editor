@@ -1,6 +1,7 @@
 // lib/ui/pages/flow_editor_page.dart
 import 'dart:math';
 
+import 'package:flow_editor/core/models/state/interaction_transient_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -53,7 +54,7 @@ class FlowEditorPage extends ConsumerWidget {
 
     // ─────────────── UI ───────────────────────────────────────
     return Scaffold(
-      backgroundColor: Theme.of(context).colorScheme.background,
+      backgroundColor: Theme.of(context).colorScheme.surface,
 
       // "+" 按钮：随机位置添加一个节点
       floatingActionButton: FloatingActionButton(
@@ -61,8 +62,8 @@ class FlowEditorPage extends ConsumerWidget {
         onPressed: () {
           final id = 'node_${DateTime.now().millisecondsSinceEpoch}';
           final rnd = Random();
-          final x = 200.0 + 50;
-          final y = 200.0 + 50;
+          final x = rnd.nextDouble() * 200.0 + 50;
+          final y = rnd.nextDouble() * 200.0 + 50;
 
           final newNode = NodeModel(
             id: id,

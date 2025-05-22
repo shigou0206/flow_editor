@@ -19,10 +19,10 @@ class PanCanvasCommand implements ICommand {
   @override
   Future<void> execute() async {
     final st = ctx.getState();
-    _beforeOffset = st.viewport.offset;
+    _beforeOffset = st.canvasState.offset;
     final newOffset = _beforeOffset + delta;
     ctx.updateState(st.copyWith(
-      viewport: st.viewport.copyWith(offset: newOffset),
+      canvasState: st.canvasState.copyWith(offset: newOffset),
     ));
   }
 
@@ -30,7 +30,7 @@ class PanCanvasCommand implements ICommand {
   Future<void> undo() async {
     final st = ctx.getState();
     ctx.updateState(st.copyWith(
-      viewport: st.viewport.copyWith(offset: _beforeOffset),
+      canvasState: st.canvasState.copyWith(offset: _beforeOffset),
     ));
   }
 }

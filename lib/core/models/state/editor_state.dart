@@ -5,7 +5,6 @@ import 'package:flow_editor/core/models/state/node_state.dart';
 import 'package:flow_editor/core/models/state/edge_state.dart';
 import 'package:flow_editor/core/models/node_model.dart';
 import 'package:flow_editor/core/models/edge_model.dart';
-import 'package:flow_editor/core/models/state/canvas_viewport_state.dart';
 import 'package:flow_editor/core/models/state/selection_state.dart';
 import 'package:flow_editor/core/models/state/interaction_transient_state.dart';
 
@@ -20,7 +19,6 @@ class EditorState with _$EditorState {
     required CanvasState canvasState,
     required NodeState nodeState,
     required EdgeState edgeState,
-    @Default(CanvasViewportState()) CanvasViewportState viewport,
     @Default(SelectionState()) SelectionState selection,
     @Default(InteractionState.idle()) InteractionState interaction,
   }) = _EditorState;

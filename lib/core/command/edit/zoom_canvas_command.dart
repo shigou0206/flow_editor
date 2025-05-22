@@ -19,8 +19,8 @@ class ZoomCanvasCommand implements ICommand {
   @override
   Future<void> execute() async {
     final st = ctx.getState();
-    _beforeOffset = st.viewport.offset;
-    _beforeScale = st.viewport.scale;
+    _beforeOffset = st.canvasState.offset;
+    _beforeScale = st.canvasState.scale;
 
     final oldScale = _beforeScale;
     final newScale = oldScale * scaleDelta;
@@ -34,7 +34,7 @@ class ZoomCanvasCommand implements ICommand {
     final newOffset = canvasPoint - focalPoint / newScale;
 
     ctx.updateState(st.copyWith(
-      viewport: st.viewport.copyWith(
+      canvasState: st.canvasState.copyWith(
         offset: newOffset,
         scale: newScale,
       ),
@@ -45,7 +45,7 @@ class ZoomCanvasCommand implements ICommand {
   Future<void> undo() async {
     final st = ctx.getState();
     ctx.updateState(st.copyWith(
-      viewport: st.viewport.copyWith(
+      canvasState: st.canvasState.copyWith(
         offset: _beforeOffset,
         scale: _beforeScale,
       ),

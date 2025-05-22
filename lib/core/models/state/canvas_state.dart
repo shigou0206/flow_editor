@@ -16,6 +16,7 @@ class CanvasState with _$CanvasState {
   const factory CanvasState({
     @OffsetConverter() @Default(Offset.zero) Offset offset,
     @Default(1.0) double scale,
+    @SizeConverter() Size? viewportSize,
     @Default(CanvasInteractionMode.panCanvas)
     CanvasInteractionMode interactionMode,
     @Default(CanvasVisualConfig()) CanvasVisualConfig visualConfig,

@@ -23,7 +23,6 @@ mixin _$EditorState {
   CanvasState get canvasState => throw _privateConstructorUsedError;
   NodeState get nodeState => throw _privateConstructorUsedError;
   EdgeState get edgeState => throw _privateConstructorUsedError;
-  CanvasViewportState get viewport => throw _privateConstructorUsedError;
   SelectionState get selection => throw _privateConstructorUsedError;
   InteractionState get interaction => throw _privateConstructorUsedError;
 
@@ -43,14 +42,12 @@ abstract class $EditorStateCopyWith<$Res> {
       {CanvasState canvasState,
       NodeState nodeState,
       EdgeState edgeState,
-      CanvasViewportState viewport,
       SelectionState selection,
       InteractionState interaction});
 
   $CanvasStateCopyWith<$Res> get canvasState;
   $NodeStateCopyWith<$Res> get nodeState;
   $EdgeStateCopyWith<$Res> get edgeState;
-  $CanvasViewportStateCopyWith<$Res> get viewport;
   $InteractionStateCopyWith<$Res> get interaction;
 }
 
@@ -70,7 +67,6 @@ class _$EditorStateCopyWithImpl<$Res, $Val extends EditorState>
     Object? canvasState = null,
     Object? nodeState = null,
     Object? edgeState = null,
-    Object? viewport = null,
     Object? selection = null,
     Object? interaction = null,
   }) {
@@ -87,10 +83,6 @@ class _$EditorStateCopyWithImpl<$Res, $Val extends EditorState>
           ? _value.edgeState
           : edgeState // ignore: cast_nullable_to_non_nullable
               as EdgeState,
-      viewport: null == viewport
-          ? _value.viewport
-          : viewport // ignore: cast_nullable_to_non_nullable
-              as CanvasViewportState,
       selection: null == selection
           ? _value.selection
           : selection // ignore: cast_nullable_to_non_nullable
@@ -128,14 +120,6 @@ class _$EditorStateCopyWithImpl<$Res, $Val extends EditorState>
 
   @override
   @pragma('vm:prefer-inline')
-  $CanvasViewportStateCopyWith<$Res> get viewport {
-    return $CanvasViewportStateCopyWith<$Res>(_value.viewport, (value) {
-      return _then(_value.copyWith(viewport: value) as $Val);
-    });
-  }
-
-  @override
-  @pragma('vm:prefer-inline')
   $InteractionStateCopyWith<$Res> get interaction {
     return $InteractionStateCopyWith<$Res>(_value.interaction, (value) {
       return _then(_value.copyWith(interaction: value) as $Val);
@@ -155,7 +139,6 @@ abstract class _$$EditorStateImplCopyWith<$Res>
       {CanvasState canvasState,
       NodeState nodeState,
       EdgeState edgeState,
-      CanvasViewportState viewport,
       SelectionState selection,
       InteractionState interaction});
 
@@ -165,8 +148,6 @@ abstract class _$$EditorStateImplCopyWith<$Res>
   $NodeStateCopyWith<$Res> get nodeState;
   @override
   $EdgeStateCopyWith<$Res> get edgeState;
-  @override
-  $CanvasViewportStateCopyWith<$Res> get viewport;
   @override
   $InteractionStateCopyWith<$Res> get interaction;
 }
@@ -185,7 +166,6 @@ class __$$EditorStateImplCopyWithImpl<$Res>
     Object? canvasState = null,
     Object? nodeState = null,
     Object? edgeState = null,
-    Object? viewport = null,
     Object? selection = null,
     Object? interaction = null,
   }) {
@@ -202,10 +182,6 @@ class __$$EditorStateImplCopyWithImpl<$Res>
           ? _value.edgeState
           : edgeState // ignore: cast_nullable_to_non_nullable
               as EdgeState,
-      viewport: null == viewport
-          ? _value.viewport
-          : viewport // ignore: cast_nullable_to_non_nullable
-              as CanvasViewportState,
       selection: null == selection
           ? _value.selection
           : selection // ignore: cast_nullable_to_non_nullable
@@ -225,7 +201,6 @@ class _$EditorStateImpl extends _EditorState {
       {required this.canvasState,
       required this.nodeState,
       required this.edgeState,
-      this.viewport = const CanvasViewportState(),
       this.selection = const SelectionState(),
       this.interaction = const InteractionState.idle()})
       : super._();
@@ -241,9 +216,6 @@ class _$EditorStateImpl extends _EditorState {
   final EdgeState edgeState;
   @override
   @JsonKey()
-  final CanvasViewportState viewport;
-  @override
-  @JsonKey()
   final SelectionState selection;
   @override
   @JsonKey()
@@ -251,7 +223,7 @@ class _$EditorStateImpl extends _EditorState {
 
   @override
   String toString() {
-    return 'EditorState(canvasState: $canvasState, nodeState: $nodeState, edgeState: $edgeState, viewport: $viewport, selection: $selection, interaction: $interaction)';
+    return 'EditorState(canvasState: $canvasState, nodeState: $nodeState, edgeState: $edgeState, selection: $selection, interaction: $interaction)';
   }
 
   @override
@@ -265,8 +237,6 @@ class _$EditorStateImpl extends _EditorState {
                 other.nodeState == nodeState) &&
             (identical(other.edgeState, edgeState) ||
                 other.edgeState == edgeState) &&
-            (identical(other.viewport, viewport) ||
-                other.viewport == viewport) &&
             (identical(other.selection, selection) ||
                 other.selection == selection) &&
             (identical(other.interaction, interaction) ||
@@ -275,8 +245,8 @@ class _$EditorStateImpl extends _EditorState {
 
   @JsonKey(ignore: true)
   @override
-  int get hashCode => Object.hash(runtimeType, canvasState, nodeState,
-      edgeState, viewport, selection, interaction);
+  int get hashCode => Object.hash(
+      runtimeType, canvasState, nodeState, edgeState, selection, interaction);
 
   @JsonKey(ignore: true)
   @override
@@ -297,7 +267,6 @@ abstract class _EditorState extends EditorState {
       {required final CanvasState canvasState,
       required final NodeState nodeState,
       required final EdgeState edgeState,
-      final CanvasViewportState viewport,
       final SelectionState selection,
       final InteractionState interaction}) = _$EditorStateImpl;
   const _EditorState._() : super._();
@@ -311,8 +280,6 @@ abstract class _EditorState extends EditorState {
   NodeState get nodeState;
   @override
   EdgeState get edgeState;
-  @override
-  CanvasViewportState get viewport;
   @override
   SelectionState get selection;
   @override

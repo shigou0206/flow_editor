@@ -36,61 +36,77 @@ class CanvasRenderer extends StatelessWidget {
     final edges = edgeState.edges;
     final pathGen = FlexiblePathGenerator(nodes);
 
-    // 如果拖拽中，把那个节点加上这次的偏移
-    String? draggingId = interaction.mapOrNull(dragNode: (s) => s.nodeId);
-    Offset dragDelta =
-        interaction.mapOrNull(dragNode: (s) => s.lastCanvas - s.startCanvas) ??
-            Offset.zero;
+    // —— 临时节点拖拽偏移 ——
+    final draggingNode = interaction.mapOrNull(dragNode: (s) => s);
+    final nodeDragDelta = draggingNode != null
+        ? draggingNode.lastCanvas - draggingNode.startCanvas
+        : Offset.zero;
 
-    return Stack(children: [
-      // 背景
-      Positioned.fill(
-        child: CustomPaint(
-          painter: DottedGridPainter(
-            config: visualConfig,
-            offset: offset,
-            scale: scale,
-            style: visualConfig.backgroundStyle,
-            themeMode: Theme.of(context).brightness == Brightness.dark
-                ? ThemeMode.dark
-                : ThemeMode.light,
+    // —— 临时连线拖拽 ——
+    final draggingEdgeId = interaction.mapOrNull(dragEdge: (s) => s.edgeId);
+    final draggingEdgeEnd =
+        interaction.mapOrNull(dragEdge: (s) => s.lastCanvas);
+
+    // —— 悬停 ID ——
+    final hoveredEdgeId = interaction.mapOrNull(hoveringEdge: (s) => s.edgeId);
+
+    return Stack(
+      clipBehavior: Clip.none,
+      children: [
+        // 1) 背景网格
+        Positioned.fill(
+          child: CustomPaint(
+            painter: DottedGridPainter(
+              config: visualConfig,
+              offset: offset,
+              scale: scale,
+              style: visualConfig.backgroundStyle,
+              themeMode: Theme.of(context).brightness == Brightness.dark
+                  ? ThemeMode.dark
+                  : ThemeMode.light,
+            ),
           ),
         ),
-      ),
 
-      // 边
-      Transform(
-        alignment: Alignment.topLeft,
-        transform: Matrix4.identity()
-          ..translate(offset.dx, offset.dy)
-          ..scale(scale),
-        child: CustomPaint(
-          painter: EdgeRenderer(
-            nodes: nodes,
-            edges: edges,
-            pathGenerator: pathGen,
-            // （边的hover/drag逻辑同理）
+        // 2) 边的渲染（含连线拖动的“虚影”）
+        Transform(
+          alignment: Alignment.topLeft,
+          transform: Matrix4.identity()
+            ..translate(offset.dx, offset.dy)
+            ..scale(scale),
+          child: CustomPaint(
+            painter: EdgeRenderer(
+              nodes: nodes,
+              edges: edges,
+              pathGenerator: pathGen,
+              hoveredEdgeId: hoveredEdgeId,
+              draggingEdgeId: draggingEdgeId,
+              draggingEnd: draggingEdgeEnd,
+            ),
           ),
         ),
-      ),
 
-      // 节点
-      ...nodes.map((node) {
-        // 计算临时位置
-        final base = node.position;
-        final pos = (node.id == draggingId) ? base + dragDelta : base;
-        return Positioned(
-          key: ValueKey(node.id),
-          left: offset.dx + (pos.dx - node.anchorPadding.left) * scale,
-          top: offset.dy + (pos.dy - node.anchorPadding.top) * scale,
-          child: Transform.scale(
-            scale: scale,
-            alignment: Alignment.topLeft,
-            transformHitTests: true,
-            child: nodeWidgetFactory.createNodeWidget(node),
-          ),
-        );
-      }),
-    ]);
+        // 3) 节点的渲染（含节点拖动预览）
+        ...nodes.map((node) {
+          // 如果当前在拖这个节点，就加上临时偏移
+          final basePos = node.position;
+          final pos = (node.id == draggingNode?.nodeId)
+              ? basePos + nodeDragDelta
+              : basePos;
+
+          return Positioned(
+            key: ValueKey(node.id),
+            left: offset.dx + (pos.dx - node.anchorPadding.left) * scale,
+            top: offset.dy + (pos.dy - node.anchorPadding.top) * scale,
+            child: Transform.scale(
+              scale: scale,
+              alignment: Alignment.topLeft,
+              transformHitTests: true,
+              child: nodeWidgetFactory.createNodeWidget(node),
+            ),
+          );
+        }).toList(),
+      ],
+    );
   }
 }

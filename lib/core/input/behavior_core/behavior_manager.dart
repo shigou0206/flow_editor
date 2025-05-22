@@ -12,10 +12,12 @@ class BehaviorManager {
   }
 
   void handle(InputEvent ev, BehaviorContext context) {
+    debugPrint(
+        '🔔 dispatching event: ${ev.type}, interaction=${context.interaction}');
     final state = context.getState();
     for (final b in _behaviors) {
-      final can = b.canHandle(ev, context.getState());
-      debugPrint('🔍 [${b.runtimeType}] canHandle($ev) → $can');
+      final can = b.canHandle(ev, state);
+      debugPrint('  🔍 [${b.runtimeType}] canHandle → $can');
       if (can) {
         debugPrint('⚡ [${b.runtimeType}] HANDLE this event');
         b.handle(ev, context);

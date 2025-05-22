@@ -17,46 +17,58 @@ class CanvasPanBehavior implements CanvasBehavior {
   bool canHandle(InputEvent ev, EditorState state) {
     final interaction = state.interaction;
 
-    // 开始拖动：点击空白区域 && pan 可用
+    // 1) 鼠标按下：空白区 && 允许平移
     if (ev.type == InputEventType.pointerDown && ev.canvasPos != null) {
-      return state.canvasState.interactionConfig.enablePan &&
-          context.hitTester.hitTestElement(ev.canvasPos!) == null;
+      final hit = context.hitTester.hitTestElement(ev.canvasPos!);
+      return state.canvasState.interactionConfig.enablePan && hit == null;
     }
-
-    // 拖动中：交互状态是正在平移
+    // 2) 移动/抬起/取消：只有当处于 PanCanvas 临时状态时才接管
     if ((ev.type == InputEventType.pointerMove ||
             ev.type == InputEventType.pointerUp ||
             ev.type == InputEventType.pointerCancel) &&
         interaction is PanCanvas) {
       return true;
     }
-
     return false;
   }
 
   @override
   void handle(InputEvent ev, BehaviorContext context) {
+    final interaction = context.interaction;
+
     switch (ev.type) {
       case InputEventType.pointerDown:
-        if (ev.canvasPos != null) {
+        // 进入临时平移状态，记录起点和最新点
+        context.updateInteraction(
+          InteractionState.panCanvas(
+            startGlobal: ev.canvasPos!,
+            lastGlobal: ev.canvasPos!,
+          ),
+        );
+        break;
+
+      case InputEventType.pointerMove:
+        if (ev.canvasPos != null && interaction is PanCanvas) {
+          // 只更新临时 lastGlobal
           context.updateInteraction(
             InteractionState.panCanvas(
-              startGlobal: ev.canvasPos!,
+              startGlobal: interaction.startGlobal,
               lastGlobal: ev.canvasPos!,
             ),
           );
         }
         break;
 
-      case InputEventType.pointerMove:
-        if (ev.canvasPosDelta != null) {
-          context.controller.panBy(ev.canvasPosDelta!);
-        }
-        break;
-
       case InputEventType.pointerUp:
       case InputEventType.pointerCancel:
-        context.updateInteraction(const InteractionState.idle());
+        if (interaction is PanCanvas) {
+          // 计算总偏移 = 抬起点 - 起始点
+          final delta = interaction.lastGlobal - interaction.startGlobal;
+          // 一次性写入持久态
+          context.controller.panBy(delta);
+          // 退出临时状态
+          context.updateInteraction(const InteractionState.idle());
+        }
         break;
 
       default:

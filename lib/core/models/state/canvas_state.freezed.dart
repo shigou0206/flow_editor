@@ -23,6 +23,8 @@ mixin _$CanvasState {
   @OffsetConverter()
   Offset get offset => throw _privateConstructorUsedError;
   double get scale => throw _privateConstructorUsedError;
+  @SizeConverter()
+  Size? get viewportSize => throw _privateConstructorUsedError;
   CanvasInteractionMode get interactionMode =>
       throw _privateConstructorUsedError;
   CanvasVisualConfig get visualConfig => throw _privateConstructorUsedError;
@@ -48,6 +50,7 @@ abstract class $CanvasStateCopyWith<$Res> {
   $Res call(
       {@OffsetConverter() Offset offset,
       double scale,
+      @SizeConverter() Size? viewportSize,
       CanvasInteractionMode interactionMode,
       CanvasVisualConfig visualConfig,
       CanvasInteractionConfig interactionConfig,
@@ -75,6 +78,7 @@ class _$CanvasStateCopyWithImpl<$Res, $Val extends CanvasState>
   $Res call({
     Object? offset = null,
     Object? scale = null,
+    Object? viewportSize = freezed,
     Object? interactionMode = null,
     Object? visualConfig = null,
     Object? interactionConfig = null,
@@ -92,6 +96,10 @@ class _$CanvasStateCopyWithImpl<$Res, $Val extends CanvasState>
           ? _value.scale
           : scale // ignore: cast_nullable_to_non_nullable
               as double,
+      viewportSize: freezed == viewportSize
+          ? _value.viewportSize
+          : viewportSize // ignore: cast_nullable_to_non_nullable
+              as Size?,
       interactionMode: null == interactionMode
           ? _value.interactionMode
           : interactionMode // ignore: cast_nullable_to_non_nullable
@@ -152,6 +160,7 @@ abstract class _$$CanvasStateImplCopyWith<$Res>
   $Res call(
       {@OffsetConverter() Offset offset,
       double scale,
+      @SizeConverter() Size? viewportSize,
       CanvasInteractionMode interactionMode,
       CanvasVisualConfig visualConfig,
       CanvasInteractionConfig interactionConfig,
@@ -179,6 +188,7 @@ class __$$CanvasStateImplCopyWithImpl<$Res>
   $Res call({
     Object? offset = null,
     Object? scale = null,
+    Object? viewportSize = freezed,
     Object? interactionMode = null,
     Object? visualConfig = null,
     Object? interactionConfig = null,
@@ -196,6 +206,10 @@ class __$$CanvasStateImplCopyWithImpl<$Res>
           ? _value.scale
           : scale // ignore: cast_nullable_to_non_nullable
               as double,
+      viewportSize: freezed == viewportSize
+          ? _value.viewportSize
+          : viewportSize // ignore: cast_nullable_to_non_nullable
+              as Size?,
       interactionMode: null == interactionMode
           ? _value.interactionMode
           : interactionMode // ignore: cast_nullable_to_non_nullable
@@ -234,6 +248,7 @@ class _$CanvasStateImpl extends _CanvasState {
   const _$CanvasStateImpl(
       {@OffsetConverter() this.offset = Offset.zero,
       this.scale = 1.0,
+      @SizeConverter() this.viewportSize,
       this.interactionMode = CanvasInteractionMode.panCanvas,
       this.visualConfig = const CanvasVisualConfig(),
       this.interactionConfig = const CanvasInteractionConfig(),
@@ -254,6 +269,9 @@ class _$CanvasStateImpl extends _CanvasState {
   @override
   @JsonKey()
   final double scale;
+  @override
+  @SizeConverter()
+  final Size? viewportSize;
   @override
   @JsonKey()
   final CanvasInteractionMode interactionMode;
@@ -283,7 +301,7 @@ class _$CanvasStateImpl extends _CanvasState {
 
   @override
   String toString() {
-    return 'CanvasState(offset: $offset, scale: $scale, interactionMode: $interactionMode, visualConfig: $visualConfig, interactionConfig: $interactionConfig, version: $version, focusItemId: $focusItemId, workflowStatus: $workflowStatus, data: $data)';
+    return 'CanvasState(offset: $offset, scale: $scale, viewportSize: $viewportSize, interactionMode: $interactionMode, visualConfig: $visualConfig, interactionConfig: $interactionConfig, version: $version, focusItemId: $focusItemId, workflowStatus: $workflowStatus, data: $data)';
   }
 
   @override
@@ -293,6 +311,8 @@ class _$CanvasStateImpl extends _CanvasState {
             other is _$CanvasStateImpl &&
             (identical(other.offset, offset) || other.offset == offset) &&
             (identical(other.scale, scale) || other.scale == scale) &&
+            (identical(other.viewportSize, viewportSize) ||
+                other.viewportSize == viewportSize) &&
             (identical(other.interactionMode, interactionMode) ||
                 other.interactionMode == interactionMode) &&
             (identical(other.visualConfig, visualConfig) ||
@@ -313,6 +333,7 @@ class _$CanvasStateImpl extends _CanvasState {
       runtimeType,
       offset,
       scale,
+      viewportSize,
       interactionMode,
       visualConfig,
       interactionConfig,
@@ -339,6 +360,7 @@ abstract class _CanvasState extends CanvasState {
   const factory _CanvasState(
       {@OffsetConverter() final Offset offset,
       final double scale,
+      @SizeConverter() final Size? viewportSize,
       final CanvasInteractionMode interactionMode,
       final CanvasVisualConfig visualConfig,
       final CanvasInteractionConfig interactionConfig,
@@ -356,6 +378,9 @@ abstract class _CanvasState extends CanvasState {
   Offset get offset;
   @override
   double get scale;
+  @override
+  @SizeConverter()
+  Size? get viewportSize;
   @override
   CanvasInteractionMode get interactionMode;
   @override

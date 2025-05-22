@@ -12,10 +12,6 @@ _$EditorStateImpl _$$EditorStateImplFromJson(Map<String, dynamic> json) =>
           CanvasState.fromJson(json['canvasState'] as Map<String, dynamic>),
       nodeState: NodeState.fromJson(json['nodeState'] as Map<String, dynamic>),
       edgeState: EdgeState.fromJson(json['edgeState'] as Map<String, dynamic>),
-      viewport: json['viewport'] == null
-          ? const CanvasViewportState()
-          : CanvasViewportState.fromJson(
-              json['viewport'] as Map<String, dynamic>),
       selection: json['selection'] == null
           ? const SelectionState()
           : SelectionState.fromJson(json['selection'] as Map<String, dynamic>),
@@ -30,7 +26,6 @@ Map<String, dynamic> _$$EditorStateImplToJson(_$EditorStateImpl instance) =>
       'canvasState': instance.canvasState,
       'nodeState': instance.nodeState,
       'edgeState': instance.edgeState,
-      'viewport': instance.viewport,
       'selection': instance.selection,
       'interaction': instance.interaction,
     };

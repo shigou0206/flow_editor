@@ -13,6 +13,8 @@ _$CanvasStateImpl _$$CanvasStateImplFromJson(Map<String, dynamic> json) =>
           : const OffsetConverter()
               .fromJson(json['offset'] as Map<String, dynamic>),
       scale: (json['scale'] as num?)?.toDouble() ?? 1.0,
+      viewportSize: _$JsonConverterFromJson<Map<String, dynamic>, Size>(
+          json['viewportSize'], const SizeConverter().fromJson),
       interactionMode: $enumDecodeNullable(
               _$CanvasInteractionModeEnumMap, json['interactionMode']) ??
           CanvasInteractionMode.panCanvas,
@@ -36,6 +38,8 @@ Map<String, dynamic> _$$CanvasStateImplToJson(_$CanvasStateImpl instance) =>
     <String, dynamic>{
       'offset': const OffsetConverter().toJson(instance.offset),
       'scale': instance.scale,
+      'viewportSize': _$JsonConverterToJson<Map<String, dynamic>, Size>(
+          instance.viewportSize, const SizeConverter().toJson),
       'interactionMode':
           _$CanvasInteractionModeEnumMap[instance.interactionMode]!,
       'visualConfig': instance.visualConfig,
@@ -45,6 +49,12 @@ Map<String, dynamic> _$$CanvasStateImplToJson(_$CanvasStateImpl instance) =>
       'workflowStatus': _$WorkflowStatusEnumMap[instance.workflowStatus]!,
       'data': instance.data,
     };
+
+Value? _$JsonConverterFromJson<Json, Value>(
+  Object? json,
+  Value? Function(Json json) fromJson,
+) =>
+    json == null ? null : fromJson(json as Json);
 
 const _$CanvasInteractionModeEnumMap = {
   CanvasInteractionMode.none: 'none',
@@ -62,3 +72,9 @@ const _$WorkflowStatusEnumMap = {
   WorkflowStatus.cancelled: 'cancelled',
   WorkflowStatus.normal: 'normal',
 };
+
+Json? _$JsonConverterToJson<Json, Value>(
+  Value? value,
+  Json? Function(Value value) toJson,
+) =>
+    value == null ? null : toJson(value);
