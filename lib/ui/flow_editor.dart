@@ -1,7 +1,6 @@
 // lib/ui/pages/flow_editor_page.dart
 import 'dart:math';
 
-import 'package:flow_editor/core/models/state/interaction_transient_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -52,6 +51,11 @@ class FlowEditorPage extends ConsumerWidget {
       ),
     );
 
+    final panDelta = editor.interaction.maybeMap(
+      panCanvas: (s) => s.lastGlobal - s.startGlobal,
+      orElse: () => Offset.zero,
+    );
+
     // ─────────────── UI ───────────────────────────────────────
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.surface,
@@ -83,7 +87,7 @@ class FlowEditorPage extends ConsumerWidget {
           // ← 确保填满整屏，这样才能接收全域事件
           child: RepaintBoundary(
             child: CanvasRenderer(
-              offset: canvas.offset,
+              offset: canvas.offset + panDelta,
               scale: canvas.scale,
               visualConfig: canvas.visualConfig,
               nodeState: editor.nodeState,

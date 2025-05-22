@@ -25,6 +25,7 @@ mixin _$EditorState {
   EdgeState get edgeState => throw _privateConstructorUsedError;
   SelectionState get selection => throw _privateConstructorUsedError;
   InteractionState get interaction => throw _privateConstructorUsedError;
+  InputConfig get inputConfig => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
   @JsonKey(ignore: true)
@@ -43,12 +44,14 @@ abstract class $EditorStateCopyWith<$Res> {
       NodeState nodeState,
       EdgeState edgeState,
       SelectionState selection,
-      InteractionState interaction});
+      InteractionState interaction,
+      InputConfig inputConfig});
 
   $CanvasStateCopyWith<$Res> get canvasState;
   $NodeStateCopyWith<$Res> get nodeState;
   $EdgeStateCopyWith<$Res> get edgeState;
   $InteractionStateCopyWith<$Res> get interaction;
+  $InputConfigCopyWith<$Res> get inputConfig;
 }
 
 /// @nodoc
@@ -69,6 +72,7 @@ class _$EditorStateCopyWithImpl<$Res, $Val extends EditorState>
     Object? edgeState = null,
     Object? selection = null,
     Object? interaction = null,
+    Object? inputConfig = null,
   }) {
     return _then(_value.copyWith(
       canvasState: null == canvasState
@@ -91,6 +95,10 @@ class _$EditorStateCopyWithImpl<$Res, $Val extends EditorState>
           ? _value.interaction
           : interaction // ignore: cast_nullable_to_non_nullable
               as InteractionState,
+      inputConfig: null == inputConfig
+          ? _value.inputConfig
+          : inputConfig // ignore: cast_nullable_to_non_nullable
+              as InputConfig,
     ) as $Val);
   }
 
@@ -125,6 +133,14 @@ class _$EditorStateCopyWithImpl<$Res, $Val extends EditorState>
       return _then(_value.copyWith(interaction: value) as $Val);
     });
   }
+
+  @override
+  @pragma('vm:prefer-inline')
+  $InputConfigCopyWith<$Res> get inputConfig {
+    return $InputConfigCopyWith<$Res>(_value.inputConfig, (value) {
+      return _then(_value.copyWith(inputConfig: value) as $Val);
+    });
+  }
 }
 
 /// @nodoc
@@ -140,7 +156,8 @@ abstract class _$$EditorStateImplCopyWith<$Res>
       NodeState nodeState,
       EdgeState edgeState,
       SelectionState selection,
-      InteractionState interaction});
+      InteractionState interaction,
+      InputConfig inputConfig});
 
   @override
   $CanvasStateCopyWith<$Res> get canvasState;
@@ -150,6 +167,8 @@ abstract class _$$EditorStateImplCopyWith<$Res>
   $EdgeStateCopyWith<$Res> get edgeState;
   @override
   $InteractionStateCopyWith<$Res> get interaction;
+  @override
+  $InputConfigCopyWith<$Res> get inputConfig;
 }
 
 /// @nodoc
@@ -168,6 +187,7 @@ class __$$EditorStateImplCopyWithImpl<$Res>
     Object? edgeState = null,
     Object? selection = null,
     Object? interaction = null,
+    Object? inputConfig = null,
   }) {
     return _then(_$EditorStateImpl(
       canvasState: null == canvasState
@@ -190,6 +210,10 @@ class __$$EditorStateImplCopyWithImpl<$Res>
           ? _value.interaction
           : interaction // ignore: cast_nullable_to_non_nullable
               as InteractionState,
+      inputConfig: null == inputConfig
+          ? _value.inputConfig
+          : inputConfig // ignore: cast_nullable_to_non_nullable
+              as InputConfig,
     ));
   }
 }
@@ -202,7 +226,8 @@ class _$EditorStateImpl extends _EditorState {
       required this.nodeState,
       required this.edgeState,
       this.selection = const SelectionState(),
-      this.interaction = const InteractionState.idle()})
+      this.interaction = const InteractionState.idle(),
+      this.inputConfig = const InputConfig()})
       : super._();
 
   factory _$EditorStateImpl.fromJson(Map<String, dynamic> json) =>
@@ -220,10 +245,13 @@ class _$EditorStateImpl extends _EditorState {
   @override
   @JsonKey()
   final InteractionState interaction;
+  @override
+  @JsonKey()
+  final InputConfig inputConfig;
 
   @override
   String toString() {
-    return 'EditorState(canvasState: $canvasState, nodeState: $nodeState, edgeState: $edgeState, selection: $selection, interaction: $interaction)';
+    return 'EditorState(canvasState: $canvasState, nodeState: $nodeState, edgeState: $edgeState, selection: $selection, interaction: $interaction, inputConfig: $inputConfig)';
   }
 
   @override
@@ -240,13 +268,15 @@ class _$EditorStateImpl extends _EditorState {
             (identical(other.selection, selection) ||
                 other.selection == selection) &&
             (identical(other.interaction, interaction) ||
-                other.interaction == interaction));
+                other.interaction == interaction) &&
+            (identical(other.inputConfig, inputConfig) ||
+                other.inputConfig == inputConfig));
   }
 
   @JsonKey(ignore: true)
   @override
-  int get hashCode => Object.hash(
-      runtimeType, canvasState, nodeState, edgeState, selection, interaction);
+  int get hashCode => Object.hash(runtimeType, canvasState, nodeState,
+      edgeState, selection, interaction, inputConfig);
 
   @JsonKey(ignore: true)
   @override
@@ -268,7 +298,8 @@ abstract class _EditorState extends EditorState {
       required final NodeState nodeState,
       required final EdgeState edgeState,
       final SelectionState selection,
-      final InteractionState interaction}) = _$EditorStateImpl;
+      final InteractionState interaction,
+      final InputConfig inputConfig}) = _$EditorStateImpl;
   const _EditorState._() : super._();
 
   factory _EditorState.fromJson(Map<String, dynamic> json) =
@@ -284,6 +315,8 @@ abstract class _EditorState extends EditorState {
   SelectionState get selection;
   @override
   InteractionState get interaction;
+  @override
+  InputConfig get inputConfig;
   @override
   @JsonKey(ignore: true)
   _$$EditorStateImplCopyWith<_$EditorStateImpl> get copyWith =>

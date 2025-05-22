@@ -17,7 +17,7 @@ List<CanvasBehavior> registerDefaultBehaviors(BehaviorContext context) {
     CanvasZoomBehavior(context),
     NodeDragBehavior(context),
     EdgeDrawBehavior(context),
-    // MarqueeSelectBehavior(context),
+    MarqueeSelectBehavior(context),
     DeleteKeyBehavior(context),
     CopyPasteBehavior(context),
     UndoRedoBehavior(context),

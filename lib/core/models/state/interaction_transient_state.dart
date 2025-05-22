@@ -13,14 +13,12 @@ class InteractionState with _$InteractionState {
 
   const factory InteractionState.idle() = Idle;
 
-  /// 拖节点：记录拖开始的画布坐标 startCanvas，和最新的 lastCanvas
   const factory InteractionState.dragNode({
     required String nodeId,
     @OffsetConverter() required Offset startCanvas,
     @OffsetConverter() required Offset lastCanvas,
   }) = DragNode;
 
-  /// 拖边：同理记录起点，以及最新的临时终点
   const factory InteractionState.dragEdge({
     required String edgeId,
     @OffsetConverter() required Offset startCanvas,
@@ -85,77 +83,68 @@ class InteractionState with _$InteractionState {
 }
 
 extension InteractionStateX on InteractionState {
-  // 是否处于拖动（拖节点、边、中点、插入节点等）中
-  bool get isDragging => maybeWhen(
-        dragNode: (_, __, ___) => true,
-        dragEdge: (_, __, ___, ____) => true,
-        dragWaypoint: (_, __, ___, ____) => true,
-        insertingNode: (_, __, ___) => true,
-        insertNodeToEdge: (_, __, ___) => true,
-        resizingNode: (_, __, ___, ____) => true,
+  /// 是否处于拖动状态
+  bool get isDragging => maybeMap(
+        dragNode: (_) => true,
+        dragEdge: (_) => true,
+        dragWaypoint: (_) => true,
+        insertingNode: (_) => true,
+        insertNodeToEdge: (_) => true,
+        resizingNode: (_) => true,
         orElse: () => false,
       );
 
-  // 是否正在拖拽节点
-  bool get isDraggingNode => maybeWhen(
-        dragNode: (_, __, ___) => true,
+  /// 是否处于画布拖动
+  bool get isPanning => maybeMap(
+        panCanvas: (_) => true,
         orElse: () => false,
       );
 
-  // 是否正在拖拽边
-  bool get isDraggingEdge => maybeWhen(
-        dragEdge: (_, __, ___, ____) => true,
-        orElse: () => false,
+  /// 当前拖动画布时的偏移
+  Offset get deltaPan => maybeWhen(
+        panCanvas: (startGlobal, lastGlobal) => lastGlobal - startGlobal,
+        orElse: () => Offset.zero,
       );
 
-  // 是否正在拖拽中点（waypoint）
-  bool get isDraggingWaypoint => maybeWhen(
-        dragWaypoint: (_, __, ___, ____) => true,
-        orElse: () => false,
+  /// 当前拖动节点的偏移
+  Offset get deltaNodeDrag => maybeWhen(
+        dragNode: (_, startCanvas, lastCanvas) => lastCanvas - startCanvas,
+        orElse: () => Offset.zero,
       );
 
-  // 是否正在拖动画布
-  bool get isPanning => maybeWhen(
-        panCanvas: (_, __) => true,
-        orElse: () => false,
+  Offset dragOffsetForNode(String nodeId) => maybeMap(
+        dragNode: (s) =>
+            s.nodeId == nodeId ? s.lastCanvas - s.startCanvas : Offset.zero,
+        orElse: () => Offset.zero,
       );
 
-  // 当前拖动状态的 delta
-  Offset? get deltaPan => maybeWhen(
-        dragNode: (_, start, last) => last - start,
-        dragEdge: (_, start, last, __) => last - start,
-        dragWaypoint: (_, __, start, last) => last - start,
-        insertingNode: (_, start, last) => last - start,
-        insertNodeToEdge: (_, start, last) => last - start,
-        resizingNode: (_, __, start, last) => last - start,
-        panCanvas: (start, last) => last - start,
-        orElse: () => null,
+  /// 当前拖动边的偏移
+  Offset get deltaEdgeDrag => maybeWhen(
+        dragEdge: (_, startCanvas, lastCanvas, __) => lastCanvas - startCanvas,
+        orElse: () => Offset.zero,
       );
 
-  // 当前拖拽中涉及的目标 ID（可能是 nodeId / edgeId）
-  String? get draggingTargetId => maybeWhen(
-        dragNode: (nodeId, __, ___) => nodeId,
-        dragEdge: (edgeId, __, ___, ____) => edgeId,
-        dragWaypoint: (edgeId, __, ___, ____) => edgeId,
-        resizingNode: (nodeId, __, ___, ____) => nodeId,
-        orElse: () => null,
+  /// 👉 当前拖动Waypoint的偏移
+  Offset get deltaWaypointDrag => maybeWhen(
+        dragWaypoint: (_, __, startCanvas, lastCanvas) =>
+            lastCanvas - startCanvas,
+        orElse: () => Offset.zero,
       );
 
-  // 是否为悬停状态
-  bool get isHovering => maybeWhen(
-        hoveringNode: (_) => true,
-        hoveringEdge: (_) => true,
-        hoveringAnchor: (_) => true,
-        orElse: () => false,
+  /// 👉 当前插入节点的偏移
+  Offset get deltaInsertNode => maybeWhen(
+        insertingNode: (_, startCanvas, lastCanvas) => lastCanvas - startCanvas,
+        orElse: () => Offset.zero,
       );
 
-  // 是否处于打开菜单状态
-  bool get isContextMenuOpen => maybeWhen(
-        contextMenuOpen: (_, __) => true,
-        orElse: () => false,
+  /// 👉 当前节点resize的偏移
+  Offset get deltaResizeNode => maybeWhen(
+        resizingNode: (_, __, startCanvas, lastCanvas) =>
+            lastCanvas - startCanvas,
+        orElse: () => Offset.zero,
       );
 
-  // 当前悬停目标 ID（node/anchor/edge）
+  /// 当前hover的目标 ID
   String? get hoveringTargetId => maybeWhen(
         hoveringNode: (id) => id,
         hoveringEdge: (id) => id,
@@ -163,15 +152,64 @@ extension InteractionStateX on InteractionState {
         orElse: () => null,
       );
 
-  // 是否是正在框选
-  bool get isSelectingArea => maybeWhen(
+  /// 当前拖动目标 ID（Node/Edge）
+  String? get draggingTargetId => maybeWhen(
+        dragNode: (nodeId, _, __) => nodeId,
+        dragEdge: (edgeId, _, __, ___) => edgeId,
+        dragWaypoint: (edgeId, _, __, ___) => edgeId,
+        resizingNode: (nodeId, _, __, ___) => nodeId,
+        insertNodeToEdge: (edgeId, _, __) => edgeId,
+        orElse: () => null,
+      );
+
+  /// 是否正在框选
+  bool get isSelectingArea => maybeMap(
         selectingArea: (_) => true,
         orElse: () => false,
       );
 
-  // 框选区域
+  /// 框选区域
   Rect? get selectionBox => maybeWhen(
-        selectingArea: (box) => box,
+        selectingArea: (selectionBox) => selectionBox,
+        orElse: () => null,
+      );
+
+  /// 当前是否正在悬停节点
+  bool get isHoveringNode => maybeMap(
+        hoveringNode: (_) => true,
+        orElse: () => false,
+      );
+
+  /// 当前是否正在悬停边
+  bool get isHoveringEdge => maybeMap(
+        hoveringEdge: (_) => true,
+        orElse: () => false,
+      );
+
+  /// 当前是否正在悬停锚点
+  bool get isHoveringAnchor => maybeMap(
+        hoveringAnchor: (_) => true,
+        orElse: () => false,
+      );
+
+  /// 当前是否有任何悬停（节点、边或锚点）
+  bool get isHovering => isHoveringNode || isHoveringEdge || isHoveringAnchor;
+
+  /// 当前悬停的节点 ID（如果存在）
+  String? get hoveringNodeId => maybeWhen(
+        hoveringNode: (id) => id,
+        orElse: () => null,
+      );
+
+  /// 当前悬停的边 ID（如果存在）
+  String? get hoveringEdgeId => maybeWhen(
+        hoveringEdge: (id) => id,
+        orElse: () => null,
+      );
+
+  /// 当前悬停的锚点 ID（如果存在）
+  String? get hoveringAnchorId => maybeWhen(
+        hoveringAnchor: (id) => id,
         orElse: () => null,
       );
 }

@@ -2,6 +2,7 @@ import 'package:flow_editor/core/input/behavior_core/canvas_behavior.dart';
 import 'package:flow_editor/core/input/behavior_core/behavior_context.dart';
 import 'package:flow_editor/core/input/event/input_event.dart';
 import 'package:flow_editor/core/input/event/input_event_type.dart';
+import 'package:flow_editor/core/models/config/input_config.dart';
 import 'package:flow_editor/core/models/state/editor_state.dart';
 import 'package:flow_editor/core/models/state/interaction_transient_state.dart';
 
@@ -17,18 +18,28 @@ class CanvasPanBehavior implements CanvasBehavior {
   bool canHandle(InputEvent ev, EditorState state) {
     final interaction = state.interaction;
 
+    // —— 永远不要在节点/连线拖拽时平移画布 ——
+    if (interaction is DragNode ||
+        interaction is DragEdge ||
+        interaction is DragWaypoint) {
+      return false;
+    }
+
     // 1) 鼠标按下：空白区 && 允许平移
     if (ev.type == InputEventType.pointerDown && ev.canvasPos != null) {
       final hit = context.hitTester.hitTestElement(ev.canvasPos!);
-      return state.canvasState.interactionConfig.enablePan && hit == null;
+      final ok = state.canvasState.interactionConfig.enablePan && hit == null;
+      return ok;
     }
-    // 2) 移动/抬起/取消：只有当处于 PanCanvas 临时状态时才接管
+
+    // 2) 移动/抬起/取消：必须是在 PanCanvas 临时状态时才接管
     if ((ev.type == InputEventType.pointerMove ||
             ev.type == InputEventType.pointerUp ||
             ev.type == InputEventType.pointerCancel) &&
         interaction is PanCanvas) {
       return true;
     }
+
     return false;
   }
 
@@ -75,4 +86,7 @@ class CanvasPanBehavior implements CanvasBehavior {
         break;
     }
   }
+
+  @override
+  bool enabled(InputConfig config) => config.enablePan;
 }

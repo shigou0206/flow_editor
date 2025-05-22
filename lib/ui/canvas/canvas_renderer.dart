@@ -1,5 +1,3 @@
-// lib/ui/canvas/canvas_renderer.dart
-
 import 'package:flutter/material.dart';
 import 'package:flow_editor/core/models/state/node_state.dart';
 import 'package:flow_editor/core/models/state/edge_state.dart';
@@ -32,28 +30,12 @@ class CanvasRenderer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final nodes = nodeState.nodes;
-    final edges = edgeState.edges;
-    final pathGen = FlexiblePathGenerator(nodes);
-
-    // —— 临时节点拖拽偏移 ——
-    final draggingNode = interaction.mapOrNull(dragNode: (s) => s);
-    final nodeDragDelta = draggingNode != null
-        ? draggingNode.lastCanvas - draggingNode.startCanvas
-        : Offset.zero;
-
-    // —— 临时连线拖拽 ——
-    final draggingEdgeId = interaction.mapOrNull(dragEdge: (s) => s.edgeId);
-    final draggingEdgeEnd =
-        interaction.mapOrNull(dragEdge: (s) => s.lastCanvas);
-
-    // —— 悬停 ID ——
-    final hoveredEdgeId = interaction.mapOrNull(hoveringEdge: (s) => s.edgeId);
+    final pathGen = FlexiblePathGenerator(nodeState.nodes);
 
     return Stack(
       clipBehavior: Clip.none,
       children: [
-        // 1) 背景网格
+        // 背景网格
         Positioned.fill(
           child: CustomPaint(
             painter: DottedGridPainter(
@@ -68,7 +50,7 @@ class CanvasRenderer extends StatelessWidget {
           ),
         ),
 
-        // 2) 边的渲染（含连线拖动的“虚影”）
+        // 边的渲染（含临时拖动边）
         Transform(
           alignment: Alignment.topLeft,
           transform: Matrix4.identity()
@@ -76,23 +58,19 @@ class CanvasRenderer extends StatelessWidget {
             ..scale(scale),
           child: CustomPaint(
             painter: EdgeRenderer(
-              nodes: nodes,
-              edges: edges,
+              nodes: nodeState.nodes,
+              edges: edgeState.edges,
               pathGenerator: pathGen,
-              hoveredEdgeId: hoveredEdgeId,
-              draggingEdgeId: draggingEdgeId,
-              draggingEnd: draggingEdgeEnd,
+              hoveredEdgeId: interaction.hoveringTargetId,
+              draggingEdgeId: interaction.draggingTargetId,
+              draggingEnd: interaction.mapOrNull(dragEdge: (s) => s.lastCanvas),
             ),
           ),
         ),
 
-        // 3) 节点的渲染（含节点拖动预览）
-        ...nodes.map((node) {
-          // 如果当前在拖这个节点，就加上临时偏移
-          final basePos = node.position;
-          final pos = (node.id == draggingNode?.nodeId)
-              ? basePos + nodeDragDelta
-              : basePos;
+        // 节点的渲染（含节点拖动预览）
+        ...nodeState.nodes.map((node) {
+          final pos = node.position + interaction.dragOffsetForNode(node.id);
 
           return Positioned(
             key: ValueKey(node.id),
@@ -105,7 +83,7 @@ class CanvasRenderer extends StatelessWidget {
               child: nodeWidgetFactory.createNodeWidget(node),
             ),
           );
-        }).toList(),
+        }),
       ],
     );
   }

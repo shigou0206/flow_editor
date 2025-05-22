@@ -3,6 +3,7 @@ import 'package:flow_editor/core/input/behavior_core/canvas_behavior.dart';
 import 'package:flow_editor/core/input/behavior_core/behavior_context.dart';
 import 'package:flow_editor/core/input/event/input_event.dart';
 import 'package:flow_editor/core/input/event/input_event_type.dart';
+import 'package:flow_editor/core/models/config/input_config.dart';
 import 'package:flow_editor/core/models/state/editor_state.dart';
 
 class DeleteKeyBehavior implements CanvasBehavior {
@@ -23,4 +24,7 @@ class DeleteKeyBehavior implements CanvasBehavior {
   void handle(InputEvent ev, BehaviorContext context) {
     context.controller.deleteSelection();
   }
+
+  @override
+  bool enabled(InputConfig config) => config.enableKeyDelete;
 }

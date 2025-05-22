@@ -19,6 +19,9 @@ _$EditorStateImpl _$$EditorStateImplFromJson(Map<String, dynamic> json) =>
           ? const InteractionState.idle()
           : InteractionState.fromJson(
               json['interaction'] as Map<String, dynamic>),
+      inputConfig: json['inputConfig'] == null
+          ? const InputConfig()
+          : InputConfig.fromJson(json['inputConfig'] as Map<String, dynamic>),
     );
 
 Map<String, dynamic> _$$EditorStateImplToJson(_$EditorStateImpl instance) =>
@@ -28,4 +31,5 @@ Map<String, dynamic> _$$EditorStateImplToJson(_$EditorStateImpl instance) =>
       'edgeState': instance.edgeState,
       'selection': instance.selection,
       'interaction': instance.interaction,
+      'inputConfig': instance.inputConfig,
     };
