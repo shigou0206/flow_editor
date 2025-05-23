@@ -9,7 +9,7 @@ import 'package:flow_editor/core/models/edge_model.dart';
 import 'package:flow_editor/core/models/state/selection_state.dart';
 import 'package:flow_editor/core/models/state/interaction_transient_state.dart';
 import 'package:flow_editor/core/models/config/input_config.dart';
-
+import 'package:flow_editor/core/models/state/clipboard_state.dart';
 part 'editor_state.freezed.dart';
 part 'editor_state.g.dart';
 
@@ -24,6 +24,7 @@ class EditorState with _$EditorState {
     @Default(SelectionState()) SelectionState selection,
     @Default(InteractionState.idle()) InteractionState interaction,
     @Default(InputConfig()) InputConfig inputConfig,
+    @Default(ClipboardState()) ClipboardState clipboard,
   }) = _EditorState;
 
   factory EditorState.fromJson(Map<String, dynamic> json) =>

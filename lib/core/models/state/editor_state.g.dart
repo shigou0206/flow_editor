@@ -22,6 +22,9 @@ _$EditorStateImpl _$$EditorStateImplFromJson(Map<String, dynamic> json) =>
       inputConfig: json['inputConfig'] == null
           ? const InputConfig()
           : InputConfig.fromJson(json['inputConfig'] as Map<String, dynamic>),
+      clipboard: json['clipboard'] == null
+          ? const ClipboardState()
+          : ClipboardState.fromJson(json['clipboard'] as Map<String, dynamic>),
     );
 
 Map<String, dynamic> _$$EditorStateImplToJson(_$EditorStateImpl instance) =>
@@ -32,4 +35,5 @@ Map<String, dynamic> _$$EditorStateImplToJson(_$EditorStateImpl instance) =>
       'selection': instance.selection,
       'interaction': instance.interaction,
       'inputConfig': instance.inputConfig,
+      'clipboard': instance.clipboard,
     };

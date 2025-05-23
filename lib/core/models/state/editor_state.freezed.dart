@@ -26,6 +26,7 @@ mixin _$EditorState {
   SelectionState get selection => throw _privateConstructorUsedError;
   InteractionState get interaction => throw _privateConstructorUsedError;
   InputConfig get inputConfig => throw _privateConstructorUsedError;
+  ClipboardState get clipboard => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
   @JsonKey(ignore: true)
@@ -45,13 +46,15 @@ abstract class $EditorStateCopyWith<$Res> {
       EdgeState edgeState,
       SelectionState selection,
       InteractionState interaction,
-      InputConfig inputConfig});
+      InputConfig inputConfig,
+      ClipboardState clipboard});
 
   $CanvasStateCopyWith<$Res> get canvasState;
   $NodeStateCopyWith<$Res> get nodeState;
   $EdgeStateCopyWith<$Res> get edgeState;
   $InteractionStateCopyWith<$Res> get interaction;
   $InputConfigCopyWith<$Res> get inputConfig;
+  $ClipboardStateCopyWith<$Res> get clipboard;
 }
 
 /// @nodoc
@@ -73,6 +76,7 @@ class _$EditorStateCopyWithImpl<$Res, $Val extends EditorState>
     Object? selection = null,
     Object? interaction = null,
     Object? inputConfig = null,
+    Object? clipboard = null,
   }) {
     return _then(_value.copyWith(
       canvasState: null == canvasState
@@ -99,6 +103,10 @@ class _$EditorStateCopyWithImpl<$Res, $Val extends EditorState>
           ? _value.inputConfig
           : inputConfig // ignore: cast_nullable_to_non_nullable
               as InputConfig,
+      clipboard: null == clipboard
+          ? _value.clipboard
+          : clipboard // ignore: cast_nullable_to_non_nullable
+              as ClipboardState,
     ) as $Val);
   }
 
@@ -141,6 +149,14 @@ class _$EditorStateCopyWithImpl<$Res, $Val extends EditorState>
       return _then(_value.copyWith(inputConfig: value) as $Val);
     });
   }
+
+  @override
+  @pragma('vm:prefer-inline')
+  $ClipboardStateCopyWith<$Res> get clipboard {
+    return $ClipboardStateCopyWith<$Res>(_value.clipboard, (value) {
+      return _then(_value.copyWith(clipboard: value) as $Val);
+    });
+  }
 }
 
 /// @nodoc
@@ -157,7 +173,8 @@ abstract class _$$EditorStateImplCopyWith<$Res>
       EdgeState edgeState,
       SelectionState selection,
       InteractionState interaction,
-      InputConfig inputConfig});
+      InputConfig inputConfig,
+      ClipboardState clipboard});
 
   @override
   $CanvasStateCopyWith<$Res> get canvasState;
@@ -169,6 +186,8 @@ abstract class _$$EditorStateImplCopyWith<$Res>
   $InteractionStateCopyWith<$Res> get interaction;
   @override
   $InputConfigCopyWith<$Res> get inputConfig;
+  @override
+  $ClipboardStateCopyWith<$Res> get clipboard;
 }
 
 /// @nodoc
@@ -188,6 +207,7 @@ class __$$EditorStateImplCopyWithImpl<$Res>
     Object? selection = null,
     Object? interaction = null,
     Object? inputConfig = null,
+    Object? clipboard = null,
   }) {
     return _then(_$EditorStateImpl(
       canvasState: null == canvasState
@@ -214,6 +234,10 @@ class __$$EditorStateImplCopyWithImpl<$Res>
           ? _value.inputConfig
           : inputConfig // ignore: cast_nullable_to_non_nullable
               as InputConfig,
+      clipboard: null == clipboard
+          ? _value.clipboard
+          : clipboard // ignore: cast_nullable_to_non_nullable
+              as ClipboardState,
     ));
   }
 }
@@ -227,7 +251,8 @@ class _$EditorStateImpl extends _EditorState {
       required this.edgeState,
       this.selection = const SelectionState(),
       this.interaction = const InteractionState.idle(),
-      this.inputConfig = const InputConfig()})
+      this.inputConfig = const InputConfig(),
+      this.clipboard = const ClipboardState()})
       : super._();
 
   factory _$EditorStateImpl.fromJson(Map<String, dynamic> json) =>
@@ -248,10 +273,13 @@ class _$EditorStateImpl extends _EditorState {
   @override
   @JsonKey()
   final InputConfig inputConfig;
+  @override
+  @JsonKey()
+  final ClipboardState clipboard;
 
   @override
   String toString() {
-    return 'EditorState(canvasState: $canvasState, nodeState: $nodeState, edgeState: $edgeState, selection: $selection, interaction: $interaction, inputConfig: $inputConfig)';
+    return 'EditorState(canvasState: $canvasState, nodeState: $nodeState, edgeState: $edgeState, selection: $selection, interaction: $interaction, inputConfig: $inputConfig, clipboard: $clipboard)';
   }
 
   @override
@@ -270,13 +298,15 @@ class _$EditorStateImpl extends _EditorState {
             (identical(other.interaction, interaction) ||
                 other.interaction == interaction) &&
             (identical(other.inputConfig, inputConfig) ||
-                other.inputConfig == inputConfig));
+                other.inputConfig == inputConfig) &&
+            (identical(other.clipboard, clipboard) ||
+                other.clipboard == clipboard));
   }
 
   @JsonKey(ignore: true)
   @override
   int get hashCode => Object.hash(runtimeType, canvasState, nodeState,
-      edgeState, selection, interaction, inputConfig);
+      edgeState, selection, interaction, inputConfig, clipboard);
 
   @JsonKey(ignore: true)
   @override
@@ -299,7 +329,8 @@ abstract class _EditorState extends EditorState {
       required final EdgeState edgeState,
       final SelectionState selection,
       final InteractionState interaction,
-      final InputConfig inputConfig}) = _$EditorStateImpl;
+      final InputConfig inputConfig,
+      final ClipboardState clipboard}) = _$EditorStateImpl;
   const _EditorState._() : super._();
 
   factory _EditorState.fromJson(Map<String, dynamic> json) =
@@ -317,6 +348,8 @@ abstract class _EditorState extends EditorState {
   InteractionState get interaction;
   @override
   InputConfig get inputConfig;
+  @override
+  ClipboardState get clipboard;
   @override
   @JsonKey(ignore: true)
   _$$EditorStateImplCopyWith<_$EditorStateImpl> get copyWith =>
