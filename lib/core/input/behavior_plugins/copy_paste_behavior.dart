@@ -35,9 +35,9 @@ class CopyPasteBehavior implements CanvasBehavior {
     if (!isControlOrCommandPressed) return;
 
     if (ev.key == LogicalKeyboardKey.keyC) {
-      context.controller.copySelection();
+      context.controller.interaction.copySelection();
     } else if (ev.key == LogicalKeyboardKey.keyV) {
-      context.controller.pasteClipboard();
+      context.controller.interaction.pasteClipboard();
     }
   }
 

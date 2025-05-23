@@ -122,7 +122,7 @@ class FlowEditorPage extends ConsumerWidget {
               ),
             ],
           );
-          ctrl.addNode(newNode);
+          ctrl.graph.addNode(newNode);
         },
       ),
 

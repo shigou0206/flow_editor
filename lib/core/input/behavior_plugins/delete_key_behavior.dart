@@ -22,7 +22,7 @@ class DeleteKeyBehavior implements CanvasBehavior {
 
   @override
   void handle(InputEvent ev, BehaviorContext context) {
-    context.controller.deleteSelection();
+    context.controller.interaction.deleteSelection();
   }
 
   @override

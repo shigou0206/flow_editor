@@ -43,13 +43,13 @@ class UndoRedoBehavior implements CanvasBehavior {
 
     // Undo: Ctrl/Cmd + Z
     if (ev.key == LogicalKeyboardKey.keyZ && !_isShiftPressed) {
-      context.controller.undo();
+      context.controller.graph.undo();
     }
 
     // Redo: Ctrl+Y or Cmd+Shift+Z
     if (ev.key == LogicalKeyboardKey.keyY ||
         (ev.key == LogicalKeyboardKey.keyZ && _isShiftPressed)) {
-      context.controller.redo();
+      context.controller.graph.redo();
     }
   }
 

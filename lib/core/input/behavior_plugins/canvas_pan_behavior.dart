@@ -76,7 +76,7 @@ class CanvasPanBehavior implements CanvasBehavior {
           // 计算总偏移 = 抬起点 - 起始点
           final delta = interaction.lastGlobal - interaction.startGlobal;
           // 一次性写入持久态
-          context.controller.panBy(delta);
+          context.controller.viewport.panBy(delta);
           // 退出临时状态
           context.updateInteraction(const InteractionState.idle());
         }

@@ -52,7 +52,7 @@ class MarqueeSelectBehavior implements CanvasBehavior {
         if (ev.canvasPos != null && interaction is SelectingArea) {
           final start = interaction.selectionBox.topLeft;
           final rect = Rect.fromPoints(start, ev.canvasPos!);
-          context.controller.marqueeSelect(rect);
+          context.controller.interaction.marqueeSelect(rect);
           context.updateInteraction(
               InteractionState.selectingArea(selectionBox: rect));
         }
@@ -60,7 +60,7 @@ class MarqueeSelectBehavior implements CanvasBehavior {
 
       case InputEventType.pointerUp:
       case InputEventType.pointerCancel:
-        context.controller.marqueeSelect(Rect.zero);
+        context.controller.interaction.marqueeSelect(Rect.zero);
         context.updateInteraction(const InteractionState.idle());
         break;
 

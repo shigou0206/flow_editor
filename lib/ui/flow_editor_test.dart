@@ -137,7 +137,7 @@ class FlowEditorPage extends ConsumerWidget {
                   ],
                 );
 
-                ctrl.addNode(newNode);
+                ctrl.graph.addNode(newNode);
               },
               builder: (_, candidateData, rejectedData) => CanvasInputWrapper(
                 context: behaviorCtx,

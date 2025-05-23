@@ -28,7 +28,7 @@ class CanvasZoomBehavior implements CanvasBehavior {
     final zoomDelta = -signal.scrollDelta.dy * 0.001;
 
     if (ev.canvasPos != null && zoomDelta.abs() > 0.0001) {
-      context.controller.zoomAt(ev.canvasPos!, zoomDelta);
+      context.controller.viewport.zoomAt(ev.canvasPos!, zoomDelta);
     }
   }
 

@@ -40,7 +40,7 @@ class NodeDragBehavior implements CanvasBehavior {
         final p = ev.canvasPos!;
         final nodeId = ctx.hitTester.hitTestNode(p)!;
         // 通知 controller 开始低级拖拽
-        ctx.controller.startNodeDrag(nodeId);
+        ctx.controller.interaction.startNodeDrag(nodeId);
         // 进入 DragNode 临时状态，记录起点和当前位置
         ctx.updateInteraction(
           InteractionState.dragNode(
@@ -56,7 +56,7 @@ class NodeDragBehavior implements CanvasBehavior {
         final newPos = ev.canvasPos!;
         final delta = newPos - it.lastCanvas;
         // 1) 更新低级拖拽（画面上节点实时移动）
-        ctx.controller.updateNodeDrag(delta);
+        ctx.controller.interaction.updateNodeDrag(delta);
         // 2) 更新 InteractionState.lastCanvas，用于 UI 渲染 & 后续计算
         ctx.updateInteraction(
           InteractionState.dragNode(
@@ -71,10 +71,10 @@ class NodeDragBehavior implements CanvasBehavior {
       case InputEventType.pointerCancel:
         if (it is DragNode) {
           // 1) 结束低级拖拽
-          ctx.controller.endNodeDrag();
+          ctx.controller.interaction.endNodeDrag();
           // 2) 计算总偏移并提交持久化命令
           final totalDelta = it.lastCanvas - it.startCanvas;
-          ctx.controller.moveNode(it.nodeId, totalDelta);
+          ctx.controller.graph.moveNode(it.nodeId, totalDelta);
           // 3) 重置为 idle 状态
           ctx.updateInteraction(const InteractionState.idle());
         }
