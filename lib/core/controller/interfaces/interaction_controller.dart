@@ -1,7 +1,6 @@
 // lib/core/controller/interfaces/interaction_controller.dart
 
 import 'package:flutter/widgets.dart';
-import 'package:flow_editor/core/models/anchor_model.dart';
 
 /// InteractionController 处理临时的视觉交互状态，不直接修改业务数据
 abstract class IInteractionController {
@@ -20,7 +19,7 @@ abstract class IInteractionController {
   void updateEdgeDrag(Offset canvasPos);
 
   /// 拖拽边结束时返回源 AnchorModel 和目标信息，业务层决定是否添加实际的边
-  AnchorModel endEdgeDrag({String? targetNodeId, String? targetAnchorId});
+  void endEdgeDrag();
   void cancelEdgeDrag();
 
   /// 为临时边生成一个唯一的 edgeId

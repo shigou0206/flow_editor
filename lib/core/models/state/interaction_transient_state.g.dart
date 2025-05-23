@@ -36,21 +36,22 @@ Map<String, dynamic> _$$DragNodeImplToJson(_$DragNodeImpl instance) =>
 _$DragEdgeImpl _$$DragEdgeImplFromJson(Map<String, dynamic> json) =>
     _$DragEdgeImpl(
       edgeId: json['edgeId'] as String,
+      sourceNodeId: json['sourceNodeId'] as String,
+      sourceAnchorId: json['sourceAnchorId'] as String,
       startCanvas: const OffsetConverter()
           .fromJson(json['startCanvas'] as Map<String, dynamic>),
       lastCanvas: const OffsetConverter()
           .fromJson(json['lastCanvas'] as Map<String, dynamic>),
-      sourceAnchor:
-          AnchorModel.fromJson(json['sourceAnchor'] as Map<String, dynamic>),
       $type: json['type'] as String?,
     );
 
 Map<String, dynamic> _$$DragEdgeImplToJson(_$DragEdgeImpl instance) =>
     <String, dynamic>{
       'edgeId': instance.edgeId,
+      'sourceNodeId': instance.sourceNodeId,
+      'sourceAnchorId': instance.sourceAnchorId,
       'startCanvas': const OffsetConverter().toJson(instance.startCanvas),
       'lastCanvas': const OffsetConverter().toJson(instance.lastCanvas),
-      'sourceAnchor': instance.sourceAnchor,
       'type': instance.$type,
     };
 

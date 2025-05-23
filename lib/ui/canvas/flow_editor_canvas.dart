@@ -1,3 +1,4 @@
+import 'package:flow_editor/core/models/state/editor_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flow_editor/core/state_management/providers.dart';
@@ -42,51 +43,54 @@ class FlowEditorCanvas extends ConsumerWidget {
     final nodeFactory = NodeWidgetFactoryImpl(registry: registry);
 
     return DragTarget<NodeModel>(
-        onAcceptWithDetails: (details) {
-          final renderBox = context.findRenderObject() as RenderBox;
-          final localOffset =
-              renderBox.globalToLocal(details.offset); // ✅ 正确转换为局部坐标
-          final localPos =
-              (localOffset - canvas.offset - panDelta) / canvas.scale;
+      onAcceptWithDetails: (details) {
+        final renderBox = context.findRenderObject() as RenderBox;
+        final localOffset =
+            renderBox.globalToLocal(details.offset); // ✅ 正确转换为局部坐标
+        final localPos =
+            (localOffset - canvas.offset - panDelta) / canvas.scale;
 
-          final newId = 'node_${DateTime.now().millisecondsSinceEpoch}';
+        final newId = 'node_${DateTime.now().millisecondsSinceEpoch}';
 
-          final newNode = details.data.copyWith(
-            id: newId,
-            position: localPos,
-          );
+        final newNode = details.data.copyWith(
+          id: newId,
+          position: localPos,
+        );
 
-          ctrl.graph.addNode(newNode);
-        },
-        builder: (_, __, ___) => CanvasInputWrapper(
-              context: behaviorCtx,
-              toCanvas: (local) => (local - canvas.offset) / canvas.scale,
-              child: SizedBox.expand(
-                child: Stack(
-                  children: [
-                    // 背景层
-                    Positioned.fill(
-                      child: Container(
-                        color: Colors.grey[100], // ✅ 可设置网格背景等
-                      ),
-                    ),
-                    // 主绘制区域
-                    Positioned.fill(
-                      child: RepaintBoundary(
-                        child: CanvasRenderer(
-                          offset: canvas.offset + panDelta,
-                          scale: canvas.scale,
-                          visualConfig: canvas.visualConfig,
-                          nodeState: editor.nodeState,
-                          edgeState: editor.edgeState,
-                          interaction: editor.interaction,
-                          nodeWidgetFactory: nodeFactory,
-                        ),
-                      ),
-                    ),
-                  ],
+        ctrl.graph.addNode(newNode);
+      },
+      builder: (_, __, ___) => CanvasInputWrapper(
+        context: behaviorCtx,
+        toCanvas: (local) => (local - canvas.offset) / canvas.scale,
+        child: SizedBox.expand(
+          child: Stack(
+            children: [
+              // 背景层
+              Positioned.fill(
+                child: Container(
+                  color: Colors.grey[100], // ✅ 可设置背景
                 ),
               ),
-            ));
+              // 主绘制区域 (修正后传入renderedNodes/renderedEdges)
+              Positioned.fill(
+                child: RepaintBoundary(
+                  child: CanvasRenderer(
+                    offset: canvas.offset + panDelta,
+                    scale: canvas.scale,
+                    visualConfig: canvas.visualConfig,
+                    nodeState: editor.nodeState,
+                    edgeState: editor.edgeState,
+                    interaction: editor.interaction,
+                    nodeWidgetFactory: nodeFactory,
+                    renderedNodes: editor.renderedNodes, // ✅ 必须新增的参数
+                    renderedEdges: editor.renderedEdges, // ✅ 必须新增的参数
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 }

@@ -8,6 +8,8 @@ import 'package:flow_editor/core/painters/path_generators/flexible_path_generato
 import 'package:flow_editor/ui/edge/edge_renderer.dart';
 import 'package:flow_editor/ui/node/factories/node_widget_factory.dart';
 import 'package:flow_editor/core/utils/anchor_position_utils.dart';
+import 'package:flow_editor/core/models/node_model.dart';
+import 'package:flow_editor/core/models/edge_model.dart';
 
 class CanvasRenderer extends StatelessWidget {
   const CanvasRenderer({
@@ -19,6 +21,8 @@ class CanvasRenderer extends StatelessWidget {
     required this.edgeState,
     required this.interaction,
     required this.nodeWidgetFactory,
+    required this.renderedNodes,
+    required this.renderedEdges,
   });
 
   final Offset offset;
@@ -28,10 +32,12 @@ class CanvasRenderer extends StatelessWidget {
   final EdgeState edgeState;
   final InteractionState interaction;
   final NodeWidgetFactory nodeWidgetFactory;
+  final List<NodeModel> renderedNodes;
+  final List<EdgeModel> renderedEdges;
 
   @override
   Widget build(BuildContext context) {
-    final pathGen = FlexiblePathGenerator(nodeState.nodes);
+    final pathGen = FlexiblePathGenerator(renderedNodes);
 
     return Stack(
       clipBehavior: Clip.none,
@@ -59,27 +65,38 @@ class CanvasRenderer extends StatelessWidget {
             ..scale(scale),
           child: CustomPaint(
             painter: EdgeRenderer(
-              nodes: nodeState.nodes,
-              edges: edgeState.edges,
+              nodes: renderedNodes,
+              edges: renderedEdges,
               pathGenerator: pathGen,
               hoveredEdgeId: interaction.hoveringTargetId,
               draggingEdgeId: interaction.draggingTargetId,
               draggingStart: interaction.mapOrNull(dragEdge: (s) {
-                final node = nodeState.nodes.firstWhere(
-                  (n) => n.anchors.any((a) => a.id == s.sourceAnchor.id),
+                final sourceNode = renderedNodes.firstWhere(
+                  (n) => n.id == s.sourceNodeId,
+                  orElse: () => renderedNodes.first,
                 );
+
+                final sourceAnchor = sourceNode.anchors.firstWhere(
+                  (a) => a.id == s.sourceAnchorId,
+                  orElse: () => sourceNode.anchors.first,
+                );
+
                 return computeAnchorWorldPosition(
-                    node, s.sourceAnchor, nodeState.nodes);
+                  sourceNode,
+                  sourceAnchor,
+                  renderedNodes,
+                );
               }),
-              draggingEnd: interaction.mapOrNull(dragEdge: (s) => s.lastCanvas),
+              draggingEnd: interaction.mapOrNull(
+                dragEdge: (s) => s.lastCanvas,
+              ),
             ),
           ),
         ),
 
         // 节点的渲染（含节点拖动预览）
-        ...nodeState.nodes.map((node) {
-          final pos = node.position + interaction.dragOffsetForNode(node.id);
-
+        ...renderedNodes.map((node) {
+          final pos = node.position; // 已经包含了拖动偏移
           return Positioned(
             key: ValueKey(node.id),
             left: offset.dx + (pos.dx - node.anchorPadding.left) * scale,
