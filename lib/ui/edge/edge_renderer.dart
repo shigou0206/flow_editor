@@ -2,10 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flow_editor/core/models/node_model.dart';
 import 'package:flow_editor/core/models/edge_model.dart';
 import 'package:flow_editor/ui/edge/edge_style_resolver.dart';
-import 'package:flow_editor/core/utils/anchor_position_utils.dart';
 import 'package:flow_editor/core/painters/path_generators/path_generator.dart';
 import 'package:flow_editor/core/utils/canvas_utils.dart';
-import 'package:collection/collection.dart';
+import 'package:flow_editor/core/models/styles/edge_line_style.dart';
 
 class EdgeRenderer extends CustomPainter {
   final List<NodeModel> nodes;
@@ -17,6 +16,7 @@ class EdgeRenderer extends CustomPainter {
   final String? hoveredEdgeId;
 
   final String? draggingEdgeId;
+  final Offset? draggingStart; // 新增起点坐标
   final Offset? draggingEnd;
 
   EdgeRenderer({
@@ -27,6 +27,7 @@ class EdgeRenderer extends CustomPainter {
     this.selectedEdgeIds = const {},
     this.hoveredEdgeId,
     this.draggingEdgeId,
+    this.draggingStart,
     this.draggingEnd,
   });
 
@@ -69,42 +70,22 @@ class EdgeRenderer extends CustomPainter {
   }
 
   void _drawGhostEdge(Canvas canvas) {
-    if (draggingEdgeId == null || draggingEnd == null) return;
+    if (draggingStart == null || draggingEnd == null) return;
 
-    final edge = edges.firstWhereOrNull((e) => e.id == draggingEdgeId);
-    if (edge == null) return;
+    final path = Path()
+      ..moveTo(draggingStart!.dx, draggingStart!.dy)
+      ..lineTo(draggingEnd!.dx, draggingEnd!.dy);
 
-    final source =
-        _getAnchorOrNodeCenter(edge.sourceNodeId ?? '', edge.sourceAnchorId);
-    if (source == null) return;
+    final paint = styleResolver.resolveGhostPaint(const EdgeLineStyle());
 
-    // 生成拖拽过程中的临时路径
-    final edgePath = pathGenerator.generateGhost(edge, draggingEnd!);
-    if (edgePath == null) return;
-
-    final path = edgePath.path;
-
-    final paint = styleResolver.resolveGhostPaint(edge.lineStyle);
     canvas.drawPath(path, paint);
 
-    // 也可以绘制箭头（根据需求）
     styleResolver.drawArrowIfNeeded(
-        canvas: canvas, path: path, paint: paint, style: edge.lineStyle);
-  }
-
-  Offset? _getAnchorOrNodeCenter(String nodeId, String? anchorId) {
-    final node = nodes.firstWhereOrNull((n) => n.id == nodeId);
-    if (node == null) return null;
-
-    if (anchorId != null) {
-      final anchor = node.anchors.firstWhereOrNull((a) => a.id == anchorId);
-      if (anchor != null) {
-        return computeAnchorWorldPosition(node, anchor, nodes) +
-            Offset(anchor.size.width / 2, anchor.size.height / 2);
-      }
-    }
-
-    return Offset(node.position.dx, node.position.dy);
+      canvas: canvas,
+      path: path,
+      paint: paint,
+      style: const EdgeLineStyle(), // 或使用默认的 ghost style
+    );
   }
 
   @override
@@ -112,6 +93,7 @@ class EdgeRenderer extends CustomPainter {
     return oldDelegate.nodes != nodes ||
         oldDelegate.edges != edges ||
         oldDelegate.draggingEdgeId != draggingEdgeId ||
+        oldDelegate.draggingStart != draggingStart ||
         oldDelegate.draggingEnd != draggingEnd ||
         oldDelegate.hoveredEdgeId != hoveredEdgeId ||
         oldDelegate.selectedEdgeIds != selectedEdgeIds;

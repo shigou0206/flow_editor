@@ -92,8 +92,8 @@ class AnchorPainter extends CustomPainter {
     }
 
     // 否则回到原先 plusButtonColorHex / locked / isHover
-    final baseColor =
-        _parseColorHex(anchor.plusButtonColorHex) ?? const Color(0xFF252525);
+    final baseColor = _parseColorHex(anchor.plusButtonColorHex) ??
+        const Color.fromARGB(255, 200, 200, 200);
     if (anchor.locked) {
       return Colors.grey;
     } else {

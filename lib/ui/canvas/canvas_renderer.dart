@@ -7,6 +7,7 @@ import 'package:flow_editor/core/painters/dotted_grid_painter.dart';
 import 'package:flow_editor/core/painters/path_generators/flexible_path_generator.dart';
 import 'package:flow_editor/ui/edge/edge_renderer.dart';
 import 'package:flow_editor/ui/node/factories/node_widget_factory.dart';
+import 'package:flow_editor/core/utils/anchor_position_utils.dart';
 
 class CanvasRenderer extends StatelessWidget {
   const CanvasRenderer({
@@ -43,10 +44,9 @@ class CanvasRenderer extends StatelessWidget {
               offset: offset,
               scale: scale,
               style: visualConfig.backgroundStyle,
-              themeMode: ThemeMode.light,
-              // themeMode: Theme.of(context).brightness == Brightness.dark
-              //     ? ThemeMode.dark
-              //     : ThemeMode.light,
+              themeMode: Theme.of(context).brightness == Brightness.dark
+                  ? ThemeMode.dark
+                  : ThemeMode.light,
             ),
           ),
         ),
@@ -64,6 +64,13 @@ class CanvasRenderer extends StatelessWidget {
               pathGenerator: pathGen,
               hoveredEdgeId: interaction.hoveringTargetId,
               draggingEdgeId: interaction.draggingTargetId,
+              draggingStart: interaction.mapOrNull(dragEdge: (s) {
+                final node = nodeState.nodes.firstWhere(
+                  (n) => n.anchors.any((a) => a.id == s.sourceAnchor.id),
+                );
+                return computeAnchorWorldPosition(
+                    node, s.sourceAnchor, nodeState.nodes);
+              }),
               draggingEnd: interaction.mapOrNull(dragEdge: (s) => s.lastCanvas),
             ),
           ),
