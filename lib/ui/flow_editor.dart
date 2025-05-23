@@ -1,5 +1,3 @@
-// lib/ui/pages/flow_editor_page.dart
-import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flow_editor/core/state_management/providers.dart';
@@ -20,14 +18,11 @@ class FlowEditorPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    // ─────────────── 数据源 ────────────────────────────────────
-    final editor = ref.watch(activeEditorStateProvider); // 当前 EditorState
-    final store = ref.read(activeEditorNotifierProvider); // Store（写入口）
-    final ctrl = ref.read(activeCanvasControllerProvider); // ICanvasController
+    final editor = ref.watch(activeEditorStateProvider);
+    final store = ref.read(activeEditorNotifierProvider);
+    final ctrl = ref.read(activeCanvasControllerProvider);
 
-    final canvas = editor.canvasState; // CanvasState
-    final nodes = editor.nodeState.nodes; // List<NodeModel>
-    debugPrint('nodes length: ${nodes.length}');
+    final canvas = editor.canvasState;
 
     late final BehaviorContext behaviorCtx;
     behaviorCtx = BehaviorContext(
@@ -48,15 +43,13 @@ class FlowEditorPage extends ConsumerWidget {
     );
 
     final registry = initNodeWidgetRegistry();
-    final nodeFactory = NodeWidgetFactoryImpl(
-      registry: registry,
-    );
+    final nodeFactory = NodeWidgetFactoryImpl(registry: registry);
 
-    late final availableNodes = [
+    final availableNodes = [
       const NodeModel(
         id: 'start_template',
         type: 'start',
-        position: Offset(0, 0),
+        position: Offset.zero,
         size: Size(100, 80),
         title: 'Start',
         anchors: [],
@@ -64,7 +57,7 @@ class FlowEditorPage extends ConsumerWidget {
       const NodeModel(
         id: 'end_template',
         type: 'end',
-        position: Offset(0, 0),
+        position: Offset.zero,
         size: Size(100, 80),
         title: 'End',
         anchors: [],
@@ -72,7 +65,7 @@ class FlowEditorPage extends ConsumerWidget {
       const NodeModel(
         id: 'placeholder_template',
         type: 'placeholder',
-        position: Offset(0, 0),
+        position: Offset.zero,
         size: Size(100, 80),
         title: 'Placeholder',
         anchors: [],
@@ -80,63 +73,85 @@ class FlowEditorPage extends ConsumerWidget {
       const NodeModel(
         id: 'middle_template',
         type: 'middle',
-        position: Offset(0, 0),
+        position: Offset.zero,
         size: Size(100, 80),
         title: 'Middle',
         anchors: [],
       ),
     ];
 
-    // ─────────────── UI ───────────────────────────────────────
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.surface,
-
-      // "+" 按钮：随机位置添加一个节点
-      floatingActionButton: FloatingActionButton(
-        child: const Icon(Icons.add),
-        onPressed: () {
-          final id = 'node_${DateTime.now().millisecondsSinceEpoch}';
-
-          final rnd = Random();
-          final x = rnd.nextDouble() * 200.0 + 50;
-          final y = rnd.nextDouble() * 200.0 + 50;
-
-          final newNode = NodeModel(
-            type: 'start',
-            id: id,
-            position: Offset(x, y),
-            size: const Size(120, 60),
-            title: 'Node $id',
-            anchors: [
-              AnchorModel(
-                id: '${id}_right',
-                position: Position.right,
-                size: const Size(5, 5),
-              ),
-            ],
-          );
-          ctrl.graph.addNode(newNode);
-        },
-      ),
-
-      // 主画布
-      body: CanvasInputWrapper(
-        context: behaviorCtx,
-        toCanvas: (local) => (local - canvas.offset) / canvas.scale,
-        child: SizedBox.expand(
-          // ← 确保填满整屏，这样才能接收全域事件
-          child: RepaintBoundary(
-            child: CanvasRenderer(
-              offset: canvas.offset + panDelta,
-              scale: canvas.scale,
-              visualConfig: canvas.visualConfig,
-              nodeState: editor.nodeState,
-              edgeState: editor.edgeState,
-              interaction: editor.interaction,
-              nodeWidgetFactory: nodeFactory,
+      body: Row(
+        children: [
+          // 左侧节点列表
+          SizedBox(
+            width: 120,
+            child: ListView(
+              children: availableNodes
+                  .map((nodeTemplate) => Draggable<NodeModel>(
+                        data: nodeTemplate,
+                        feedback: Opacity(
+                          opacity: 0.7,
+                          child: SizedBox(
+                            width: nodeTemplate.size.width,
+                            height: nodeTemplate.size.height,
+                            child: nodeFactory.createNodeWidget(nodeTemplate),
+                          ),
+                        ),
+                        childWhenDragging: Opacity(
+                          opacity: 0.3,
+                          child: nodeFactory.createNodeWidget(nodeTemplate),
+                        ),
+                        child: nodeFactory.createNodeWidget(nodeTemplate),
+                      ))
+                  .toList(),
             ),
           ),
-        ),
+
+          // 主画布 (拖拽目标区域)
+          Expanded(
+            child: DragTarget<NodeModel>(
+              onAcceptWithDetails: (details) {
+                final localPos =
+                    (details.offset - canvas.offset - panDelta) / canvas.scale;
+
+                final newId = 'node_${DateTime.now().millisecondsSinceEpoch}';
+
+                final newNode = details.data.copyWith(
+                  id: newId,
+                  position: localPos,
+                  anchors: [
+                    AnchorModel(
+                      id: 'anchor_$newId',
+                      position: Position.right,
+                      size: const Size(5, 5),
+                    ),
+                  ],
+                );
+
+                ctrl.graph.addNode(newNode);
+              },
+              builder: (_, candidateData, rejectedData) => CanvasInputWrapper(
+                context: behaviorCtx,
+                toCanvas: (local) => (local - canvas.offset) / canvas.scale,
+                child: SizedBox.expand(
+                  child: RepaintBoundary(
+                    child: CanvasRenderer(
+                      offset: canvas.offset + panDelta,
+                      scale: canvas.scale,
+                      visualConfig: canvas.visualConfig,
+                      nodeState: editor.nodeState,
+                      edgeState: editor.edgeState,
+                      interaction: editor.interaction,
+                      nodeWidgetFactory: nodeFactory,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
