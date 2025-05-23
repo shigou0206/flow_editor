@@ -1,7 +1,7 @@
 // main.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flow_editor/ui/flow_editor_page.dart';
+import 'package:flow_editor/ui/sfn_editor_page.dart';
 import 'core/state_management/theme_provider.dart';
 
 void main() {
@@ -23,7 +23,7 @@ class MyApp extends ConsumerWidget {
       ),
       darkTheme: ThemeData.dark(useMaterial3: true),
       themeMode: themeMode,
-      home: const FlowEditorPage(),
+      home: const SfnEditorPage(),
       debugShowCheckedModeBanner: false,
     );
   }
