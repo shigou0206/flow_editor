@@ -19,29 +19,21 @@ class PlaceholderNodeWidget extends StatelessWidget {
         width: node.size.width,
         height: node.size.height,
         decoration: BoxDecoration(
-          shape: BoxShape.circle,
-          border: Border.all(
-            color: Colors.grey,
-            width: 2,
-            style: BorderStyle.solid,
-          ),
-          color: Colors.white,
+          color: const Color.fromARGB(255, 129, 127, 127), // 背景亮灰
+          borderRadius: BorderRadius.circular(8),
+          border: Border.all(color: Colors.grey[600]!, width: 2), // ✅ 更亮的边
           boxShadow: const [
             BoxShadow(
-              color: Colors.black12,
+              color: Colors.black26,
               blurRadius: 4,
-              offset: Offset(1, 1),
-            )
+              offset: Offset(1, 2),
+            ),
           ],
         ),
         child: Center(
-          child: IconButton(
-            icon: const Icon(
-              Icons.add,
-              color: Colors.grey,
-              size: 32,
-            ),
-            onPressed: () {},
+          child: Text(
+            'Placeholder_${node.id}',
+            style: const TextStyle(color: Colors.white, fontSize: 16),
           ),
         ),
       ),

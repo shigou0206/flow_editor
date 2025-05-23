@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flow_editor/core/models/anchor_model.dart';
 import 'package:flow_editor/core/models/enums/anchor_enums.dart';
+import 'dart:math' as math;
 
 class AnchorPainter extends CustomPainter {
   final AnchorModel anchor;
@@ -16,7 +17,7 @@ class AnchorPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final center = Offset(size.width / 2, size.height / 2);
-    const double radius = 12;
+    double radius = math.max(size.width / 2, size.height / 2);
 
     // 1) 决定填充颜色
     final Color fillColor = _resolveFillColor();

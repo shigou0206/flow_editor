@@ -14,7 +14,7 @@ class DefaultNodeFactory implements NodeWidgetFactory {
     final style = node.style ?? const NodeStyle();
 
     // 将 Hex 颜色字符串转换为 Flutter 的 Color
-    Color _parseHex(String? hex, Color fallback) {
+    Color parseHex(String? hex, Color fallback) {
       if (hex == null) return fallback;
       final cleaned = hex.replaceFirst('#', '');
       final value = int.tryParse(cleaned, radix: 16);
@@ -28,9 +28,9 @@ class DefaultNodeFactory implements NodeWidgetFactory {
       width: node.size.width,
       height: node.size.height,
       decoration: BoxDecoration(
-        color: _parseHex(style.fillColorHex, Colors.white),
+        color: parseHex(style.fillColorHex, Colors.white),
         border: Border.all(
-          color: _parseHex(style.borderColorHex, Colors.black),
+          color: parseHex(style.borderColorHex, Colors.black),
           width: style.borderWidth,
         ),
         borderRadius: BorderRadius.circular(style.borderRadius),
@@ -40,7 +40,7 @@ class DefaultNodeFactory implements NodeWidgetFactory {
         node.title ?? '',
         textAlign: TextAlign.center,
         style: TextStyle(
-          color: _parseHex(style.borderColorHex, Colors.black),
+          color: parseHex(style.borderColorHex, Colors.black),
         ),
       ),
     );

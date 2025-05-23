@@ -3,10 +3,10 @@ import 'package:flow_editor/core/models/node_model.dart';
 import 'package:flow_editor/core/models/enums/node_enums.dart';
 import 'package:flow_editor/ui/node/workflow/base/node_widget.dart';
 
-class EndNodeWidget extends StatelessWidget {
+class MiddleNodeWidget extends StatelessWidget {
   final NodeModel node;
 
-  const EndNodeWidget({
+  const MiddleNodeWidget({
     super.key,
     required this.node,
   });
@@ -14,7 +14,7 @@ class EndNodeWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return NodeWidget(
-      node: node.copyWith(role: NodeRole.end),
+      node: node.copyWith(role: NodeRole.middle),
       child: Container(
         width: node.size.width,
         height: node.size.height,
@@ -32,7 +32,7 @@ class EndNodeWidget extends StatelessWidget {
         ),
         child: Center(
           child: Text(
-            'End_${node.id}',
+            'Middle_${node.id}',
             style: const TextStyle(color: Colors.white, fontSize: 16),
           ),
         ),

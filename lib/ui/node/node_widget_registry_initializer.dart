@@ -6,9 +6,8 @@ import 'package:flow_editor/core/models/node_model.dart';
 // 这里引入你各种节点的自定义Widget
 import 'package:flow_editor/ui/node/workflow/start_node_widget.dart';
 import 'package:flow_editor/ui/node/workflow/end_node_widget.dart';
-import 'package:flow_editor/ui/node/workflow/base/node_widget.dart';
 import 'package:flow_editor/ui/node/workflow/placeholder_node_widget.dart';
-import 'package:flutter/material.dart';
+import 'package:flow_editor/ui/node/workflow/middle_node_widget.dart';
 
 NodeWidgetRegistry initNodeWidgetRegistry() {
   final registry = NodeWidgetRegistry();
@@ -39,9 +38,8 @@ NodeWidgetRegistry initNodeWidgetRegistry() {
 
   registry.register<NodeModel>(
     type: 'middle',
-    builder: (node) => NodeWidget(
+    builder: (node) => MiddleNodeWidget(
       node: node,
-      child: Container(),
     ),
     useDefaultContainer: false,
   );
