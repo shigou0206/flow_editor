@@ -122,10 +122,15 @@ class FlowEditorPage extends ConsumerWidget {
                   id: newId,
                   position: localPos,
                   anchors: [
-                    AnchorModel(
-                      id: 'anchor_$newId',
+                    const AnchorModel(
+                      id: 'in',
                       position: Position.right,
-                      size: const Size(5, 5),
+                      size: Size(24, 24),
+                    ),
+                    const AnchorModel(
+                      id: 'out',
+                      position: Position.left,
+                      size: Size(24, 24),
                     ),
                   ],
                 );
