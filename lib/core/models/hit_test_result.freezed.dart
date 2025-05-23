@@ -884,3 +884,171 @@ abstract class _InsertTargetHitResult implements InsertTargetHitResult {
   _$$InsertTargetHitResultImplCopyWith<_$InsertTargetHitResultImpl>
       get copyWith => throw _privateConstructorUsedError;
 }
+
+AnchorHitResult _$AnchorHitResultFromJson(Map<String, dynamic> json) {
+  return _AnchorHitResult.fromJson(json);
+}
+
+/// @nodoc
+mixin _$AnchorHitResult {
+  String get nodeId => throw _privateConstructorUsedError;
+  AnchorModel get anchor => throw _privateConstructorUsedError;
+
+  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
+  @JsonKey(ignore: true)
+  $AnchorHitResultCopyWith<AnchorHitResult> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class $AnchorHitResultCopyWith<$Res> {
+  factory $AnchorHitResultCopyWith(
+          AnchorHitResult value, $Res Function(AnchorHitResult) then) =
+      _$AnchorHitResultCopyWithImpl<$Res, AnchorHitResult>;
+  @useResult
+  $Res call({String nodeId, AnchorModel anchor});
+
+  $AnchorModelCopyWith<$Res> get anchor;
+}
+
+/// @nodoc
+class _$AnchorHitResultCopyWithImpl<$Res, $Val extends AnchorHitResult>
+    implements $AnchorHitResultCopyWith<$Res> {
+  _$AnchorHitResultCopyWithImpl(this._value, this._then);
+
+  // ignore: unused_field
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
+
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? nodeId = null,
+    Object? anchor = null,
+  }) {
+    return _then(_value.copyWith(
+      nodeId: null == nodeId
+          ? _value.nodeId
+          : nodeId // ignore: cast_nullable_to_non_nullable
+              as String,
+      anchor: null == anchor
+          ? _value.anchor
+          : anchor // ignore: cast_nullable_to_non_nullable
+              as AnchorModel,
+    ) as $Val);
+  }
+
+  @override
+  @pragma('vm:prefer-inline')
+  $AnchorModelCopyWith<$Res> get anchor {
+    return $AnchorModelCopyWith<$Res>(_value.anchor, (value) {
+      return _then(_value.copyWith(anchor: value) as $Val);
+    });
+  }
+}
+
+/// @nodoc
+abstract class _$$AnchorHitResultImplCopyWith<$Res>
+    implements $AnchorHitResultCopyWith<$Res> {
+  factory _$$AnchorHitResultImplCopyWith(_$AnchorHitResultImpl value,
+          $Res Function(_$AnchorHitResultImpl) then) =
+      __$$AnchorHitResultImplCopyWithImpl<$Res>;
+  @override
+  @useResult
+  $Res call({String nodeId, AnchorModel anchor});
+
+  @override
+  $AnchorModelCopyWith<$Res> get anchor;
+}
+
+/// @nodoc
+class __$$AnchorHitResultImplCopyWithImpl<$Res>
+    extends _$AnchorHitResultCopyWithImpl<$Res, _$AnchorHitResultImpl>
+    implements _$$AnchorHitResultImplCopyWith<$Res> {
+  __$$AnchorHitResultImplCopyWithImpl(
+      _$AnchorHitResultImpl _value, $Res Function(_$AnchorHitResultImpl) _then)
+      : super(_value, _then);
+
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? nodeId = null,
+    Object? anchor = null,
+  }) {
+    return _then(_$AnchorHitResultImpl(
+      nodeId: null == nodeId
+          ? _value.nodeId
+          : nodeId // ignore: cast_nullable_to_non_nullable
+              as String,
+      anchor: null == anchor
+          ? _value.anchor
+          : anchor // ignore: cast_nullable_to_non_nullable
+              as AnchorModel,
+    ));
+  }
+}
+
+/// @nodoc
+@JsonSerializable()
+class _$AnchorHitResultImpl implements _AnchorHitResult {
+  const _$AnchorHitResultImpl({required this.nodeId, required this.anchor});
+
+  factory _$AnchorHitResultImpl.fromJson(Map<String, dynamic> json) =>
+      _$$AnchorHitResultImplFromJson(json);
+
+  @override
+  final String nodeId;
+  @override
+  final AnchorModel anchor;
+
+  @override
+  String toString() {
+    return 'AnchorHitResult(nodeId: $nodeId, anchor: $anchor)';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$AnchorHitResultImpl &&
+            (identical(other.nodeId, nodeId) || other.nodeId == nodeId) &&
+            (identical(other.anchor, anchor) || other.anchor == anchor));
+  }
+
+  @JsonKey(ignore: true)
+  @override
+  int get hashCode => Object.hash(runtimeType, nodeId, anchor);
+
+  @JsonKey(ignore: true)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$AnchorHitResultImplCopyWith<_$AnchorHitResultImpl> get copyWith =>
+      __$$AnchorHitResultImplCopyWithImpl<_$AnchorHitResultImpl>(
+          this, _$identity);
+
+  @override
+  Map<String, dynamic> toJson() {
+    return _$$AnchorHitResultImplToJson(
+      this,
+    );
+  }
+}
+
+abstract class _AnchorHitResult implements AnchorHitResult {
+  const factory _AnchorHitResult(
+      {required final String nodeId,
+      required final AnchorModel anchor}) = _$AnchorHitResultImpl;
+
+  factory _AnchorHitResult.fromJson(Map<String, dynamic> json) =
+      _$AnchorHitResultImpl.fromJson;
+
+  @override
+  String get nodeId;
+  @override
+  AnchorModel get anchor;
+  @override
+  @JsonKey(ignore: true)
+  _$$AnchorHitResultImplCopyWith<_$AnchorHitResultImpl> get copyWith =>
+      throw _privateConstructorUsedError;
+}

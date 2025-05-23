@@ -38,12 +38,6 @@ class FlowEditorPage extends ConsumerWidget {
         // 🔑 从 behaviorCtx.getState() 拿最新 state
         getNodes: () => behaviorCtx.getState().nodeState.nodes,
         getEdges: () => behaviorCtx.getState().edgeState.edges,
-        getAnchors: () => behaviorCtx
-            .getState()
-            .nodeState
-            .nodes
-            .expand((n) => n.anchors)
-            .toList(),
         computeAnchorWorldPosition: computeAnchorWorldPosition,
       ),
     );
@@ -115,10 +109,9 @@ class FlowEditorPage extends ConsumerWidget {
             title: 'Node $id',
             anchors: [
               AnchorModel(
-                id: 'anchor_${DateTime.now().millisecondsSinceEpoch}',
+                id: '${id}_right',
                 position: Position.right,
                 size: const Size(5, 5),
-                nodeId: id,
               ),
             ],
           );

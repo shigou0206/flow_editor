@@ -16,7 +16,7 @@ abstract class IInteractionController {
 
   // === 边拖拽相关 ===
 
-  void startEdgeDrag(String anchorId);
+  void startEdgeDrag(String sourceNodeId, String sourceAnchorId);
   void updateEdgeDrag(Offset canvasPos);
 
   /// 拖拽边结束时返回源 AnchorModel 和目标信息，业务层决定是否添加实际的边
@@ -24,7 +24,7 @@ abstract class IInteractionController {
   void cancelEdgeDrag();
 
   /// 为临时边生成一个唯一的 edgeId
-  String generateTempEdgeId(AnchorModel sourceAnchor);
+  String generateTempEdgeId(String sourceNodeId, String sourceAnchorId);
 
   // === 框选操作 ===
 

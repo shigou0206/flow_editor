@@ -1,8 +1,5 @@
-// lib/core/hit_test/canvas_hit_tester.dart
-
 import 'dart:ui';
 import 'package:flow_editor/core/models/node_model.dart';
-import 'package:flow_editor/core/models/anchor_model.dart';
 import 'package:flow_editor/core/models/edge_model.dart';
 import 'package:flow_editor/core/models/hit_test_result.dart';
 
@@ -15,12 +12,16 @@ abstract class CanvasHitTester {
 
   // ===== Model-based 命中 =====
   NodeModel? hitTestNodeModel(Offset pos);
-  AnchorModel? hitTestAnchorModel(Offset pos);
   EdgeModel? hitTestEdgeModel(Offset pos);
+
+  /// 命中 anchor 时，返回包含 nodeId 的 AnchorHitResult（推荐替代 anchorModel）
+  AnchorHitResult? hitTestAnchorResult(Offset pos);
 
   // ===== 综合优先级（anchor > node > edge） =====
   String? hitTestElement(Offset pos);
-  dynamic hitTestElementModel(Offset pos);
+
+  /// 综合命中模型，按优先级返回 AnchorHitResult / NodeModel / EdgeModel
+  Object? hitTestElementModel(Offset pos);
 
   // ===== 扩展项：高级 UI 区块命中 =====
   ResizeHitResult? hitTestResizeHandle(Offset pos);

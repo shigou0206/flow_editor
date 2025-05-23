@@ -34,7 +34,6 @@ class AnchorModel with _$AnchorModel {
     @Default(AnchorPlacement.border) AnchorPlacement placement,
     @Default(0.0) double offsetDistance,
     @Default(0.0) double angle,
-    required String nodeId,
   }) = _AnchorModel;
 
   factory AnchorModel.fromJson(Map<String, dynamic> json) =>

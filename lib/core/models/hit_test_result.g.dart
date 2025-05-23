@@ -96,3 +96,17 @@ Map<String, dynamic> _$$InsertTargetHitResultImplToJson(
       'targetId': instance.targetId,
       'position': const OffsetConverter().toJson(instance.position),
     };
+
+_$AnchorHitResultImpl _$$AnchorHitResultImplFromJson(
+        Map<String, dynamic> json) =>
+    _$AnchorHitResultImpl(
+      nodeId: json['nodeId'] as String,
+      anchor: AnchorModel.fromJson(json['anchor'] as Map<String, dynamic>),
+    );
+
+Map<String, dynamic> _$$AnchorHitResultImplToJson(
+        _$AnchorHitResultImpl instance) =>
+    <String, dynamic>{
+      'nodeId': instance.nodeId,
+      'anchor': instance.anchor,
+    };

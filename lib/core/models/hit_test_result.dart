@@ -1,5 +1,6 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:flutter/material.dart';
+import 'package:flow_editor/core/models/anchor_model.dart';
 import 'package:flow_editor/core/models/converters/offset_size_converter.dart';
 import 'package:flow_editor/core/models/converters/rect_converter.dart';
 
@@ -74,4 +75,16 @@ class InsertTargetHitResult with _$InsertTargetHitResult {
 
   factory InsertTargetHitResult.fromJson(Map<String, dynamic> json) =>
       _$InsertTargetHitResultFromJson(json);
+}
+
+/// 命中 anchor 时的返回结构，包含 anchor 和其归属节点 ID
+@freezed
+class AnchorHitResult with _$AnchorHitResult {
+  const factory AnchorHitResult({
+    required String nodeId,
+    required AnchorModel anchor,
+  }) = _AnchorHitResult;
+
+  factory AnchorHitResult.fromJson(Map<String, dynamic> json) =>
+      _$AnchorHitResultFromJson(json);
 }

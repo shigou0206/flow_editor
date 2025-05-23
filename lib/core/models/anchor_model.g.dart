@@ -40,7 +40,6 @@ _$AnchorModelImpl _$$AnchorModelImplFromJson(Map<String, dynamic> json) =>
               AnchorPlacement.border,
       offsetDistance: (json['offsetDistance'] as num?)?.toDouble() ?? 0.0,
       angle: (json['angle'] as num?)?.toDouble() ?? 0.0,
-      nodeId: json['nodeId'] as String,
     );
 
 Map<String, dynamic> _$$AnchorModelImplToJson(_$AnchorModelImpl instance) =>
@@ -64,7 +63,6 @@ Map<String, dynamic> _$$AnchorModelImplToJson(_$AnchorModelImpl instance) =>
       'placement': _$AnchorPlacementEnumMap[instance.placement]!,
       'offsetDistance': instance.offsetDistance,
       'angle': instance.angle,
-      'nodeId': instance.nodeId,
     };
 
 const _$PositionEnumMap = {

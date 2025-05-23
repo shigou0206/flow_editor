@@ -56,9 +56,9 @@ class InteractionControllerImpl implements IInteractionController {
   // === 边拖拽相关 ===
 
   @override
-  void startEdgeDrag(String anchorId) {
-    final anchor = _findAnchorById(anchorId);
-    final tempEdgeId = generateTempEdgeId(anchor);
+  void startEdgeDrag(String sourceNodeId, String sourceAnchorId) {
+    final anchor = _findAnchorById(sourceAnchorId);
+    final tempEdgeId = generateTempEdgeId(sourceNodeId, sourceAnchorId);
     _st = _st.copyWith(
       interaction: InteractionState.dragEdge(
         edgeId: tempEdgeId,
@@ -94,9 +94,9 @@ class InteractionControllerImpl implements IInteractionController {
       _st = _st.copyWith(interaction: const InteractionState.idle());
 
   @override
-  String generateTempEdgeId(AnchorModel sourceAnchor) {
+  String generateTempEdgeId(String sourceNodeId, String sourceAnchorId) {
     final now = DateTime.now().millisecondsSinceEpoch;
-    return 'temp_edge_${sourceAnchor.nodeId}_${sourceAnchor.id}_$now';
+    return 'temp_edge_${sourceNodeId}_${sourceAnchorId}_$now';
   }
 
   // === 框选操作 ===
@@ -136,41 +136,41 @@ class InteractionControllerImpl implements IInteractionController {
 }
 
 @override
-  void panBy(Offset delta) {
-    throw UnimplementedError('panBy is not yet implemented.');
-  }
+void panBy(Offset delta) {
+  throw UnimplementedError('panBy is not yet implemented.');
+}
 
 @override
-  void panTo(Offset position) {
-    throw UnimplementedError('panTo is not yet implemented.');
-  }
+void panTo(Offset position) {
+  throw UnimplementedError('panTo is not yet implemented.');
+}
 
 @override
-  void zoomAt(Offset focalPoint, double scaleDelta) {
-    throw UnimplementedError('zoomAt is not yet implemented.');
-  }
+void zoomAt(Offset focalPoint, double scaleDelta) {
+  throw UnimplementedError('zoomAt is not yet implemented.');
+}
 
 @override
-  void zoomTo(double scale) {
-    throw UnimplementedError('zoomTo is not yet implemented.');
-  }
+void zoomTo(double scale) {
+  throw UnimplementedError('zoomTo is not yet implemented.');
+}
 
 @override
-  void focusOnNode(String nodeId) {
-    throw UnimplementedError('focusOnNode is not yet implemented.');
-  }
+void focusOnNode(String nodeId) {
+  throw UnimplementedError('focusOnNode is not yet implemented.');
+}
 
 @override
-  void cancelNodeDrag() {
-    throw UnimplementedError('cancelNodeDrag is not yet implemented.');
-  }
+void cancelNodeDrag() {
+  throw UnimplementedError('cancelNodeDrag is not yet implemented.');
+}
 
 @override
-  void cancelEdgeDrag() {
-    throw UnimplementedError('cancelEdgeDrag is not yet implemented.');
-  }
+void cancelEdgeDrag() {
+  throw UnimplementedError('cancelEdgeDrag is not yet implemented.');
+}
 
 @override
-  void cancelMarqueeSelection() {
-    throw UnimplementedError('cancelMarqueeSelection is not yet implemented.');
-  }
+void cancelMarqueeSelection() {
+  throw UnimplementedError('cancelMarqueeSelection is not yet implemented.');
+}

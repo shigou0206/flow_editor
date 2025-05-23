@@ -41,7 +41,6 @@ mixin _$AnchorModel {
   AnchorPlacement get placement => throw _privateConstructorUsedError;
   double get offsetDistance => throw _privateConstructorUsedError;
   double get angle => throw _privateConstructorUsedError;
-  String get nodeId => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
   @JsonKey(ignore: true)
@@ -74,8 +73,7 @@ abstract class $AnchorModelCopyWith<$Res> {
       Map<String, dynamic> data,
       AnchorPlacement placement,
       double offsetDistance,
-      double angle,
-      String nodeId});
+      double angle});
 }
 
 /// @nodoc
@@ -110,7 +108,6 @@ class _$AnchorModelCopyWithImpl<$Res, $Val extends AnchorModel>
     Object? placement = null,
     Object? offsetDistance = null,
     Object? angle = null,
-    Object? nodeId = null,
   }) {
     return _then(_value.copyWith(
       id: null == id
@@ -189,10 +186,6 @@ class _$AnchorModelCopyWithImpl<$Res, $Val extends AnchorModel>
           ? _value.angle
           : angle // ignore: cast_nullable_to_non_nullable
               as double,
-      nodeId: null == nodeId
-          ? _value.nodeId
-          : nodeId // ignore: cast_nullable_to_non_nullable
-              as String,
     ) as $Val);
   }
 }
@@ -224,8 +217,7 @@ abstract class _$$AnchorModelImplCopyWith<$Res>
       Map<String, dynamic> data,
       AnchorPlacement placement,
       double offsetDistance,
-      double angle,
-      String nodeId});
+      double angle});
 }
 
 /// @nodoc
@@ -258,7 +250,6 @@ class __$$AnchorModelImplCopyWithImpl<$Res>
     Object? placement = null,
     Object? offsetDistance = null,
     Object? angle = null,
-    Object? nodeId = null,
   }) {
     return _then(_$AnchorModelImpl(
       id: null == id
@@ -337,10 +328,6 @@ class __$$AnchorModelImplCopyWithImpl<$Res>
           ? _value.angle
           : angle // ignore: cast_nullable_to_non_nullable
               as double,
-      nodeId: null == nodeId
-          ? _value.nodeId
-          : nodeId // ignore: cast_nullable_to_non_nullable
-              as String,
     ));
   }
 }
@@ -367,8 +354,7 @@ class _$AnchorModelImpl extends _AnchorModel {
       final Map<String, dynamic> data = const {},
       this.placement = AnchorPlacement.border,
       this.offsetDistance = 0.0,
-      this.angle = 0.0,
-      required this.nodeId})
+      this.angle = 0.0})
       : _acceptedEdgeTypes = acceptedEdgeTypes,
         _data = data,
         super._();
@@ -443,12 +429,10 @@ class _$AnchorModelImpl extends _AnchorModel {
   @override
   @JsonKey()
   final double angle;
-  @override
-  final String nodeId;
 
   @override
   String toString() {
-    return 'AnchorModel(id: $id, size: $size, position: $position, ratio: $ratio, direction: $direction, maxConnections: $maxConnections, acceptedEdgeTypes: $acceptedEdgeTypes, shape: $shape, arrowDirection: $arrowDirection, locked: $locked, version: $version, lockedByUser: $lockedByUser, plusButtonColorHex: $plusButtonColorHex, plusButtonSize: $plusButtonSize, iconName: $iconName, data: $data, placement: $placement, offsetDistance: $offsetDistance, angle: $angle, nodeId: $nodeId)';
+    return 'AnchorModel(id: $id, size: $size, position: $position, ratio: $ratio, direction: $direction, maxConnections: $maxConnections, acceptedEdgeTypes: $acceptedEdgeTypes, shape: $shape, arrowDirection: $arrowDirection, locked: $locked, version: $version, lockedByUser: $lockedByUser, plusButtonColorHex: $plusButtonColorHex, plusButtonSize: $plusButtonSize, iconName: $iconName, data: $data, placement: $placement, offsetDistance: $offsetDistance, angle: $angle)';
   }
 
   @override
@@ -485,8 +469,7 @@ class _$AnchorModelImpl extends _AnchorModel {
                 other.placement == placement) &&
             (identical(other.offsetDistance, offsetDistance) ||
                 other.offsetDistance == offsetDistance) &&
-            (identical(other.angle, angle) || other.angle == angle) &&
-            (identical(other.nodeId, nodeId) || other.nodeId == nodeId));
+            (identical(other.angle, angle) || other.angle == angle));
   }
 
   @JsonKey(ignore: true)
@@ -511,8 +494,7 @@ class _$AnchorModelImpl extends _AnchorModel {
         const DeepCollectionEquality().hash(_data),
         placement,
         offsetDistance,
-        angle,
-        nodeId
+        angle
       ]);
 
   @JsonKey(ignore: true)
@@ -549,8 +531,7 @@ abstract class _AnchorModel extends AnchorModel {
       final Map<String, dynamic> data,
       final AnchorPlacement placement,
       final double offsetDistance,
-      final double angle,
-      required final String nodeId}) = _$AnchorModelImpl;
+      final double angle}) = _$AnchorModelImpl;
   const _AnchorModel._() : super._();
 
   factory _AnchorModel.fromJson(Map<String, dynamic> json) =
@@ -595,8 +576,6 @@ abstract class _AnchorModel extends AnchorModel {
   double get offsetDistance;
   @override
   double get angle;
-  @override
-  String get nodeId;
   @override
   @JsonKey(ignore: true)
   _$$AnchorModelImplCopyWith<_$AnchorModelImpl> get copyWith =>

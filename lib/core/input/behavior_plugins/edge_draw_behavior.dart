@@ -19,8 +19,8 @@ class EdgeDrawBehavior implements CanvasBehavior {
     final interaction = state.interaction;
 
     if (ev.type == InputEventType.pointerDown) {
-      final anchor = context.hitTester.hitTestAnchorModel(ev.canvasPos!);
-      return anchor != null;
+      final result = context.hitTester.hitTestAnchorResult(ev.canvasPos!);
+      return result != null;
     }
 
     if (interaction is DragEdge &&
@@ -37,11 +37,15 @@ class EdgeDrawBehavior implements CanvasBehavior {
   void handle(InputEvent ev, BehaviorContext context) {
     switch (ev.type) {
       case InputEventType.pointerDown:
-        final anchor = context.hitTester.hitTestAnchorModel(ev.canvasPos!);
-        if (anchor != null) {
-          final edgeId =
-              context.controller.interaction.generateTempEdgeId(anchor);
-          context.controller.interaction.startEdgeDrag(anchor.id);
+        final result = context.hitTester.hitTestAnchorResult(ev.canvasPos!);
+        if (result != null) {
+          final anchor = result.anchor;
+          final nodeId = result.nodeId;
+          final edgeId = context.controller.interaction.generateTempEdgeId(
+            nodeId,
+            anchor.id,
+          );
+          context.controller.interaction.startEdgeDrag(nodeId, anchor.id);
           context.updateInteraction(
             InteractionState.dragEdge(
               edgeId: edgeId,
