@@ -16,7 +16,6 @@ class EdgeRenderer extends CustomPainter {
   final String? hoveredEdgeId;
 
   final String? draggingEdgeId;
-  final Offset? draggingStart; // 新增起点坐标
   final Offset? draggingEnd;
 
   EdgeRenderer({
@@ -27,7 +26,6 @@ class EdgeRenderer extends CustomPainter {
     this.selectedEdgeIds = const {},
     this.hoveredEdgeId,
     this.draggingEdgeId,
-    this.draggingStart,
     this.draggingEnd,
   });
 
@@ -70,21 +68,31 @@ class EdgeRenderer extends CustomPainter {
   }
 
   void _drawGhostEdge(Canvas canvas) {
-    if (draggingStart == null || draggingEnd == null) return;
+    if (draggingEdgeId == null || draggingEnd == null) return;
 
-    final path = Path()
-      ..moveTo(draggingStart!.dx, draggingStart!.dy)
-      ..lineTo(draggingEnd!.dx, draggingEnd!.dy);
+    final edge = edges.firstWhere(
+      (e) => e.id == draggingEdgeId,
+      orElse: () => EdgeModel(
+        id: draggingEdgeId!,
+        sourceNodeId: '',
+        sourceAnchorId: '',
+        targetNodeId: null,
+        targetAnchorId: null,
+      ),
+    );
+
+    final ghostEdgePath = pathGenerator.generateGhost(edge, draggingEnd!);
+    if (ghostEdgePath == null) return;
 
     final paint = styleResolver.resolveGhostPaint(const EdgeLineStyle());
 
-    canvas.drawPath(path, paint);
+    canvas.drawPath(ghostEdgePath.path, paint);
 
     styleResolver.drawArrowIfNeeded(
       canvas: canvas,
-      path: path,
+      path: ghostEdgePath.path,
       paint: paint,
-      style: const EdgeLineStyle(), // 或使用默认的 ghost style
+      style: const EdgeLineStyle(),
     );
   }
 
@@ -93,7 +101,6 @@ class EdgeRenderer extends CustomPainter {
     return oldDelegate.nodes != nodes ||
         oldDelegate.edges != edges ||
         oldDelegate.draggingEdgeId != draggingEdgeId ||
-        oldDelegate.draggingStart != draggingStart ||
         oldDelegate.draggingEnd != draggingEnd ||
         oldDelegate.hoveredEdgeId != hoveredEdgeId ||
         oldDelegate.selectedEdgeIds != selectedEdgeIds;

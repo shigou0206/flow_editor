@@ -7,7 +7,6 @@ import 'package:flow_editor/core/painters/dotted_grid_painter.dart';
 import 'package:flow_editor/core/painters/path_generators/flexible_path_generator.dart';
 import 'package:flow_editor/ui/edge/edge_renderer.dart';
 import 'package:flow_editor/ui/node/factories/node_widget_factory.dart';
-import 'package:flow_editor/core/utils/anchor_position_utils.dart';
 import 'package:flow_editor/core/models/node_model.dart';
 import 'package:flow_editor/core/models/edge_model.dart';
 
@@ -70,23 +69,6 @@ class CanvasRenderer extends StatelessWidget {
               pathGenerator: pathGen,
               hoveredEdgeId: interaction.hoveringTargetId,
               draggingEdgeId: interaction.draggingTargetId,
-              draggingStart: interaction.mapOrNull(dragEdge: (s) {
-                final sourceNode = renderedNodes.firstWhere(
-                  (n) => n.id == s.sourceNodeId,
-                  orElse: () => renderedNodes.first,
-                );
-
-                final sourceAnchor = sourceNode.anchors.firstWhere(
-                  (a) => a.id == s.sourceAnchorId,
-                  orElse: () => sourceNode.anchors.first,
-                );
-
-                return computeAnchorWorldPosition(
-                  sourceNode,
-                  sourceAnchor,
-                  renderedNodes,
-                );
-              }),
               draggingEnd: interaction.mapOrNull(
                 dragEdge: (s) => s.lastCanvas,
               ),
@@ -96,7 +78,7 @@ class CanvasRenderer extends StatelessWidget {
 
         // 节点的渲染（含节点拖动预览）
         ...renderedNodes.map((node) {
-          final pos = node.position; // 已经包含了拖动偏移
+          final pos = node.position;
           return Positioned(
             key: ValueKey(node.id),
             left: offset.dx + (pos.dx - node.anchorPadding.left) * scale,

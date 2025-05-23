@@ -79,6 +79,7 @@ class FlexiblePathGenerator implements PathGenerator {
   Path _createPath(Offset start, Offset end, EdgeMode type, Position? sourcePos,
       Position? targetPos) {
     Path path;
+    debugPrint('✅ EdgePath from source ($start) to target ($end)');
 
     switch (type) {
       case EdgeMode.bezier:
