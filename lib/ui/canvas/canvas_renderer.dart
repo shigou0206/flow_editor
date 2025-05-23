@@ -43,9 +43,10 @@ class CanvasRenderer extends StatelessWidget {
               offset: offset,
               scale: scale,
               style: visualConfig.backgroundStyle,
-              themeMode: Theme.of(context).brightness == Brightness.dark
-                  ? ThemeMode.dark
-                  : ThemeMode.light,
+              themeMode: ThemeMode.light,
+              // themeMode: Theme.of(context).brightness == Brightness.dark
+              //     ? ThemeMode.dark
+              //     : ThemeMode.light,
             ),
           ),
         ),

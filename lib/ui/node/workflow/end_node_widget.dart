@@ -19,7 +19,7 @@ class EndNodeWidget extends StatelessWidget {
         width: node.size.width,
         height: node.size.height,
         decoration: BoxDecoration(
-          color: const Color.fromARGB(255, 129, 127, 127), // 背景亮灰
+          color: const Color.fromARGB(255, 255, 255, 255), // 背景亮灰
           borderRadius: BorderRadius.circular(8),
           border: Border.all(color: Colors.grey[600]!, width: 2), // ✅ 更亮的边
           boxShadow: const [
@@ -33,7 +33,8 @@ class EndNodeWidget extends StatelessWidget {
         child: Center(
           child: Text(
             'End_${node.id}',
-            style: const TextStyle(color: Colors.white, fontSize: 16),
+            style: const TextStyle(
+                color: Color.fromARGB(255, 100, 100, 100), fontSize: 16),
           ),
         ),
       ),
