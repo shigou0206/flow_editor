@@ -10,7 +10,7 @@ _$InputConfigImpl _$$InputConfigImplFromJson(Map<String, dynamic> json) =>
     _$InputConfigImpl(
       enablePan: json['enablePan'] as bool? ?? true,
       enableZoom: json['enableZoom'] as bool? ?? true,
-      enableNodeDrag: json['enableNodeDrag'] as bool? ?? true,
+      enableNodeDrag: json['enableNodeDrag'] as bool? ?? false,
       enableNodeResize: json['enableNodeResize'] as bool? ?? true,
       enableNodeHover: json['enableNodeHover'] as bool? ?? false,
       enableNodeTap: json['enableNodeTap'] as bool? ?? true,

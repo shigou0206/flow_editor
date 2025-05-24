@@ -330,7 +330,7 @@ class _$InputConfigImpl implements _InputConfig {
   const _$InputConfigImpl(
       {this.enablePan = true,
       this.enableZoom = true,
-      this.enableNodeDrag = true,
+      this.enableNodeDrag = false,
       this.enableNodeResize = true,
       this.enableNodeHover = false,
       this.enableNodeTap = true,
