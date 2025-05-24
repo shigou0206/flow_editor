@@ -12,7 +12,7 @@ class CopyPasteBehavior implements CanvasBehavior {
   CopyPasteBehavior(this.context);
 
   @override
-  int get priority => 90;
+  int get priority => context.getState().behaviorPriority.copyPasteKey;
 
   bool get isControlOrCommandPressed {
     final keys = HardwareKeyboard.instance.logicalKeysPressed;

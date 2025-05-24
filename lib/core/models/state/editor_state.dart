@@ -10,7 +10,7 @@ import 'package:flow_editor/core/models/state/selection_state.dart';
 import 'package:flow_editor/core/models/state/interaction_transient_state.dart';
 import 'package:flow_editor/core/models/config/input_config.dart';
 import 'package:flow_editor/core/models/state/clipboard_state.dart';
-
+import 'package:flow_editor/core/input/behavior_core/behavior_priority.dart';
 part 'editor_state.freezed.dart';
 part 'editor_state.g.dart';
 
@@ -25,6 +25,7 @@ class EditorState with _$EditorState {
     @Default(SelectionState()) SelectionState selection,
     @Default(InteractionState.idle()) InteractionState interaction,
     @Default(InputConfig()) InputConfig inputConfig,
+    @Default(BehaviorPriority()) BehaviorPriority behaviorPriority,
     @Default(ClipboardState()) ClipboardState clipboard,
   }) = _EditorState;
 
@@ -122,4 +123,56 @@ extension EditorStateExtras on EditorState {
     debugPrint('- Selected Edges: ${selection.edgeIds}');
     debugPrint('- Interaction: $interaction');
   }
+
+  /// 判断当前是否只有单个节点被选中
+  bool get hasSingleNodeSelected => selection.nodeIds.length == 1;
+
+  /// 判断当前是否有多个节点被选中
+  bool get hasMultipleNodesSelected => selection.nodeIds.length > 1;
+
+  /// 判断是否有边被选中
+  bool get hasSelectedEdges => selection.edgeIds.isNotEmpty;
+
+  /// 获取当前悬停的节点模型
+  NodeModel? get hoveringNode => interaction.hoveringNodeId == null
+      ? null
+      : nodeState.nodes.firstWhereOrNull(
+          (n) => n.id == interaction.hoveringNodeId,
+        );
+
+  /// 获取当前悬停的边模型
+  EdgeModel? get hoveringEdge => interaction.hoveringEdgeId == null
+      ? null
+      : edgeState.edges.firstWhereOrNull(
+          (e) => e.id == interaction.hoveringEdgeId,
+        );
+
+  /// 检查指定节点是否处于选中状态
+  bool isNodeSelected(String nodeId) => selection.nodeIds.contains(nodeId);
+
+  /// 检查指定边是否处于选中状态
+  bool isEdgeSelected(String edgeId) => selection.edgeIds.contains(edgeId);
+
+  /// 根据 ID 快速获取节点模型
+  NodeModel? nodeById(String id) =>
+      nodeState.nodes.firstWhereOrNull((n) => n.id == id);
+
+  /// 根据 ID 快速获取边模型
+  EdgeModel? edgeById(String id) =>
+      edgeState.edges.firstWhereOrNull((e) => e.id == id);
+
+  /// 获取所有 Group 节点
+  List<NodeModel> get groupNodes =>
+      nodeState.nodes.where((node) => node.isGroup).toList();
+
+  /// 获取所有非 Group 节点
+  List<NodeModel> get regularNodes =>
+      nodeState.nodes.where((node) => !node.isGroup).toList();
+
+  /// 获取指定 Group 节点内的所有子节点
+  List<NodeModel> childrenOfGroup(String groupId) =>
+      nodeState.nodes.where((node) => node.parentId == groupId).toList();
+
+  /// 判断画布是否空白（没有任何节点和边）
+  bool get isCanvasEmpty => nodeState.nodes.isEmpty && edgeState.edges.isEmpty;
 }

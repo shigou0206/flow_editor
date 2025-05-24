@@ -12,7 +12,7 @@ class CanvasZoomBehavior implements CanvasBehavior {
   CanvasZoomBehavior(this.context);
 
   @override
-  int get priority => 60;
+  int get priority => context.getState().behaviorPriority.canvasZoom;
 
   @override
   bool canHandle(InputEvent ev, EditorState state) {

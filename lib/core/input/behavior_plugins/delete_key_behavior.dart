@@ -12,7 +12,7 @@ class DeleteKeyBehavior implements CanvasBehavior {
   DeleteKeyBehavior(this.context);
 
   @override
-  int get priority => 80;
+  int get priority => context.getState().behaviorPriority.deleteKey;
 
   @override
   bool canHandle(InputEvent ev, EditorState state) {

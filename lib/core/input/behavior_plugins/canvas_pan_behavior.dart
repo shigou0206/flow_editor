@@ -12,7 +12,7 @@ class CanvasPanBehavior implements CanvasBehavior {
   CanvasPanBehavior(this.context);
 
   @override
-  int get priority => 50;
+  int get priority => context.getState().behaviorPriority.canvasPan;
 
   @override
   bool canHandle(InputEvent ev, EditorState state) {

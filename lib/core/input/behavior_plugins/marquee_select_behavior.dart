@@ -13,7 +13,7 @@ class MarqueeSelectBehavior implements CanvasBehavior {
   MarqueeSelectBehavior(this.context);
 
   @override
-  int get priority => 30;
+  int get priority => context.getState().behaviorPriority.marqueeSelect;
 
   @override
   bool canHandle(InputEvent ev, EditorState state) {

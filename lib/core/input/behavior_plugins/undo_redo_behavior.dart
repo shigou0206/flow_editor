@@ -12,7 +12,7 @@ class UndoRedoBehavior implements CanvasBehavior {
   UndoRedoBehavior(this.context);
 
   @override
-  int get priority => 100;
+  int get priority => context.getState().behaviorPriority.undoRedoKey;
 
   bool get _isCommandPressed {
     final keys = HardwareKeyboard.instance.logicalKeysPressed;

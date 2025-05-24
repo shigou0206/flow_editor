@@ -20,11 +20,27 @@ InputConfig _$InputConfigFromJson(Map<String, dynamic> json) {
 
 /// @nodoc
 mixin _$InputConfig {
+// Canvas interactions
   bool get enablePan => throw _privateConstructorUsedError;
-  bool get enableZoom => throw _privateConstructorUsedError;
+  bool get enableZoom =>
+      throw _privateConstructorUsedError; // Node interactions
   bool get enableNodeDrag => throw _privateConstructorUsedError;
+  bool get enableNodeResize => throw _privateConstructorUsedError;
+  bool get enableNodeHover => throw _privateConstructorUsedError;
+  bool get enableNodeTap =>
+      throw _privateConstructorUsedError; // Edge interactions
   bool get enableEdgeDraw => throw _privateConstructorUsedError;
-  bool get enableMarqueeSelect => throw _privateConstructorUsedError;
+  bool get enableEdgeHover => throw _privateConstructorUsedError;
+  bool get enableEdgeWaypointDrag => throw _privateConstructorUsedError;
+  bool get enableEdgeWaypointHover =>
+      throw _privateConstructorUsedError; // Anchor interactions
+  bool get enableAnchorHover => throw _privateConstructorUsedError;
+  bool get enableAnchorDrag =>
+      throw _privateConstructorUsedError; // Marquee selection
+  bool get enableMarqueeSelect =>
+      throw _privateConstructorUsedError; // Insertion interactions
+  bool get enableInsertNodeToEdge =>
+      throw _privateConstructorUsedError; // Keyboard interactions
   bool get enableKeyDelete => throw _privateConstructorUsedError;
   bool get enableKeyCopyPaste => throw _privateConstructorUsedError;
   bool get enableKeyUndoRedo => throw _privateConstructorUsedError;
@@ -45,8 +61,17 @@ abstract class $InputConfigCopyWith<$Res> {
       {bool enablePan,
       bool enableZoom,
       bool enableNodeDrag,
+      bool enableNodeResize,
+      bool enableNodeHover,
+      bool enableNodeTap,
       bool enableEdgeDraw,
+      bool enableEdgeHover,
+      bool enableEdgeWaypointDrag,
+      bool enableEdgeWaypointHover,
+      bool enableAnchorHover,
+      bool enableAnchorDrag,
       bool enableMarqueeSelect,
+      bool enableInsertNodeToEdge,
       bool enableKeyDelete,
       bool enableKeyCopyPaste,
       bool enableKeyUndoRedo});
@@ -68,8 +93,17 @@ class _$InputConfigCopyWithImpl<$Res, $Val extends InputConfig>
     Object? enablePan = null,
     Object? enableZoom = null,
     Object? enableNodeDrag = null,
+    Object? enableNodeResize = null,
+    Object? enableNodeHover = null,
+    Object? enableNodeTap = null,
     Object? enableEdgeDraw = null,
+    Object? enableEdgeHover = null,
+    Object? enableEdgeWaypointDrag = null,
+    Object? enableEdgeWaypointHover = null,
+    Object? enableAnchorHover = null,
+    Object? enableAnchorDrag = null,
     Object? enableMarqueeSelect = null,
+    Object? enableInsertNodeToEdge = null,
     Object? enableKeyDelete = null,
     Object? enableKeyCopyPaste = null,
     Object? enableKeyUndoRedo = null,
@@ -87,13 +121,49 @@ class _$InputConfigCopyWithImpl<$Res, $Val extends InputConfig>
           ? _value.enableNodeDrag
           : enableNodeDrag // ignore: cast_nullable_to_non_nullable
               as bool,
+      enableNodeResize: null == enableNodeResize
+          ? _value.enableNodeResize
+          : enableNodeResize // ignore: cast_nullable_to_non_nullable
+              as bool,
+      enableNodeHover: null == enableNodeHover
+          ? _value.enableNodeHover
+          : enableNodeHover // ignore: cast_nullable_to_non_nullable
+              as bool,
+      enableNodeTap: null == enableNodeTap
+          ? _value.enableNodeTap
+          : enableNodeTap // ignore: cast_nullable_to_non_nullable
+              as bool,
       enableEdgeDraw: null == enableEdgeDraw
           ? _value.enableEdgeDraw
           : enableEdgeDraw // ignore: cast_nullable_to_non_nullable
               as bool,
+      enableEdgeHover: null == enableEdgeHover
+          ? _value.enableEdgeHover
+          : enableEdgeHover // ignore: cast_nullable_to_non_nullable
+              as bool,
+      enableEdgeWaypointDrag: null == enableEdgeWaypointDrag
+          ? _value.enableEdgeWaypointDrag
+          : enableEdgeWaypointDrag // ignore: cast_nullable_to_non_nullable
+              as bool,
+      enableEdgeWaypointHover: null == enableEdgeWaypointHover
+          ? _value.enableEdgeWaypointHover
+          : enableEdgeWaypointHover // ignore: cast_nullable_to_non_nullable
+              as bool,
+      enableAnchorHover: null == enableAnchorHover
+          ? _value.enableAnchorHover
+          : enableAnchorHover // ignore: cast_nullable_to_non_nullable
+              as bool,
+      enableAnchorDrag: null == enableAnchorDrag
+          ? _value.enableAnchorDrag
+          : enableAnchorDrag // ignore: cast_nullable_to_non_nullable
+              as bool,
       enableMarqueeSelect: null == enableMarqueeSelect
           ? _value.enableMarqueeSelect
           : enableMarqueeSelect // ignore: cast_nullable_to_non_nullable
+              as bool,
+      enableInsertNodeToEdge: null == enableInsertNodeToEdge
+          ? _value.enableInsertNodeToEdge
+          : enableInsertNodeToEdge // ignore: cast_nullable_to_non_nullable
               as bool,
       enableKeyDelete: null == enableKeyDelete
           ? _value.enableKeyDelete
@@ -123,8 +193,17 @@ abstract class _$$InputConfigImplCopyWith<$Res>
       {bool enablePan,
       bool enableZoom,
       bool enableNodeDrag,
+      bool enableNodeResize,
+      bool enableNodeHover,
+      bool enableNodeTap,
       bool enableEdgeDraw,
+      bool enableEdgeHover,
+      bool enableEdgeWaypointDrag,
+      bool enableEdgeWaypointHover,
+      bool enableAnchorHover,
+      bool enableAnchorDrag,
       bool enableMarqueeSelect,
+      bool enableInsertNodeToEdge,
       bool enableKeyDelete,
       bool enableKeyCopyPaste,
       bool enableKeyUndoRedo});
@@ -144,8 +223,17 @@ class __$$InputConfigImplCopyWithImpl<$Res>
     Object? enablePan = null,
     Object? enableZoom = null,
     Object? enableNodeDrag = null,
+    Object? enableNodeResize = null,
+    Object? enableNodeHover = null,
+    Object? enableNodeTap = null,
     Object? enableEdgeDraw = null,
+    Object? enableEdgeHover = null,
+    Object? enableEdgeWaypointDrag = null,
+    Object? enableEdgeWaypointHover = null,
+    Object? enableAnchorHover = null,
+    Object? enableAnchorDrag = null,
     Object? enableMarqueeSelect = null,
+    Object? enableInsertNodeToEdge = null,
     Object? enableKeyDelete = null,
     Object? enableKeyCopyPaste = null,
     Object? enableKeyUndoRedo = null,
@@ -163,13 +251,49 @@ class __$$InputConfigImplCopyWithImpl<$Res>
           ? _value.enableNodeDrag
           : enableNodeDrag // ignore: cast_nullable_to_non_nullable
               as bool,
+      enableNodeResize: null == enableNodeResize
+          ? _value.enableNodeResize
+          : enableNodeResize // ignore: cast_nullable_to_non_nullable
+              as bool,
+      enableNodeHover: null == enableNodeHover
+          ? _value.enableNodeHover
+          : enableNodeHover // ignore: cast_nullable_to_non_nullable
+              as bool,
+      enableNodeTap: null == enableNodeTap
+          ? _value.enableNodeTap
+          : enableNodeTap // ignore: cast_nullable_to_non_nullable
+              as bool,
       enableEdgeDraw: null == enableEdgeDraw
           ? _value.enableEdgeDraw
           : enableEdgeDraw // ignore: cast_nullable_to_non_nullable
               as bool,
+      enableEdgeHover: null == enableEdgeHover
+          ? _value.enableEdgeHover
+          : enableEdgeHover // ignore: cast_nullable_to_non_nullable
+              as bool,
+      enableEdgeWaypointDrag: null == enableEdgeWaypointDrag
+          ? _value.enableEdgeWaypointDrag
+          : enableEdgeWaypointDrag // ignore: cast_nullable_to_non_nullable
+              as bool,
+      enableEdgeWaypointHover: null == enableEdgeWaypointHover
+          ? _value.enableEdgeWaypointHover
+          : enableEdgeWaypointHover // ignore: cast_nullable_to_non_nullable
+              as bool,
+      enableAnchorHover: null == enableAnchorHover
+          ? _value.enableAnchorHover
+          : enableAnchorHover // ignore: cast_nullable_to_non_nullable
+              as bool,
+      enableAnchorDrag: null == enableAnchorDrag
+          ? _value.enableAnchorDrag
+          : enableAnchorDrag // ignore: cast_nullable_to_non_nullable
+              as bool,
       enableMarqueeSelect: null == enableMarqueeSelect
           ? _value.enableMarqueeSelect
           : enableMarqueeSelect // ignore: cast_nullable_to_non_nullable
+              as bool,
+      enableInsertNodeToEdge: null == enableInsertNodeToEdge
+          ? _value.enableInsertNodeToEdge
+          : enableInsertNodeToEdge // ignore: cast_nullable_to_non_nullable
               as bool,
       enableKeyDelete: null == enableKeyDelete
           ? _value.enableKeyDelete
@@ -194,8 +318,17 @@ class _$InputConfigImpl implements _InputConfig {
       {this.enablePan = true,
       this.enableZoom = true,
       this.enableNodeDrag = true,
+      this.enableNodeResize = true,
+      this.enableNodeHover = true,
+      this.enableNodeTap = true,
       this.enableEdgeDraw = true,
+      this.enableEdgeHover = true,
+      this.enableEdgeWaypointDrag = true,
+      this.enableEdgeWaypointHover = true,
+      this.enableAnchorHover = true,
+      this.enableAnchorDrag = true,
       this.enableMarqueeSelect = false,
+      this.enableInsertNodeToEdge = true,
       this.enableKeyDelete = true,
       this.enableKeyCopyPaste = true,
       this.enableKeyUndoRedo = true});
@@ -203,21 +336,55 @@ class _$InputConfigImpl implements _InputConfig {
   factory _$InputConfigImpl.fromJson(Map<String, dynamic> json) =>
       _$$InputConfigImplFromJson(json);
 
+// Canvas interactions
   @override
   @JsonKey()
   final bool enablePan;
   @override
   @JsonKey()
   final bool enableZoom;
+// Node interactions
   @override
   @JsonKey()
   final bool enableNodeDrag;
   @override
   @JsonKey()
+  final bool enableNodeResize;
+  @override
+  @JsonKey()
+  final bool enableNodeHover;
+  @override
+  @JsonKey()
+  final bool enableNodeTap;
+// Edge interactions
+  @override
+  @JsonKey()
   final bool enableEdgeDraw;
   @override
   @JsonKey()
+  final bool enableEdgeHover;
+  @override
+  @JsonKey()
+  final bool enableEdgeWaypointDrag;
+  @override
+  @JsonKey()
+  final bool enableEdgeWaypointHover;
+// Anchor interactions
+  @override
+  @JsonKey()
+  final bool enableAnchorHover;
+  @override
+  @JsonKey()
+  final bool enableAnchorDrag;
+// Marquee selection
+  @override
+  @JsonKey()
   final bool enableMarqueeSelect;
+// Insertion interactions
+  @override
+  @JsonKey()
+  final bool enableInsertNodeToEdge;
+// Keyboard interactions
   @override
   @JsonKey()
   final bool enableKeyDelete;
@@ -230,7 +397,7 @@ class _$InputConfigImpl implements _InputConfig {
 
   @override
   String toString() {
-    return 'InputConfig(enablePan: $enablePan, enableZoom: $enableZoom, enableNodeDrag: $enableNodeDrag, enableEdgeDraw: $enableEdgeDraw, enableMarqueeSelect: $enableMarqueeSelect, enableKeyDelete: $enableKeyDelete, enableKeyCopyPaste: $enableKeyCopyPaste, enableKeyUndoRedo: $enableKeyUndoRedo)';
+    return 'InputConfig(enablePan: $enablePan, enableZoom: $enableZoom, enableNodeDrag: $enableNodeDrag, enableNodeResize: $enableNodeResize, enableNodeHover: $enableNodeHover, enableNodeTap: $enableNodeTap, enableEdgeDraw: $enableEdgeDraw, enableEdgeHover: $enableEdgeHover, enableEdgeWaypointDrag: $enableEdgeWaypointDrag, enableEdgeWaypointHover: $enableEdgeWaypointHover, enableAnchorHover: $enableAnchorHover, enableAnchorDrag: $enableAnchorDrag, enableMarqueeSelect: $enableMarqueeSelect, enableInsertNodeToEdge: $enableInsertNodeToEdge, enableKeyDelete: $enableKeyDelete, enableKeyCopyPaste: $enableKeyCopyPaste, enableKeyUndoRedo: $enableKeyUndoRedo)';
   }
 
   @override
@@ -244,10 +411,29 @@ class _$InputConfigImpl implements _InputConfig {
                 other.enableZoom == enableZoom) &&
             (identical(other.enableNodeDrag, enableNodeDrag) ||
                 other.enableNodeDrag == enableNodeDrag) &&
+            (identical(other.enableNodeResize, enableNodeResize) ||
+                other.enableNodeResize == enableNodeResize) &&
+            (identical(other.enableNodeHover, enableNodeHover) ||
+                other.enableNodeHover == enableNodeHover) &&
+            (identical(other.enableNodeTap, enableNodeTap) ||
+                other.enableNodeTap == enableNodeTap) &&
             (identical(other.enableEdgeDraw, enableEdgeDraw) ||
                 other.enableEdgeDraw == enableEdgeDraw) &&
+            (identical(other.enableEdgeHover, enableEdgeHover) ||
+                other.enableEdgeHover == enableEdgeHover) &&
+            (identical(other.enableEdgeWaypointDrag, enableEdgeWaypointDrag) ||
+                other.enableEdgeWaypointDrag == enableEdgeWaypointDrag) &&
+            (identical(
+                    other.enableEdgeWaypointHover, enableEdgeWaypointHover) ||
+                other.enableEdgeWaypointHover == enableEdgeWaypointHover) &&
+            (identical(other.enableAnchorHover, enableAnchorHover) ||
+                other.enableAnchorHover == enableAnchorHover) &&
+            (identical(other.enableAnchorDrag, enableAnchorDrag) ||
+                other.enableAnchorDrag == enableAnchorDrag) &&
             (identical(other.enableMarqueeSelect, enableMarqueeSelect) ||
                 other.enableMarqueeSelect == enableMarqueeSelect) &&
+            (identical(other.enableInsertNodeToEdge, enableInsertNodeToEdge) ||
+                other.enableInsertNodeToEdge == enableInsertNodeToEdge) &&
             (identical(other.enableKeyDelete, enableKeyDelete) ||
                 other.enableKeyDelete == enableKeyDelete) &&
             (identical(other.enableKeyCopyPaste, enableKeyCopyPaste) ||
@@ -263,8 +449,17 @@ class _$InputConfigImpl implements _InputConfig {
       enablePan,
       enableZoom,
       enableNodeDrag,
+      enableNodeResize,
+      enableNodeHover,
+      enableNodeTap,
       enableEdgeDraw,
+      enableEdgeHover,
+      enableEdgeWaypointDrag,
+      enableEdgeWaypointHover,
+      enableAnchorHover,
+      enableAnchorDrag,
       enableMarqueeSelect,
+      enableInsertNodeToEdge,
       enableKeyDelete,
       enableKeyCopyPaste,
       enableKeyUndoRedo);
@@ -288,8 +483,17 @@ abstract class _InputConfig implements InputConfig {
       {final bool enablePan,
       final bool enableZoom,
       final bool enableNodeDrag,
+      final bool enableNodeResize,
+      final bool enableNodeHover,
+      final bool enableNodeTap,
       final bool enableEdgeDraw,
+      final bool enableEdgeHover,
+      final bool enableEdgeWaypointDrag,
+      final bool enableEdgeWaypointHover,
+      final bool enableAnchorHover,
+      final bool enableAnchorDrag,
       final bool enableMarqueeSelect,
+      final bool enableInsertNodeToEdge,
       final bool enableKeyDelete,
       final bool enableKeyCopyPaste,
       final bool enableKeyUndoRedo}) = _$InputConfigImpl;
@@ -297,17 +501,35 @@ abstract class _InputConfig implements InputConfig {
   factory _InputConfig.fromJson(Map<String, dynamic> json) =
       _$InputConfigImpl.fromJson;
 
-  @override
+  @override // Canvas interactions
   bool get enablePan;
   @override
   bool get enableZoom;
-  @override
+  @override // Node interactions
   bool get enableNodeDrag;
   @override
+  bool get enableNodeResize;
+  @override
+  bool get enableNodeHover;
+  @override
+  bool get enableNodeTap;
+  @override // Edge interactions
   bool get enableEdgeDraw;
   @override
-  bool get enableMarqueeSelect;
+  bool get enableEdgeHover;
   @override
+  bool get enableEdgeWaypointDrag;
+  @override
+  bool get enableEdgeWaypointHover;
+  @override // Anchor interactions
+  bool get enableAnchorHover;
+  @override
+  bool get enableAnchorDrag;
+  @override // Marquee selection
+  bool get enableMarqueeSelect;
+  @override // Insertion interactions
+  bool get enableInsertNodeToEdge;
+  @override // Keyboard interactions
   bool get enableKeyDelete;
   @override
   bool get enableKeyCopyPaste;

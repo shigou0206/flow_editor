@@ -111,4 +111,33 @@ class InteractionControllerImpl implements IInteractionController {
 
   @override
   void deleteSelection() {}
+
+  @override
+  void hoverNode(String nodeId) {
+    _st = _st.copyWith(
+      interaction: InteractionState.hoveringNode(nodeId: nodeId),
+    );
+  }
+
+  @override
+  void hoverAnchor(String nodeId, String anchorId) {
+    _st = _st.copyWith(
+      interaction: InteractionState.hoveringAnchor(
+        nodeId: nodeId,
+        anchorId: anchorId,
+      ),
+    );
+  }
+
+  @override
+  void hoverEdge(String edgeId) {
+    _st = _st.copyWith(
+      interaction: InteractionState.hoveringEdge(edgeId: edgeId),
+    );
+  }
+
+  @override
+  void clearHover() {
+    _st = _st.copyWith(interaction: const InteractionState.idle());
+  }
 }

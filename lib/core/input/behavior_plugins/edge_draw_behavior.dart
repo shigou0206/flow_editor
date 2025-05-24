@@ -16,7 +16,7 @@ class EdgeDrawBehavior implements CanvasBehavior {
   EdgeDrawBehavior(this.context);
 
   @override
-  int get priority => 20;
+  int get priority => context.getState().behaviorPriority.edgeDraw;
 
   @override
   bool canHandle(InputEvent ev, EditorState state) {

@@ -13,7 +13,7 @@ class NodeDragBehavior implements CanvasBehavior {
   NodeDragBehavior(this.context);
 
   @override
-  int get priority => 10;
+  int get priority => context.getState().behaviorPriority.nodeDrag;
 
   @override
   bool canHandle(InputEvent ev, dynamic _) {

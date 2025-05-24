@@ -37,4 +37,16 @@ abstract class IInteractionController {
 
   /// 临时视觉删除，不改变实际数据，需业务层确认实际删除
   void deleteSelection();
+
+  /// 当鼠标进入节点区域时调用
+  void hoverNode(String nodeId);
+
+  /// 当鼠标进入锚点区域时调用
+  void hoverAnchor(String nodeId, String anchorId);
+
+  /// 当鼠标进入边的区域时调用
+  void hoverEdge(String edgeId);
+
+  /// 当鼠标离开节点、锚点或边的区域时调用，取消 hover 状态
+  void clearHover();
 }

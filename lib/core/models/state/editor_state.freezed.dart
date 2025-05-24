@@ -26,6 +26,7 @@ mixin _$EditorState {
   SelectionState get selection => throw _privateConstructorUsedError;
   InteractionState get interaction => throw _privateConstructorUsedError;
   InputConfig get inputConfig => throw _privateConstructorUsedError;
+  BehaviorPriority get behaviorPriority => throw _privateConstructorUsedError;
   ClipboardState get clipboard => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -47,6 +48,7 @@ abstract class $EditorStateCopyWith<$Res> {
       SelectionState selection,
       InteractionState interaction,
       InputConfig inputConfig,
+      BehaviorPriority behaviorPriority,
       ClipboardState clipboard});
 
   $CanvasStateCopyWith<$Res> get canvasState;
@@ -54,6 +56,7 @@ abstract class $EditorStateCopyWith<$Res> {
   $EdgeStateCopyWith<$Res> get edgeState;
   $InteractionStateCopyWith<$Res> get interaction;
   $InputConfigCopyWith<$Res> get inputConfig;
+  $BehaviorPriorityCopyWith<$Res> get behaviorPriority;
   $ClipboardStateCopyWith<$Res> get clipboard;
 }
 
@@ -76,6 +79,7 @@ class _$EditorStateCopyWithImpl<$Res, $Val extends EditorState>
     Object? selection = null,
     Object? interaction = null,
     Object? inputConfig = null,
+    Object? behaviorPriority = null,
     Object? clipboard = null,
   }) {
     return _then(_value.copyWith(
@@ -103,6 +107,10 @@ class _$EditorStateCopyWithImpl<$Res, $Val extends EditorState>
           ? _value.inputConfig
           : inputConfig // ignore: cast_nullable_to_non_nullable
               as InputConfig,
+      behaviorPriority: null == behaviorPriority
+          ? _value.behaviorPriority
+          : behaviorPriority // ignore: cast_nullable_to_non_nullable
+              as BehaviorPriority,
       clipboard: null == clipboard
           ? _value.clipboard
           : clipboard // ignore: cast_nullable_to_non_nullable
@@ -152,6 +160,14 @@ class _$EditorStateCopyWithImpl<$Res, $Val extends EditorState>
 
   @override
   @pragma('vm:prefer-inline')
+  $BehaviorPriorityCopyWith<$Res> get behaviorPriority {
+    return $BehaviorPriorityCopyWith<$Res>(_value.behaviorPriority, (value) {
+      return _then(_value.copyWith(behaviorPriority: value) as $Val);
+    });
+  }
+
+  @override
+  @pragma('vm:prefer-inline')
   $ClipboardStateCopyWith<$Res> get clipboard {
     return $ClipboardStateCopyWith<$Res>(_value.clipboard, (value) {
       return _then(_value.copyWith(clipboard: value) as $Val);
@@ -174,6 +190,7 @@ abstract class _$$EditorStateImplCopyWith<$Res>
       SelectionState selection,
       InteractionState interaction,
       InputConfig inputConfig,
+      BehaviorPriority behaviorPriority,
       ClipboardState clipboard});
 
   @override
@@ -186,6 +203,8 @@ abstract class _$$EditorStateImplCopyWith<$Res>
   $InteractionStateCopyWith<$Res> get interaction;
   @override
   $InputConfigCopyWith<$Res> get inputConfig;
+  @override
+  $BehaviorPriorityCopyWith<$Res> get behaviorPriority;
   @override
   $ClipboardStateCopyWith<$Res> get clipboard;
 }
@@ -207,6 +226,7 @@ class __$$EditorStateImplCopyWithImpl<$Res>
     Object? selection = null,
     Object? interaction = null,
     Object? inputConfig = null,
+    Object? behaviorPriority = null,
     Object? clipboard = null,
   }) {
     return _then(_$EditorStateImpl(
@@ -234,6 +254,10 @@ class __$$EditorStateImplCopyWithImpl<$Res>
           ? _value.inputConfig
           : inputConfig // ignore: cast_nullable_to_non_nullable
               as InputConfig,
+      behaviorPriority: null == behaviorPriority
+          ? _value.behaviorPriority
+          : behaviorPriority // ignore: cast_nullable_to_non_nullable
+              as BehaviorPriority,
       clipboard: null == clipboard
           ? _value.clipboard
           : clipboard // ignore: cast_nullable_to_non_nullable
@@ -252,6 +276,7 @@ class _$EditorStateImpl extends _EditorState {
       this.selection = const SelectionState(),
       this.interaction = const InteractionState.idle(),
       this.inputConfig = const InputConfig(),
+      this.behaviorPriority = const BehaviorPriority(),
       this.clipboard = const ClipboardState()})
       : super._();
 
@@ -275,11 +300,14 @@ class _$EditorStateImpl extends _EditorState {
   final InputConfig inputConfig;
   @override
   @JsonKey()
+  final BehaviorPriority behaviorPriority;
+  @override
+  @JsonKey()
   final ClipboardState clipboard;
 
   @override
   String toString() {
-    return 'EditorState(canvasState: $canvasState, nodeState: $nodeState, edgeState: $edgeState, selection: $selection, interaction: $interaction, inputConfig: $inputConfig, clipboard: $clipboard)';
+    return 'EditorState(canvasState: $canvasState, nodeState: $nodeState, edgeState: $edgeState, selection: $selection, interaction: $interaction, inputConfig: $inputConfig, behaviorPriority: $behaviorPriority, clipboard: $clipboard)';
   }
 
   @override
@@ -299,14 +327,24 @@ class _$EditorStateImpl extends _EditorState {
                 other.interaction == interaction) &&
             (identical(other.inputConfig, inputConfig) ||
                 other.inputConfig == inputConfig) &&
+            (identical(other.behaviorPriority, behaviorPriority) ||
+                other.behaviorPriority == behaviorPriority) &&
             (identical(other.clipboard, clipboard) ||
                 other.clipboard == clipboard));
   }
 
   @JsonKey(ignore: true)
   @override
-  int get hashCode => Object.hash(runtimeType, canvasState, nodeState,
-      edgeState, selection, interaction, inputConfig, clipboard);
+  int get hashCode => Object.hash(
+      runtimeType,
+      canvasState,
+      nodeState,
+      edgeState,
+      selection,
+      interaction,
+      inputConfig,
+      behaviorPriority,
+      clipboard);
 
   @JsonKey(ignore: true)
   @override
@@ -330,6 +368,7 @@ abstract class _EditorState extends EditorState {
       final SelectionState selection,
       final InteractionState interaction,
       final InputConfig inputConfig,
+      final BehaviorPriority behaviorPriority,
       final ClipboardState clipboard}) = _$EditorStateImpl;
   const _EditorState._() : super._();
 
@@ -348,6 +387,8 @@ abstract class _EditorState extends EditorState {
   InteractionState get interaction;
   @override
   InputConfig get inputConfig;
+  @override
+  BehaviorPriority get behaviorPriority;
   @override
   ClipboardState get clipboard;
   @override
