@@ -11,6 +11,7 @@
 // import 'package:flow_editor/ui/node/factories/node_widget_factory_impl.dart';
 // import 'package:flow_editor/ui/node/node_widget_registry_initializer.dart';
 // import 'package:flow_editor/core/models/node_model.dart';
+// import 'package:flow_editor/core/models/state/interaction_transient_state.dart';
 
 // class SfnEditorCanvas extends ConsumerWidget {
 //   const SfnEditorCanvas({super.key});
@@ -43,21 +44,72 @@
 //     final nodeFactory = NodeWidgetFactoryImpl(registry: registry);
 
 //     return DragTarget<NodeModel>(
-//       onAcceptWithDetails: (details) {
+//       onWillAcceptWithDetails: (details) {
+//         debugPrint('[DragTarget] onWillAcceptWithDetails triggered');
 //         final renderBox = context.findRenderObject() as RenderBox;
-//         final localOffset =
-//             renderBox.globalToLocal(details.offset); // ✅ 正确转换为局部坐标
+//         final localOffset = renderBox.globalToLocal(details.offset);
+
 //         final localPos =
 //             (localOffset - canvas.offset - panDelta) / canvas.scale;
+//         debugPrint('[DragTarget] Local position: $localPos');
 
-//         final newId = 'node_${DateTime.now().millisecondsSinceEpoch}';
+//         final highlightedEdgeId = behaviorCtx.hitTester.hitTestEdge(localPos);
+//         debugPrint('[DragTarget] Highlighted Edge: $highlightedEdgeId');
 
-//         final newNode = details.data.copyWith(
-//           id: newId,
-//           position: localPos,
-//         );
+//         ctrl.interaction.startInsertingNodePreview(details.data, localPos);
+//         ctrl.interaction
+//             .updateInsertingNodePreview(localPos, highlightedEdgeId);
+//         return true;
+//       },
+//       onMove: (details) {
+//         final renderBox = context.findRenderObject() as RenderBox;
+//         final localOffset = renderBox.globalToLocal(details.offset);
+//         final localPos =
+//             (localOffset - canvas.offset - panDelta) / canvas.scale;
+//         debugPrint('[DragTarget] onMove: Local position: $localPos');
 
-//         ctrl.graph.addNode(newNode);
+//         final highlightedEdgeId = behaviorCtx.hitTester.hitTestEdge(localPos);
+//         debugPrint('[DragTarget] onMove: Highlighted Edge: $highlightedEdgeId');
+
+//         ctrl.interaction
+//             .updateInsertingNodePreview(localPos, highlightedEdgeId);
+//       },
+//       onLeave: (_) {
+//         debugPrint('[DragTarget] onLeave triggered');
+//         ctrl.interaction.endInsertingNodePreview();
+//       },
+//       onAcceptWithDetails: (details) {
+//         debugPrint('[DragTarget] onAcceptWithDetails triggered');
+//         final renderBox = context.findRenderObject() as RenderBox;
+//         final localOffset = renderBox.globalToLocal(details.offset);
+//         final localPos =
+//             (localOffset - canvas.offset - panDelta) / canvas.scale;
+//         debugPrint('[DragTarget] onAccept: Local position: $localPos');
+
+//         final interaction = behaviorCtx.interaction;
+
+//         if (interaction is InsertingNodePreview &&
+//             interaction.highlightedEdgeId != null) {
+//           debugPrint(
+//               '[DragTarget] Inserting node into edge ${interaction.highlightedEdgeId}');
+//           final newNode = details.data.copyWith(
+//             id: 'node_${DateTime.now().millisecondsSinceEpoch}',
+//             position: localPos,
+//           );
+
+//           ctrl.graph
+//               .insertNodeIntoEdge(newNode, interaction.highlightedEdgeId!);
+//         } else {
+//           debugPrint('[DragTarget] Inserting node at canvas');
+//           final newNode = details.data.copyWith(
+//             id: 'node_${DateTime.now().millisecondsSinceEpoch}',
+//             position: localPos,
+//           );
+
+//           ctrl.graph.addNode(newNode);
+//         }
+
+//         ctrl.interaction.endInsertingNodePreview();
 //       },
 //       builder: (_, __, ___) => CanvasInputWrapper(
 //         context: behaviorCtx,
@@ -65,13 +117,9 @@
 //         child: SizedBox.expand(
 //           child: Stack(
 //             children: [
-//               // 背景层
 //               Positioned.fill(
-//                 child: Container(
-//                   color: Colors.grey[100], // ✅ 可设置背景
-//                 ),
+//                 child: Container(color: Colors.grey[100]),
 //               ),
-//               // 主绘制区域 (修正后传入renderedNodes/renderedEdges)
 //               Positioned.fill(
 //                 child: RepaintBoundary(
 //                   child: SfnCanvasRenderer(
@@ -82,8 +130,8 @@
 //                     edgeState: editor.edgeState,
 //                     interaction: editor.interaction,
 //                     nodeWidgetFactory: nodeFactory,
-//                     renderedNodes: editor.renderedNodes, // ✅ 必须新增的参数
-//                     renderedEdges: editor.renderedEdges, // ✅ 必须新增的参数
+//                     renderedNodes: editor.renderedNodes,
+//                     renderedEdges: editor.renderedEdges,
 //                   ),
 //                 ),
 //               ),
@@ -142,15 +190,17 @@ class SfnEditorCanvas extends ConsumerWidget {
 
     return DragTarget<NodeModel>(
       onWillAcceptWithDetails: (details) {
-        debugPrint('[DragTarget] onWillAcceptWithDetails triggered');
         final renderBox = context.findRenderObject() as RenderBox;
         final localOffset = renderBox.globalToLocal(details.offset);
+
+        // ✅ 修正位置：计算中心点，而非左上角
+        final nodeSize = details.data.size;
+        final centerLocalOffset =
+            localOffset + Offset(nodeSize.width / 2, nodeSize.height / 2);
         final localPos =
-            (localOffset - canvas.offset - panDelta) / canvas.scale;
-        debugPrint('[DragTarget] Local position: $localPos');
+            (centerLocalOffset - canvas.offset - panDelta) / canvas.scale;
 
         final highlightedEdgeId = behaviorCtx.hitTester.hitTestEdge(localPos);
-        debugPrint('[DragTarget] Highlighted Edge: $highlightedEdgeId');
 
         ctrl.interaction.startInsertingNodePreview(details.data, localPos);
         ctrl.interaction
@@ -160,34 +210,42 @@ class SfnEditorCanvas extends ConsumerWidget {
       onMove: (details) {
         final renderBox = context.findRenderObject() as RenderBox;
         final localOffset = renderBox.globalToLocal(details.offset);
-        final localPos =
-            (localOffset - canvas.offset - panDelta) / canvas.scale;
-        debugPrint('[DragTarget] onMove: Local position: $localPos');
 
-        final highlightedEdgeId = behaviorCtx.hitTester.hitTestEdge(localPos);
-        debugPrint('[DragTarget] onMove: Highlighted Edge: $highlightedEdgeId');
+        // ✅ 修正位置：计算中心点，而非左上角
+        final nodeSize = details.data.size;
+        final centerLocalOffset =
+            localOffset + Offset(nodeSize.width / 2, nodeSize.height / 2);
+        final localPos =
+            (centerLocalOffset - canvas.offset - panDelta) / canvas.scale;
+
+        // final highlightedEdgeId = behaviorCtx.hitTester.hitTestEdge(localPos);
+        final highlightedEdgeId = behaviorCtx.hitTester.hitTestEdgeWithRect(
+            Rect.fromCenter(
+                center: localPos,
+                width: nodeSize.width,
+                height: nodeSize.height));
 
         ctrl.interaction
             .updateInsertingNodePreview(localPos, highlightedEdgeId);
       },
       onLeave: (_) {
-        debugPrint('[DragTarget] onLeave triggered');
         ctrl.interaction.endInsertingNodePreview();
       },
       onAcceptWithDetails: (details) {
-        debugPrint('[DragTarget] onAcceptWithDetails triggered');
         final renderBox = context.findRenderObject() as RenderBox;
         final localOffset = renderBox.globalToLocal(details.offset);
+
+        // ✅ 修正位置：计算中心点，而非左上角
+        final nodeSize = details.data.size;
+        final centerLocalOffset =
+            localOffset + Offset(nodeSize.width / 2, nodeSize.height / 2);
         final localPos =
-            (localOffset - canvas.offset - panDelta) / canvas.scale;
-        debugPrint('[DragTarget] onAccept: Local position: $localPos');
+            (centerLocalOffset - canvas.offset - panDelta) / canvas.scale;
 
         final interaction = behaviorCtx.interaction;
 
         if (interaction is InsertingNodePreview &&
             interaction.highlightedEdgeId != null) {
-          debugPrint(
-              '[DragTarget] Inserting node into edge ${interaction.highlightedEdgeId}');
           final newNode = details.data.copyWith(
             id: 'node_${DateTime.now().millisecondsSinceEpoch}',
             position: localPos,
@@ -196,7 +254,6 @@ class SfnEditorCanvas extends ConsumerWidget {
           ctrl.graph
               .insertNodeIntoEdge(newNode, interaction.highlightedEdgeId!);
         } else {
-          debugPrint('[DragTarget] Inserting node at canvas');
           final newNode = details.data.copyWith(
             id: 'node_${DateTime.now().millisecondsSinceEpoch}',
             position: localPos,

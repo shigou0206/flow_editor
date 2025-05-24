@@ -33,5 +33,5 @@ abstract class CanvasHitTester {
   InsertTargetHitResult? hitTestInsertPoint(Offset pos);
 
   // 检测矩形区域内的边，并可选地根据鼠标位置确定最接近的边
-  String? hitTestEdgeWithRect(Rect rect, [Offset? mouseCanvasPos]);
+  String? hitTestEdgeWithRect(Rect rect);
 }

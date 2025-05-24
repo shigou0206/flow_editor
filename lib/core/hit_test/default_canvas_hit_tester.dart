@@ -1,4 +1,5 @@
 import 'dart:ui';
+
 import 'package:flow_editor/core/hit_test/canvas_hit_tester.dart';
 import 'package:flow_editor/core/models/node_model.dart';
 import 'package:flow_editor/core/models/anchor_model.dart';
@@ -7,6 +8,7 @@ import 'package:flow_editor/core/models/hit_test_result.dart';
 import 'package:flow_editor/core/models/config/hit_test_tolerance.dart';
 import 'package:flow_editor/core/painters/path_generators/flexible_path_generator.dart';
 import 'package:flow_editor/core/utils/hit_test_utils.dart';
+import 'package:flutter/foundation.dart';
 
 class DefaultCanvasHitTester implements CanvasHitTester {
   final List<NodeModel> Function() getNodes;
@@ -261,47 +263,82 @@ class DefaultCanvasHitTester implements CanvasHitTester {
     return null;
   }
 
-  String? hitTestEdgeWithRect(Rect rect, [Offset? mouseCanvasPos]) {
+  @override
+  String? hitTestEdgeWithRect(Rect rect) {
     final edges = getEdges();
-    final generator = FlexiblePathGenerator(getNodes());
-
-    final intersectingEdges = <String, Path>{};
+    final nodes = getNodes();
 
     for (final edge in edges) {
-      final result = generator.generate(edge, type: edge.lineStyle.edgeMode);
-      if (result == null) continue;
+      final waypoints = edge.waypoints;
+      if (waypoints == null || waypoints.length < 2) continue;
 
-      final path = result.path;
-      if (_pathIntersectsRect(path, rect)) {
-        intersectingEdges[edge.id] = path;
+      for (int i = 0; i < waypoints.length - 1; i++) {
+        final wp1 = _getAbsoluteWaypointPosition(edge, waypoints[i], nodes);
+        final wp2 = _getAbsoluteWaypointPosition(edge, waypoints[i + 1], nodes);
+
+        if (_lineIntersectsRect(wp1, wp2, rect)) {
+          debugPrint('✅ Edge intersects: ${edge.id}');
+          return edge.id; // 立即返回相交的边
+        }
       }
     }
 
-    if (intersectingEdges.isEmpty) return null;
-
-    // 如果只有一条边，直接返回
-    if (intersectingEdges.length == 1 || mouseCanvasPos == null) {
-      return intersectingEdges.keys.first;
-    }
-
-    // 多条边，找最近的
-    double minDist = double.infinity;
-    String? closestEdgeId;
-    intersectingEdges.forEach((id, path) {
-      final dist = distanceToPath(path, mouseCanvasPos);
-      if (dist < minDist) {
-        minDist = dist;
-        closestEdgeId = id;
-      }
-    });
-
-    return closestEdgeId;
+    debugPrint('❌ No edges intersect with the rect.');
+    return null;
   }
 
-// 检测矩形与路径交叉
-  bool _pathIntersectsRect(Path path, Rect rect) {
-    final rectPath = Path()..addRect(rect);
-    final intersection = Path.combine(PathOperation.intersect, path, rectPath);
-    return !intersection.getBounds().isEmpty;
+// 递归找到waypoint的全局坐标
+  Offset _getAbsoluteWaypointPosition(
+      EdgeModel edge, Offset waypoint, List<NodeModel> nodes) {
+    // 找到所属的group节点，如果不存在group，返回waypoint本身
+    NodeModel? groupNode = _findParentGroupNode(edge, nodes);
+    Offset absolutePosition = waypoint;
+
+    while (groupNode != null) {
+      absolutePosition += groupNode.position;
+      groupNode = _findParentGroupNodeByNode(groupNode, nodes);
+    }
+
+    return absolutePosition;
+  }
+
+// 根据 edge 找到其所属的最近group节点
+  NodeModel? _findParentGroupNode(EdgeModel edge, List<NodeModel> nodes) {
+    final sourceNode =
+        nodes.firstWhereOrNull((node) => node.id == edge.sourceNodeId);
+    if (sourceNode == null) return null;
+
+    return _findParentGroupNodeByNode(sourceNode, nodes);
+  }
+
+// 根据一个节点找到其所属的最近group节点
+  NodeModel? _findParentGroupNodeByNode(NodeModel node, List<NodeModel> nodes) {
+    return nodes.firstWhereOrNull((n) => n.id == node.parentId && n.isGroup);
+  }
+
+// 判断矩形与线段是否相交
+  bool _lineIntersectsRect(Offset p1, Offset p2, Rect rect) {
+    if (rect.contains(p1) || rect.contains(p2)) return true;
+
+    final rectLines = [
+      [rect.topLeft, rect.topRight],
+      [rect.topRight, rect.bottomRight],
+      [rect.bottomRight, rect.bottomLeft],
+      [rect.bottomLeft, rect.topLeft],
+    ];
+
+    for (final line in rectLines) {
+      if (_linesIntersect(p1, p2, line[0], line[1])) return true;
+    }
+    return false;
+  }
+
+// 判断两条线段是否相交
+  bool _linesIntersect(Offset a1, Offset a2, Offset b1, Offset b2) {
+    double cross(Offset p1, Offset p2, Offset p3) =>
+        (p2.dx - p1.dx) * (p3.dy - p1.dy) - (p2.dy - p1.dy) * (p3.dx - p1.dx);
+
+    return (cross(a1, a2, b1) * cross(a1, a2, b2) < 0) &&
+        (cross(b1, b2, a1) * cross(b1, b2, a2) < 0);
   }
 }
