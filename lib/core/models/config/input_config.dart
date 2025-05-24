@@ -11,7 +11,7 @@ class InputConfig with _$InputConfig {
     @Default(true) bool enableZoom,
 
     // Node interactions
-    @Default(true) bool enableNodeDrag,
+    @Default(false) bool enableNodeDrag,
     @Default(true) bool enableNodeResize,
     @Default(false) bool enableNodeHover,
     @Default(true) bool enableNodeTap,
