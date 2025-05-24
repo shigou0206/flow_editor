@@ -11,6 +11,7 @@ class BehaviorPriority with _$BehaviorPriority {
     @Default(7) int edgeHover,
     @Default(10) int nodeDrag,
     @Default(20) int edgeDraw,
+    @Default(25) int nodeInsertPreview,
     @Default(30) int marqueeSelect,
     @Default(40) int resizeNode,
     @Default(50) int canvasPan,

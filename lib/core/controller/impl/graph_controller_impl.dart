@@ -108,6 +108,38 @@ class GraphControllerImpl implements IGraphController {
     );
   }
 
+  @override
+  Future<void> insertNodeIntoEdge(NodeModel node, String edgeId) async {
+    final state = _ctx.getState();
+
+    // 获取要拆分的原始边
+    final originalEdge =
+        state.edgeState.edges.firstWhere((edge) => edge.id == edgeId);
+
+    // 删除原来的边
+    await _cmdMgr.executeCommand(DeleteEdgeCommand(_ctx, edgeId));
+
+    // 添加新的节点
+    await _cmdMgr.executeCommand(AddNodeCommand(_ctx, node));
+
+    // 新建两条边（源节点 -> 新节点，新节点 -> 目标节点）
+    final edgeToNewNode = EdgeModel.generated(
+      sourceNodeId: originalEdge.sourceNodeId,
+      sourceAnchorId: originalEdge.sourceAnchorId,
+      targetNodeId: node.id,
+    );
+
+    final edgeFromNewNode = EdgeModel.generated(
+      sourceNodeId: node.id,
+      targetNodeId: originalEdge.targetNodeId,
+      targetAnchorId: originalEdge.targetAnchorId,
+    );
+
+    // 添加新的两条边
+    await _cmdMgr.executeCommand(AddEdgeCommand(_ctx, edgeToNewNode));
+    await _cmdMgr.executeCommand(AddEdgeCommand(_ctx, edgeFromNewNode));
+  }
+
   // === Selection ===
 
   @override
@@ -147,86 +179,86 @@ class GraphControllerImpl implements IGraphController {
 }
 
 @override
-  void addNode(NodeModel node) {
-    throw UnimplementedError('addNode is not yet implemented.');
-  }
+void addNode(NodeModel node) {
+  throw UnimplementedError('addNode is not yet implemented.');
+}
 
 @override
-  void deleteNode(String nodeId) {
-    throw UnimplementedError('deleteNode is not yet implemented.');
-  }
+void deleteNode(String nodeId) {
+  throw UnimplementedError('deleteNode is not yet implemented.');
+}
 
 @override
-  void deleteNodeWithEdges(String nodeId) {
-    throw UnimplementedError('deleteNodeWithEdges is not yet implemented.');
-  }
+void deleteNodeWithEdges(String nodeId) {
+  throw UnimplementedError('deleteNodeWithEdges is not yet implemented.');
+}
 
 @override
-  void moveNode(String nodeId, Offset to) {
-    throw UnimplementedError('moveNode is not yet implemented.');
-  }
+void moveNode(String nodeId, Offset to) {
+  throw UnimplementedError('moveNode is not yet implemented.');
+}
 
 @override
-  void groupNodes(List<String> nodeIds) {
-    throw UnimplementedError('groupNodes is not yet implemented.');
-  }
+void groupNodes(List<String> nodeIds) {
+  throw UnimplementedError('groupNodes is not yet implemented.');
+}
 
 @override
-  void ungroupNodes(String groupId) {
-    throw UnimplementedError('ungroupNodes is not yet implemented.');
-  }
+void ungroupNodes(String groupId) {
+  throw UnimplementedError('ungroupNodes is not yet implemented.');
+}
 
 @override
-  void duplicateNode(String nodeId) {
-    throw UnimplementedError('duplicateNode is not yet implemented.');
-  }
+void duplicateNode(String nodeId) {
+  throw UnimplementedError('duplicateNode is not yet implemented.');
+}
 
 @override
-  void addEdge(EdgeModel edge) {
-    throw UnimplementedError('addEdge is not yet implemented.');
-  }
+void addEdge(EdgeModel edge) {
+  throw UnimplementedError('addEdge is not yet implemented.');
+}
 
 @override
-  void deleteEdge(String edgeId) {
-    throw UnimplementedError('deleteEdge is not yet implemented.');
-  }
+void deleteEdge(String edgeId) {
+  throw UnimplementedError('deleteEdge is not yet implemented.');
+}
 
 @override
-  void moveEdge(String edgeId, Offset from, Offset to) {
-    throw UnimplementedError('moveEdge is not yet implemented.');
-  }
+void moveEdge(String edgeId, Offset from, Offset to) {
+  throw UnimplementedError('moveEdge is not yet implemented.');
+}
 
 @override
-  void selectNodes(Set<String> nodeIds) {
-    throw UnimplementedError('selectNodes is not yet implemented.');
-  }
+void selectNodes(Set<String> nodeIds) {
+  throw UnimplementedError('selectNodes is not yet implemented.');
+}
 
 @override
-  void selectEdges(Set<String> edgeIds) {
-    throw UnimplementedError('selectEdges is not yet implemented.');
-  }
+void selectEdges(Set<String> edgeIds) {
+  throw UnimplementedError('selectEdges is not yet implemented.');
+}
 
 @override
-  void clearSelection() {
-    throw UnimplementedError('clearSelection is not yet implemented.');
-  }
+void clearSelection() {
+  throw UnimplementedError('clearSelection is not yet implemented.');
+}
 
 @override
-  void copySelection() {
-    throw UnimplementedError('copySelection is not yet implemented.');
-  }
+void copySelection() {
+  throw UnimplementedError('copySelection is not yet implemented.');
+}
 
 @override
-  void pasteClipboard() {
-    throw UnimplementedError('pasteClipboard is not yet implemented.');
-  }
+void pasteClipboard() {
+  throw UnimplementedError('pasteClipboard is not yet implemented.');
+}
 
 @override
-  void undo() {
-    throw UnimplementedError('undo is not yet implemented.');
-  }
+void undo() {
+  throw UnimplementedError('undo is not yet implemented.');
+}
 
 @override
-  void redo() {
-    throw UnimplementedError('redo is not yet implemented.');
-  }
+void redo() {
+  throw UnimplementedError('redo is not yet implemented.');
+}

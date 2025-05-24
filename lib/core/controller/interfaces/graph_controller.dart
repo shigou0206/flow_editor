@@ -27,6 +27,7 @@ abstract class IGraphController {
     String edgeId,
     EdgeModel Function(EdgeModel) updateFn,
   );
+  Future<void> insertNodeIntoEdge(NodeModel node, String edgeId);
 
   // Selection
   Future<void> selectNodes(Set<String> nodeIds);
