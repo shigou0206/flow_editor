@@ -3,19 +3,19 @@ import 'package:flow_editor/core/models/node_model.dart';
 import 'package:flutter/material.dart';
 import 'package:collection/collection.dart';
 
-extension AbsolutePositionExtension on NodeModel {
-  Offset absolutePosition(List<NodeModel> allNodes) {
-    if (parentId == null) {
-      return position;
-    } else {
-      final parent =
-          allNodes.firstWhere((n) => n.id == parentId, orElse: () => this);
-      final parentPosition = parent.absolutePosition(allNodes);
-      final absolutePosition = parentPosition + position;
-      return absolutePosition;
-    }
-  }
-}
+// extension AbsolutePositionExtension on NodeModel {
+//   Offset absolutePosition(List<NodeModel> allNodes) {
+//     if (parentId == null) {
+//       return position;
+//     } else {
+//       final parent =
+//           allNodes.firstWhere((n) => n.id == parentId, orElse: () => this);
+//       final parentPosition = parent.absolutePosition(allNodes);
+//       final absolutePosition = parentPosition + position;
+//       return absolutePosition;
+//     }
+//   }
+// }
 
 List<Offset> mapEdgeWaypointsToAbsolute(
     EdgeModel edge, List<NodeModel> allNodes) {

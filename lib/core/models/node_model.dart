@@ -60,3 +60,12 @@ class NodeModel with _$NodeModel {
     // placeholder
   }
 }
+
+extension NodeModelExtension on NodeModel {
+  Offset absolutePosition(List<NodeModel> allNodes) {
+    if (parentId == null) return position;
+
+    final parent = allNodes.firstWhere((n) => n.id == parentId);
+    return position + parent.absolutePosition(allNodes);
+  }
+}
