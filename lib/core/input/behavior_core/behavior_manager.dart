@@ -3,6 +3,7 @@ import 'package:flow_editor/core/input/behavior_core/behavior_context.dart';
 import 'package:flow_editor/core/input/event/input_event.dart';
 
 // import 'package:flutter/foundation.dart';
+
 class BehaviorManager {
   final List<CanvasBehavior> _behaviors;
 

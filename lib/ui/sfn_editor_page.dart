@@ -116,28 +116,6 @@ class _SfnEditorPageState extends ConsumerState<SfnEditorPage> {
     );
   }
 
-  /// 计算所有节点的边界，用于居中
-  // Rect _calculateNodesBounds(List<NodeModel> nodes) {
-  //   if (nodes.isEmpty) return Rect.zero;
-  //   double left = nodes.first.position.dx;
-  //   double top = nodes.first.position.dy;
-  //   double right = left + nodes.first.size.width;
-  //   double bottom = top + nodes.first.size.height;
-
-  //   for (final node in nodes) {
-  //     left = left < node.position.dx ? left : node.position.dx;
-  //     top = top < node.position.dy ? top : node.position.dy;
-  //     right = right > node.position.dx + node.size.width
-  //         ? right
-  //         : node.position.dx + node.size.width;
-  //     bottom = bottom > node.position.dy + node.size.height
-  //         ? bottom
-  //         : node.position.dy + node.size.height;
-  //   }
-
-  //   return Rect.fromLTRB(left, top, right, bottom);
-  // }
-
   @override
   Widget build(BuildContext context) {
     final isDark = ref.watch(themeModeProvider) == ThemeMode.dark;
@@ -157,9 +135,7 @@ class _SfnEditorPageState extends ConsumerState<SfnEditorPage> {
       ),
       body: Row(
         children: [
-          FlowNodeSidebar(onNodeTemplateDragged: (node) {
-            // TODO: 实现侧边栏拖拽逻辑
-          }),
+          const FlowNodeSidebar(),
           Expanded(
             child: Container(
               key: canvasKey,

@@ -25,12 +25,10 @@ class FlowEditorPage extends ConsumerWidget {
           ),
         ],
       ),
-      body: Row(
+      body: const Row(
         children: [
-          FlowNodeSidebar(onNodeTemplateDragged: (node) {
-            // 你的处理逻辑
-          }),
-          const Expanded(child: FlowEditorCanvas()),
+          FlowNodeSidebar(),
+          Expanded(child: FlowEditorCanvas()),
         ],
       ),
     );

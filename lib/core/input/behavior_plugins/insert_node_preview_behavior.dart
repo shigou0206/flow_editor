@@ -18,7 +18,7 @@ class InsertNodePreviewBehavior implements CanvasBehavior {
   bool canHandle(InputEvent ev, dynamic _) {
     final interaction = context.interaction;
     return interaction is InsertingNodePreview &&
-        (ev.type == InputEventType.pointerMove ||
+        (ev.type == InputEventType.pointerHover ||
             ev.type == InputEventType.pointerUp);
   }
 
@@ -35,12 +35,12 @@ class InsertNodePreviewBehavior implements CanvasBehavior {
     }
 
     switch (ev.type) {
-      case InputEventType.pointerMove:
+      case InputEventType.pointerHover:
         final mousePos = ev.canvasPos!;
         final highlightedEdgeId = ctx.hitTester.hitTestEdge(mousePos);
 
         debugPrint(
-          '[InsertNodePreviewBehavior] pointerMove: '
+          '[InsertNodePreviewBehavior] pointerHover: '
           'mousePos=$mousePos, highlightedEdgeId=$highlightedEdgeId',
         );
 
