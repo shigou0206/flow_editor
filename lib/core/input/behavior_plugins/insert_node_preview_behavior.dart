@@ -17,9 +17,6 @@ class InsertNodePreviewBehavior implements CanvasBehavior {
   int get priority => context.getState().behaviorPriority.nodeInsertPreview;
 
   @override
-  bool enabled(InputConfig config) => true;
-
-  @override
   bool canHandle(InputEvent ev, dynamic _) {
     final interaction = context.interaction;
 
@@ -66,4 +63,7 @@ class InsertNodePreviewBehavior implements CanvasBehavior {
         break;
     }
   }
+
+  @override
+  bool enabled(InputConfig config) => config.enableNodeInsertPreview;
 }

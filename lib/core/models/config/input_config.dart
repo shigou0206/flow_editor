@@ -15,10 +15,11 @@ class InputConfig with _$InputConfig {
     @Default(true) bool enableNodeResize,
     @Default(false) bool enableNodeHover,
     @Default(true) bool enableNodeTap,
+    @Default(true) bool enableNodeInsertPreview,
 
     // Edge interactions
     @Default(true) bool enableEdgeDraw,
-    @Default(true) bool enableEdgeHover,
+    @Default(false) bool enableEdgeHover,
     @Default(true) bool enableEdgeWaypointDrag,
     @Default(true) bool enableEdgeWaypointHover,
 

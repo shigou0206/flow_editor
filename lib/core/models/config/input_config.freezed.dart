@@ -27,7 +27,8 @@ mixin _$InputConfig {
   bool get enableNodeDrag => throw _privateConstructorUsedError;
   bool get enableNodeResize => throw _privateConstructorUsedError;
   bool get enableNodeHover => throw _privateConstructorUsedError;
-  bool get enableNodeTap =>
+  bool get enableNodeTap => throw _privateConstructorUsedError;
+  bool get enableNodeInsertPreview =>
       throw _privateConstructorUsedError; // Edge interactions
   bool get enableEdgeDraw => throw _privateConstructorUsedError;
   bool get enableEdgeHover => throw _privateConstructorUsedError;
@@ -64,6 +65,7 @@ abstract class $InputConfigCopyWith<$Res> {
       bool enableNodeResize,
       bool enableNodeHover,
       bool enableNodeTap,
+      bool enableNodeInsertPreview,
       bool enableEdgeDraw,
       bool enableEdgeHover,
       bool enableEdgeWaypointDrag,
@@ -96,6 +98,7 @@ class _$InputConfigCopyWithImpl<$Res, $Val extends InputConfig>
     Object? enableNodeResize = null,
     Object? enableNodeHover = null,
     Object? enableNodeTap = null,
+    Object? enableNodeInsertPreview = null,
     Object? enableEdgeDraw = null,
     Object? enableEdgeHover = null,
     Object? enableEdgeWaypointDrag = null,
@@ -132,6 +135,10 @@ class _$InputConfigCopyWithImpl<$Res, $Val extends InputConfig>
       enableNodeTap: null == enableNodeTap
           ? _value.enableNodeTap
           : enableNodeTap // ignore: cast_nullable_to_non_nullable
+              as bool,
+      enableNodeInsertPreview: null == enableNodeInsertPreview
+          ? _value.enableNodeInsertPreview
+          : enableNodeInsertPreview // ignore: cast_nullable_to_non_nullable
               as bool,
       enableEdgeDraw: null == enableEdgeDraw
           ? _value.enableEdgeDraw
@@ -196,6 +203,7 @@ abstract class _$$InputConfigImplCopyWith<$Res>
       bool enableNodeResize,
       bool enableNodeHover,
       bool enableNodeTap,
+      bool enableNodeInsertPreview,
       bool enableEdgeDraw,
       bool enableEdgeHover,
       bool enableEdgeWaypointDrag,
@@ -226,6 +234,7 @@ class __$$InputConfigImplCopyWithImpl<$Res>
     Object? enableNodeResize = null,
     Object? enableNodeHover = null,
     Object? enableNodeTap = null,
+    Object? enableNodeInsertPreview = null,
     Object? enableEdgeDraw = null,
     Object? enableEdgeHover = null,
     Object? enableEdgeWaypointDrag = null,
@@ -262,6 +271,10 @@ class __$$InputConfigImplCopyWithImpl<$Res>
       enableNodeTap: null == enableNodeTap
           ? _value.enableNodeTap
           : enableNodeTap // ignore: cast_nullable_to_non_nullable
+              as bool,
+      enableNodeInsertPreview: null == enableNodeInsertPreview
+          ? _value.enableNodeInsertPreview
+          : enableNodeInsertPreview // ignore: cast_nullable_to_non_nullable
               as bool,
       enableEdgeDraw: null == enableEdgeDraw
           ? _value.enableEdgeDraw
@@ -321,8 +334,9 @@ class _$InputConfigImpl implements _InputConfig {
       this.enableNodeResize = true,
       this.enableNodeHover = false,
       this.enableNodeTap = true,
+      this.enableNodeInsertPreview = true,
       this.enableEdgeDraw = true,
-      this.enableEdgeHover = true,
+      this.enableEdgeHover = false,
       this.enableEdgeWaypointDrag = true,
       this.enableEdgeWaypointHover = true,
       this.enableAnchorHover = true,
@@ -356,6 +370,9 @@ class _$InputConfigImpl implements _InputConfig {
   @override
   @JsonKey()
   final bool enableNodeTap;
+  @override
+  @JsonKey()
+  final bool enableNodeInsertPreview;
 // Edge interactions
   @override
   @JsonKey()
@@ -397,7 +414,7 @@ class _$InputConfigImpl implements _InputConfig {
 
   @override
   String toString() {
-    return 'InputConfig(enablePan: $enablePan, enableZoom: $enableZoom, enableNodeDrag: $enableNodeDrag, enableNodeResize: $enableNodeResize, enableNodeHover: $enableNodeHover, enableNodeTap: $enableNodeTap, enableEdgeDraw: $enableEdgeDraw, enableEdgeHover: $enableEdgeHover, enableEdgeWaypointDrag: $enableEdgeWaypointDrag, enableEdgeWaypointHover: $enableEdgeWaypointHover, enableAnchorHover: $enableAnchorHover, enableAnchorDrag: $enableAnchorDrag, enableMarqueeSelect: $enableMarqueeSelect, enableInsertNodeToEdge: $enableInsertNodeToEdge, enableKeyDelete: $enableKeyDelete, enableKeyCopyPaste: $enableKeyCopyPaste, enableKeyUndoRedo: $enableKeyUndoRedo)';
+    return 'InputConfig(enablePan: $enablePan, enableZoom: $enableZoom, enableNodeDrag: $enableNodeDrag, enableNodeResize: $enableNodeResize, enableNodeHover: $enableNodeHover, enableNodeTap: $enableNodeTap, enableNodeInsertPreview: $enableNodeInsertPreview, enableEdgeDraw: $enableEdgeDraw, enableEdgeHover: $enableEdgeHover, enableEdgeWaypointDrag: $enableEdgeWaypointDrag, enableEdgeWaypointHover: $enableEdgeWaypointHover, enableAnchorHover: $enableAnchorHover, enableAnchorDrag: $enableAnchorDrag, enableMarqueeSelect: $enableMarqueeSelect, enableInsertNodeToEdge: $enableInsertNodeToEdge, enableKeyDelete: $enableKeyDelete, enableKeyCopyPaste: $enableKeyCopyPaste, enableKeyUndoRedo: $enableKeyUndoRedo)';
   }
 
   @override
@@ -417,6 +434,9 @@ class _$InputConfigImpl implements _InputConfig {
                 other.enableNodeHover == enableNodeHover) &&
             (identical(other.enableNodeTap, enableNodeTap) ||
                 other.enableNodeTap == enableNodeTap) &&
+            (identical(
+                    other.enableNodeInsertPreview, enableNodeInsertPreview) ||
+                other.enableNodeInsertPreview == enableNodeInsertPreview) &&
             (identical(other.enableEdgeDraw, enableEdgeDraw) ||
                 other.enableEdgeDraw == enableEdgeDraw) &&
             (identical(other.enableEdgeHover, enableEdgeHover) ||
@@ -452,6 +472,7 @@ class _$InputConfigImpl implements _InputConfig {
       enableNodeResize,
       enableNodeHover,
       enableNodeTap,
+      enableNodeInsertPreview,
       enableEdgeDraw,
       enableEdgeHover,
       enableEdgeWaypointDrag,
@@ -486,6 +507,7 @@ abstract class _InputConfig implements InputConfig {
       final bool enableNodeResize,
       final bool enableNodeHover,
       final bool enableNodeTap,
+      final bool enableNodeInsertPreview,
       final bool enableEdgeDraw,
       final bool enableEdgeHover,
       final bool enableEdgeWaypointDrag,
@@ -513,6 +535,8 @@ abstract class _InputConfig implements InputConfig {
   bool get enableNodeHover;
   @override
   bool get enableNodeTap;
+  @override
+  bool get enableNodeInsertPreview;
   @override // Edge interactions
   bool get enableEdgeDraw;
   @override
