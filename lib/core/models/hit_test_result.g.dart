@@ -110,3 +110,20 @@ Map<String, dynamic> _$$AnchorHitResultImplToJson(
       'nodeId': instance.nodeId,
       'anchor': instance.anchor,
     };
+
+_$EdgeWaypointPathHitResultImpl _$$EdgeWaypointPathHitResultImplFromJson(
+        Map<String, dynamic> json) =>
+    _$EdgeWaypointPathHitResultImpl(
+      edgeId: json['edgeId'] as String,
+      nearestPoint: const OffsetConverter()
+          .fromJson(json['nearestPoint'] as Map<String, dynamic>),
+      distance: (json['distance'] as num).toDouble(),
+    );
+
+Map<String, dynamic> _$$EdgeWaypointPathHitResultImplToJson(
+        _$EdgeWaypointPathHitResultImpl instance) =>
+    <String, dynamic>{
+      'edgeId': instance.edgeId,
+      'nearestPoint': const OffsetConverter().toJson(instance.nearestPoint),
+      'distance': instance.distance,
+    };

@@ -88,3 +88,16 @@ class AnchorHitResult with _$AnchorHitResult {
   factory AnchorHitResult.fromJson(Map<String, dynamic> json) =>
       _$AnchorHitResultFromJson(json);
 }
+
+/// 命中基于 Waypoints 边时的返回结构
+@freezed
+class EdgeWaypointPathHitResult with _$EdgeWaypointPathHitResult {
+  const factory EdgeWaypointPathHitResult({
+    required String edgeId,
+    @OffsetConverter() required Offset nearestPoint, // 命中线段上离鼠标最近的点
+    required double distance, // 鼠标与命中点之间的距离（用于排序）
+  }) = _EdgeWaypointPathHitResult;
+
+  factory EdgeWaypointPathHitResult.fromJson(Map<String, dynamic> json) =>
+      _$EdgeWaypointPathHitResultFromJson(json);
+}

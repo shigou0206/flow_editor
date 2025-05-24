@@ -17,6 +17,8 @@ abstract class CanvasHitTester {
   /// 命中 anchor 时，返回包含 nodeId 的 AnchorHitResult（推荐替代 anchorModel）
   AnchorHitResult? hitTestAnchorResult(Offset pos);
 
+  EdgeWaypointPathHitResult? hitTestEdgeWaypointPath(Offset pos);
+
   // ===== 综合优先级（anchor > node > edge） =====
   String? hitTestElement(Offset pos);
 

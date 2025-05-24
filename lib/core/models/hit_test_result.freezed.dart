@@ -1052,3 +1052,191 @@ abstract class _AnchorHitResult implements AnchorHitResult {
   _$$AnchorHitResultImplCopyWith<_$AnchorHitResultImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }
+
+EdgeWaypointPathHitResult _$EdgeWaypointPathHitResultFromJson(
+    Map<String, dynamic> json) {
+  return _EdgeWaypointPathHitResult.fromJson(json);
+}
+
+/// @nodoc
+mixin _$EdgeWaypointPathHitResult {
+  String get edgeId => throw _privateConstructorUsedError;
+  @OffsetConverter()
+  Offset get nearestPoint => throw _privateConstructorUsedError; // 命中线段上离鼠标最近的点
+  double get distance => throw _privateConstructorUsedError;
+
+  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
+  @JsonKey(ignore: true)
+  $EdgeWaypointPathHitResultCopyWith<EdgeWaypointPathHitResult> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class $EdgeWaypointPathHitResultCopyWith<$Res> {
+  factory $EdgeWaypointPathHitResultCopyWith(EdgeWaypointPathHitResult value,
+          $Res Function(EdgeWaypointPathHitResult) then) =
+      _$EdgeWaypointPathHitResultCopyWithImpl<$Res, EdgeWaypointPathHitResult>;
+  @useResult
+  $Res call(
+      {String edgeId, @OffsetConverter() Offset nearestPoint, double distance});
+}
+
+/// @nodoc
+class _$EdgeWaypointPathHitResultCopyWithImpl<$Res,
+        $Val extends EdgeWaypointPathHitResult>
+    implements $EdgeWaypointPathHitResultCopyWith<$Res> {
+  _$EdgeWaypointPathHitResultCopyWithImpl(this._value, this._then);
+
+  // ignore: unused_field
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
+
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? edgeId = null,
+    Object? nearestPoint = null,
+    Object? distance = null,
+  }) {
+    return _then(_value.copyWith(
+      edgeId: null == edgeId
+          ? _value.edgeId
+          : edgeId // ignore: cast_nullable_to_non_nullable
+              as String,
+      nearestPoint: null == nearestPoint
+          ? _value.nearestPoint
+          : nearestPoint // ignore: cast_nullable_to_non_nullable
+              as Offset,
+      distance: null == distance
+          ? _value.distance
+          : distance // ignore: cast_nullable_to_non_nullable
+              as double,
+    ) as $Val);
+  }
+}
+
+/// @nodoc
+abstract class _$$EdgeWaypointPathHitResultImplCopyWith<$Res>
+    implements $EdgeWaypointPathHitResultCopyWith<$Res> {
+  factory _$$EdgeWaypointPathHitResultImplCopyWith(
+          _$EdgeWaypointPathHitResultImpl value,
+          $Res Function(_$EdgeWaypointPathHitResultImpl) then) =
+      __$$EdgeWaypointPathHitResultImplCopyWithImpl<$Res>;
+  @override
+  @useResult
+  $Res call(
+      {String edgeId, @OffsetConverter() Offset nearestPoint, double distance});
+}
+
+/// @nodoc
+class __$$EdgeWaypointPathHitResultImplCopyWithImpl<$Res>
+    extends _$EdgeWaypointPathHitResultCopyWithImpl<$Res,
+        _$EdgeWaypointPathHitResultImpl>
+    implements _$$EdgeWaypointPathHitResultImplCopyWith<$Res> {
+  __$$EdgeWaypointPathHitResultImplCopyWithImpl(
+      _$EdgeWaypointPathHitResultImpl _value,
+      $Res Function(_$EdgeWaypointPathHitResultImpl) _then)
+      : super(_value, _then);
+
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? edgeId = null,
+    Object? nearestPoint = null,
+    Object? distance = null,
+  }) {
+    return _then(_$EdgeWaypointPathHitResultImpl(
+      edgeId: null == edgeId
+          ? _value.edgeId
+          : edgeId // ignore: cast_nullable_to_non_nullable
+              as String,
+      nearestPoint: null == nearestPoint
+          ? _value.nearestPoint
+          : nearestPoint // ignore: cast_nullable_to_non_nullable
+              as Offset,
+      distance: null == distance
+          ? _value.distance
+          : distance // ignore: cast_nullable_to_non_nullable
+              as double,
+    ));
+  }
+}
+
+/// @nodoc
+@JsonSerializable()
+class _$EdgeWaypointPathHitResultImpl implements _EdgeWaypointPathHitResult {
+  const _$EdgeWaypointPathHitResultImpl(
+      {required this.edgeId,
+      @OffsetConverter() required this.nearestPoint,
+      required this.distance});
+
+  factory _$EdgeWaypointPathHitResultImpl.fromJson(Map<String, dynamic> json) =>
+      _$$EdgeWaypointPathHitResultImplFromJson(json);
+
+  @override
+  final String edgeId;
+  @override
+  @OffsetConverter()
+  final Offset nearestPoint;
+// 命中线段上离鼠标最近的点
+  @override
+  final double distance;
+
+  @override
+  String toString() {
+    return 'EdgeWaypointPathHitResult(edgeId: $edgeId, nearestPoint: $nearestPoint, distance: $distance)';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$EdgeWaypointPathHitResultImpl &&
+            (identical(other.edgeId, edgeId) || other.edgeId == edgeId) &&
+            (identical(other.nearestPoint, nearestPoint) ||
+                other.nearestPoint == nearestPoint) &&
+            (identical(other.distance, distance) ||
+                other.distance == distance));
+  }
+
+  @JsonKey(ignore: true)
+  @override
+  int get hashCode => Object.hash(runtimeType, edgeId, nearestPoint, distance);
+
+  @JsonKey(ignore: true)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$EdgeWaypointPathHitResultImplCopyWith<_$EdgeWaypointPathHitResultImpl>
+      get copyWith => __$$EdgeWaypointPathHitResultImplCopyWithImpl<
+          _$EdgeWaypointPathHitResultImpl>(this, _$identity);
+
+  @override
+  Map<String, dynamic> toJson() {
+    return _$$EdgeWaypointPathHitResultImplToJson(
+      this,
+    );
+  }
+}
+
+abstract class _EdgeWaypointPathHitResult implements EdgeWaypointPathHitResult {
+  const factory _EdgeWaypointPathHitResult(
+      {required final String edgeId,
+      @OffsetConverter() required final Offset nearestPoint,
+      required final double distance}) = _$EdgeWaypointPathHitResultImpl;
+
+  factory _EdgeWaypointPathHitResult.fromJson(Map<String, dynamic> json) =
+      _$EdgeWaypointPathHitResultImpl.fromJson;
+
+  @override
+  String get edgeId;
+  @override
+  @OffsetConverter()
+  Offset get nearestPoint;
+  @override // 命中线段上离鼠标最近的点
+  double get distance;
+  @override
+  @JsonKey(ignore: true)
+  _$$EdgeWaypointPathHitResultImplCopyWith<_$EdgeWaypointPathHitResultImpl>
+      get copyWith => throw _privateConstructorUsedError;
+}

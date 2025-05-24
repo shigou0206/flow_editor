@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flow_editor/core/models/node_model.dart';
-import 'package:flow_editor/core/models/anchor_model.dart';
 import 'package:flow_editor/ui/node/factories/node_widget_factory_impl.dart';
 import 'package:flow_editor/ui/node/node_widget_registry_initializer.dart';
-import 'package:flow_editor/core/models/enums/position_enum.dart';
 
 class FlowNodeSidebar extends StatelessWidget {
   const FlowNodeSidebar({super.key, required this.onNodeTemplateDragged});
@@ -22,18 +20,6 @@ class FlowNodeSidebar extends StatelessWidget {
         position: Offset.zero,
         size: Size(200, 40),
         title: 'Start',
-        anchors: [
-          AnchorModel(
-            id: 'in',
-            position: Position.top,
-            size: Size(10, 10),
-          ),
-          AnchorModel(
-            id: 'out',
-            position: Position.bottom,
-            size: Size(10, 10),
-          ),
-        ],
       ),
       const NodeModel(
         id: 'end_template',
@@ -41,18 +27,6 @@ class FlowNodeSidebar extends StatelessWidget {
         position: Offset.zero,
         size: Size(200, 40),
         title: 'End',
-        anchors: [
-          AnchorModel(
-            id: 'in',
-            position: Position.top,
-            size: Size(10, 10),
-          ),
-          AnchorModel(
-            id: 'out',
-            position: Position.bottom,
-            size: Size(10, 10),
-          ),
-        ],
       ),
       const NodeModel(
         id: 'placeholder_template',
@@ -60,18 +34,6 @@ class FlowNodeSidebar extends StatelessWidget {
         position: Offset.zero,
         size: Size(200, 40),
         title: 'Placeholder',
-        anchors: [
-          AnchorModel(
-            id: 'in',
-            position: Position.top,
-            size: Size(10, 10),
-          ),
-          AnchorModel(
-            id: 'out',
-            position: Position.bottom,
-            size: Size(10, 10),
-          ),
-        ],
       ),
       const NodeModel(
         id: 'middle_template',
@@ -79,18 +41,6 @@ class FlowNodeSidebar extends StatelessWidget {
         position: Offset.zero,
         size: Size(200, 40),
         title: 'Middle',
-        anchors: [
-          AnchorModel(
-            id: 'in',
-            position: Position.top,
-            size: Size(10, 10),
-          ),
-          AnchorModel(
-            id: 'out',
-            position: Position.bottom,
-            size: Size(10, 10),
-          ),
-        ],
       ),
     ];
 

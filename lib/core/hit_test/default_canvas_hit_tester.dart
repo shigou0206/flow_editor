@@ -24,9 +24,11 @@ class DefaultCanvasHitTester implements CanvasHitTester {
 
   @override
   String? hitTestNode(Offset pos) {
-    for (final node in getNodes().reversed) {
-      final rect = Rect.fromLTWH(node.position.dx, node.position.dy,
-          node.size.width, node.size.height);
+    final nodes = getNodes();
+    for (final node in nodes.reversed) {
+      final absPos = node.absolutePosition(nodes);
+      final rect = Rect.fromLTWH(
+          absPos.dx, absPos.dy, node.size.width, node.size.height);
       if (rect.contains(pos)) return node.id;
     }
     return null;
@@ -36,8 +38,10 @@ class DefaultCanvasHitTester implements CanvasHitTester {
   String? hitTestAnchor(Offset pos) {
     final nodes = getNodes();
     for (final node in nodes) {
+      final absPos = node.absolutePosition(nodes);
+      final absNode = node.copyWith(position: absPos);
       for (final anchor in node.anchors) {
-        final center = computeAnchorWorldPosition(node, anchor, nodes);
+        final center = computeAnchorWorldPosition(absNode, anchor, nodes);
         if ((pos - center).distance < tolerance.anchor) {
           return anchor.id;
         }
@@ -53,7 +57,6 @@ class DefaultCanvasHitTester implements CanvasHitTester {
     final generator = FlexiblePathGenerator(getNodes());
 
     for (final edge in getEdges()) {
-      if (edge.targetNodeId == null || edge.targetAnchorId == null) continue;
       final result = generator.generate(edge, type: edge.lineStyle.edgeMode);
       if (result == null) continue;
       final d = distanceToPath(result.path, pos);
@@ -72,8 +75,9 @@ class DefaultCanvasHitTester implements CanvasHitTester {
 
   @override
   NodeModel? hitTestNodeModel(Offset pos) => _firstMatch(getNodes(), (n) {
-        final rect = Rect.fromLTWH(
-            n.position.dx, n.position.dy, n.size.width, n.size.height);
+        final absPos = n.absolutePosition(getNodes());
+        final rect =
+            Rect.fromLTWH(absPos.dx, absPos.dy, n.size.width, n.size.height);
         return rect.contains(pos);
       });
 
@@ -81,8 +85,10 @@ class DefaultCanvasHitTester implements CanvasHitTester {
   AnchorHitResult? hitTestAnchorResult(Offset pos) {
     final nodes = getNodes();
     for (final node in nodes) {
+      final absPos = node.absolutePosition(nodes);
+      final absNode = node.copyWith(position: absPos);
       for (final anchor in node.anchors) {
-        final center = computeAnchorWorldPosition(node, anchor, nodes);
+        final center = computeAnchorWorldPosition(absNode, anchor, nodes);
         if ((pos - center).distance < tolerance.anchor) {
           return AnchorHitResult(nodeId: node.id, anchor: anchor);
         }
@@ -105,9 +111,11 @@ class DefaultCanvasHitTester implements CanvasHitTester {
 
   @override
   ResizeHitResult? hitTestResizeHandle(Offset pos) {
-    for (final node in getNodes().reversed) {
-      final rect = Rect.fromLTWH(node.position.dx, node.position.dy,
-          node.size.width, node.size.height);
+    final nodes = getNodes();
+    for (final node in nodes.reversed) {
+      final absPos = node.absolutePosition(nodes);
+      final rect = Rect.fromLTWH(
+          absPos.dx, absPos.dy, node.size.width, node.size.height);
       for (final handle in ResizeHandlePosition.values) {
         final handlePos = computeHandlePosition(rect, handle);
         if ((pos - handlePos).distance < tolerance.resizeHandle) {
@@ -149,7 +157,6 @@ class DefaultCanvasHitTester implements CanvasHitTester {
         }
       }
     }
-
     return null;
   }
 
@@ -173,9 +180,11 @@ class DefaultCanvasHitTester implements CanvasHitTester {
   @override
   FloatingAnchorHitResult? hitTestFloatingAnchor(Offset pos) {
     const radius = 12.0;
-    for (final node in getNodes()) {
-      final r = Rect.fromLTWH(node.position.dx, node.position.dy,
-          node.size.width, node.size.height);
+    final nodes = getNodes();
+    for (final node in nodes) {
+      final absPos = node.absolutePosition(nodes);
+      final r = Rect.fromLTWH(
+          absPos.dx, absPos.dy, node.size.width, node.size.height);
       for (final p in [
         r.centerLeft,
         r.centerRight,
@@ -203,6 +212,46 @@ class DefaultCanvasHitTester implements CanvasHitTester {
       }
     }
     return null;
+  }
+
+  @override
+  EdgeWaypointPathHitResult? hitTestEdgeWaypointPath(Offset pos) {
+    double minDist = double.infinity;
+    String? closestEdgeId;
+    Offset? nearestPoint;
+
+    final generator = FlexiblePathGenerator(getNodes());
+
+    for (final edge in getEdges()) {
+      if (edge.waypoints == null || edge.waypoints!.length < 2) continue;
+
+      final path = generator.generate(edge)?.path;
+      if (path == null) continue;
+
+      final metrics = path.computeMetrics();
+      for (final metric in metrics) {
+        const steps = 100;
+        for (int i = 0; i <= steps; i++) {
+          final tangent = metric.getTangentForOffset(metric.length * i / steps);
+          if (tangent == null) continue;
+          final point = tangent.position;
+          final dist = (pos - point).distance;
+          if (dist < minDist) {
+            minDist = dist;
+            closestEdgeId = edge.id;
+            nearestPoint = point;
+          }
+        }
+      }
+    }
+
+    return (closestEdgeId != null && minDist < tolerance.edge)
+        ? EdgeWaypointPathHitResult(
+            edgeId: closestEdgeId,
+            distance: minDist,
+            nearestPoint: nearestPoint!,
+          )
+        : null;
   }
 
   T? _firstMatch<T>(Iterable<T> list, bool Function(T) test) {
