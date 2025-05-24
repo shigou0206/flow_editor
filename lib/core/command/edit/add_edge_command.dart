@@ -16,7 +16,7 @@ class AddEdgeCommand implements ICommand {
 
   @override
   Future<void> execute() async {
-    final st = ctx.getState(); // EditorState（单 workflow）
+    final st = ctx.getState();
     final current = st.edgeState.edges;
     _insertIndex = current.length;
 

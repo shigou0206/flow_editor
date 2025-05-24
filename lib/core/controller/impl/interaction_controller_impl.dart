@@ -140,4 +140,34 @@ class InteractionControllerImpl implements IInteractionController {
   void clearHover() {
     _st = _st.copyWith(interaction: const InteractionState.idle());
   }
+
+  @override
+  void startInsertingNodePreview(String nodeType, Offset canvasPos) {
+    _st = _st.copyWith(
+      interaction: InteractionState.insertingNodePreview(
+        nodeType: nodeType,
+        canvasPos: canvasPos,
+        nodeSize: const Size(200, 40), // 示例尺寸，实际可能根据类型变化
+        highlightedEdgeId: null,
+      ),
+    );
+  }
+
+  @override
+  void updateInsertingNodePreview(Offset canvasPos, String? highlightedEdgeId) {
+    final interaction = _st.interaction;
+    if (interaction is InsertingNodePreview) {
+      _st = _st.copyWith(
+        interaction: interaction.copyWith(
+          canvasPos: canvasPos,
+          highlightedEdgeId: highlightedEdgeId,
+        ),
+      );
+    }
+  }
+
+  @override
+  void endInsertingNodePreview() {
+    _st = _st.copyWith(interaction: const InteractionState.idle());
+  }
 }

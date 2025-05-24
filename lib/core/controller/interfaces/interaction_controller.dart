@@ -49,4 +49,13 @@ abstract class IInteractionController {
 
   /// 当鼠标离开节点、锚点或边的区域时调用，取消 hover 状态
   void clearHover();
+
+  /// 开始插入节点预览
+  void startInsertingNodePreview(String nodeType, Offset canvasPos);
+
+  /// 更新插入节点预览
+  void updateInsertingNodePreview(Offset canvasPos, String? highlightedEdgeId);
+
+  /// 结束插入节点预览
+  void endInsertingNodePreview();
 }
