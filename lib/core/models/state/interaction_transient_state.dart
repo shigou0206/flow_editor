@@ -81,6 +81,13 @@ class InteractionState with _$InteractionState {
     String? targetId,
   }) = ContextMenuOpen;
 
+  const factory InteractionState.insertingNodePreview({
+    required String nodeType, // 外部拖入节点类型
+    @OffsetConverter() required Offset canvasPos, // 当前位置（矩形中心或左上角）
+    @SizeConverter() required Size nodeSize, // 节点预览尺寸
+    String? highlightedEdgeId, // 当前高亮的目标边
+  }) = InsertingNodePreview;
+
   factory InteractionState.fromJson(Map<String, dynamic> json) =>
       _$InteractionStateFromJson(json);
 }
@@ -242,6 +249,30 @@ extension InteractionStateX on InteractionState {
 
   Offset? get resizingHandlePosition => maybeWhen(
         resizingNode: (_, handlePosition, __, ___) => handlePosition,
+        orElse: () => null,
+      );
+
+  // 是否处于插入节点预览状态
+  bool get isInsertingNodePreview => maybeMap(
+        insertingNodePreview: (_) => true,
+        orElse: () => false,
+      );
+
+  // 获取插入预览框的中心或左上角坐标
+  Offset? get insertingPreviewPos => maybeWhen(
+        insertingNodePreview: (_, pos, __, ___) => pos,
+        orElse: () => null,
+      );
+
+  // 获取插入预览节点大小
+  Size? get insertingPreviewSize => maybeWhen(
+        insertingNodePreview: (_, __, size, ___) => size,
+        orElse: () => null,
+      );
+
+  // 当前高亮的边的ID（可能为空）
+  String? get insertingHighlightedEdgeId => maybeWhen(
+        insertingNodePreview: (_, __, ___, edgeId) => edgeId,
         orElse: () => null,
       );
 }
