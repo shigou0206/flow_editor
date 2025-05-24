@@ -3,6 +3,7 @@ import 'package:flow_editor/core/controller/interfaces/interaction_controller.da
 import 'package:flow_editor/core/command/command_context.dart';
 import 'package:flow_editor/core/models/state/editor_state.dart';
 import 'package:flow_editor/core/models/state/interaction_transient_state.dart';
+import 'package:flow_editor/core/models/node_model.dart';
 
 class InteractionControllerImpl implements IInteractionController {
   final CommandContext ctx;
@@ -142,12 +143,11 @@ class InteractionControllerImpl implements IInteractionController {
   }
 
   @override
-  void startInsertingNodePreview(String nodeType, Offset canvasPos) {
+  void startInsertingNodePreview(NodeModel node, Offset canvasPos) {
     _st = _st.copyWith(
       interaction: InteractionState.insertingNodePreview(
-        nodeType: nodeType,
+        node: node,
         canvasPos: canvasPos,
-        nodeSize: const Size(200, 40), // 示例尺寸，实际可能根据类型变化
         highlightedEdgeId: null,
       ),
     );

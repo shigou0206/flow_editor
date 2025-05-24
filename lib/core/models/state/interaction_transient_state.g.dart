@@ -227,11 +227,9 @@ Map<String, dynamic> _$$ContextMenuOpenImplToJson(
 _$InsertingNodePreviewImpl _$$InsertingNodePreviewImplFromJson(
         Map<String, dynamic> json) =>
     _$InsertingNodePreviewImpl(
-      nodeType: json['nodeType'] as String,
+      node: NodeModel.fromJson(json['node'] as Map<String, dynamic>),
       canvasPos: const OffsetConverter()
           .fromJson(json['canvasPos'] as Map<String, dynamic>),
-      nodeSize: const SizeConverter()
-          .fromJson(json['nodeSize'] as Map<String, dynamic>),
       highlightedEdgeId: json['highlightedEdgeId'] as String?,
       $type: json['type'] as String?,
     );
@@ -239,9 +237,8 @@ _$InsertingNodePreviewImpl _$$InsertingNodePreviewImplFromJson(
 Map<String, dynamic> _$$InsertingNodePreviewImplToJson(
         _$InsertingNodePreviewImpl instance) =>
     <String, dynamic>{
-      'nodeType': instance.nodeType,
+      'node': instance.node,
       'canvasPos': const OffsetConverter().toJson(instance.canvasPos),
-      'nodeSize': const SizeConverter().toJson(instance.nodeSize),
       'highlightedEdgeId': instance.highlightedEdgeId,
       'type': instance.$type,
     };

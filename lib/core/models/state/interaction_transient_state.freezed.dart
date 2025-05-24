@@ -102,11 +102,8 @@ mixin _$InteractionState {
     required TResult Function(
             @OffsetConverter() Offset globalPosition, String? targetId)
         contextMenuOpen,
-    required TResult Function(
-            String nodeType,
-            @OffsetConverter() Offset canvasPos,
-            @SizeConverter() Size nodeSize,
-            String? highlightedEdgeId)
+    required TResult Function(NodeModel node,
+            @OffsetConverter() Offset canvasPos, String? highlightedEdgeId)
         insertingNodePreview,
   }) =>
       throw _privateConstructorUsedError;
@@ -155,8 +152,8 @@ mixin _$InteractionState {
     TResult? Function(
             @OffsetConverter() Offset globalPosition, String? targetId)?
         contextMenuOpen,
-    TResult? Function(String nodeType, @OffsetConverter() Offset canvasPos,
-            @SizeConverter() Size nodeSize, String? highlightedEdgeId)?
+    TResult? Function(NodeModel node, @OffsetConverter() Offset canvasPos,
+            String? highlightedEdgeId)?
         insertingNodePreview,
   }) =>
       throw _privateConstructorUsedError;
@@ -205,8 +202,8 @@ mixin _$InteractionState {
     TResult Function(
             @OffsetConverter() Offset globalPosition, String? targetId)?
         contextMenuOpen,
-    TResult Function(String nodeType, @OffsetConverter() Offset canvasPos,
-            @SizeConverter() Size nodeSize, String? highlightedEdgeId)?
+    TResult Function(NodeModel node, @OffsetConverter() Offset canvasPos,
+            String? highlightedEdgeId)?
         insertingNodePreview,
     required TResult orElse(),
   }) =>
@@ -380,11 +377,8 @@ class _$IdleImpl extends Idle {
     required TResult Function(
             @OffsetConverter() Offset globalPosition, String? targetId)
         contextMenuOpen,
-    required TResult Function(
-            String nodeType,
-            @OffsetConverter() Offset canvasPos,
-            @SizeConverter() Size nodeSize,
-            String? highlightedEdgeId)
+    required TResult Function(NodeModel node,
+            @OffsetConverter() Offset canvasPos, String? highlightedEdgeId)
         insertingNodePreview,
   }) {
     return idle();
@@ -436,8 +430,8 @@ class _$IdleImpl extends Idle {
     TResult? Function(
             @OffsetConverter() Offset globalPosition, String? targetId)?
         contextMenuOpen,
-    TResult? Function(String nodeType, @OffsetConverter() Offset canvasPos,
-            @SizeConverter() Size nodeSize, String? highlightedEdgeId)?
+    TResult? Function(NodeModel node, @OffsetConverter() Offset canvasPos,
+            String? highlightedEdgeId)?
         insertingNodePreview,
   }) {
     return idle?.call();
@@ -489,8 +483,8 @@ class _$IdleImpl extends Idle {
     TResult Function(
             @OffsetConverter() Offset globalPosition, String? targetId)?
         contextMenuOpen,
-    TResult Function(String nodeType, @OffsetConverter() Offset canvasPos,
-            @SizeConverter() Size nodeSize, String? highlightedEdgeId)?
+    TResult Function(NodeModel node, @OffsetConverter() Offset canvasPos,
+            String? highlightedEdgeId)?
         insertingNodePreview,
     required TResult orElse(),
   }) {
@@ -729,11 +723,8 @@ class _$DragNodeImpl extends DragNode {
     required TResult Function(
             @OffsetConverter() Offset globalPosition, String? targetId)
         contextMenuOpen,
-    required TResult Function(
-            String nodeType,
-            @OffsetConverter() Offset canvasPos,
-            @SizeConverter() Size nodeSize,
-            String? highlightedEdgeId)
+    required TResult Function(NodeModel node,
+            @OffsetConverter() Offset canvasPos, String? highlightedEdgeId)
         insertingNodePreview,
   }) {
     return dragNode(nodeId, startCanvas, lastCanvas);
@@ -785,8 +776,8 @@ class _$DragNodeImpl extends DragNode {
     TResult? Function(
             @OffsetConverter() Offset globalPosition, String? targetId)?
         contextMenuOpen,
-    TResult? Function(String nodeType, @OffsetConverter() Offset canvasPos,
-            @SizeConverter() Size nodeSize, String? highlightedEdgeId)?
+    TResult? Function(NodeModel node, @OffsetConverter() Offset canvasPos,
+            String? highlightedEdgeId)?
         insertingNodePreview,
   }) {
     return dragNode?.call(nodeId, startCanvas, lastCanvas);
@@ -838,8 +829,8 @@ class _$DragNodeImpl extends DragNode {
     TResult Function(
             @OffsetConverter() Offset globalPosition, String? targetId)?
         contextMenuOpen,
-    TResult Function(String nodeType, @OffsetConverter() Offset canvasPos,
-            @SizeConverter() Size nodeSize, String? highlightedEdgeId)?
+    TResult Function(NodeModel node, @OffsetConverter() Offset canvasPos,
+            String? highlightedEdgeId)?
         insertingNodePreview,
     required TResult orElse(),
   }) {
@@ -1114,11 +1105,8 @@ class _$DragEdgeImpl extends DragEdge {
     required TResult Function(
             @OffsetConverter() Offset globalPosition, String? targetId)
         contextMenuOpen,
-    required TResult Function(
-            String nodeType,
-            @OffsetConverter() Offset canvasPos,
-            @SizeConverter() Size nodeSize,
-            String? highlightedEdgeId)
+    required TResult Function(NodeModel node,
+            @OffsetConverter() Offset canvasPos, String? highlightedEdgeId)
         insertingNodePreview,
   }) {
     return dragEdge(
@@ -1171,8 +1159,8 @@ class _$DragEdgeImpl extends DragEdge {
     TResult? Function(
             @OffsetConverter() Offset globalPosition, String? targetId)?
         contextMenuOpen,
-    TResult? Function(String nodeType, @OffsetConverter() Offset canvasPos,
-            @SizeConverter() Size nodeSize, String? highlightedEdgeId)?
+    TResult? Function(NodeModel node, @OffsetConverter() Offset canvasPos,
+            String? highlightedEdgeId)?
         insertingNodePreview,
   }) {
     return dragEdge?.call(
@@ -1225,8 +1213,8 @@ class _$DragEdgeImpl extends DragEdge {
     TResult Function(
             @OffsetConverter() Offset globalPosition, String? targetId)?
         contextMenuOpen,
-    TResult Function(String nodeType, @OffsetConverter() Offset canvasPos,
-            @SizeConverter() Size nodeSize, String? highlightedEdgeId)?
+    TResult Function(NodeModel node, @OffsetConverter() Offset canvasPos,
+            String? highlightedEdgeId)?
         insertingNodePreview,
     required TResult orElse(),
   }) {
@@ -1415,7 +1403,6 @@ class _$DragWaypointImpl extends DragWaypoint {
   @override
   @OffsetConverter()
   final Offset originalPoint;
-// 新增
   @override
   @OffsetConverter()
   final Offset startCanvas;
@@ -1508,11 +1495,8 @@ class _$DragWaypointImpl extends DragWaypoint {
     required TResult Function(
             @OffsetConverter() Offset globalPosition, String? targetId)
         contextMenuOpen,
-    required TResult Function(
-            String nodeType,
-            @OffsetConverter() Offset canvasPos,
-            @SizeConverter() Size nodeSize,
-            String? highlightedEdgeId)
+    required TResult Function(NodeModel node,
+            @OffsetConverter() Offset canvasPos, String? highlightedEdgeId)
         insertingNodePreview,
   }) {
     return dragWaypoint(
@@ -1565,8 +1549,8 @@ class _$DragWaypointImpl extends DragWaypoint {
     TResult? Function(
             @OffsetConverter() Offset globalPosition, String? targetId)?
         contextMenuOpen,
-    TResult? Function(String nodeType, @OffsetConverter() Offset canvasPos,
-            @SizeConverter() Size nodeSize, String? highlightedEdgeId)?
+    TResult? Function(NodeModel node, @OffsetConverter() Offset canvasPos,
+            String? highlightedEdgeId)?
         insertingNodePreview,
   }) {
     return dragWaypoint?.call(
@@ -1619,8 +1603,8 @@ class _$DragWaypointImpl extends DragWaypoint {
     TResult Function(
             @OffsetConverter() Offset globalPosition, String? targetId)?
         contextMenuOpen,
-    TResult Function(String nodeType, @OffsetConverter() Offset canvasPos,
-            @SizeConverter() Size nodeSize, String? highlightedEdgeId)?
+    TResult Function(NodeModel node, @OffsetConverter() Offset canvasPos,
+            String? highlightedEdgeId)?
         insertingNodePreview,
     required TResult orElse(),
   }) {
@@ -1722,7 +1706,7 @@ abstract class DragWaypoint extends InteractionState {
   String get edgeId;
   int get pointIndex;
   @OffsetConverter()
-  Offset get originalPoint; // 新增
+  Offset get originalPoint;
   @OffsetConverter()
   Offset get startCanvas;
   @OffsetConverter()
@@ -1869,11 +1853,8 @@ class _$PanCanvasImpl extends PanCanvas {
     required TResult Function(
             @OffsetConverter() Offset globalPosition, String? targetId)
         contextMenuOpen,
-    required TResult Function(
-            String nodeType,
-            @OffsetConverter() Offset canvasPos,
-            @SizeConverter() Size nodeSize,
-            String? highlightedEdgeId)
+    required TResult Function(NodeModel node,
+            @OffsetConverter() Offset canvasPos, String? highlightedEdgeId)
         insertingNodePreview,
   }) {
     return panCanvas(startGlobal, lastGlobal);
@@ -1925,8 +1906,8 @@ class _$PanCanvasImpl extends PanCanvas {
     TResult? Function(
             @OffsetConverter() Offset globalPosition, String? targetId)?
         contextMenuOpen,
-    TResult? Function(String nodeType, @OffsetConverter() Offset canvasPos,
-            @SizeConverter() Size nodeSize, String? highlightedEdgeId)?
+    TResult? Function(NodeModel node, @OffsetConverter() Offset canvasPos,
+            String? highlightedEdgeId)?
         insertingNodePreview,
   }) {
     return panCanvas?.call(startGlobal, lastGlobal);
@@ -1978,8 +1959,8 @@ class _$PanCanvasImpl extends PanCanvas {
     TResult Function(
             @OffsetConverter() Offset globalPosition, String? targetId)?
         contextMenuOpen,
-    TResult Function(String nodeType, @OffsetConverter() Offset canvasPos,
-            @SizeConverter() Size nodeSize, String? highlightedEdgeId)?
+    TResult Function(NodeModel node, @OffsetConverter() Offset canvasPos,
+            String? highlightedEdgeId)?
         insertingNodePreview,
     required TResult orElse(),
   }) {
@@ -2205,11 +2186,8 @@ class _$SelectingAreaImpl extends SelectingArea {
     required TResult Function(
             @OffsetConverter() Offset globalPosition, String? targetId)
         contextMenuOpen,
-    required TResult Function(
-            String nodeType,
-            @OffsetConverter() Offset canvasPos,
-            @SizeConverter() Size nodeSize,
-            String? highlightedEdgeId)
+    required TResult Function(NodeModel node,
+            @OffsetConverter() Offset canvasPos, String? highlightedEdgeId)
         insertingNodePreview,
   }) {
     return selectingArea(selectionBox);
@@ -2261,8 +2239,8 @@ class _$SelectingAreaImpl extends SelectingArea {
     TResult? Function(
             @OffsetConverter() Offset globalPosition, String? targetId)?
         contextMenuOpen,
-    TResult? Function(String nodeType, @OffsetConverter() Offset canvasPos,
-            @SizeConverter() Size nodeSize, String? highlightedEdgeId)?
+    TResult? Function(NodeModel node, @OffsetConverter() Offset canvasPos,
+            String? highlightedEdgeId)?
         insertingNodePreview,
   }) {
     return selectingArea?.call(selectionBox);
@@ -2314,8 +2292,8 @@ class _$SelectingAreaImpl extends SelectingArea {
     TResult Function(
             @OffsetConverter() Offset globalPosition, String? targetId)?
         contextMenuOpen,
-    TResult Function(String nodeType, @OffsetConverter() Offset canvasPos,
-            @SizeConverter() Size nodeSize, String? highlightedEdgeId)?
+    TResult Function(NodeModel node, @OffsetConverter() Offset canvasPos,
+            String? highlightedEdgeId)?
         insertingNodePreview,
     required TResult orElse(),
   }) {
@@ -2565,11 +2543,8 @@ class _$InsertingNodeImpl extends InsertingNode {
     required TResult Function(
             @OffsetConverter() Offset globalPosition, String? targetId)
         contextMenuOpen,
-    required TResult Function(
-            String nodeType,
-            @OffsetConverter() Offset canvasPos,
-            @SizeConverter() Size nodeSize,
-            String? highlightedEdgeId)
+    required TResult Function(NodeModel node,
+            @OffsetConverter() Offset canvasPos, String? highlightedEdgeId)
         insertingNodePreview,
   }) {
     return insertingNode(nodeType, startCanvas, lastCanvas);
@@ -2621,8 +2596,8 @@ class _$InsertingNodeImpl extends InsertingNode {
     TResult? Function(
             @OffsetConverter() Offset globalPosition, String? targetId)?
         contextMenuOpen,
-    TResult? Function(String nodeType, @OffsetConverter() Offset canvasPos,
-            @SizeConverter() Size nodeSize, String? highlightedEdgeId)?
+    TResult? Function(NodeModel node, @OffsetConverter() Offset canvasPos,
+            String? highlightedEdgeId)?
         insertingNodePreview,
   }) {
     return insertingNode?.call(nodeType, startCanvas, lastCanvas);
@@ -2674,8 +2649,8 @@ class _$InsertingNodeImpl extends InsertingNode {
     TResult Function(
             @OffsetConverter() Offset globalPosition, String? targetId)?
         contextMenuOpen,
-    TResult Function(String nodeType, @OffsetConverter() Offset canvasPos,
-            @SizeConverter() Size nodeSize, String? highlightedEdgeId)?
+    TResult Function(NodeModel node, @OffsetConverter() Offset canvasPos,
+            String? highlightedEdgeId)?
         insertingNodePreview,
     required TResult orElse(),
   }) {
@@ -2941,11 +2916,8 @@ class _$InsertNodeToEdgeImpl extends InsertNodeToEdge {
     required TResult Function(
             @OffsetConverter() Offset globalPosition, String? targetId)
         contextMenuOpen,
-    required TResult Function(
-            String nodeType,
-            @OffsetConverter() Offset canvasPos,
-            @SizeConverter() Size nodeSize,
-            String? highlightedEdgeId)
+    required TResult Function(NodeModel node,
+            @OffsetConverter() Offset canvasPos, String? highlightedEdgeId)
         insertingNodePreview,
   }) {
     return insertNodeToEdge(nodeType, edgeId, startCanvas, lastCanvas);
@@ -2997,8 +2969,8 @@ class _$InsertNodeToEdgeImpl extends InsertNodeToEdge {
     TResult? Function(
             @OffsetConverter() Offset globalPosition, String? targetId)?
         contextMenuOpen,
-    TResult? Function(String nodeType, @OffsetConverter() Offset canvasPos,
-            @SizeConverter() Size nodeSize, String? highlightedEdgeId)?
+    TResult? Function(NodeModel node, @OffsetConverter() Offset canvasPos,
+            String? highlightedEdgeId)?
         insertingNodePreview,
   }) {
     return insertNodeToEdge?.call(nodeType, edgeId, startCanvas, lastCanvas);
@@ -3050,8 +3022,8 @@ class _$InsertNodeToEdgeImpl extends InsertNodeToEdge {
     TResult Function(
             @OffsetConverter() Offset globalPosition, String? targetId)?
         contextMenuOpen,
-    TResult Function(String nodeType, @OffsetConverter() Offset canvasPos,
-            @SizeConverter() Size nodeSize, String? highlightedEdgeId)?
+    TResult Function(NodeModel node, @OffsetConverter() Offset canvasPos,
+            String? highlightedEdgeId)?
         insertingNodePreview,
     required TResult orElse(),
   }) {
@@ -3319,11 +3291,8 @@ class _$ResizingNodeImpl extends ResizingNode {
     required TResult Function(
             @OffsetConverter() Offset globalPosition, String? targetId)
         contextMenuOpen,
-    required TResult Function(
-            String nodeType,
-            @OffsetConverter() Offset canvasPos,
-            @SizeConverter() Size nodeSize,
-            String? highlightedEdgeId)
+    required TResult Function(NodeModel node,
+            @OffsetConverter() Offset canvasPos, String? highlightedEdgeId)
         insertingNodePreview,
   }) {
     return resizingNode(nodeId, handlePosition, startCanvas, lastCanvas);
@@ -3375,8 +3344,8 @@ class _$ResizingNodeImpl extends ResizingNode {
     TResult? Function(
             @OffsetConverter() Offset globalPosition, String? targetId)?
         contextMenuOpen,
-    TResult? Function(String nodeType, @OffsetConverter() Offset canvasPos,
-            @SizeConverter() Size nodeSize, String? highlightedEdgeId)?
+    TResult? Function(NodeModel node, @OffsetConverter() Offset canvasPos,
+            String? highlightedEdgeId)?
         insertingNodePreview,
   }) {
     return resizingNode?.call(nodeId, handlePosition, startCanvas, lastCanvas);
@@ -3428,8 +3397,8 @@ class _$ResizingNodeImpl extends ResizingNode {
     TResult Function(
             @OffsetConverter() Offset globalPosition, String? targetId)?
         contextMenuOpen,
-    TResult Function(String nodeType, @OffsetConverter() Offset canvasPos,
-            @SizeConverter() Size nodeSize, String? highlightedEdgeId)?
+    TResult Function(NodeModel node, @OffsetConverter() Offset canvasPos,
+            String? highlightedEdgeId)?
         insertingNodePreview,
     required TResult orElse(),
   }) {
@@ -3658,11 +3627,8 @@ class _$HoveringNodeImpl extends HoveringNode {
     required TResult Function(
             @OffsetConverter() Offset globalPosition, String? targetId)
         contextMenuOpen,
-    required TResult Function(
-            String nodeType,
-            @OffsetConverter() Offset canvasPos,
-            @SizeConverter() Size nodeSize,
-            String? highlightedEdgeId)
+    required TResult Function(NodeModel node,
+            @OffsetConverter() Offset canvasPos, String? highlightedEdgeId)
         insertingNodePreview,
   }) {
     return hoveringNode(nodeId);
@@ -3714,8 +3680,8 @@ class _$HoveringNodeImpl extends HoveringNode {
     TResult? Function(
             @OffsetConverter() Offset globalPosition, String? targetId)?
         contextMenuOpen,
-    TResult? Function(String nodeType, @OffsetConverter() Offset canvasPos,
-            @SizeConverter() Size nodeSize, String? highlightedEdgeId)?
+    TResult? Function(NodeModel node, @OffsetConverter() Offset canvasPos,
+            String? highlightedEdgeId)?
         insertingNodePreview,
   }) {
     return hoveringNode?.call(nodeId);
@@ -3767,8 +3733,8 @@ class _$HoveringNodeImpl extends HoveringNode {
     TResult Function(
             @OffsetConverter() Offset globalPosition, String? targetId)?
         contextMenuOpen,
-    TResult Function(String nodeType, @OffsetConverter() Offset canvasPos,
-            @SizeConverter() Size nodeSize, String? highlightedEdgeId)?
+    TResult Function(NodeModel node, @OffsetConverter() Offset canvasPos,
+            String? highlightedEdgeId)?
         insertingNodePreview,
     required TResult orElse(),
   }) {
@@ -3998,11 +3964,8 @@ class _$HoveringAnchorImpl extends HoveringAnchor {
     required TResult Function(
             @OffsetConverter() Offset globalPosition, String? targetId)
         contextMenuOpen,
-    required TResult Function(
-            String nodeType,
-            @OffsetConverter() Offset canvasPos,
-            @SizeConverter() Size nodeSize,
-            String? highlightedEdgeId)
+    required TResult Function(NodeModel node,
+            @OffsetConverter() Offset canvasPos, String? highlightedEdgeId)
         insertingNodePreview,
   }) {
     return hoveringAnchor(nodeId, anchorId);
@@ -4054,8 +4017,8 @@ class _$HoveringAnchorImpl extends HoveringAnchor {
     TResult? Function(
             @OffsetConverter() Offset globalPosition, String? targetId)?
         contextMenuOpen,
-    TResult? Function(String nodeType, @OffsetConverter() Offset canvasPos,
-            @SizeConverter() Size nodeSize, String? highlightedEdgeId)?
+    TResult? Function(NodeModel node, @OffsetConverter() Offset canvasPos,
+            String? highlightedEdgeId)?
         insertingNodePreview,
   }) {
     return hoveringAnchor?.call(nodeId, anchorId);
@@ -4107,8 +4070,8 @@ class _$HoveringAnchorImpl extends HoveringAnchor {
     TResult Function(
             @OffsetConverter() Offset globalPosition, String? targetId)?
         contextMenuOpen,
-    TResult Function(String nodeType, @OffsetConverter() Offset canvasPos,
-            @SizeConverter() Size nodeSize, String? highlightedEdgeId)?
+    TResult Function(NodeModel node, @OffsetConverter() Offset canvasPos,
+            String? highlightedEdgeId)?
         insertingNodePreview,
     required TResult orElse(),
   }) {
@@ -4329,11 +4292,8 @@ class _$HoveringEdgeImpl extends HoveringEdge {
     required TResult Function(
             @OffsetConverter() Offset globalPosition, String? targetId)
         contextMenuOpen,
-    required TResult Function(
-            String nodeType,
-            @OffsetConverter() Offset canvasPos,
-            @SizeConverter() Size nodeSize,
-            String? highlightedEdgeId)
+    required TResult Function(NodeModel node,
+            @OffsetConverter() Offset canvasPos, String? highlightedEdgeId)
         insertingNodePreview,
   }) {
     return hoveringEdge(edgeId);
@@ -4385,8 +4345,8 @@ class _$HoveringEdgeImpl extends HoveringEdge {
     TResult? Function(
             @OffsetConverter() Offset globalPosition, String? targetId)?
         contextMenuOpen,
-    TResult? Function(String nodeType, @OffsetConverter() Offset canvasPos,
-            @SizeConverter() Size nodeSize, String? highlightedEdgeId)?
+    TResult? Function(NodeModel node, @OffsetConverter() Offset canvasPos,
+            String? highlightedEdgeId)?
         insertingNodePreview,
   }) {
     return hoveringEdge?.call(edgeId);
@@ -4438,8 +4398,8 @@ class _$HoveringEdgeImpl extends HoveringEdge {
     TResult Function(
             @OffsetConverter() Offset globalPosition, String? targetId)?
         contextMenuOpen,
-    TResult Function(String nodeType, @OffsetConverter() Offset canvasPos,
-            @SizeConverter() Size nodeSize, String? highlightedEdgeId)?
+    TResult Function(NodeModel node, @OffsetConverter() Offset canvasPos,
+            String? highlightedEdgeId)?
         insertingNodePreview,
     required TResult orElse(),
   }) {
@@ -4673,11 +4633,8 @@ class _$ContextMenuOpenImpl extends ContextMenuOpen {
     required TResult Function(
             @OffsetConverter() Offset globalPosition, String? targetId)
         contextMenuOpen,
-    required TResult Function(
-            String nodeType,
-            @OffsetConverter() Offset canvasPos,
-            @SizeConverter() Size nodeSize,
-            String? highlightedEdgeId)
+    required TResult Function(NodeModel node,
+            @OffsetConverter() Offset canvasPos, String? highlightedEdgeId)
         insertingNodePreview,
   }) {
     return contextMenuOpen(globalPosition, targetId);
@@ -4729,8 +4686,8 @@ class _$ContextMenuOpenImpl extends ContextMenuOpen {
     TResult? Function(
             @OffsetConverter() Offset globalPosition, String? targetId)?
         contextMenuOpen,
-    TResult? Function(String nodeType, @OffsetConverter() Offset canvasPos,
-            @SizeConverter() Size nodeSize, String? highlightedEdgeId)?
+    TResult? Function(NodeModel node, @OffsetConverter() Offset canvasPos,
+            String? highlightedEdgeId)?
         insertingNodePreview,
   }) {
     return contextMenuOpen?.call(globalPosition, targetId);
@@ -4782,8 +4739,8 @@ class _$ContextMenuOpenImpl extends ContextMenuOpen {
     TResult Function(
             @OffsetConverter() Offset globalPosition, String? targetId)?
         contextMenuOpen,
-    TResult Function(String nodeType, @OffsetConverter() Offset canvasPos,
-            @SizeConverter() Size nodeSize, String? highlightedEdgeId)?
+    TResult Function(NodeModel node, @OffsetConverter() Offset canvasPos,
+            String? highlightedEdgeId)?
         insertingNodePreview,
     required TResult orElse(),
   }) {
@@ -4892,10 +4849,11 @@ abstract class _$$InsertingNodePreviewImplCopyWith<$Res> {
       __$$InsertingNodePreviewImplCopyWithImpl<$Res>;
   @useResult
   $Res call(
-      {String nodeType,
+      {NodeModel node,
       @OffsetConverter() Offset canvasPos,
-      @SizeConverter() Size nodeSize,
       String? highlightedEdgeId});
+
+  $NodeModelCopyWith<$Res> get node;
 }
 
 /// @nodoc
@@ -4909,29 +4867,32 @@ class __$$InsertingNodePreviewImplCopyWithImpl<$Res>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? nodeType = null,
+    Object? node = null,
     Object? canvasPos = null,
-    Object? nodeSize = null,
     Object? highlightedEdgeId = freezed,
   }) {
     return _then(_$InsertingNodePreviewImpl(
-      nodeType: null == nodeType
-          ? _value.nodeType
-          : nodeType // ignore: cast_nullable_to_non_nullable
-              as String,
+      node: null == node
+          ? _value.node
+          : node // ignore: cast_nullable_to_non_nullable
+              as NodeModel,
       canvasPos: null == canvasPos
           ? _value.canvasPos
           : canvasPos // ignore: cast_nullable_to_non_nullable
               as Offset,
-      nodeSize: null == nodeSize
-          ? _value.nodeSize
-          : nodeSize // ignore: cast_nullable_to_non_nullable
-              as Size,
       highlightedEdgeId: freezed == highlightedEdgeId
           ? _value.highlightedEdgeId
           : highlightedEdgeId // ignore: cast_nullable_to_non_nullable
               as String?,
     ));
+  }
+
+  @override
+  @pragma('vm:prefer-inline')
+  $NodeModelCopyWith<$Res> get node {
+    return $NodeModelCopyWith<$Res>(_value.node, (value) {
+      return _then(_value.copyWith(node: value));
+    });
   }
 }
 
@@ -4939,9 +4900,8 @@ class __$$InsertingNodePreviewImplCopyWithImpl<$Res>
 @JsonSerializable()
 class _$InsertingNodePreviewImpl extends InsertingNodePreview {
   const _$InsertingNodePreviewImpl(
-      {required this.nodeType,
+      {required this.node,
       @OffsetConverter() required this.canvasPos,
-      @SizeConverter() required this.nodeSize,
       this.highlightedEdgeId,
       final String? $type})
       : $type = $type ?? 'inserting_node_preview',
@@ -4951,16 +4911,10 @@ class _$InsertingNodePreviewImpl extends InsertingNodePreview {
       _$$InsertingNodePreviewImplFromJson(json);
 
   @override
-  final String nodeType;
-// 外部拖入节点类型
+  final NodeModel node;
   @override
   @OffsetConverter()
   final Offset canvasPos;
-// 当前位置（矩形中心或左上角）
-  @override
-  @SizeConverter()
-  final Size nodeSize;
-// 节点预览尺寸
   @override
   final String? highlightedEdgeId;
 
@@ -4969,7 +4923,7 @@ class _$InsertingNodePreviewImpl extends InsertingNodePreview {
 
   @override
   String toString() {
-    return 'InteractionState.insertingNodePreview(nodeType: $nodeType, canvasPos: $canvasPos, nodeSize: $nodeSize, highlightedEdgeId: $highlightedEdgeId)';
+    return 'InteractionState.insertingNodePreview(node: $node, canvasPos: $canvasPos, highlightedEdgeId: $highlightedEdgeId)';
   }
 
   @override
@@ -4977,20 +4931,17 @@ class _$InsertingNodePreviewImpl extends InsertingNodePreview {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$InsertingNodePreviewImpl &&
-            (identical(other.nodeType, nodeType) ||
-                other.nodeType == nodeType) &&
+            (identical(other.node, node) || other.node == node) &&
             (identical(other.canvasPos, canvasPos) ||
                 other.canvasPos == canvasPos) &&
-            (identical(other.nodeSize, nodeSize) ||
-                other.nodeSize == nodeSize) &&
             (identical(other.highlightedEdgeId, highlightedEdgeId) ||
                 other.highlightedEdgeId == highlightedEdgeId));
   }
 
   @JsonKey(ignore: true)
   @override
-  int get hashCode => Object.hash(
-      runtimeType, nodeType, canvasPos, nodeSize, highlightedEdgeId);
+  int get hashCode =>
+      Object.hash(runtimeType, node, canvasPos, highlightedEdgeId);
 
   @JsonKey(ignore: true)
   @override
@@ -5050,15 +5001,11 @@ class _$InsertingNodePreviewImpl extends InsertingNodePreview {
     required TResult Function(
             @OffsetConverter() Offset globalPosition, String? targetId)
         contextMenuOpen,
-    required TResult Function(
-            String nodeType,
-            @OffsetConverter() Offset canvasPos,
-            @SizeConverter() Size nodeSize,
-            String? highlightedEdgeId)
+    required TResult Function(NodeModel node,
+            @OffsetConverter() Offset canvasPos, String? highlightedEdgeId)
         insertingNodePreview,
   }) {
-    return insertingNodePreview(
-        nodeType, canvasPos, nodeSize, highlightedEdgeId);
+    return insertingNodePreview(node, canvasPos, highlightedEdgeId);
   }
 
   @override
@@ -5107,12 +5054,11 @@ class _$InsertingNodePreviewImpl extends InsertingNodePreview {
     TResult? Function(
             @OffsetConverter() Offset globalPosition, String? targetId)?
         contextMenuOpen,
-    TResult? Function(String nodeType, @OffsetConverter() Offset canvasPos,
-            @SizeConverter() Size nodeSize, String? highlightedEdgeId)?
+    TResult? Function(NodeModel node, @OffsetConverter() Offset canvasPos,
+            String? highlightedEdgeId)?
         insertingNodePreview,
   }) {
-    return insertingNodePreview?.call(
-        nodeType, canvasPos, nodeSize, highlightedEdgeId);
+    return insertingNodePreview?.call(node, canvasPos, highlightedEdgeId);
   }
 
   @override
@@ -5161,14 +5107,13 @@ class _$InsertingNodePreviewImpl extends InsertingNodePreview {
     TResult Function(
             @OffsetConverter() Offset globalPosition, String? targetId)?
         contextMenuOpen,
-    TResult Function(String nodeType, @OffsetConverter() Offset canvasPos,
-            @SizeConverter() Size nodeSize, String? highlightedEdgeId)?
+    TResult Function(NodeModel node, @OffsetConverter() Offset canvasPos,
+            String? highlightedEdgeId)?
         insertingNodePreview,
     required TResult orElse(),
   }) {
     if (insertingNodePreview != null) {
-      return insertingNodePreview(
-          nodeType, canvasPos, nodeSize, highlightedEdgeId);
+      return insertingNodePreview(node, canvasPos, highlightedEdgeId);
     }
     return orElse();
   }
@@ -5250,20 +5195,17 @@ class _$InsertingNodePreviewImpl extends InsertingNodePreview {
 
 abstract class InsertingNodePreview extends InteractionState {
   const factory InsertingNodePreview(
-      {required final String nodeType,
+      {required final NodeModel node,
       @OffsetConverter() required final Offset canvasPos,
-      @SizeConverter() required final Size nodeSize,
       final String? highlightedEdgeId}) = _$InsertingNodePreviewImpl;
   const InsertingNodePreview._() : super._();
 
   factory InsertingNodePreview.fromJson(Map<String, dynamic> json) =
       _$InsertingNodePreviewImpl.fromJson;
 
-  String get nodeType; // 外部拖入节点类型
+  NodeModel get node;
   @OffsetConverter()
-  Offset get canvasPos; // 当前位置（矩形中心或左上角）
-  @SizeConverter()
-  Size get nodeSize; // 节点预览尺寸
+  Offset get canvasPos;
   String? get highlightedEdgeId;
   @JsonKey(ignore: true)
   _$$InsertingNodePreviewImplCopyWith<_$InsertingNodePreviewImpl>

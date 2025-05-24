@@ -1,5 +1,6 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:flutter/material.dart';
+import 'package:flow_editor/core/models/node_model.dart';
 import 'package:flow_editor/core/models/converters/offset_size_converter.dart';
 import 'package:flow_editor/core/models/converters/rect_converter.dart';
 
@@ -29,7 +30,7 @@ class InteractionState with _$InteractionState {
   const factory InteractionState.dragWaypoint({
     required String edgeId,
     required int pointIndex,
-    @OffsetConverter() required Offset originalPoint, // 新增
+    @OffsetConverter() required Offset originalPoint,
     @OffsetConverter() required Offset startCanvas,
     @OffsetConverter() required Offset lastCanvas,
   }) = DragWaypoint;
@@ -82,10 +83,9 @@ class InteractionState with _$InteractionState {
   }) = ContextMenuOpen;
 
   const factory InteractionState.insertingNodePreview({
-    required String nodeType, // 外部拖入节点类型
-    @OffsetConverter() required Offset canvasPos, // 当前位置（矩形中心或左上角）
-    @SizeConverter() required Size nodeSize, // 节点预览尺寸
-    String? highlightedEdgeId, // 当前高亮的目标边
+    required NodeModel node,
+    @OffsetConverter() required Offset canvasPos,
+    String? highlightedEdgeId,
   }) = InsertingNodePreview;
 
   factory InteractionState.fromJson(Map<String, dynamic> json) =>
@@ -169,110 +169,65 @@ extension InteractionStateX on InteractionState {
         orElse: () => null,
       );
 
-  bool get isSelectingArea => maybeMap(
-        selectingArea: (_) => true,
-        orElse: () => false,
-      );
-
-  Rect? get selectionBox => maybeWhen(
-        selectingArea: (selectionBox) => selectionBox,
-        orElse: () => null,
-      );
-
-  bool get isHoveringNode => maybeMap(
-        hoveringNode: (_) => true,
-        orElse: () => false,
-      );
-
-  bool get isHoveringEdge => maybeMap(
-        hoveringEdge: (_) => true,
-        orElse: () => false,
-      );
-
-  bool get isHoveringAnchor => maybeMap(
-        hoveringAnchor: (_) => true,
-        orElse: () => false,
-      );
-
-  bool get isHovering => isHoveringNode || isHoveringEdge || isHoveringAnchor;
-
-  String? get hoveringNodeId => maybeWhen(
-        hoveringNode: (id) => id,
-        orElse: () => null,
-      );
-
-  String? get hoveringEdgeId => maybeWhen(
-        hoveringEdge: (id) => id,
-        orElse: () => null,
-      );
-
-  String? get hoveringAnchorId => maybeWhen(
-        hoveringAnchor: (_, anchorId) => anchorId,
-        orElse: () => null,
-      );
-
-  String? get hoveringAnchorNodeId => maybeWhen(
-        hoveringAnchor: (nodeId, _) => nodeId,
-        orElse: () => null,
-      );
-
-  String? get draggingSourceNodeId => maybeWhen(
-        dragEdge: (_, sourceNodeId, __, ___, ____) => sourceNodeId,
-        orElse: () => null,
-      );
-
-  String? get draggingSourceAnchorId => maybeWhen(
-        dragEdge: (_, __, sourceAnchorId, ___, ____) => sourceAnchorId,
-        orElse: () => null,
-      );
-
-  int? get draggingWaypointIndex => maybeWhen(
-        dragWaypoint: (_, pointIndex, ___, ____, _____) => pointIndex,
-        orElse: () => null,
-      );
-
-  Offset? get draggingWaypointOriginalPoint => maybeWhen(
-        dragWaypoint: (_, __, originalPoint, ___, ____) => originalPoint,
-        orElse: () => null,
-      );
-
   String? get insertingNodeType => maybeWhen(
         insertingNode: (nodeType, _, __) => nodeType,
         insertNodeToEdge: (nodeType, _, __, ___) => nodeType,
+        insertingNodePreview: (node, _, __) => node.type,
         orElse: () => null,
       );
 
-  String? get resizingNodeId => maybeWhen(
-        resizingNode: (nodeId, _, __, ___) => nodeId,
-        orElse: () => null,
-      );
-
-  Offset? get resizingHandlePosition => maybeWhen(
-        resizingNode: (_, handlePosition, __, ___) => handlePosition,
-        orElse: () => null,
-      );
-
-  // 是否处于插入节点预览状态
   bool get isInsertingNodePreview => maybeMap(
         insertingNodePreview: (_) => true,
         orElse: () => false,
       );
 
-  // 获取插入预览框的中心或左上角坐标
   Offset? get insertingPreviewPos => maybeWhen(
-        insertingNodePreview: (_, pos, __, ___) => pos,
+        insertingNodePreview: (_, pos, __) => pos,
         orElse: () => null,
       );
 
-  // 获取插入预览节点大小
   Size? get insertingPreviewSize => maybeWhen(
-        insertingNodePreview: (_, __, size, ___) => size,
+        insertingNodePreview: (node, _, __) => node.size,
         orElse: () => null,
       );
 
-  // 当前高亮的边的ID（可能为空）
   String? get insertingHighlightedEdgeId => maybeWhen(
-        insertingNodePreview: (_, __, ___, edgeId) => edgeId,
+        insertingNodePreview: (_, __, edgeId) => edgeId,
         orElse: () => null,
       );
+
+  bool get isSelectingArea =>
+      maybeMap(selectingArea: (_) => true, orElse: () => false);
+  Rect? get selectionBox =>
+      maybeWhen(selectingArea: (box) => box, orElse: () => null);
+
+  bool get isHoveringNode =>
+      maybeMap(hoveringNode: (_) => true, orElse: () => false);
+  bool get isHoveringEdge =>
+      maybeMap(hoveringEdge: (_) => true, orElse: () => false);
+  bool get isHoveringAnchor =>
+      maybeMap(hoveringAnchor: (_) => true, orElse: () => false);
+  bool get isHovering => isHoveringNode || isHoveringEdge || isHoveringAnchor;
+
+  String? get hoveringNodeId =>
+      maybeWhen(hoveringNode: (id) => id, orElse: () => null);
+  String? get hoveringEdgeId =>
+      maybeWhen(hoveringEdge: (id) => id, orElse: () => null);
+  String? get hoveringAnchorId =>
+      maybeWhen(hoveringAnchor: (_, anchorId) => anchorId, orElse: () => null);
+  String? get hoveringAnchorNodeId =>
+      maybeWhen(hoveringAnchor: (nodeId, _) => nodeId, orElse: () => null);
+
+  String? get draggingSourceNodeId => maybeWhen(
+      dragEdge: (_, sourceNodeId, __, ___, ____) => sourceNodeId,
+      orElse: () => null);
+  String? get draggingSourceAnchorId => maybeWhen(
+      dragEdge: (_, __, sourceAnchorId, ___, ____) => sourceAnchorId,
+      orElse: () => null);
+
+  int? get draggingWaypointIndex => maybeWhen(
+      dragWaypoint: (_, index, ___, ____, _____) => index, orElse: () => null);
+  Offset? get draggingWaypointOriginalPoint => maybeWhen(
+      dragWaypoint: (_, __, originalPoint, ___, ____) => originalPoint,
+      orElse: () => null);
 }
