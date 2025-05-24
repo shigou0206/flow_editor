@@ -38,6 +38,8 @@ abstract class IGraphController {
   Future<void> copySelection();
   Future<void> pasteClipboard();
 
+  Future<void> applyLayout();
+
   // Undo & Redo
   Future<void> undo();
   Future<void> redo();

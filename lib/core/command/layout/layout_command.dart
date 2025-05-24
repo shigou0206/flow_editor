@@ -1,0 +1,58 @@
+import 'package:flow_editor/core/command/i_command.dart';
+import 'package:flow_editor/core/command/command_context.dart';
+import 'package:flow_editor/core/models/node_model.dart';
+import 'package:flow_editor/core/models/edge_model.dart';
+import 'package:flow_editor/layout/layout_strategy.dart';
+import 'package:flow_editor/layout/sugiyama_layout.dart';
+
+class LayoutCommand implements ICommand {
+  final CommandContext ctx;
+  final LayoutStrategy layoutStrategy;
+
+  late List<NodeModel> _beforeNodes;
+  late List<EdgeModel> _beforeEdges;
+
+  LayoutCommand(
+    this.ctx, {
+    LayoutStrategy? layoutStrategy,
+  }) : layoutStrategy = layoutStrategy ?? SugiyamaLayoutStrategy();
+
+  @override
+  String get description => 'Apply Sugiyama Layout';
+
+  @override
+  Future<void> execute() async {
+    final st = ctx.getState();
+
+    // 保存布局前状态，用于undo
+    _beforeNodes = List.of(st.nodeState.nodes);
+    _beforeEdges = List.of(st.edgeState.edges);
+
+    // 对当前节点和边执行布局
+    final nodes = List<NodeModel>.of(_beforeNodes);
+    final edges = List<EdgeModel>.of(_beforeEdges);
+
+    layoutStrategy.performLayout(nodes, edges);
+
+    // 更新布局后的节点和边
+    ctx.updateState(
+      st.copyWith(
+        nodeState: st.nodeState.updateNodes(nodes),
+        edgeState: st.edgeState.updateEdges(edges),
+      ),
+    );
+  }
+
+  @override
+  Future<void> undo() async {
+    final st = ctx.getState();
+
+    // 恢复布局前的状态
+    ctx.updateState(
+      st.copyWith(
+        nodeState: st.nodeState.updateNodes(_beforeNodes),
+        edgeState: st.edgeState.updateEdges(_beforeEdges),
+      ),
+    );
+  }
+}

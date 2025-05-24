@@ -26,6 +26,8 @@ import 'package:flow_editor/core/command/edit/clear_selection_command.dart';
 
 import 'package:flow_editor/core/command/edit/copy_selection_command.dart';
 import 'package:flow_editor/core/command/edit/paste_clipboard_command.dart';
+
+import 'package:flow_editor/core/command/layout/layout_command.dart';
 import 'package:flutter/material.dart';
 
 class GraphControllerImpl implements IGraphController {
@@ -109,38 +111,6 @@ class GraphControllerImpl implements IGraphController {
     );
   }
 
-  // @override
-  // Future<void> insertNodeIntoEdge(NodeModel node, String edgeId) async {
-  //   final state = _ctx.getState();
-
-  //   // 获取要拆分的原始边
-  //   final originalEdge =
-  //       state.edgeState.edges.firstWhere((edge) => edge.id == edgeId);
-
-  //   // 删除原来的边
-  //   await _cmdMgr.executeCommand(DeleteEdgeCommand(_ctx, edgeId));
-
-  //   // 添加新的节点
-  //   await _cmdMgr.executeCommand(AddNodeCommand(_ctx, node));
-
-  //   // 新建两条边（源节点 -> 新节点，新节点 -> 目标节点）
-  //   final edgeToNewNode = EdgeModel.generated(
-  //     sourceNodeId: originalEdge.sourceNodeId,
-  //     sourceAnchorId: originalEdge.sourceAnchorId,
-  //     targetNodeId: node.id,
-  //   );
-
-  //   final edgeFromNewNode = EdgeModel.generated(
-  //     sourceNodeId: node.id,
-  //     targetNodeId: originalEdge.targetNodeId,
-  //     targetAnchorId: originalEdge.targetAnchorId,
-  //   );
-
-  //   // 添加新的两条边
-  //   await _cmdMgr.executeCommand(AddEdgeCommand(_ctx, edgeToNewNode));
-  //   await _cmdMgr.executeCommand(AddEdgeCommand(_ctx, edgeFromNewNode));
-  // }
-
   @override
   Future<void> insertNodeIntoEdge(NodeModel node, String edgeId) async {
     final state = _ctx.getState();
@@ -152,24 +122,33 @@ class GraphControllerImpl implements IGraphController {
     debugPrint(
         '[🔍 InsertNodeIntoEdge]: Original Edge Found - id=${originalEdge.id}, source=${originalEdge.sourceNodeId}, target=${originalEdge.targetNodeId}');
 
+    // 获取原边源节点，推断 parentId
+    final sourceNode = state.nodeState.nodes
+        .firstWhere((node) => node.id == originalEdge.sourceNodeId);
+
+    final parentId = sourceNode.parentId;
+
     // 删除原来的边
     await _cmdMgr.executeCommand(DeleteEdgeCommand(_ctx, edgeId));
     debugPrint('[🔴 Edge Deleted]: id=$edgeId');
 
+    // 新节点带上 parentId 信息
+    final nodeWithParent = node.copyWith(parentId: parentId);
+
     // 添加新的节点
-    await _cmdMgr.executeCommand(AddNodeCommand(_ctx, node));
+    await _cmdMgr.executeCommand(AddNodeCommand(_ctx, nodeWithParent));
     debugPrint(
-        '[🟢 Node Added]: id=${node.id}, type=${node.type}, position=${node.position}');
+        '[🟢 Node Added]: id=${nodeWithParent.id}, type=${nodeWithParent.type}, position=${nodeWithParent.position}, parentId=${nodeWithParent.parentId}');
 
     // 新建两条边（源节点 -> 新节点，新节点 -> 目标节点）
     final edgeToNewNode = EdgeModel.generated(
       sourceNodeId: originalEdge.sourceNodeId,
       sourceAnchorId: originalEdge.sourceAnchorId,
-      targetNodeId: node.id,
+      targetNodeId: nodeWithParent.id,
     );
 
     final edgeFromNewNode = EdgeModel.generated(
-      sourceNodeId: node.id,
+      sourceNodeId: nodeWithParent.id,
       targetNodeId: originalEdge.targetNodeId,
       targetAnchorId: originalEdge.targetAnchorId,
     );
@@ -182,6 +161,8 @@ class GraphControllerImpl implements IGraphController {
     await _cmdMgr.executeCommand(AddEdgeCommand(_ctx, edgeFromNewNode));
     debugPrint(
         '[🟢 Edge Added]: id=${edgeFromNewNode.id}, source=${edgeFromNewNode.sourceNodeId}, target=${edgeFromNewNode.targetNodeId}');
+
+    await applyLayout();
   }
 
   // === Selection ===
@@ -213,6 +194,11 @@ class GraphControllerImpl implements IGraphController {
     return _cmdMgr.executeCommand(PasteClipboardCommand(_ctx));
   }
 
+  @override
+  Future<void> applyLayout() {
+    return _cmdMgr.executeCommand(LayoutCommand(_ctx));
+  }
+
   // === Undo & Redo ===
 
   @override
@@ -220,89 +206,4 @@ class GraphControllerImpl implements IGraphController {
 
   @override
   Future<void> redo() => _cmdMgr.redo();
-}
-
-@override
-void addNode(NodeModel node) {
-  throw UnimplementedError('addNode is not yet implemented.');
-}
-
-@override
-void deleteNode(String nodeId) {
-  throw UnimplementedError('deleteNode is not yet implemented.');
-}
-
-@override
-void deleteNodeWithEdges(String nodeId) {
-  throw UnimplementedError('deleteNodeWithEdges is not yet implemented.');
-}
-
-@override
-void moveNode(String nodeId, Offset to) {
-  throw UnimplementedError('moveNode is not yet implemented.');
-}
-
-@override
-void groupNodes(List<String> nodeIds) {
-  throw UnimplementedError('groupNodes is not yet implemented.');
-}
-
-@override
-void ungroupNodes(String groupId) {
-  throw UnimplementedError('ungroupNodes is not yet implemented.');
-}
-
-@override
-void duplicateNode(String nodeId) {
-  throw UnimplementedError('duplicateNode is not yet implemented.');
-}
-
-@override
-void addEdge(EdgeModel edge) {
-  throw UnimplementedError('addEdge is not yet implemented.');
-}
-
-@override
-void deleteEdge(String edgeId) {
-  throw UnimplementedError('deleteEdge is not yet implemented.');
-}
-
-@override
-void moveEdge(String edgeId, Offset from, Offset to) {
-  throw UnimplementedError('moveEdge is not yet implemented.');
-}
-
-@override
-void selectNodes(Set<String> nodeIds) {
-  throw UnimplementedError('selectNodes is not yet implemented.');
-}
-
-@override
-void selectEdges(Set<String> edgeIds) {
-  throw UnimplementedError('selectEdges is not yet implemented.');
-}
-
-@override
-void clearSelection() {
-  throw UnimplementedError('clearSelection is not yet implemented.');
-}
-
-@override
-void copySelection() {
-  throw UnimplementedError('copySelection is not yet implemented.');
-}
-
-@override
-void pasteClipboard() {
-  throw UnimplementedError('pasteClipboard is not yet implemented.');
-}
-
-@override
-void undo() {
-  throw UnimplementedError('undo is not yet implemented.');
-}
-
-@override
-void redo() {
-  throw UnimplementedError('redo is not yet implemented.');
 }
