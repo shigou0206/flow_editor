@@ -9,7 +9,7 @@ import 'package:flow_editor/core/input/behavior_core/plugin_registry.dart';
 import 'package:flow_editor/core/input/behavior_core/behavior_context.dart';
 import 'package:flow_editor/core/input/event/input_event.dart';
 import 'package:flow_editor/core/input/event/input_event_type.dart';
-import 'package:flow_editor/core/input/config/config.dart';
+import 'package:flow_editor/core/models/config/input_config.dart';
 
 typedef CoordinateFn = Offset Function(Offset local);
 typedef PointerEventListener = void Function(PointerEvent);

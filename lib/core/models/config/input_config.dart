@@ -13,7 +13,7 @@ class InputConfig with _$InputConfig {
     // Node interactions
     @Default(true) bool enableNodeDrag,
     @Default(true) bool enableNodeResize,
-    @Default(false) bool enableNodeHover,
+    @Default(true) bool enableNodeHover,
     @Default(true) bool enableNodeTap,
 
     // Edge interactions
