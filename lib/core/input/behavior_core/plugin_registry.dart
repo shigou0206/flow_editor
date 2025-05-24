@@ -12,6 +12,7 @@ import 'package:flow_editor/core/input/behavior_plugins/marquee_select_behavior.
 import 'package:flow_editor/core/input/behavior_plugins/delete_key_behavior.dart';
 import 'package:flow_editor/core/input/behavior_plugins/copy_paste_behavior.dart';
 import 'package:flow_editor/core/input/behavior_plugins/undo_redo_behavior.dart';
+import 'package:flow_editor/core/input/behavior_plugins/insert_node_preview_behavior.dart';
 
 List<CanvasBehavior> registerDefaultBehaviors(BehaviorContext context) {
   final behaviors = <CanvasBehavior>[
@@ -21,6 +22,7 @@ List<CanvasBehavior> registerDefaultBehaviors(BehaviorContext context) {
     NodeDragBehavior(context),
     EdgeHoverBehavior(context),
     EdgeDrawBehavior(context),
+    InsertNodePreviewBehavior(context),
     MarqueeSelectBehavior(context),
     DeleteKeyBehavior(context),
     CopyPasteBehavior(context),
