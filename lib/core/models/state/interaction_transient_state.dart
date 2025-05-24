@@ -18,11 +18,10 @@ class InteractionState with _$InteractionState {
     @OffsetConverter() required Offset lastCanvas,
   }) = DragNode;
 
-  // ✅ 完全修正后的 dragEdge
   const factory InteractionState.dragEdge({
     required String edgeId,
     required String sourceNodeId,
-    required String sourceAnchorId, // 明确修正
+    required String sourceAnchorId,
     @OffsetConverter() required Offset startCanvas,
     @OffsetConverter() required Offset lastCanvas,
   }) = DragEdge;
@@ -30,6 +29,7 @@ class InteractionState with _$InteractionState {
   const factory InteractionState.dragWaypoint({
     required String edgeId,
     required int pointIndex,
+    @OffsetConverter() required Offset originalPoint, // 新增
     @OffsetConverter() required Offset startCanvas,
     @OffsetConverter() required Offset lastCanvas,
   }) = DragWaypoint;
@@ -50,6 +50,7 @@ class InteractionState with _$InteractionState {
   }) = InsertingNode;
 
   const factory InteractionState.insertNodeToEdge({
+    required String nodeType,
     required String edgeId,
     @OffsetConverter() required Offset startCanvas,
     @OffsetConverter() required Offset lastCanvas,
@@ -67,6 +68,7 @@ class InteractionState with _$InteractionState {
   }) = HoveringNode;
 
   const factory InteractionState.hoveringAnchor({
+    required String nodeId,
     required String anchorId,
   }) = HoveringAnchor;
 
@@ -122,13 +124,19 @@ extension InteractionStateX on InteractionState {
       );
 
   Offset get deltaWaypointDrag => maybeWhen(
-        dragWaypoint: (_, __, startCanvas, lastCanvas) =>
+        dragWaypoint: (_, __, ___, startCanvas, lastCanvas) =>
             lastCanvas - startCanvas,
         orElse: () => Offset.zero,
       );
 
   Offset get deltaInsertNode => maybeWhen(
         insertingNode: (_, startCanvas, lastCanvas) => lastCanvas - startCanvas,
+        orElse: () => Offset.zero,
+      );
+
+  Offset get deltaInsertNodeToEdge => maybeWhen(
+        insertNodeToEdge: (_, __, startCanvas, lastCanvas) =>
+            lastCanvas - startCanvas,
         orElse: () => Offset.zero,
       );
 
@@ -141,16 +149,16 @@ extension InteractionStateX on InteractionState {
   String? get hoveringTargetId => maybeWhen(
         hoveringNode: (id) => id,
         hoveringEdge: (id) => id,
-        hoveringAnchor: (id) => id,
+        hoveringAnchor: (_, id) => id,
         orElse: () => null,
       );
 
   String? get draggingTargetId => maybeWhen(
         dragNode: (nodeId, _, __) => nodeId,
         dragEdge: (edgeId, _, __, ___, ____) => edgeId,
-        dragWaypoint: (edgeId, _, __, ___) => edgeId,
+        dragWaypoint: (edgeId, _, __, ___, ____) => edgeId,
         resizingNode: (nodeId, _, __, ___) => nodeId,
-        insertNodeToEdge: (edgeId, _, __) => edgeId,
+        insertNodeToEdge: (_, edgeId, __, ___) => edgeId,
         orElse: () => null,
       );
 
@@ -192,19 +200,48 @@ extension InteractionStateX on InteractionState {
       );
 
   String? get hoveringAnchorId => maybeWhen(
-        hoveringAnchor: (id) => id,
+        hoveringAnchor: (_, anchorId) => anchorId,
         orElse: () => null,
       );
 
-  // ✅ 修正后的扩展方法获取拖拽边的起始节点 ID
+  String? get hoveringAnchorNodeId => maybeWhen(
+        hoveringAnchor: (nodeId, _) => nodeId,
+        orElse: () => null,
+      );
+
   String? get draggingSourceNodeId => maybeWhen(
         dragEdge: (_, sourceNodeId, __, ___, ____) => sourceNodeId,
         orElse: () => null,
       );
 
-  // ✅ 修正后的扩展方法获取拖拽边的起始锚点 ID
   String? get draggingSourceAnchorId => maybeWhen(
         dragEdge: (_, __, sourceAnchorId, ___, ____) => sourceAnchorId,
+        orElse: () => null,
+      );
+
+  int? get draggingWaypointIndex => maybeWhen(
+        dragWaypoint: (_, pointIndex, ___, ____, _____) => pointIndex,
+        orElse: () => null,
+      );
+
+  Offset? get draggingWaypointOriginalPoint => maybeWhen(
+        dragWaypoint: (_, __, originalPoint, ___, ____) => originalPoint,
+        orElse: () => null,
+      );
+
+  String? get insertingNodeType => maybeWhen(
+        insertingNode: (nodeType, _, __) => nodeType,
+        insertNodeToEdge: (nodeType, _, __, ___) => nodeType,
+        orElse: () => null,
+      );
+
+  String? get resizingNodeId => maybeWhen(
+        resizingNode: (nodeId, _, __, ___) => nodeId,
+        orElse: () => null,
+      );
+
+  Offset? get resizingHandlePosition => maybeWhen(
+        resizingNode: (_, handlePosition, __, ___) => handlePosition,
         orElse: () => null,
       );
 }

@@ -59,6 +59,8 @@ _$DragWaypointImpl _$$DragWaypointImplFromJson(Map<String, dynamic> json) =>
     _$DragWaypointImpl(
       edgeId: json['edgeId'] as String,
       pointIndex: (json['pointIndex'] as num).toInt(),
+      originalPoint: const OffsetConverter()
+          .fromJson(json['originalPoint'] as Map<String, dynamic>),
       startCanvas: const OffsetConverter()
           .fromJson(json['startCanvas'] as Map<String, dynamic>),
       lastCanvas: const OffsetConverter()
@@ -70,6 +72,7 @@ Map<String, dynamic> _$$DragWaypointImplToJson(_$DragWaypointImpl instance) =>
     <String, dynamic>{
       'edgeId': instance.edgeId,
       'pointIndex': instance.pointIndex,
+      'originalPoint': const OffsetConverter().toJson(instance.originalPoint),
       'startCanvas': const OffsetConverter().toJson(instance.startCanvas),
       'lastCanvas': const OffsetConverter().toJson(instance.lastCanvas),
       'type': instance.$type,
@@ -125,6 +128,7 @@ Map<String, dynamic> _$$InsertingNodeImplToJson(_$InsertingNodeImpl instance) =>
 _$InsertNodeToEdgeImpl _$$InsertNodeToEdgeImplFromJson(
         Map<String, dynamic> json) =>
     _$InsertNodeToEdgeImpl(
+      nodeType: json['nodeType'] as String,
       edgeId: json['edgeId'] as String,
       startCanvas: const OffsetConverter()
           .fromJson(json['startCanvas'] as Map<String, dynamic>),
@@ -136,6 +140,7 @@ _$InsertNodeToEdgeImpl _$$InsertNodeToEdgeImplFromJson(
 Map<String, dynamic> _$$InsertNodeToEdgeImplToJson(
         _$InsertNodeToEdgeImpl instance) =>
     <String, dynamic>{
+      'nodeType': instance.nodeType,
       'edgeId': instance.edgeId,
       'startCanvas': const OffsetConverter().toJson(instance.startCanvas),
       'lastCanvas': const OffsetConverter().toJson(instance.lastCanvas),
@@ -177,6 +182,7 @@ Map<String, dynamic> _$$HoveringNodeImplToJson(_$HoveringNodeImpl instance) =>
 
 _$HoveringAnchorImpl _$$HoveringAnchorImplFromJson(Map<String, dynamic> json) =>
     _$HoveringAnchorImpl(
+      nodeId: json['nodeId'] as String,
       anchorId: json['anchorId'] as String,
       $type: json['type'] as String?,
     );
@@ -184,6 +190,7 @@ _$HoveringAnchorImpl _$$HoveringAnchorImplFromJson(Map<String, dynamic> json) =>
 Map<String, dynamic> _$$HoveringAnchorImplToJson(
         _$HoveringAnchorImpl instance) =>
     <String, dynamic>{
+      'nodeId': instance.nodeId,
       'anchorId': instance.anchorId,
       'type': instance.$type,
     };
