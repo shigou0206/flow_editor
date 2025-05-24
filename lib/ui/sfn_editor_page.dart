@@ -4,7 +4,7 @@ import 'package:flow_editor/core/models/node_model.dart';
 import 'package:flow_editor/core/models/edge_model.dart';
 import 'package:flow_editor/core/state_management/providers.dart';
 import 'package:flow_editor/ui/canvas/sfn_editor_canvas.dart';
-import 'package:flow_editor/ui/sidebar/flow_node_sidebar.dart';
+import 'package:flow_editor/ui/sidebar/nodes_sidebar.dart';
 import 'package:flow_editor/core/state_management/theme_provider.dart';
 import 'package:flow_editor/layout/sugiyama_layout.dart'; // ✅ 布局算法引入
 
