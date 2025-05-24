@@ -27,13 +27,21 @@ class ViewportControllerImpl implements IViewportController {
 
   @override
   void zoomAt(Offset focalPoint, double scaleDelta) {
-    _cmdMgr.executeCommand(ZoomCanvasCommand(_ctx, focalPoint, scaleDelta));
+    final currentScale = _ctx.getState().canvasState.scale;
+    double newScale = (currentScale * scaleDelta).clamp(0.1, 10.0);
+    double adjustedScaleDelta = newScale / currentScale;
+
+    _cmdMgr.executeCommand(
+      ZoomCanvasCommand(_ctx, focalPoint, adjustedScaleDelta),
+    );
   }
 
   @override
   void zoomTo(double scale) {
+    double safeScale = scale.clamp(0.1, 10.0);
     final currentScale = _ctx.getState().canvasState.scale;
-    final scaleDelta = scale / currentScale;
+    final scaleDelta = safeScale / currentScale;
+
     zoomAt(Offset.zero, scaleDelta);
   }
 

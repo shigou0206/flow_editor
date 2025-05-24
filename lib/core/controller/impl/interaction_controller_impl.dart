@@ -154,18 +154,6 @@ class InteractionControllerImpl implements IInteractionController {
     );
   }
 
-  // @override
-  // void updateInsertingNodePreview(Offset canvasPos, String? highlightedEdgeId) {
-  //   final interaction = _st.interaction;
-  //   if (interaction is InsertingNodePreview) {
-  //     _st = _st.copyWith(
-  //       interaction: interaction.copyWith(
-  //         canvasPos: canvasPos,
-  //         highlightedEdgeId: highlightedEdgeId,
-  //       ),
-  //     );
-  //   }
-  // }
   @override
   void updateInsertingNodePreview(Offset canvasPos, String? highlightedEdgeId) {
     final interaction = _st.interaction;

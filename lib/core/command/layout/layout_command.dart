@@ -4,6 +4,7 @@ import 'package:flow_editor/core/models/node_model.dart';
 import 'package:flow_editor/core/models/edge_model.dart';
 import 'package:flow_editor/layout/layout_strategy.dart';
 import 'package:flow_editor/layout/sugiyama_layout.dart';
+import 'package:flutter/foundation.dart';
 
 class LayoutCommand implements ICommand {
   final CommandContext ctx;
@@ -33,6 +34,9 @@ class LayoutCommand implements ICommand {
     final edges = List<EdgeModel>.of(_beforeEdges);
 
     layoutStrategy.performLayout(nodes, edges);
+    for (final edge in edges) {
+      debugPrint('✅ Edge ${edge.id} waypoints: ${edge.waypoints}');
+    }
 
     // 更新布局后的节点和边
     ctx.updateState(
