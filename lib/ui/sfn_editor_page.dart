@@ -59,30 +59,30 @@ class _SfnEditorPageState extends ConsumerState<SfnEditorPage> {
         size: Size(nodeWidth, nodeHeight),
         title: 'Start',
       ),
-      const NodeModel(
-        id: 'node1',
-        type: 'middle',
-        parentId: 'group1',
-        position: Offset.zero,
-        size: Size(nodeWidth, nodeHeight),
-        title: 'Node 1',
-      ),
-      const NodeModel(
-        id: 'node2',
-        type: 'middle',
-        parentId: 'group1',
-        position: Offset.zero,
-        size: Size(nodeWidth, nodeHeight),
-        title: 'Node 2',
-      ),
-      const NodeModel(
-        id: 'node3',
-        type: 'middle',
-        parentId: 'group1',
-        position: Offset.zero,
-        size: Size(nodeWidth, nodeHeight),
-        title: 'Node 3',
-      ),
+      // const NodeModel(
+      //   id: 'node1',
+      //   type: 'middle',
+      //   parentId: 'group1',
+      //   position: Offset.zero,
+      //   size: Size(nodeWidth, nodeHeight),
+      //   title: 'Node 1',
+      // ),
+      // const NodeModel(
+      //   id: 'node2',
+      //   type: 'middle',
+      //   parentId: 'group1',
+      //   position: Offset.zero,
+      //   size: Size(nodeWidth, nodeHeight),
+      //   title: 'Node 2',
+      // ),
+      // const NodeModel(
+      //   id: 'node3',
+      //   type: 'middle',
+      //   parentId: 'group1',
+      //   position: Offset.zero,
+      //   size: Size(nodeWidth, nodeHeight),
+      //   title: 'Node 3',
+      // ),
       const NodeModel(
         id: 'end_node',
         type: 'end',
@@ -94,11 +94,11 @@ class _SfnEditorPageState extends ConsumerState<SfnEditorPage> {
     ];
 
     final edges = [
-      EdgeModel.generated(sourceNodeId: 'start_node', targetNodeId: 'node1'),
-      EdgeModel.generated(sourceNodeId: 'node1', targetNodeId: 'node2'),
-      EdgeModel.generated(sourceNodeId: 'node1', targetNodeId: 'node3'),
-      EdgeModel.generated(sourceNodeId: 'node2', targetNodeId: 'end_node'),
-      EdgeModel.generated(sourceNodeId: 'node3', targetNodeId: 'end_node'),
+      EdgeModel.generated(sourceNodeId: 'start_node', targetNodeId: 'end_node'),
+      // EdgeModel.generated(sourceNodeId: 'node1', targetNodeId: 'node2'),
+      // EdgeModel.generated(sourceNodeId: 'node1', targetNodeId: 'node3'),
+      // EdgeModel.generated(sourceNodeId: 'node2', targetNodeId: 'end_node'),
+      // EdgeModel.generated(sourceNodeId: 'node3', targetNodeId: 'end_node'),
     ];
 
     final layout = SugiyamaLayoutStrategy();

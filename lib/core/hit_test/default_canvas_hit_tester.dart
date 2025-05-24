@@ -260,4 +260,48 @@ class DefaultCanvasHitTester implements CanvasHitTester {
     }
     return null;
   }
+
+  String? hitTestEdgeWithRect(Rect rect, [Offset? mouseCanvasPos]) {
+    final edges = getEdges();
+    final generator = FlexiblePathGenerator(getNodes());
+
+    final intersectingEdges = <String, Path>{};
+
+    for (final edge in edges) {
+      final result = generator.generate(edge, type: edge.lineStyle.edgeMode);
+      if (result == null) continue;
+
+      final path = result.path;
+      if (_pathIntersectsRect(path, rect)) {
+        intersectingEdges[edge.id] = path;
+      }
+    }
+
+    if (intersectingEdges.isEmpty) return null;
+
+    // 如果只有一条边，直接返回
+    if (intersectingEdges.length == 1 || mouseCanvasPos == null) {
+      return intersectingEdges.keys.first;
+    }
+
+    // 多条边，找最近的
+    double minDist = double.infinity;
+    String? closestEdgeId;
+    intersectingEdges.forEach((id, path) {
+      final dist = distanceToPath(path, mouseCanvasPos);
+      if (dist < minDist) {
+        minDist = dist;
+        closestEdgeId = id;
+      }
+    });
+
+    return closestEdgeId;
+  }
+
+// 检测矩形与路径交叉
+  bool _pathIntersectsRect(Path path, Rect rect) {
+    final rectPath = Path()..addRect(rect);
+    final intersection = Path.combine(PathOperation.intersect, path, rectPath);
+    return !intersection.getBounds().isEmpty;
+  }
 }

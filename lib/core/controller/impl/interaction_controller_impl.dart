@@ -4,6 +4,7 @@ import 'package:flow_editor/core/command/command_context.dart';
 import 'package:flow_editor/core/models/state/editor_state.dart';
 import 'package:flow_editor/core/models/state/interaction_transient_state.dart';
 import 'package:flow_editor/core/models/node_model.dart';
+import 'package:flutter/material.dart';
 
 class InteractionControllerImpl implements IInteractionController {
   final CommandContext ctx;
@@ -153,16 +154,32 @@ class InteractionControllerImpl implements IInteractionController {
     );
   }
 
+  // @override
+  // void updateInsertingNodePreview(Offset canvasPos, String? highlightedEdgeId) {
+  //   final interaction = _st.interaction;
+  //   if (interaction is InsertingNodePreview) {
+  //     _st = _st.copyWith(
+  //       interaction: interaction.copyWith(
+  //         canvasPos: canvasPos,
+  //         highlightedEdgeId: highlightedEdgeId,
+  //       ),
+  //     );
+  //   }
+  // }
   @override
   void updateInsertingNodePreview(Offset canvasPos, String? highlightedEdgeId) {
     final interaction = _st.interaction;
     if (interaction is InsertingNodePreview) {
+      debugPrint(
+          '🔥 状态更新: highlightedEdgeId = $highlightedEdgeId, canvasPos=$canvasPos');
       _st = _st.copyWith(
         interaction: interaction.copyWith(
           canvasPos: canvasPos,
           highlightedEdgeId: highlightedEdgeId,
         ),
       );
+    } else {
+      debugPrint('🚨 Interaction 状态异常: 当前并非插入预览状态');
     }
   }
 

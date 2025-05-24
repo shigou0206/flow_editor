@@ -38,6 +38,9 @@ class EdgeRenderer extends CustomPainter {
   }
 
   void _drawEdge(Canvas canvas, EdgeModel edge) {
+    final isHighlighted = edge.id == hoveredEdgeId;
+    debugPrint('🎨 渲染边 ${edge.id}, isHighlighted: $isHighlighted');
+
     final edgePath = pathGenerator.generate(edge);
 
     if (edgePath == null) return;
