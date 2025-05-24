@@ -319,7 +319,7 @@ class _$InputConfigImpl implements _InputConfig {
       this.enableZoom = true,
       this.enableNodeDrag = true,
       this.enableNodeResize = true,
-      this.enableNodeHover = true,
+      this.enableNodeHover = false,
       this.enableNodeTap = true,
       this.enableEdgeDraw = true,
       this.enableEdgeHover = true,
