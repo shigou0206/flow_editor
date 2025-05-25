@@ -9,10 +9,14 @@ part of 'canvas_insert_element.dart';
 _$NodeInsertElementImpl _$$NodeInsertElementImplFromJson(
         Map<String, dynamic> json) =>
     _$NodeInsertElementImpl(
-      position: const OffsetConverter()
-          .fromJson(json['position'] as Map<String, dynamic>),
-      size:
-          const SizeConverter().fromJson(json['size'] as Map<String, dynamic>),
+      position: json['position'] == null
+          ? Offset.zero
+          : const OffsetConverter()
+              .fromJson(json['position'] as Map<String, dynamic>),
+      size: json['size'] == null
+          ? const Size(200, 40)
+          : const SizeConverter()
+              .fromJson(json['size'] as Map<String, dynamic>),
       node: NodeModel.fromJson(json['node'] as Map<String, dynamic>),
       $type: json['type'] as String?,
     );
@@ -29,10 +33,14 @@ Map<String, dynamic> _$$NodeInsertElementImplToJson(
 _$GroupInsertElementImpl _$$GroupInsertElementImplFromJson(
         Map<String, dynamic> json) =>
     _$GroupInsertElementImpl(
-      position: const OffsetConverter()
-          .fromJson(json['position'] as Map<String, dynamic>),
-      size:
-          const SizeConverter().fromJson(json['size'] as Map<String, dynamic>),
+      position: json['position'] == null
+          ? Offset.zero
+          : const OffsetConverter()
+              .fromJson(json['position'] as Map<String, dynamic>),
+      size: json['size'] == null
+          ? const Size(200, 40)
+          : const SizeConverter()
+              .fromJson(json['size'] as Map<String, dynamic>),
       groupNode: NodeModel.fromJson(json['groupNode'] as Map<String, dynamic>),
       children: (json['children'] as List<dynamic>)
           .map((e) => NodeModel.fromJson(e as Map<String, dynamic>))

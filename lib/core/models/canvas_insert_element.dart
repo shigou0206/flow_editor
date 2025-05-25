@@ -10,14 +10,14 @@ part 'canvas_insert_element.g.dart';
 @Freezed(unionKey: 'type', unionValueCase: FreezedUnionCase.snake)
 class CanvasInsertElement with _$CanvasInsertElement {
   const factory CanvasInsertElement.node({
-    @OffsetConverter() required Offset position,
-    @SizeConverter() required Size size,
+    @OffsetConverter() @Default(Offset.zero) Offset position,
+    @SizeConverter() @Default(Size(200, 40)) Size size,
     required NodeModel node,
   }) = NodeInsertElement;
 
   const factory CanvasInsertElement.group({
-    @OffsetConverter() required Offset position,
-    @SizeConverter() required Size size,
+    @OffsetConverter() @Default(Offset.zero) Offset position,
+    @SizeConverter() @Default(Size(200, 40)) Size size,
     required NodeModel groupNode,
     required List<NodeModel> children,
     required List<EdgeModel> edges,

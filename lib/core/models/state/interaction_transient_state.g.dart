@@ -242,3 +242,23 @@ Map<String, dynamic> _$$InsertingNodePreviewImplToJson(
       'highlightedEdgeId': instance.highlightedEdgeId,
       'type': instance.$type,
     };
+
+_$InsertingGroupPreviewImpl _$$InsertingGroupPreviewImplFromJson(
+        Map<String, dynamic> json) =>
+    _$InsertingGroupPreviewImpl(
+      groupElement: CanvasInsertElement.fromJson(
+          json['groupElement'] as Map<String, dynamic>),
+      canvasPos: const OffsetConverter()
+          .fromJson(json['canvasPos'] as Map<String, dynamic>),
+      highlightedEdgeId: json['highlightedEdgeId'] as String?,
+      $type: json['type'] as String?,
+    );
+
+Map<String, dynamic> _$$InsertingGroupPreviewImplToJson(
+        _$InsertingGroupPreviewImpl instance) =>
+    <String, dynamic>{
+      'groupElement': instance.groupElement,
+      'canvasPos': const OffsetConverter().toJson(instance.canvasPos),
+      'highlightedEdgeId': instance.highlightedEdgeId,
+      'type': instance.$type,
+    };

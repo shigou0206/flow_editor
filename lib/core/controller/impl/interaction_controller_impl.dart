@@ -4,6 +4,8 @@ import 'package:flow_editor/core/command/command_context.dart';
 import 'package:flow_editor/core/models/state/editor_state.dart';
 import 'package:flow_editor/core/models/state/interaction_transient_state.dart';
 import 'package:flow_editor/core/models/node_model.dart';
+import 'package:flow_editor/core/models/edge_model.dart';
+import 'package:flow_editor/core/models/canvas_insert_element.dart';
 import 'package:flutter/material.dart';
 
 class InteractionControllerImpl implements IInteractionController {
@@ -158,8 +160,6 @@ class InteractionControllerImpl implements IInteractionController {
   void updateInsertingNodePreview(Offset canvasPos, String? highlightedEdgeId) {
     final interaction = _st.interaction;
     if (interaction is InsertingNodePreview) {
-      debugPrint(
-          '🔥 状态更新: highlightedEdgeId = $highlightedEdgeId, canvasPos=$canvasPos');
       _st = _st.copyWith(
         interaction: interaction.copyWith(
           canvasPos: canvasPos,
@@ -173,6 +173,38 @@ class InteractionControllerImpl implements IInteractionController {
 
   @override
   void endInsertingNodePreview() {
+    _st = _st.copyWith(interaction: const InteractionState.idle());
+  }
+
+  @override
+  void startInsertingGroupPreview(NodeModel groupNode, List<NodeModel> children,
+      List<EdgeModel> edges, Offset canvasPos) {
+    _st = _st.copyWith(
+      interaction: InteractionState.insertingGroupPreview(
+        groupElement: CanvasInsertElement.group(
+            groupNode: groupNode, children: children, edges: edges),
+        canvasPos: canvasPos,
+        highlightedEdgeId: null,
+      ),
+    );
+  }
+
+  @override
+  void updateInsertingGroupPreview(
+      Offset canvasPos, String? highlightedEdgeId) {
+    final interaction = _st.interaction;
+    if (interaction is InsertingGroupPreview) {
+      _st = _st.copyWith(
+        interaction: interaction.copyWith(
+          canvasPos: canvasPos,
+          highlightedEdgeId: highlightedEdgeId,
+        ),
+      );
+    }
+  }
+
+  @override
+  void endInsertingGroupPreview() {
     _st = _st.copyWith(interaction: const InteractionState.idle());
   }
 }

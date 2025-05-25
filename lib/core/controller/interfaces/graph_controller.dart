@@ -15,6 +15,10 @@ abstract class IGraphController {
     String nodeId,
     NodeModel Function(NodeModel) updateFn,
   );
+
+  // Group
+  // Future<void> addNodeGroup(NodeModel groupNode, List<NodeModel> children,
+  //     List<EdgeModel> edges, Offset position);
   Future<void> groupNodes(List<String> nodeIds);
   Future<void> ungroupNodes(String groupId);
   Future<void> duplicateNode(String nodeId);
@@ -28,6 +32,9 @@ abstract class IGraphController {
     EdgeModel Function(EdgeModel) updateFn,
   );
   Future<void> insertNodeIntoEdge(NodeModel node, String edgeId);
+
+  Future<void> insertNodeGroupIntoEdge(NodeModel groupNode,
+      List<NodeModel> children, List<EdgeModel> edges, String edgeId);
 
   // Selection
   Future<void> selectNodes(Set<String> nodeIds);

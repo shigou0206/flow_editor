@@ -199,8 +199,8 @@ class __$$NodeInsertElementImplCopyWithImpl<$Res>
 @JsonSerializable()
 class _$NodeInsertElementImpl implements NodeInsertElement {
   const _$NodeInsertElementImpl(
-      {@OffsetConverter() required this.position,
-      @SizeConverter() required this.size,
+      {@OffsetConverter() this.position = Offset.zero,
+      @SizeConverter() this.size = const Size(200, 40),
       required this.node,
       final String? $type})
       : $type = $type ?? 'node';
@@ -209,9 +209,11 @@ class _$NodeInsertElementImpl implements NodeInsertElement {
       _$$NodeInsertElementImplFromJson(json);
 
   @override
+  @JsonKey()
   @OffsetConverter()
   final Offset position;
   @override
+  @JsonKey()
   @SizeConverter()
   final Size size;
   @override
@@ -343,8 +345,8 @@ class _$NodeInsertElementImpl implements NodeInsertElement {
 
 abstract class NodeInsertElement implements CanvasInsertElement {
   const factory NodeInsertElement(
-      {@OffsetConverter() required final Offset position,
-      @SizeConverter() required final Size size,
+      {@OffsetConverter() final Offset position,
+      @SizeConverter() final Size size,
       required final NodeModel node}) = _$NodeInsertElementImpl;
 
   factory NodeInsertElement.fromJson(Map<String, dynamic> json) =
@@ -435,8 +437,8 @@ class __$$GroupInsertElementImplCopyWithImpl<$Res>
 @JsonSerializable()
 class _$GroupInsertElementImpl implements GroupInsertElement {
   const _$GroupInsertElementImpl(
-      {@OffsetConverter() required this.position,
-      @SizeConverter() required this.size,
+      {@OffsetConverter() this.position = Offset.zero,
+      @SizeConverter() this.size = const Size(200, 40),
       required this.groupNode,
       required final List<NodeModel> children,
       required final List<EdgeModel> edges,
@@ -449,9 +451,11 @@ class _$GroupInsertElementImpl implements GroupInsertElement {
       _$$GroupInsertElementImplFromJson(json);
 
   @override
+  @JsonKey()
   @OffsetConverter()
   final Offset position;
   @override
+  @JsonKey()
   @SizeConverter()
   final Size size;
   @override
@@ -607,8 +611,8 @@ class _$GroupInsertElementImpl implements GroupInsertElement {
 
 abstract class GroupInsertElement implements CanvasInsertElement {
   const factory GroupInsertElement(
-      {@OffsetConverter() required final Offset position,
-      @SizeConverter() required final Size size,
+      {@OffsetConverter() final Offset position,
+      @SizeConverter() final Size size,
       required final NodeModel groupNode,
       required final List<NodeModel> children,
       required final List<EdgeModel> edges}) = _$GroupInsertElementImpl;

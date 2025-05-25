@@ -165,6 +165,90 @@ class GraphControllerImpl implements IGraphController {
     await applyLayout();
   }
 
+  @override
+  Future<void> insertNodeGroupIntoEdge(
+    NodeModel groupNode,
+    List<NodeModel> children,
+    List<EdgeModel> edges,
+    String edgeId,
+  ) async {
+    final state = _ctx.getState();
+
+    // 获取要拆分的原始边
+    final originalEdge =
+        state.edgeState.edges.firstWhere((edge) => edge.id == edgeId);
+
+    final sourceNodeId = originalEdge.sourceNodeId;
+    final targetNodeId = originalEdge.targetNodeId;
+
+    if (sourceNodeId == null || targetNodeId == null) {
+      throw Exception('原始边的 sourceNodeId 或 targetNodeId 为 null');
+    }
+
+    debugPrint(
+        '[🔍 InsertGroupIntoEdge]: Original Edge Found - id=${originalEdge.id}, source=$sourceNodeId, target=$targetNodeId');
+
+    // 获取原边源节点，推断 parentId
+    final sourceNode =
+        state.nodeState.nodes.firstWhere((node) => node.id == sourceNodeId);
+
+    final parentId = sourceNode.parentId;
+
+    // 删除原来的边
+    await _cmdMgr.executeCommand(DeleteEdgeCommand(_ctx, edgeId));
+    debugPrint('[🔴 Edge Deleted]: id=$edgeId');
+
+    // Group节点带上parentId信息
+    final groupNodeWithParent = groupNode.copyWith(parentId: parentId);
+
+    // 添加Group节点
+    await _cmdMgr.executeCommand(AddNodeCommand(_ctx, groupNodeWithParent));
+    debugPrint(
+        '[🟢 Group Node Added]: id=${groupNodeWithParent.id}, position=${groupNodeWithParent.position}, parentId=$parentId');
+
+    // 子节点带上正确的parentId
+    final childrenWithParent = children
+        .map((child) => child.copyWith(parentId: groupNodeWithParent.id))
+        .toList();
+
+    for (final child in childrenWithParent) {
+      await _cmdMgr.executeCommand(AddNodeCommand(_ctx, child));
+      debugPrint(
+          '[🟢 Child Node Added]: id=${child.id}, parentId=${child.parentId}');
+    }
+
+    // 边更新后添加
+    for (final edge in edges) {
+      await _cmdMgr.executeCommand(AddEdgeCommand(_ctx, edge));
+      debugPrint(
+          '[🟢 Group Edge Added]: id=${edge.id}, source=${edge.sourceNodeId}, target=${edge.targetNodeId}');
+    }
+
+    // 新建两条边（源节点 -> Group节点，Group节点 -> 目标节点）
+    final edgeToGroup = EdgeModel.generated(
+      sourceNodeId: sourceNodeId,
+      sourceAnchorId: originalEdge.sourceAnchorId,
+      targetNodeId: groupNodeWithParent.id,
+    );
+
+    final edgeFromGroup = EdgeModel.generated(
+      sourceNodeId: groupNodeWithParent.id,
+      targetNodeId: targetNodeId,
+      targetAnchorId: originalEdge.targetAnchorId,
+    );
+
+    // 添加新的两条边
+    await _cmdMgr.executeCommand(AddEdgeCommand(_ctx, edgeToGroup));
+    debugPrint(
+        '[🟢 Edge to Group Added]: id=${edgeToGroup.id}, source=$sourceNodeId, target=${groupNodeWithParent.id}');
+
+    await _cmdMgr.executeCommand(AddEdgeCommand(_ctx, edgeFromGroup));
+    debugPrint(
+        '[🟢 Edge from Group Added]: id=${edgeFromGroup.id}, source=${groupNodeWithParent.id}, target=$targetNodeId');
+
+    await applyLayout();
+  }
+
   // === Selection ===
 
   @override

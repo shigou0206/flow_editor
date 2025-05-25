@@ -23,14 +23,13 @@ class SfnEditorCanvas extends ConsumerWidget {
     final ctrl = ref.read(activeCanvasControllerProvider);
     final canvas = editor.canvasState;
 
-    late final BehaviorContext behaviorCtx;
-    behaviorCtx = BehaviorContext(
+    final behaviorCtx = BehaviorContext(
       controller: ctrl,
       getState: () => ref.read(activeEditorStateProvider),
       updateState: (s) => store.replaceState(s),
       hitTester: DefaultCanvasHitTester(
-        getNodes: () => behaviorCtx.getState().nodeState.nodes,
-        getEdges: () => behaviorCtx.getState().edgeState.edges,
+        getNodes: () => ref.read(activeEditorStateProvider).nodeState.nodes,
+        getEdges: () => ref.read(activeEditorStateProvider).edgeState.edges,
         computeAnchorWorldPosition: computeAnchorWorldPosition,
       ),
     );
@@ -54,15 +53,27 @@ class SfnEditorCanvas extends ConsumerWidget {
         final localPos =
             (centerLocalOffset - canvas.offset - panDelta) / canvas.scale;
 
-        final highlightedEdgeId = behaviorCtx.hitTester.hitTestEdge(localPos);
+        final highlightedEdgeId = behaviorCtx.hitTester.hitTestEdgeWithRect(
+          Rect.fromCenter(
+              center: localPos,
+              width: elementSize.width,
+              height: elementSize.height),
+        );
 
         if (details.data.isNode) {
           ctrl.interaction
               .startInsertingNodePreview(details.data.singleNode!, localPos);
           ctrl.interaction
               .updateInsertingNodePreview(localPos, highlightedEdgeId);
-        } else {
-          // group节点插入预览逻辑（待实现）
+        } else if (details.data.isGroup) {
+          ctrl.interaction.startInsertingGroupPreview(
+            details.data.rootGroupNode!,
+            details.data.allNodes.sublist(1),
+            details.data.allEdges,
+            localPos,
+          );
+          ctrl.interaction
+              .updateInsertingGroupPreview(localPos, highlightedEdgeId);
         }
         return true;
       },
@@ -78,17 +89,19 @@ class SfnEditorCanvas extends ConsumerWidget {
 
         final highlightedEdgeId = behaviorCtx.hitTester.hitTestEdgeWithRect(
           Rect.fromCenter(
-            center: localPos,
-            width: elementSize.width,
-            height: elementSize.height,
-          ),
+              center: localPos,
+              width: elementSize.width,
+              height: elementSize.height),
         );
 
         ctrl.interaction
             .updateInsertingNodePreview(localPos, highlightedEdgeId);
+        ctrl.interaction
+            .updateInsertingGroupPreview(localPos, highlightedEdgeId);
       },
       onLeave: (_) {
         ctrl.interaction.endInsertingNodePreview();
+        ctrl.interaction.endInsertingGroupPreview();
       },
       onAcceptWithDetails: (details) {
         final renderBox = context.findRenderObject() as RenderBox;
@@ -108,18 +121,34 @@ class SfnEditorCanvas extends ConsumerWidget {
             position: localPos,
           );
 
-          if (interaction is InsertingNodePreview &&
-              interaction.highlightedEdgeId != null) {
-            ctrl.graph.insertNodeIntoEdge(node, interaction.highlightedEdgeId!);
+          if (interaction.insertingHighlightedEdgeId != null) {
+            ctrl.graph.insertNodeIntoEdge(
+                node, interaction.insertingHighlightedEdgeId!);
           } else {
             ctrl.graph.addNode(node);
           }
         } else if (details.data.isGroup) {
-          // 🚧 Group节点暂未实现，明确标记未来扩展
-          debugPrint('⚠️ Group节点拖入尚未实现，请补充实现逻辑');
+          debugPrint(
+              "🔥 Inserting group: ${details.data.rootGroupNode!.id}, ${details.data.allNodes.sublist(1).map((e) => e.id).join(', ')}, ${details.data.allEdges.map((e) => e.id).join(', ')}");
+          if (interaction.insertingHighlightedEdgeId != null) {
+            ctrl.graph.insertNodeGroupIntoEdge(
+              details.data.rootGroupNode!,
+              details.data.allNodes.sublist(1),
+              details.data.allEdges,
+              interaction.insertingHighlightedEdgeId!, // ✅ 统一的getter
+            );
+          } else {
+            // ctrl.graph.addNodeGroup(
+            //   details.data.rootGroupNode!,
+            //   details.data.allNodes.sublist(1),
+            //   details.data.allEdges,
+            //   localPos,
+            // );
+          }
         }
 
         ctrl.interaction.endInsertingNodePreview();
+        ctrl.interaction.endInsertingGroupPreview();
       },
       builder: (_, __, ___) => CanvasInputWrapper(
         context: behaviorCtx,

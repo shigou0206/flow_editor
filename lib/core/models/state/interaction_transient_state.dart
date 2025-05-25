@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flow_editor/core/models/node_model.dart';
 import 'package:flow_editor/core/models/converters/offset_size_converter.dart';
 import 'package:flow_editor/core/models/converters/rect_converter.dart';
-
+import 'package:flow_editor/core/models/canvas_insert_element.dart';
 part 'interaction_transient_state.freezed.dart';
 part 'interaction_transient_state.g.dart';
 
@@ -87,6 +87,12 @@ class InteractionState with _$InteractionState {
     @OffsetConverter() required Offset canvasPos,
     String? highlightedEdgeId,
   }) = InsertingNodePreview;
+
+  const factory InteractionState.insertingGroupPreview({
+    required CanvasInsertElement groupElement,
+    @OffsetConverter() required Offset canvasPos,
+    String? highlightedEdgeId,
+  }) = InsertingGroupPreview;
 
   factory InteractionState.fromJson(Map<String, dynamic> json) =>
       _$InteractionStateFromJson(json);
@@ -230,4 +236,34 @@ extension InteractionStateX on InteractionState {
   Offset? get draggingWaypointOriginalPoint => maybeWhen(
       dragWaypoint: (_, __, originalPoint, ___, ____) => originalPoint,
       orElse: () => null);
+
+  // 新增：判断是否为Group节点拖拽状态
+  bool get isInsertingGroupPreview => maybeMap(
+        insertingGroupPreview: (_) => true,
+        orElse: () => false,
+      );
+
+  // 新增：获取拖拽中的Group节点预览位置
+  Offset? get insertingGroupPreviewPos => maybeWhen(
+        insertingGroupPreview: (_, pos, __) => pos,
+        orElse: () => null,
+      );
+
+  // 新增：获取拖拽中的Group节点尺寸
+  Size? get insertingGroupPreviewSize => maybeWhen(
+        insertingGroupPreview: (groupElement, _, __) => groupElement.size,
+        orElse: () => null,
+      );
+
+  // 新增：获取Group节点拖拽时高亮的边ID
+  String? get insertingGroupHighlightedEdgeId => maybeWhen(
+        insertingGroupPreview: (_, __, edgeId) => edgeId,
+        orElse: () => null,
+      );
+
+  // 新增：快速获取拖拽中的整个group数据
+  CanvasInsertElement? get insertingGroupElement => maybeWhen(
+        insertingGroupPreview: (element, _, __) => element,
+        orElse: () => null,
+      );
 }

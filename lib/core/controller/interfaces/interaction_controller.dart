@@ -2,6 +2,7 @@
 
 import 'package:flutter/widgets.dart';
 import 'package:flow_editor/core/models/node_model.dart';
+import 'package:flow_editor/core/models/edge_model.dart';
 
 /// InteractionController 处理临时的视觉交互状态，不直接修改业务数据
 abstract class IInteractionController {
@@ -59,4 +60,11 @@ abstract class IInteractionController {
 
   /// 结束插入节点预览
   void endInsertingNodePreview();
+
+  void startInsertingGroupPreview(NodeModel groupNode, List<NodeModel> children,
+      List<EdgeModel> edges, Offset canvasPos);
+
+  void updateInsertingGroupPreview(Offset canvasPos, String? highlightedEdgeId);
+
+  void endInsertingGroupPreview();
 }
