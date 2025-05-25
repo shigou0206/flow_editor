@@ -51,6 +51,7 @@ mixin _$EdgeModel {
   List<EdgeOverlayElement> get overlays =>
       throw _privateConstructorUsedError; // ===== 附加数据 =====
   Map<String, dynamic> get data => throw _privateConstructorUsedError;
+  Map<String, dynamic> get metadata => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
   @JsonKey(ignore: true)
@@ -85,7 +86,8 @@ abstract class $EdgeModelCopyWith<$Res> {
       String? label,
       Map<String, dynamic>? labelStyle,
       List<EdgeOverlayElement> overlays,
-      Map<String, dynamic> data});
+      Map<String, dynamic> data,
+      Map<String, dynamic> metadata});
 
   $EdgeLineStyleCopyWith<$Res> get lineStyle;
   $EdgeAnimationConfigCopyWith<$Res> get animConfig;
@@ -126,6 +128,7 @@ class _$EdgeModelCopyWithImpl<$Res, $Val extends EdgeModel>
     Object? labelStyle = freezed,
     Object? overlays = null,
     Object? data = null,
+    Object? metadata = null,
   }) {
     return _then(_value.copyWith(
       id: null == id
@@ -216,6 +219,10 @@ class _$EdgeModelCopyWithImpl<$Res, $Val extends EdgeModel>
           ? _value.data
           : data // ignore: cast_nullable_to_non_nullable
               as Map<String, dynamic>,
+      metadata: null == metadata
+          ? _value.metadata
+          : metadata // ignore: cast_nullable_to_non_nullable
+              as Map<String, dynamic>,
     ) as $Val);
   }
 
@@ -266,7 +273,8 @@ abstract class _$$EdgeModelImplCopyWith<$Res>
       String? label,
       Map<String, dynamic>? labelStyle,
       List<EdgeOverlayElement> overlays,
-      Map<String, dynamic> data});
+      Map<String, dynamic> data,
+      Map<String, dynamic> metadata});
 
   @override
   $EdgeLineStyleCopyWith<$Res> get lineStyle;
@@ -307,6 +315,7 @@ class __$$EdgeModelImplCopyWithImpl<$Res>
     Object? labelStyle = freezed,
     Object? overlays = null,
     Object? data = null,
+    Object? metadata = null,
   }) {
     return _then(_$EdgeModelImpl(
       id: null == id
@@ -397,6 +406,10 @@ class __$$EdgeModelImplCopyWithImpl<$Res>
           ? _value._data
           : data // ignore: cast_nullable_to_non_nullable
               as Map<String, dynamic>,
+      metadata: null == metadata
+          ? _value._metadata
+          : metadata // ignore: cast_nullable_to_non_nullable
+              as Map<String, dynamic>,
     ));
   }
 }
@@ -426,11 +439,13 @@ class _$EdgeModelImpl extends _EdgeModel {
       this.label,
       final Map<String, dynamic>? labelStyle,
       final List<EdgeOverlayElement> overlays = const [],
-      final Map<String, dynamic> data = const {}})
+      final Map<String, dynamic> data = const {},
+      final Map<String, dynamic> metadata = const {}})
       : _waypoints = waypoints,
         _labelStyle = labelStyle,
         _overlays = overlays,
         _data = data,
+        _metadata = metadata,
         super._();
 
   factory _$EdgeModelImpl.fromJson(Map<String, dynamic> json) =>
@@ -533,9 +548,18 @@ class _$EdgeModelImpl extends _EdgeModel {
     return EqualUnmodifiableMapView(_data);
   }
 
+  final Map<String, dynamic> _metadata;
+  @override
+  @JsonKey()
+  Map<String, dynamic> get metadata {
+    if (_metadata is EqualUnmodifiableMapView) return _metadata;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableMapView(_metadata);
+  }
+
   @override
   String toString() {
-    return 'EdgeModel(id: $id, sourcePosition: $sourcePosition, targetPosition: $targetPosition, sourceNodeId: $sourceNodeId, sourceAnchorId: $sourceAnchorId, targetNodeId: $targetNodeId, targetAnchorId: $targetAnchorId, isConnected: $isConnected, isDirected: $isDirected, edgeType: $edgeType, status: $status, locked: $locked, lockedByUser: $lockedByUser, version: $version, zIndex: $zIndex, waypoints: $waypoints, lineStyle: $lineStyle, animConfig: $animConfig, label: $label, labelStyle: $labelStyle, overlays: $overlays, data: $data)';
+    return 'EdgeModel(id: $id, sourcePosition: $sourcePosition, targetPosition: $targetPosition, sourceNodeId: $sourceNodeId, sourceAnchorId: $sourceAnchorId, targetNodeId: $targetNodeId, targetAnchorId: $targetAnchorId, isConnected: $isConnected, isDirected: $isDirected, edgeType: $edgeType, status: $status, locked: $locked, lockedByUser: $lockedByUser, version: $version, zIndex: $zIndex, waypoints: $waypoints, lineStyle: $lineStyle, animConfig: $animConfig, label: $label, labelStyle: $labelStyle, overlays: $overlays, data: $data, metadata: $metadata)';
   }
 
   @override
@@ -578,7 +602,8 @@ class _$EdgeModelImpl extends _EdgeModel {
             const DeepCollectionEquality()
                 .equals(other._labelStyle, _labelStyle) &&
             const DeepCollectionEquality().equals(other._overlays, _overlays) &&
-            const DeepCollectionEquality().equals(other._data, _data));
+            const DeepCollectionEquality().equals(other._data, _data) &&
+            const DeepCollectionEquality().equals(other._metadata, _metadata));
   }
 
   @JsonKey(ignore: true)
@@ -606,7 +631,8 @@ class _$EdgeModelImpl extends _EdgeModel {
         label,
         const DeepCollectionEquality().hash(_labelStyle),
         const DeepCollectionEquality().hash(_overlays),
-        const DeepCollectionEquality().hash(_data)
+        const DeepCollectionEquality().hash(_data),
+        const DeepCollectionEquality().hash(_metadata)
       ]);
 
   @JsonKey(ignore: true)
@@ -646,7 +672,8 @@ abstract class _EdgeModel extends EdgeModel {
       final String? label,
       final Map<String, dynamic>? labelStyle,
       final List<EdgeOverlayElement> overlays,
-      final Map<String, dynamic> data}) = _$EdgeModelImpl;
+      final Map<String, dynamic> data,
+      final Map<String, dynamic> metadata}) = _$EdgeModelImpl;
   const _EdgeModel._() : super._();
 
   factory _EdgeModel.fromJson(Map<String, dynamic> json) =
@@ -699,6 +726,8 @@ abstract class _EdgeModel extends EdgeModel {
   List<EdgeOverlayElement> get overlays;
   @override // ===== 附加数据 =====
   Map<String, dynamic> get data;
+  @override
+  Map<String, dynamic> get metadata;
   @override
   @JsonKey(ignore: true)
   _$$EdgeModelImplCopyWith<_$EdgeModelImpl> get copyWith =>

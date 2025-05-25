@@ -13,13 +13,32 @@ class GraphDslConverter {
     final states = <String, dynamic>{};
 
     for (var node in nodes) {
-      var stateData = Map<String, dynamic>.from(node.data);
+      final stateData = Map<String, dynamic>.from(node.data);
       stateData.remove('id');
 
       final outgoingEdges =
           edges.where((e) => e.sourceNodeId == node.id).toList();
 
-      if (node.type != 'Choice') {
+      if (node.type == 'Choice') {
+        final choices = <Map<String, dynamic>>[];
+        String? defaultNext;
+
+        for (var edge in outgoingEdges) {
+          if (edge.data['isDefault'] == true) {
+            defaultNext = edge.targetNodeId;
+          } else if (edge.data['condition'] != null) {
+            choices.add({
+              'condition': edge.data['condition'],
+              'next': edge.targetNodeId,
+            });
+          }
+        }
+
+        stateData['choices'] = choices;
+        if (defaultNext != null) {
+          stateData['defaultNext'] = defaultNext;
+        }
+      } else {
         if (outgoingEdges.isNotEmpty) {
           stateData['next'] = outgoingEdges.first.targetNodeId;
           stateData.remove('end');

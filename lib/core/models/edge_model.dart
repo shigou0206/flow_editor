@@ -50,6 +50,7 @@ class EdgeModel with _$EdgeModel {
 
     // ===== 附加数据 =====
     @Default({}) Map<String, dynamic> data,
+    @Default({}) Map<String, dynamic> metadata,
   }) = _EdgeModel;
 
   factory EdgeModel.fromJson(Map<String, dynamic> json) =>

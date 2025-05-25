@@ -42,6 +42,7 @@ _$EdgeModelImpl _$$EdgeModelImplFromJson(Map<String, dynamic> json) =>
               .toList() ??
           const [],
       data: json['data'] as Map<String, dynamic>? ?? const {},
+      metadata: json['metadata'] as Map<String, dynamic>? ?? const {},
     );
 
 Map<String, dynamic> _$$EdgeModelImplToJson(_$EdgeModelImpl instance) =>
@@ -70,6 +71,7 @@ Map<String, dynamic> _$$EdgeModelImplToJson(_$EdgeModelImpl instance) =>
       'labelStyle': instance.labelStyle,
       'overlays': instance.overlays,
       'data': instance.data,
+      'metadata': instance.metadata,
     };
 
 Value? _$JsonConverterFromJson<Json, Value>(

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flow_editor/ui/sfn_editor_page.dart';
+import 'package:flow_editor/ui/dsl_editor_page.dart';
 import 'core/state_management/theme_provider.dart';
 
 void main() {
@@ -22,7 +22,7 @@ class MyApp extends ConsumerWidget {
       ),
       darkTheme: ThemeData.dark(useMaterial3: true),
       themeMode: themeMode,
-      home: const SfnEditorPage(),
+      home: const DslEditorPage(),
       debugShowCheckedModeBanner: false,
     );
   }

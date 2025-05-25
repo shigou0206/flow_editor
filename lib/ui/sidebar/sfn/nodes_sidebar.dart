@@ -1,15 +1,9 @@
 // import 'package:flutter/material.dart';
 // import 'package:flow_editor/core/models/node_model.dart';
 // import 'package:flow_editor/core/models/edge_model.dart';
+// import 'package:flow_editor/core/models/canvas_insert_element.dart';
 // import 'package:flow_editor/ui/node/factories/node_widget_factory_impl.dart';
 // import 'package:flow_editor/ui/node/node_widget_registry_initializer.dart';
-
-// class SubgraphDragData {
-//   final List<NodeModel> nodes;
-//   final List<EdgeModel> edges;
-
-//   SubgraphDragData({required this.nodes, required this.edges});
-// }
 
 // class FlowNodeSidebar extends StatelessWidget {
 //   const FlowNodeSidebar({super.key});
@@ -20,45 +14,83 @@
 //     final nodeFactory = NodeWidgetFactoryImpl(registry: registry);
 
 //     final availableNodes = [
-//       // const NodeModel(
-//       //   id: 'start_template',
-//       //   type: 'start',
-//       //   position: Offset.zero,
-//       //   size: Size(200, 40),
-//       //   title: 'Start',
-//       // ),
-//       // const NodeModel(
-//       //   id: 'end_template',
-//       //   type: 'end',
-//       //   position: Offset.zero,
-//       //   size: Size(200, 40),
-//       //   title: 'End',
-//       // ),
 //       const NodeModel(
-//         id: 'placeholder_template',
-//         type: 'placeholder',
+//         id: 'task_template',
+//         type: 'Task',
 //         position: Offset.zero,
 //         size: Size(200, 40),
-//         title: 'Placeholder',
+//         title: 'Task',
 //       ),
 //       const NodeModel(
-//         id: 'middle_template',
-//         type: 'middle',
+//         id: 'pass_template',
+//         type: 'Pass',
 //         position: Offset.zero,
 //         size: Size(200, 40),
-//         title: 'Middle',
+//         title: 'Pass',
 //       ),
+//       const NodeModel(
+//         id: 'choice_template',
+//         type: 'Choice',
+//         position: Offset.zero,
+//         size: Size(200, 40),
+//         title: 'Choice',
+//       ),
+//       const NodeModel(
+//         id: 'succeed_template',
+//         type: 'Succeed',
+//         position: Offset.zero,
+//         size: Size(200, 40),
+//         title: 'Succeed',
+//       ),
+//       const NodeModel(
+//         id: 'fail_template',
+//         type: 'Fail',
+//         position: Offset.zero,
+//         size: Size(200, 40),
+//         title: 'Fail',
+//       ),
+//       const NodeModel(
+//         id: 'wait_template',
+//         type: 'Wait',
+//         position: Offset.zero,
+//         size: Size(200, 40),
+//         title: 'Wait',
+//       ),
+//       const NodeModel(
+//         id: 'parallel_template',
+//         type: 'Parallel',
+//         position: Offset.zero,
+//         size: Size(200, 40),
+//         title: 'Parallel',
+//       ),
+//       const NodeModel(
+//         id: 'map_template',
+//         type: 'Map',
+//         position: Offset.zero,
+//         size: Size(200, 40),
+//         title: 'Map',
+//       ),
+//       // const NodeModel(
+//       //   id: 'custom_template',
+//       //   type: 'Custom',
+//       //   position: Offset.zero,
+//       //   size: Size(200, 40),
+//       //   title: 'Custom',
+//       // ),
 //     ];
 
-//     final groupDragData = SubgraphDragData(
-//       nodes: [
-//         const NodeModel(
-//           id: 'group_template',
-//           type: 'group',
-//           position: Offset(0, 0),
-//           size: Size(200, 40),
-//           title: 'Group Node',
-//         ),
+//     final groupDragData = CanvasInsertElement.group(
+//       position: Offset.zero,
+//       size: const Size(200, 40), // 明确指定group的尺寸
+//       groupNode: const NodeModel(
+//         id: 'group_template',
+//         type: 'group',
+//         position: Offset.zero,
+//         size: Size(200, 40),
+//         title: 'Group Node',
+//         isGroup: true,
+//       ),
+//       children: [
 //         const NodeModel(
 //           id: 'group_inner_node1',
 //           type: 'middle',
@@ -90,36 +122,44 @@
 //       color: Theme.of(context).colorScheme.surfaceContainerHighest,
 //       child: ListView(
 //         children: [
-//           // 单个节点拖拽
+//           // ✅ 单个节点拖拽（修正为使用CanvasInsertElement）
 //           ...availableNodes.map(
-//             (node) => Draggable<NodeModel>(
-//               data: node,
-//               feedback: Opacity(
-//                 opacity: 0.7,
-//                 child: SizedBox(
-//                   width: node.size.width,
-//                   height: node.size.height,
+//             (node) {
+//               final nodeData = CanvasInsertElement.node(
+//                 node: node,
+//                 position: Offset.zero,
+//                 size: node.size, // 显式指定大小
+//               );
+
+//               return Draggable<CanvasInsertElement>(
+//                 data: nodeData,
+//                 feedback: Opacity(
+//                   opacity: 0.7,
+//                   child: SizedBox(
+//                     width: nodeData.size.width,
+//                     height: nodeData.size.height,
+//                     child: nodeFactory.createNodeWidget(node),
+//                   ),
+//                 ),
+//                 childWhenDragging: Opacity(
+//                   opacity: 0.3,
 //                   child: nodeFactory.createNodeWidget(node),
 //                 ),
-//               ),
-//               childWhenDragging: Opacity(
-//                 opacity: 0.3,
 //                 child: nodeFactory.createNodeWidget(node),
-//               ),
-//               child: nodeFactory.createNodeWidget(node),
-//             ),
+//               );
+//             },
 //           ),
 
 //           const SizedBox(height: 20),
 
-//           // 拖拽子图（包含Group和两个内部节点）
-//           Draggable<SubgraphDragData>(
+//           // ✅ 拖拽子图（使用group模式）
+//           Draggable<CanvasInsertElement>(
 //             data: groupDragData,
 //             feedback: Opacity(
 //               opacity: 0.7,
 //               child: Container(
-//                 width: groupDragData.nodes.first.size.width,
-//                 height: groupDragData.nodes.first.size.height,
+//                 width: groupDragData.size.width,
+//                 height: groupDragData.size.height,
 //                 decoration: BoxDecoration(
 //                   color: Colors.grey.shade300,
 //                   borderRadius: BorderRadius.circular(4),
@@ -127,7 +167,7 @@
 //                 ),
 //                 child: Center(
 //                   child: Text(
-//                     groupDragData.nodes.first.title ?? '',
+//                     groupDragData.rootGroupNode?.title ?? '',
 //                     style: const TextStyle(fontWeight: FontWeight.bold),
 //                   ),
 //                 ),
@@ -136,26 +176,28 @@
 //             childWhenDragging: Opacity(
 //               opacity: 0.3,
 //               child: Container(
-//                 padding: const EdgeInsets.all(8),
+//                 width: groupDragData.size.width,
+//                 height: groupDragData.size.height,
 //                 decoration: BoxDecoration(
 //                   color: Colors.grey.shade300,
 //                   borderRadius: BorderRadius.circular(4),
 //                   border: Border.all(color: Colors.blueAccent, width: 1),
 //                 ),
 //                 child: Center(
-//                   child: Text(groupDragData.nodes.first.title ?? ''),
+//                   child: Text(groupDragData.rootGroupNode?.title ?? ''),
 //                 ),
 //               ),
 //             ),
 //             child: Container(
-//               padding: const EdgeInsets.all(8),
+//               width: groupDragData.size.width,
+//               height: groupDragData.size.height,
 //               decoration: BoxDecoration(
 //                 color: Colors.grey.shade300,
 //                 borderRadius: BorderRadius.circular(4),
 //                 border: Border.all(color: Colors.blueAccent, width: 1),
 //               ),
 //               child: Center(
-//                 child: Text(groupDragData.nodes.first.title ?? ''),
+//                 child: Text(groupDragData.rootGroupNode?.title ?? ''),
 //               ),
 //             ),
 //           ),
@@ -182,24 +224,66 @@ class FlowNodeSidebar extends StatelessWidget {
 
     final availableNodes = [
       const NodeModel(
-        id: 'placeholder_template',
-        type: 'placeholder',
+        id: 'task_template',
+        type: 'Task',
         position: Offset.zero,
         size: Size(200, 40),
-        title: 'Placeholder',
+        title: 'Task',
       ),
       const NodeModel(
-        id: 'middle_template',
-        type: 'middle',
+        id: 'pass_template',
+        type: 'Pass',
         position: Offset.zero,
         size: Size(200, 40),
-        title: 'Middle',
+        title: 'Pass',
+      ),
+      const NodeModel(
+        id: 'choice_template',
+        type: 'Choice',
+        position: Offset.zero,
+        size: Size(200, 40),
+        title: 'Choice',
+      ),
+      const NodeModel(
+        id: 'succeed_template',
+        type: 'Succeed',
+        position: Offset.zero,
+        size: Size(200, 40),
+        title: 'Succeed',
+      ),
+      const NodeModel(
+        id: 'fail_template',
+        type: 'Fail',
+        position: Offset.zero,
+        size: Size(200, 40),
+        title: 'Fail',
+      ),
+      const NodeModel(
+        id: 'wait_template',
+        type: 'Wait',
+        position: Offset.zero,
+        size: Size(200, 40),
+        title: 'Wait',
+      ),
+      const NodeModel(
+        id: 'parallel_template',
+        type: 'Parallel',
+        position: Offset.zero,
+        size: Size(200, 40),
+        title: 'Parallel',
+      ),
+      const NodeModel(
+        id: 'map_template',
+        type: 'Map',
+        position: Offset.zero,
+        size: Size(200, 40),
+        title: 'Map',
       ),
     ];
 
     final groupDragData = CanvasInsertElement.group(
       position: Offset.zero,
-      size: const Size(200, 40), // 明确指定group的尺寸
+      size: const Size(200, 40),
       groupNode: const NodeModel(
         id: 'group_template',
         type: 'group',
@@ -240,86 +324,82 @@ class FlowNodeSidebar extends StatelessWidget {
       color: Theme.of(context).colorScheme.surfaceContainerHighest,
       child: ListView(
         children: [
-          // ✅ 单个节点拖拽（修正为使用CanvasInsertElement）
-          ...availableNodes.map(
-            (node) {
-              final nodeData = CanvasInsertElement.node(
-                node: node,
-                position: Offset.zero,
-                size: node.size, // 显式指定大小
-              );
+          ...availableNodes.map((node) {
+            final nodeData = CanvasInsertElement.node(
+              node: node,
+              position: Offset.zero,
+              size: node.size,
+            );
 
-              return Draggable<CanvasInsertElement>(
+            return Padding(
+              padding: const EdgeInsets.only(bottom: 8.0),
+              child: Draggable<CanvasInsertElement>(
                 data: nodeData,
                 feedback: Opacity(
                   opacity: 0.7,
-                  child: SizedBox(
-                    width: nodeData.size.width,
-                    height: nodeData.size.height,
-                    child: nodeFactory.createNodeWidget(node),
-                  ),
+                  child: _buildNodePreview(node),
                 ),
                 childWhenDragging: Opacity(
                   opacity: 0.3,
-                  child: nodeFactory.createNodeWidget(node),
+                  child: _buildNodePreview(node),
                 ),
-                child: nodeFactory.createNodeWidget(node),
-              );
-            },
-          ),
-
+                child: _buildNodePreview(node),
+              ),
+            );
+          }),
           const SizedBox(height: 20),
-
-          // ✅ 拖拽子图（使用group模式）
           Draggable<CanvasInsertElement>(
             data: groupDragData,
             feedback: Opacity(
               opacity: 0.7,
-              child: Container(
-                width: groupDragData.size.width,
-                height: groupDragData.size.height,
-                decoration: BoxDecoration(
-                  color: Colors.grey.shade300,
-                  borderRadius: BorderRadius.circular(4),
-                  border: Border.all(color: Colors.blueAccent, width: 1),
-                ),
-                child: Center(
-                  child: Text(
-                    groupDragData.rootGroupNode?.title ?? '',
-                    style: const TextStyle(fontWeight: FontWeight.bold),
-                  ),
-                ),
-              ),
+              child: _buildGroupPreview(groupDragData),
             ),
             childWhenDragging: Opacity(
               opacity: 0.3,
-              child: Container(
-                width: groupDragData.size.width,
-                height: groupDragData.size.height,
-                decoration: BoxDecoration(
-                  color: Colors.grey.shade300,
-                  borderRadius: BorderRadius.circular(4),
-                  border: Border.all(color: Colors.blueAccent, width: 1),
-                ),
-                child: Center(
-                  child: Text(groupDragData.rootGroupNode?.title ?? ''),
-                ),
-              ),
+              child: _buildGroupPreview(groupDragData),
             ),
-            child: Container(
-              width: groupDragData.size.width,
-              height: groupDragData.size.height,
-              decoration: BoxDecoration(
-                color: Colors.grey.shade300,
-                borderRadius: BorderRadius.circular(4),
-                border: Border.all(color: Colors.blueAccent, width: 1),
-              ),
-              child: Center(
-                child: Text(groupDragData.rootGroupNode?.title ?? ''),
-              ),
-            ),
+            child: _buildGroupPreview(groupDragData),
           ),
         ],
+      ),
+    );
+  }
+
+  // 🚩 修改为直接展示 type name
+  Widget _buildNodePreview(NodeModel node) {
+    return Container(
+      width: node.size.width,
+      height: node.size.height,
+      decoration: BoxDecoration(
+        color: Colors.grey.shade300,
+        borderRadius: BorderRadius.circular(4),
+        border: Border.all(color: Colors.blueAccent, width: 1),
+      ),
+      alignment: Alignment.center,
+      child: Text(
+        node.type, // 直接使用 type name
+        style: const TextStyle(
+          fontWeight: FontWeight.bold,
+          color: Colors.black,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildGroupPreview(CanvasInsertElement groupData) {
+    return Container(
+      width: groupData.size.width,
+      height: groupData.size.height,
+      decoration: BoxDecoration(
+        color: Colors.grey.shade300,
+        borderRadius: BorderRadius.circular(4),
+        border: Border.all(color: Colors.blueAccent, width: 1),
+      ),
+      child: Center(
+        child: Text(
+          groupData.rootGroupNode?.title ?? '',
+          style: const TextStyle(fontWeight: FontWeight.bold),
+        ),
       ),
     );
   }
