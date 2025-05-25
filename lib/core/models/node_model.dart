@@ -41,6 +41,7 @@ class NodeModel with _$NodeModel {
     @Default({}) Map<String, dynamic> outputs,
     @Default({}) Map<String, dynamic> config,
     @Default({}) Map<String, dynamic> data,
+    @Default({}) Map<String, dynamic> metadata,
   }) = _NodeModel;
 
   factory NodeModel.fromJson(Map<String, dynamic> json) =>

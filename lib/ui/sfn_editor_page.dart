@@ -3,8 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flow_editor/core/models/node_model.dart';
 import 'package:flow_editor/core/models/edge_model.dart';
 import 'package:flow_editor/core/state_management/providers.dart';
-import 'package:flow_editor/ui/canvas/sfn_editor_canvas.dart';
-import 'package:flow_editor/ui/sidebar/nodes_sidebar.dart';
+import 'package:flow_editor/ui/canvas/sfn/sfn_editor_canvas.dart';
+import 'package:flow_editor/ui/sidebar/sfn/nodes_sidebar.dart';
 import 'package:flow_editor/core/state_management/theme_provider.dart';
 import 'package:flow_editor/layout/sugiyama_layout.dart'; // ✅ 布局算法引入
 
@@ -56,7 +56,7 @@ class _SfnEditorPageState extends ConsumerState<SfnEditorPage> {
         type: 'start',
         parentId: 'group1',
         position: Offset.zero,
-        size: Size(nodeWidth, nodeHeight),
+        size: Size(nodeWidth, 30),
         title: 'Start',
       ),
       const NodeModel(
@@ -72,7 +72,7 @@ class _SfnEditorPageState extends ConsumerState<SfnEditorPage> {
         type: 'middle',
         parentId: 'group1',
         position: Offset.zero,
-        size: Size(nodeWidth, nodeHeight),
+        size: Size(500, nodeHeight),
         title: 'Node 2',
       ),
       const NodeModel(
@@ -88,7 +88,7 @@ class _SfnEditorPageState extends ConsumerState<SfnEditorPage> {
         type: 'end',
         parentId: 'group1',
         position: Offset.zero,
-        size: Size(nodeWidth, nodeHeight),
+        size: Size(20, 20),
         title: 'End',
       ),
     ];

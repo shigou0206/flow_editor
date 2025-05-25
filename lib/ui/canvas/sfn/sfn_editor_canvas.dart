@@ -152,7 +152,7 @@ import 'package:flow_editor/core/input/wrapper/canvas_input_wrapper.dart';
 import 'package:flow_editor/core/input/behavior_core/behavior_context.dart';
 import 'package:flow_editor/core/hit_test/default_canvas_hit_tester.dart';
 import 'package:flow_editor/core/utils/anchor_position_utils.dart';
-import 'package:flow_editor/ui/canvas/sfn_canvas_render.dart';
+import 'package:flow_editor/ui/canvas/sfn/sfn_canvas_render.dart';
 import 'package:flow_editor/ui/node/factories/node_widget_factory_impl.dart';
 import 'package:flow_editor/ui/node/node_widget_registry_initializer.dart';
 import 'package:flow_editor/core/models/node_model.dart';

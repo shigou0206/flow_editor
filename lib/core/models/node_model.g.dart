@@ -58,6 +58,7 @@ _$NodeModelImpl _$$NodeModelImplFromJson(Map<String, dynamic> json) =>
       outputs: json['outputs'] as Map<String, dynamic>? ?? const {},
       config: json['config'] as Map<String, dynamic>? ?? const {},
       data: json['data'] as Map<String, dynamic>? ?? const {},
+      metadata: json['metadata'] as Map<String, dynamic>? ?? const {},
     );
 
 Map<String, dynamic> _$$NodeModelImplToJson(_$NodeModelImpl instance) =>
@@ -89,6 +90,7 @@ Map<String, dynamic> _$$NodeModelImplToJson(_$NodeModelImpl instance) =>
       'outputs': instance.outputs,
       'config': instance.config,
       'data': instance.data,
+      'metadata': instance.metadata,
     };
 
 const _$DragModeEnumMap = {

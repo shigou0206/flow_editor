@@ -49,6 +49,7 @@ mixin _$NodeModel {
   Map<String, dynamic> get outputs => throw _privateConstructorUsedError;
   Map<String, dynamic> get config => throw _privateConstructorUsedError;
   Map<String, dynamic> get data => throw _privateConstructorUsedError;
+  Map<String, dynamic> get metadata => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
   @JsonKey(ignore: true)
@@ -88,7 +89,8 @@ abstract class $NodeModelCopyWith<$Res> {
       Map<String, dynamic> inputs,
       Map<String, dynamic> outputs,
       Map<String, dynamic> config,
-      Map<String, dynamic> data});
+      Map<String, dynamic> data,
+      Map<String, dynamic> metadata});
 
   $NodeStyleCopyWith<$Res>? get style;
 }
@@ -133,6 +135,7 @@ class _$NodeModelCopyWithImpl<$Res, $Val extends NodeModel>
     Object? outputs = null,
     Object? config = null,
     Object? data = null,
+    Object? metadata = null,
   }) {
     return _then(_value.copyWith(
       id: null == id
@@ -243,6 +246,10 @@ class _$NodeModelCopyWithImpl<$Res, $Val extends NodeModel>
           ? _value.data
           : data // ignore: cast_nullable_to_non_nullable
               as Map<String, dynamic>,
+      metadata: null == metadata
+          ? _value.metadata
+          : metadata // ignore: cast_nullable_to_non_nullable
+              as Map<String, dynamic>,
     ) as $Val);
   }
 
@@ -294,7 +301,8 @@ abstract class _$$NodeModelImplCopyWith<$Res>
       Map<String, dynamic> inputs,
       Map<String, dynamic> outputs,
       Map<String, dynamic> config,
-      Map<String, dynamic> data});
+      Map<String, dynamic> data,
+      Map<String, dynamic> metadata});
 
   @override
   $NodeStyleCopyWith<$Res>? get style;
@@ -338,6 +346,7 @@ class __$$NodeModelImplCopyWithImpl<$Res>
     Object? outputs = null,
     Object? config = null,
     Object? data = null,
+    Object? metadata = null,
   }) {
     return _then(_$NodeModelImpl(
       id: null == id
@@ -448,6 +457,10 @@ class __$$NodeModelImplCopyWithImpl<$Res>
           ? _value._data
           : data // ignore: cast_nullable_to_non_nullable
               as Map<String, dynamic>,
+      metadata: null == metadata
+          ? _value._metadata
+          : metadata // ignore: cast_nullable_to_non_nullable
+              as Map<String, dynamic>,
     ));
   }
 }
@@ -482,7 +495,8 @@ class _$NodeModelImpl extends _NodeModel {
       final Map<String, dynamic> inputs = const {},
       final Map<String, dynamic> outputs = const {},
       final Map<String, dynamic> config = const {},
-      final Map<String, dynamic> data = const {}})
+      final Map<String, dynamic> data = const {},
+      final Map<String, dynamic> metadata = const {}})
       : _anchors = anchors,
         _children = children,
         _outgoingEdgeIds = outgoingEdgeIds,
@@ -491,6 +505,7 @@ class _$NodeModelImpl extends _NodeModel {
         _outputs = outputs,
         _config = config,
         _data = data,
+        _metadata = metadata,
         super._();
 
   factory _$NodeModelImpl.fromJson(Map<String, dynamic> json) =>
@@ -618,9 +633,18 @@ class _$NodeModelImpl extends _NodeModel {
     return EqualUnmodifiableMapView(_data);
   }
 
+  final Map<String, dynamic> _metadata;
+  @override
+  @JsonKey()
+  Map<String, dynamic> get metadata {
+    if (_metadata is EqualUnmodifiableMapView) return _metadata;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableMapView(_metadata);
+  }
+
   @override
   String toString() {
-    return 'NodeModel(id: $id, position: $position, size: $size, dragMode: $dragMode, type: $type, role: $role, title: $title, anchors: $anchors, isGroup: $isGroup, isGroupRoot: $isGroupRoot, children: $children, outgoingEdgeIds: $outgoingEdgeIds, incomingEdgeIds: $incomingEdgeIds, status: $status, parentId: $parentId, zIndex: $zIndex, enabled: $enabled, locked: $locked, description: $description, style: $style, version: $version, createdAt: $createdAt, updatedAt: $updatedAt, inputs: $inputs, outputs: $outputs, config: $config, data: $data)';
+    return 'NodeModel(id: $id, position: $position, size: $size, dragMode: $dragMode, type: $type, role: $role, title: $title, anchors: $anchors, isGroup: $isGroup, isGroupRoot: $isGroupRoot, children: $children, outgoingEdgeIds: $outgoingEdgeIds, incomingEdgeIds: $incomingEdgeIds, status: $status, parentId: $parentId, zIndex: $zIndex, enabled: $enabled, locked: $locked, description: $description, style: $style, version: $version, createdAt: $createdAt, updatedAt: $updatedAt, inputs: $inputs, outputs: $outputs, config: $config, data: $data, metadata: $metadata)';
   }
 
   @override
@@ -663,7 +687,8 @@ class _$NodeModelImpl extends _NodeModel {
             const DeepCollectionEquality().equals(other._inputs, _inputs) &&
             const DeepCollectionEquality().equals(other._outputs, _outputs) &&
             const DeepCollectionEquality().equals(other._config, _config) &&
-            const DeepCollectionEquality().equals(other._data, _data));
+            const DeepCollectionEquality().equals(other._data, _data) &&
+            const DeepCollectionEquality().equals(other._metadata, _metadata));
   }
 
   @JsonKey(ignore: true)
@@ -696,7 +721,8 @@ class _$NodeModelImpl extends _NodeModel {
         const DeepCollectionEquality().hash(_inputs),
         const DeepCollectionEquality().hash(_outputs),
         const DeepCollectionEquality().hash(_config),
-        const DeepCollectionEquality().hash(_data)
+        const DeepCollectionEquality().hash(_data),
+        const DeepCollectionEquality().hash(_metadata)
       ]);
 
   @JsonKey(ignore: true)
@@ -741,7 +767,8 @@ abstract class _NodeModel extends NodeModel {
       final Map<String, dynamic> inputs,
       final Map<String, dynamic> outputs,
       final Map<String, dynamic> config,
-      final Map<String, dynamic> data}) = _$NodeModelImpl;
+      final Map<String, dynamic> data,
+      final Map<String, dynamic> metadata}) = _$NodeModelImpl;
   const _NodeModel._() : super._();
 
   factory _NodeModel.fromJson(Map<String, dynamic> json) =
@@ -803,6 +830,8 @@ abstract class _NodeModel extends NodeModel {
   Map<String, dynamic> get config;
   @override
   Map<String, dynamic> get data;
+  @override
+  Map<String, dynamic> get metadata;
   @override
   @JsonKey(ignore: true)
   _$$NodeModelImplCopyWith<_$NodeModelImpl> get copyWith =>
