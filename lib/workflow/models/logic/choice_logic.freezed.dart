@@ -20,11 +20,18 @@ ChoiceLogic _$ChoiceLogicFromJson(Map<String, dynamic> json) {
 
 /// @nodoc
 mixin _$ChoiceLogic {
-  @JsonKey(name: 'And')
+  @JsonKey(
+      name: 'And',
+      toJson: _choiceLogicListToJson,
+      fromJson: _choiceLogicListFromJson)
   List<ChoiceLogic>? get and => throw _privateConstructorUsedError;
-  @JsonKey(name: 'Or')
+  @JsonKey(
+      name: 'Or',
+      toJson: _choiceLogicListToJson,
+      fromJson: _choiceLogicListFromJson)
   List<ChoiceLogic>? get or => throw _privateConstructorUsedError;
-  @JsonKey(name: 'Not')
+  @JsonKey(
+      name: 'Not', toJson: _choiceLogicToJson, fromJson: _choiceLogicFromJson)
   ChoiceLogic? get not => throw _privateConstructorUsedError;
   String? get variable => throw _privateConstructorUsedError;
   String? get operator => throw _privateConstructorUsedError;
@@ -43,9 +50,21 @@ abstract class $ChoiceLogicCopyWith<$Res> {
       _$ChoiceLogicCopyWithImpl<$Res, ChoiceLogic>;
   @useResult
   $Res call(
-      {@JsonKey(name: 'And') List<ChoiceLogic>? and,
-      @JsonKey(name: 'Or') List<ChoiceLogic>? or,
-      @JsonKey(name: 'Not') ChoiceLogic? not,
+      {@JsonKey(
+          name: 'And',
+          toJson: _choiceLogicListToJson,
+          fromJson: _choiceLogicListFromJson)
+      List<ChoiceLogic>? and,
+      @JsonKey(
+          name: 'Or',
+          toJson: _choiceLogicListToJson,
+          fromJson: _choiceLogicListFromJson)
+      List<ChoiceLogic>? or,
+      @JsonKey(
+          name: 'Not',
+          toJson: _choiceLogicToJson,
+          fromJson: _choiceLogicFromJson)
+      ChoiceLogic? not,
       String? variable,
       String? operator,
       dynamic value});
@@ -123,9 +142,21 @@ abstract class _$$ChoiceLogicImplCopyWith<$Res>
   @override
   @useResult
   $Res call(
-      {@JsonKey(name: 'And') List<ChoiceLogic>? and,
-      @JsonKey(name: 'Or') List<ChoiceLogic>? or,
-      @JsonKey(name: 'Not') ChoiceLogic? not,
+      {@JsonKey(
+          name: 'And',
+          toJson: _choiceLogicListToJson,
+          fromJson: _choiceLogicListFromJson)
+      List<ChoiceLogic>? and,
+      @JsonKey(
+          name: 'Or',
+          toJson: _choiceLogicListToJson,
+          fromJson: _choiceLogicListFromJson)
+      List<ChoiceLogic>? or,
+      @JsonKey(
+          name: 'Not',
+          toJson: _choiceLogicToJson,
+          fromJson: _choiceLogicFromJson)
+      ChoiceLogic? not,
       String? variable,
       String? operator,
       dynamic value});
@@ -183,23 +214,39 @@ class __$$ChoiceLogicImplCopyWithImpl<$Res>
 
 /// @nodoc
 @JsonSerializable()
-class _$ChoiceLogicImpl implements _ChoiceLogic {
+class _$ChoiceLogicImpl extends _ChoiceLogic {
   const _$ChoiceLogicImpl(
-      {@JsonKey(name: 'And') final List<ChoiceLogic>? and,
-      @JsonKey(name: 'Or') final List<ChoiceLogic>? or,
-      @JsonKey(name: 'Not') this.not,
+      {@JsonKey(
+          name: 'And',
+          toJson: _choiceLogicListToJson,
+          fromJson: _choiceLogicListFromJson)
+      final List<ChoiceLogic>? and,
+      @JsonKey(
+          name: 'Or',
+          toJson: _choiceLogicListToJson,
+          fromJson: _choiceLogicListFromJson)
+      final List<ChoiceLogic>? or,
+      @JsonKey(
+          name: 'Not',
+          toJson: _choiceLogicToJson,
+          fromJson: _choiceLogicFromJson)
+      this.not,
       this.variable,
       this.operator,
       this.value})
       : _and = and,
-        _or = or;
+        _or = or,
+        super._();
 
   factory _$ChoiceLogicImpl.fromJson(Map<String, dynamic> json) =>
       _$$ChoiceLogicImplFromJson(json);
 
   final List<ChoiceLogic>? _and;
   @override
-  @JsonKey(name: 'And')
+  @JsonKey(
+      name: 'And',
+      toJson: _choiceLogicListToJson,
+      fromJson: _choiceLogicListFromJson)
   List<ChoiceLogic>? get and {
     final value = _and;
     if (value == null) return null;
@@ -210,7 +257,10 @@ class _$ChoiceLogicImpl implements _ChoiceLogic {
 
   final List<ChoiceLogic>? _or;
   @override
-  @JsonKey(name: 'Or')
+  @JsonKey(
+      name: 'Or',
+      toJson: _choiceLogicListToJson,
+      fromJson: _choiceLogicListFromJson)
   List<ChoiceLogic>? get or {
     final value = _or;
     if (value == null) return null;
@@ -220,7 +270,8 @@ class _$ChoiceLogicImpl implements _ChoiceLogic {
   }
 
   @override
-  @JsonKey(name: 'Not')
+  @JsonKey(
+      name: 'Not', toJson: _choiceLogicToJson, fromJson: _choiceLogicFromJson)
   final ChoiceLogic? not;
   @override
   final String? variable;
@@ -274,26 +325,46 @@ class _$ChoiceLogicImpl implements _ChoiceLogic {
   }
 }
 
-abstract class _ChoiceLogic implements ChoiceLogic {
+abstract class _ChoiceLogic extends ChoiceLogic {
   const factory _ChoiceLogic(
-      {@JsonKey(name: 'And') final List<ChoiceLogic>? and,
-      @JsonKey(name: 'Or') final List<ChoiceLogic>? or,
-      @JsonKey(name: 'Not') final ChoiceLogic? not,
+      {@JsonKey(
+          name: 'And',
+          toJson: _choiceLogicListToJson,
+          fromJson: _choiceLogicListFromJson)
+      final List<ChoiceLogic>? and,
+      @JsonKey(
+          name: 'Or',
+          toJson: _choiceLogicListToJson,
+          fromJson: _choiceLogicListFromJson)
+      final List<ChoiceLogic>? or,
+      @JsonKey(
+          name: 'Not',
+          toJson: _choiceLogicToJson,
+          fromJson: _choiceLogicFromJson)
+      final ChoiceLogic? not,
       final String? variable,
       final String? operator,
       final dynamic value}) = _$ChoiceLogicImpl;
+  const _ChoiceLogic._() : super._();
 
   factory _ChoiceLogic.fromJson(Map<String, dynamic> json) =
       _$ChoiceLogicImpl.fromJson;
 
   @override
-  @JsonKey(name: 'And')
+  @JsonKey(
+      name: 'And',
+      toJson: _choiceLogicListToJson,
+      fromJson: _choiceLogicListFromJson)
   List<ChoiceLogic>? get and;
   @override
-  @JsonKey(name: 'Or')
+  @JsonKey(
+      name: 'Or',
+      toJson: _choiceLogicListToJson,
+      fromJson: _choiceLogicListFromJson)
   List<ChoiceLogic>? get or;
   @override
-  @JsonKey(name: 'Not')
+  @JsonKey(
+      name: 'Not', toJson: _choiceLogicToJson, fromJson: _choiceLogicFromJson)
   ChoiceLogic? get not;
   @override
   String? get variable;
