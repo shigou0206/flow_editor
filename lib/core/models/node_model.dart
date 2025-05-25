@@ -15,8 +15,8 @@ class NodeModel with _$NodeModel {
 
   const factory NodeModel({
     required String id,
-    @OffsetConverter() required Offset position,
-    @SizeConverter() required Size size,
+    @OffsetConverter() @Default(Offset.zero) Offset position,
+    @SizeConverter() @Default(Size(200, 40)) Size size,
     @Default(DragMode.full) DragMode dragMode,
     @Default('') String type,
     @Default(NodeRole.middle) NodeRole role,

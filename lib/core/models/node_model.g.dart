@@ -9,10 +9,14 @@ part of 'node_model.dart';
 _$NodeModelImpl _$$NodeModelImplFromJson(Map<String, dynamic> json) =>
     _$NodeModelImpl(
       id: json['id'] as String,
-      position: const OffsetConverter()
-          .fromJson(json['position'] as Map<String, dynamic>),
-      size:
-          const SizeConverter().fromJson(json['size'] as Map<String, dynamic>),
+      position: json['position'] == null
+          ? Offset.zero
+          : const OffsetConverter()
+              .fromJson(json['position'] as Map<String, dynamic>),
+      size: json['size'] == null
+          ? const Size(200, 40)
+          : const SizeConverter()
+              .fromJson(json['size'] as Map<String, dynamic>),
       dragMode: $enumDecodeNullable(_$DragModeEnumMap, json['dragMode']) ??
           DragMode.full,
       type: json['type'] as String? ?? '',

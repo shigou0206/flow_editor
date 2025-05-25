@@ -470,8 +470,8 @@ class __$$NodeModelImplCopyWithImpl<$Res>
 class _$NodeModelImpl extends _NodeModel {
   const _$NodeModelImpl(
       {required this.id,
-      @OffsetConverter() required this.position,
-      @SizeConverter() required this.size,
+      @OffsetConverter() this.position = Offset.zero,
+      @SizeConverter() this.size = const Size(200, 40),
       this.dragMode = DragMode.full,
       this.type = '',
       this.role = NodeRole.middle,
@@ -514,9 +514,11 @@ class _$NodeModelImpl extends _NodeModel {
   @override
   final String id;
   @override
+  @JsonKey()
   @OffsetConverter()
   final Offset position;
   @override
+  @JsonKey()
   @SizeConverter()
   final Size size;
   @override
@@ -742,8 +744,8 @@ class _$NodeModelImpl extends _NodeModel {
 abstract class _NodeModel extends NodeModel {
   const factory _NodeModel(
       {required final String id,
-      @OffsetConverter() required final Offset position,
-      @SizeConverter() required final Size size,
+      @OffsetConverter() final Offset position,
+      @SizeConverter() final Size size,
       final DragMode dragMode,
       final String type,
       final NodeRole role,
