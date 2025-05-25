@@ -12,12 +12,23 @@ class GraphDslConverter {
   }) {
     final states = <String, dynamic>{};
 
+    // 🚩 定义特殊节点ID集合，明确排除
+    const specialNodeIds = {'start_node', 'end_node', 'group_root'};
+
     for (var node in nodes) {
+      if (specialNodeIds.contains(node.id)) continue; // 🚩 跳过特殊节点
+
       final stateData = Map<String, dynamic>.from(node.data);
       stateData.remove('id');
 
-      final outgoingEdges =
-          edges.where((e) => e.sourceNodeId == node.id).toList();
+      // 🚩 排除所有连接到特殊节点的边
+      final outgoingEdges = edges
+          .where(
+            (e) =>
+                e.sourceNodeId == node.id &&
+                !specialNodeIds.contains(e.targetNodeId),
+          )
+          .toList();
 
       if (node.type == 'Choice') {
         final choices = <Map<String, dynamic>>[];
@@ -51,10 +62,21 @@ class GraphDslConverter {
       states[node.id] = stateData;
     }
 
+    // 🚩 修正 startAt（如果传入的startAt特殊节点，自动修正）
+    String correctedStartAt = startAt;
+    if (startAt == 'start_node') {
+      final startEdge = edges.firstWhere(
+        (e) => e.sourceNodeId == 'start_node',
+        orElse: () =>
+            throw Exception('Start node is missing an outgoing edge.'),
+      );
+      correctedStartAt = startEdge.targetNodeId ?? '';
+    }
+
     return WorkflowDSL(
       comment: comment,
       version: version,
-      startAt: startAt,
+      startAt: correctedStartAt,
       states: states,
     );
   }

@@ -5,7 +5,6 @@ import 'package:flow_editor/core/command/command_context.dart';
 import 'package:flow_editor/core/models/edge_model.dart';
 import 'package:flow_editor/core/command/edit/delete_edge_command.dart';
 import 'package:flow_editor/core/command/edit/delete_node_command.dart';
-// import 'package:flow_editor/core/command/composite_command.dart';
 import 'package:flow_editor/core/command/edit/add_edge_command.dart';
 
 class DeleteNodeWithAutoReconnectCommand implements ICommand {
@@ -14,7 +13,17 @@ class DeleteNodeWithAutoReconnectCommand implements ICommand {
 
   late CompositeCommand _inner;
 
+  static const Set<String> protectedNodeIds = {
+    'start_node',
+    'end_node',
+    'group_root',
+  };
+
   DeleteNodeWithAutoReconnectCommand(this.ctx, this.nodeId) {
+    if (protectedNodeIds.contains(nodeId)) {
+      throw Exception('禁止删除特殊节点: $nodeId');
+    }
+
     final state = ctx.getState();
     final nodes = state.nodeState.nodes;
     final edges = state.edgeState.edges;
@@ -29,9 +38,9 @@ class DeleteNodeWithAutoReconnectCommand implements ICommand {
         relatedEdges.where((e) => e.sourceNodeId == nodeId).toList();
 
     final children = <ICommand>[
-      // 首先删除所有与节点关联的边
+      // 删除关联的边
       ...relatedEdges.map((e) => DeleteEdgeCommand(ctx, e.id)),
-      // 然后删除节点
+      // 删除节点
       DeleteNodeCommand(ctx, nodeId),
     ];
 
@@ -40,15 +49,30 @@ class DeleteNodeWithAutoReconnectCommand implements ICommand {
     final allowReconnect =
         !['Choice', 'Parallel', 'Map'].contains(deletedNode.type);
 
-    // 自动重连的条件判断
-    if (allowReconnect &&
+    // 标记当前被删除节点是否为startAt节点 (start_node指向的节点)
+    final isStartAtNode =
+        incomingEdges.any((e) => e.sourceNodeId == 'start_node');
+
+    if (isStartAtNode) {
+      // 如果删除的是入口节点，需要重新连接start_node
+      if (outgoingEdges.isNotEmpty) {
+        final newStartEdge = EdgeModel.generated(
+          sourceNodeId: 'start_node',
+          targetNodeId: outgoingEdges.first.targetNodeId,
+        );
+        children.add(AddEdgeCommand(ctx, newStartEdge));
+      }
+      // 如果没有后继节点，则start_node不再连接任何节点（孤立）
+    } else if (allowReconnect &&
         incomingEdges.length == 1 &&
-        outgoingEdges.length == 1) {
+        outgoingEdges.length == 1 &&
+        !protectedNodeIds.contains(incomingEdges.first.sourceNodeId) &&
+        !protectedNodeIds.contains(outgoingEdges.first.targetNodeId)) {
+      // 一般节点的自动重连（不涉及start节点）
       final newEdge = EdgeModel.generated(
         sourceNodeId: incomingEdges.first.sourceNodeId,
         targetNodeId: outgoingEdges.first.targetNodeId,
       );
-      // 创建新的重连边
       children.add(AddEdgeCommand(ctx, newEdge));
     }
 

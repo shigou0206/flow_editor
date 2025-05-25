@@ -48,6 +48,12 @@ NodeWidgetRegistry initNodeWidgetRegistry() {
     useDefaultContainer: false,
   );
 
+  registry.register<NodeModel>(
+    type: 'group',
+    builder: (node) => MiddleNodeWidget(node: node),
+    useDefaultContainer: false,
+  );
+
   // 🚩 以下为完整的 Workflow State 节点注册
 
   // Task 节点

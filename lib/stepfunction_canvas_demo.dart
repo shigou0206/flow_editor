@@ -175,6 +175,7 @@ class _LayoutDemoPageState extends ConsumerState<LayoutDemoPage> {
           children: [
             CustomPaint(
               painter: EdgeRenderer(
+                context: context,
                 nodes: layoutState.nodes,
                 edges: layoutState.edges,
                 pathGenerator: FlexiblePathGenerator(layoutState.nodes),

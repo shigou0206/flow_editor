@@ -24,7 +24,10 @@ class CanvasZoomBehavior implements CanvasBehavior {
   void handle(InputEvent ev, BehaviorContext context) {
     if (ev.type != InputEventType.pointerSignal) return;
 
-    final signal = ev.raw as PointerScrollEvent;
+    // 🚩 修改这里，使用pointerEvent明确类型安全
+    final signal = ev.pointerEvent as PointerScrollEvent?;
+    if (signal == null) return; // 增加类型安全检查
+
     final zoomDelta = -signal.scrollDelta.dy * 0.001;
 
     if (ev.canvasPos != null && zoomDelta.abs() > 0.0001) {

@@ -219,7 +219,7 @@ class _$EdgeLineStyleImpl implements _EdgeLineStyle {
   const _$EdgeLineStyleImpl(
       {this.edgeMode = EdgeMode.hvBezier,
       this.colorHex = '#000000',
-      this.strokeWidth = 1.0,
+      this.strokeWidth = 2.0,
       final List<double> dashPattern = const [],
       this.lineCap = EdgeLineCap.butt,
       this.lineJoin = EdgeLineJoin.miter,

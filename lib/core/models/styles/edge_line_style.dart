@@ -9,7 +9,7 @@ class EdgeLineStyle with _$EdgeLineStyle {
   const factory EdgeLineStyle({
     @Default(EdgeMode.hvBezier) EdgeMode edgeMode,
     @Default('#000000') String colorHex,
-    @Default(1.0) double strokeWidth,
+    @Default(2.0) double strokeWidth,
     @Default([]) List<double> dashPattern,
     @Default(EdgeLineCap.butt) EdgeLineCap lineCap,
     @Default(EdgeLineJoin.miter) EdgeLineJoin lineJoin,

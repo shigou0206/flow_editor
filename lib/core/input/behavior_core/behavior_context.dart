@@ -2,8 +2,10 @@ import 'package:flow_editor/core/hit_test/canvas_hit_tester.dart';
 import 'package:flow_editor/core/controller/interfaces/canvas_controller.dart';
 import 'package:flow_editor/core/models/state/editor_state.dart';
 import 'package:flow_editor/core/models/state/interaction_transient_state.dart';
+import 'package:flutter/widgets.dart';
 
 class BehaviorContext {
+  final BuildContext buildContext;
   final ICanvasController controller;
   final EditorState Function() getState;
   final void Function(EditorState) updateState;
@@ -11,6 +13,7 @@ class BehaviorContext {
   final CanvasHitTester hitTester;
 
   const BehaviorContext({
+    required this.buildContext,
     required this.controller,
     required this.getState,
     required this.updateState,

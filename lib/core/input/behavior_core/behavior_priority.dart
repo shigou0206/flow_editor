@@ -6,9 +6,11 @@ part 'behavior_priority.g.dart';
 @freezed
 class BehaviorPriority with _$BehaviorPriority {
   const factory BehaviorPriority({
+    @Default(4) int nodeContextMenu,
     @Default(5) int anchorHover,
     @Default(6) int nodeHover,
     @Default(7) int edgeHover,
+    @Default(8) int nodeSelect,
     @Default(10) int nodeDrag,
     @Default(20) int edgeDraw,
     @Default(25) int nodeInsertPreview,

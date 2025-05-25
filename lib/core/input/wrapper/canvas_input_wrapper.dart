@@ -1,9 +1,6 @@
-// lib/core/input/wrapper/canvas_input_wrapper.dart
-
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-
 import 'package:flow_editor/core/input/behavior_core/behavior_manager.dart';
 import 'package:flow_editor/core/input/behavior_core/plugin_registry.dart';
 import 'package:flow_editor/core/input/behavior_core/behavior_context.dart';
@@ -39,7 +36,7 @@ class _CanvasInputWrapperState extends State<CanvasInputWrapper> {
       BehaviorManager(registerDefaultBehaviors(widget.context));
 
   final FocusNode _focusNode = FocusNode();
-  final GlobalKey _childKey = GlobalKey(); // ← added GlobalKey
+  final GlobalKey _childKey = GlobalKey();
   Offset? _lastCanvasPos;
 
   @override
@@ -56,7 +53,7 @@ class _CanvasInputWrapperState extends State<CanvasInputWrapper> {
       onKeyEvent: _handleKeyEvent,
       child: Listener(
         behavior: HitTestBehavior.translucent,
-        onPointerDown: _onPointer(InputEventType.pointerDown),
+        onPointerDown: _onPointerDown,
         onPointerMove: _onPointer(InputEventType.pointerMove),
         onPointerUp: _onPointer(InputEventType.pointerUp),
         onPointerHover: _onPointer(InputEventType.pointerHover),
@@ -72,16 +69,12 @@ class _CanvasInputWrapperState extends State<CanvasInputWrapper> {
           behavior: HitTestBehavior.translucent,
           onDoubleTap: () => _dispatch(InputEvent.pointer(
             type: InputEventType.doubleTap,
-            raw: null,
+            pointerEvent: null,
             canvasPos: null,
           )),
-          onLongPress: () => _dispatch(InputEvent.pointer(
-            type: InputEventType.longPress,
-            raw: null,
-            canvasPos: null,
-          )),
+          onLongPressStart: (details) => _onLongPress(details),
           child: Container(
-            key: _childKey, // ← wrap child in keyed Container
+            key: _childKey,
             child: widget.child,
           ),
         ),
@@ -89,11 +82,32 @@ class _CanvasInputWrapperState extends State<CanvasInputWrapper> {
     );
   }
 
+  // ✅ 改良版pointerDown，明确右键事件
+  void _onPointerDown(PointerDownEvent event) {
+    final type = event.buttons == kSecondaryMouseButton
+        ? InputEventType.pointerRightClick
+        : InputEventType.pointerDown;
+
+    final render = _childKey.currentContext?.findRenderObject();
+    if (render is! RenderBox) return;
+
+    final local = render.globalToLocal(event.position);
+    final canvasPos = widget.toCanvas(local);
+
+    _lastCanvasPos = canvasPos;
+
+    _dispatch(InputEvent.pointer(
+      type: type,
+      pointerEvent: event,
+      canvasPos: canvasPos,
+    ));
+  }
+
   PointerEventListener _onPointer(InputEventType type) {
     return (PointerEvent e) {
-      // delay render box lookup until event time
       final render = _childKey.currentContext?.findRenderObject();
       if (render is! RenderBox) return;
+
       final local = render.globalToLocal(e.position);
       final canvasPos = widget.toCanvas(local);
 
@@ -102,8 +116,7 @@ class _CanvasInputWrapperState extends State<CanvasInputWrapper> {
         delta = canvasPos - _lastCanvasPos!;
       }
 
-      if (type == InputEventType.pointerDown ||
-          type == InputEventType.pointerMove) {
+      if (type == InputEventType.pointerMove) {
         _lastCanvasPos = canvasPos;
       } else if (type == InputEventType.pointerUp ||
           type == InputEventType.pointerCancel) {
@@ -112,13 +125,29 @@ class _CanvasInputWrapperState extends State<CanvasInputWrapper> {
 
       _dispatch(InputEvent.pointer(
         type: type,
-        raw: e,
+        pointerEvent: e,
         canvasPos: canvasPos,
         canvasPosDelta: delta,
       ));
     };
   }
 
+  // ✅ 增加长按事件并明确位置
+  void _onLongPress(LongPressStartDetails details) {
+    final render = _childKey.currentContext?.findRenderObject();
+    if (render is! RenderBox) return;
+
+    final local = render.globalToLocal(details.globalPosition);
+    final canvasPos = widget.toCanvas(local);
+
+    _dispatch(InputEvent.pointer(
+      type: InputEventType.longPress,
+      pointerEvent: null,
+      canvasPos: canvasPos,
+    ));
+  }
+
+  // 键盘事件不变
   KeyEventResult _handleKeyEvent(FocusNode node, KeyEvent e) {
     final type = switch (e) {
       KeyRepeatEvent _ => InputEventType.keyRepeat,
@@ -127,7 +156,7 @@ class _CanvasInputWrapperState extends State<CanvasInputWrapper> {
       _ => InputEventType.keyDown,
     };
 
-    _dispatch(InputEvent.key(type: type, raw: e, key: e.logicalKey));
+    _dispatch(InputEvent.key(type: type, keyEvent: e));
     return KeyEventResult.handled;
   }
 

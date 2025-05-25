@@ -83,6 +83,7 @@ class SfnCanvasRenderer extends StatelessWidget {
               Positioned.fill(
                 child: CustomPaint(
                   painter: EdgeRenderer(
+                    context: context,
                     nodes: renderedNodes,
                     edges: renderedEdges,
                     pathGenerator: pathGen,

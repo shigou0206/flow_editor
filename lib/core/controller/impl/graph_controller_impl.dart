@@ -9,6 +9,7 @@ import 'package:flow_editor/core/models/edge_model.dart';
 import 'package:flow_editor/core/command/edit/add_node_command.dart';
 import 'package:flow_editor/core/command/edit/delete_node_command.dart';
 import 'package:flow_editor/core/command/edit/delete_node_with_edges_command.dart';
+import 'package:flow_editor/core/command/edit/delete_node_with_auto_reconnect_command.dart';
 import 'package:flow_editor/core/command/edit/move_node_command.dart';
 import 'package:flow_editor/core/command/edit/update_node_property_command.dart';
 import 'package:flow_editor/core/command/edit/group_nodes_command.dart';
@@ -51,6 +52,13 @@ class GraphControllerImpl implements IGraphController {
   @override
   Future<void> deleteNodeWithEdges(String nodeId) {
     return _cmdMgr.executeCommand(DeleteNodeWithEdgesCommand(_ctx, nodeId));
+  }
+
+  @override
+  Future<void> deleteNodeWithAutoReconnect(String nodeId) async {
+    final command = DeleteNodeWithAutoReconnectCommand(_ctx, nodeId);
+    await _cmdMgr.executeCommand(command);
+    await applyLayout();
   }
 
   @override

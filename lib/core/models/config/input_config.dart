@@ -16,6 +16,8 @@ class InputConfig with _$InputConfig {
     @Default(false) bool enableNodeHover,
     @Default(true) bool enableNodeTap,
     @Default(true) bool enableNodeInsertPreview,
+    @Default(true) bool enableNodeContextMenu,
+    @Default(true) bool enableNodeSelect,
 
     // Edge interactions
     @Default(true) bool enableEdgeDraw,

@@ -10,6 +10,7 @@ abstract class IGraphController {
   Future<void> addNode(NodeModel node);
   Future<void> deleteNode(String nodeId);
   Future<void> deleteNodeWithEdges(String nodeId);
+  Future<void> deleteNodeWithAutoReconnect(String nodeId);
   Future<void> moveNode(String nodeId, Offset to);
   Future<void> updateNodeProperty(
     String nodeId,

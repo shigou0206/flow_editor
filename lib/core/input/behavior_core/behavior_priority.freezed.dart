@@ -20,9 +20,11 @@ BehaviorPriority _$BehaviorPriorityFromJson(Map<String, dynamic> json) {
 
 /// @nodoc
 mixin _$BehaviorPriority {
+  int get nodeContextMenu => throw _privateConstructorUsedError;
   int get anchorHover => throw _privateConstructorUsedError;
   int get nodeHover => throw _privateConstructorUsedError;
   int get edgeHover => throw _privateConstructorUsedError;
+  int get nodeSelect => throw _privateConstructorUsedError;
   int get nodeDrag => throw _privateConstructorUsedError;
   int get edgeDraw => throw _privateConstructorUsedError;
   int get nodeInsertPreview => throw _privateConstructorUsedError;
@@ -47,9 +49,11 @@ abstract class $BehaviorPriorityCopyWith<$Res> {
       _$BehaviorPriorityCopyWithImpl<$Res, BehaviorPriority>;
   @useResult
   $Res call(
-      {int anchorHover,
+      {int nodeContextMenu,
+      int anchorHover,
       int nodeHover,
       int edgeHover,
+      int nodeSelect,
       int nodeDrag,
       int edgeDraw,
       int nodeInsertPreview,
@@ -75,9 +79,11 @@ class _$BehaviorPriorityCopyWithImpl<$Res, $Val extends BehaviorPriority>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
+    Object? nodeContextMenu = null,
     Object? anchorHover = null,
     Object? nodeHover = null,
     Object? edgeHover = null,
+    Object? nodeSelect = null,
     Object? nodeDrag = null,
     Object? edgeDraw = null,
     Object? nodeInsertPreview = null,
@@ -90,6 +96,10 @@ class _$BehaviorPriorityCopyWithImpl<$Res, $Val extends BehaviorPriority>
     Object? undoRedoKey = null,
   }) {
     return _then(_value.copyWith(
+      nodeContextMenu: null == nodeContextMenu
+          ? _value.nodeContextMenu
+          : nodeContextMenu // ignore: cast_nullable_to_non_nullable
+              as int,
       anchorHover: null == anchorHover
           ? _value.anchorHover
           : anchorHover // ignore: cast_nullable_to_non_nullable
@@ -101,6 +111,10 @@ class _$BehaviorPriorityCopyWithImpl<$Res, $Val extends BehaviorPriority>
       edgeHover: null == edgeHover
           ? _value.edgeHover
           : edgeHover // ignore: cast_nullable_to_non_nullable
+              as int,
+      nodeSelect: null == nodeSelect
+          ? _value.nodeSelect
+          : nodeSelect // ignore: cast_nullable_to_non_nullable
               as int,
       nodeDrag: null == nodeDrag
           ? _value.nodeDrag
@@ -155,9 +169,11 @@ abstract class _$$BehaviorPriorityImplCopyWith<$Res>
   @override
   @useResult
   $Res call(
-      {int anchorHover,
+      {int nodeContextMenu,
+      int anchorHover,
       int nodeHover,
       int edgeHover,
+      int nodeSelect,
       int nodeDrag,
       int edgeDraw,
       int nodeInsertPreview,
@@ -181,9 +197,11 @@ class __$$BehaviorPriorityImplCopyWithImpl<$Res>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
+    Object? nodeContextMenu = null,
     Object? anchorHover = null,
     Object? nodeHover = null,
     Object? edgeHover = null,
+    Object? nodeSelect = null,
     Object? nodeDrag = null,
     Object? edgeDraw = null,
     Object? nodeInsertPreview = null,
@@ -196,6 +214,10 @@ class __$$BehaviorPriorityImplCopyWithImpl<$Res>
     Object? undoRedoKey = null,
   }) {
     return _then(_$BehaviorPriorityImpl(
+      nodeContextMenu: null == nodeContextMenu
+          ? _value.nodeContextMenu
+          : nodeContextMenu // ignore: cast_nullable_to_non_nullable
+              as int,
       anchorHover: null == anchorHover
           ? _value.anchorHover
           : anchorHover // ignore: cast_nullable_to_non_nullable
@@ -207,6 +229,10 @@ class __$$BehaviorPriorityImplCopyWithImpl<$Res>
       edgeHover: null == edgeHover
           ? _value.edgeHover
           : edgeHover // ignore: cast_nullable_to_non_nullable
+              as int,
+      nodeSelect: null == nodeSelect
+          ? _value.nodeSelect
+          : nodeSelect // ignore: cast_nullable_to_non_nullable
               as int,
       nodeDrag: null == nodeDrag
           ? _value.nodeDrag
@@ -256,9 +282,11 @@ class __$$BehaviorPriorityImplCopyWithImpl<$Res>
 @JsonSerializable()
 class _$BehaviorPriorityImpl implements _BehaviorPriority {
   const _$BehaviorPriorityImpl(
-      {this.anchorHover = 5,
+      {this.nodeContextMenu = 4,
+      this.anchorHover = 5,
       this.nodeHover = 6,
       this.edgeHover = 7,
+      this.nodeSelect = 8,
       this.nodeDrag = 10,
       this.edgeDraw = 20,
       this.nodeInsertPreview = 25,
@@ -275,6 +303,9 @@ class _$BehaviorPriorityImpl implements _BehaviorPriority {
 
   @override
   @JsonKey()
+  final int nodeContextMenu;
+  @override
+  @JsonKey()
   final int anchorHover;
   @override
   @JsonKey()
@@ -282,6 +313,9 @@ class _$BehaviorPriorityImpl implements _BehaviorPriority {
   @override
   @JsonKey()
   final int edgeHover;
+  @override
+  @JsonKey()
+  final int nodeSelect;
   @override
   @JsonKey()
   final int nodeDrag;
@@ -315,7 +349,7 @@ class _$BehaviorPriorityImpl implements _BehaviorPriority {
 
   @override
   String toString() {
-    return 'BehaviorPriority(anchorHover: $anchorHover, nodeHover: $nodeHover, edgeHover: $edgeHover, nodeDrag: $nodeDrag, edgeDraw: $edgeDraw, nodeInsertPreview: $nodeInsertPreview, marqueeSelect: $marqueeSelect, resizeNode: $resizeNode, canvasPan: $canvasPan, canvasZoom: $canvasZoom, deleteKey: $deleteKey, copyPasteKey: $copyPasteKey, undoRedoKey: $undoRedoKey)';
+    return 'BehaviorPriority(nodeContextMenu: $nodeContextMenu, anchorHover: $anchorHover, nodeHover: $nodeHover, edgeHover: $edgeHover, nodeSelect: $nodeSelect, nodeDrag: $nodeDrag, edgeDraw: $edgeDraw, nodeInsertPreview: $nodeInsertPreview, marqueeSelect: $marqueeSelect, resizeNode: $resizeNode, canvasPan: $canvasPan, canvasZoom: $canvasZoom, deleteKey: $deleteKey, copyPasteKey: $copyPasteKey, undoRedoKey: $undoRedoKey)';
   }
 
   @override
@@ -323,12 +357,16 @@ class _$BehaviorPriorityImpl implements _BehaviorPriority {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$BehaviorPriorityImpl &&
+            (identical(other.nodeContextMenu, nodeContextMenu) ||
+                other.nodeContextMenu == nodeContextMenu) &&
             (identical(other.anchorHover, anchorHover) ||
                 other.anchorHover == anchorHover) &&
             (identical(other.nodeHover, nodeHover) ||
                 other.nodeHover == nodeHover) &&
             (identical(other.edgeHover, edgeHover) ||
                 other.edgeHover == edgeHover) &&
+            (identical(other.nodeSelect, nodeSelect) ||
+                other.nodeSelect == nodeSelect) &&
             (identical(other.nodeDrag, nodeDrag) ||
                 other.nodeDrag == nodeDrag) &&
             (identical(other.edgeDraw, edgeDraw) ||
@@ -355,9 +393,11 @@ class _$BehaviorPriorityImpl implements _BehaviorPriority {
   @override
   int get hashCode => Object.hash(
       runtimeType,
+      nodeContextMenu,
       anchorHover,
       nodeHover,
       edgeHover,
+      nodeSelect,
       nodeDrag,
       edgeDraw,
       nodeInsertPreview,
@@ -386,9 +426,11 @@ class _$BehaviorPriorityImpl implements _BehaviorPriority {
 
 abstract class _BehaviorPriority implements BehaviorPriority {
   const factory _BehaviorPriority(
-      {final int anchorHover,
+      {final int nodeContextMenu,
+      final int anchorHover,
       final int nodeHover,
       final int edgeHover,
+      final int nodeSelect,
       final int nodeDrag,
       final int edgeDraw,
       final int nodeInsertPreview,
@@ -404,11 +446,15 @@ abstract class _BehaviorPriority implements BehaviorPriority {
       _$BehaviorPriorityImpl.fromJson;
 
   @override
+  int get nodeContextMenu;
+  @override
   int get anchorHover;
   @override
   int get nodeHover;
   @override
   int get edgeHover;
+  @override
+  int get nodeSelect;
   @override
   int get nodeDrag;
   @override

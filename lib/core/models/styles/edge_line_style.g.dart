@@ -11,7 +11,7 @@ _$EdgeLineStyleImpl _$$EdgeLineStyleImplFromJson(Map<String, dynamic> json) =>
       edgeMode: $enumDecodeNullable(_$EdgeModeEnumMap, json['edgeMode']) ??
           EdgeMode.hvBezier,
       colorHex: json['colorHex'] as String? ?? '#000000',
-      strokeWidth: (json['strokeWidth'] as num?)?.toDouble() ?? 1.0,
+      strokeWidth: (json['strokeWidth'] as num?)?.toDouble() ?? 2.0,
       dashPattern: (json['dashPattern'] as List<dynamic>?)
               ?.map((e) => (e as num).toDouble())
               .toList() ??
