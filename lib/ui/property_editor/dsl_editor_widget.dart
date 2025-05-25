@@ -139,21 +139,45 @@ class DslEditorWidget extends ConsumerStatefulWidget {
 class _DslEditorWidgetState extends ConsumerState<DslEditorWidget> {
   final controller = TextEditingController();
 
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      loadDsl();
+    });
+  }
+
+  /// 根据当前画布状态加载 DSL 到编辑框
   void loadDsl() {
     final editorState = ref.read(activeEditorStateProvider);
     final nodes = editorState.nodeState.nodes;
     final edges = editorState.edgeState.edges;
 
+    final startEdge = edges.firstWhere(
+      (edge) => edge.sourceNodeId == 'start_node',
+      orElse: () =>
+          EdgeModel.generated(sourceNodeId: 'start_node', targetNodeId: ''),
+    );
+    final startAt =
+        startEdge.targetNodeId != null && startEdge.targetNodeId!.isNotEmpty
+            ? startEdge.targetNodeId
+            : nodes.firstWhere((node) => node.id != 'start_node').id;
+
     final workflowDsl = GraphDslConverter.toDsl(
       nodes: nodes,
       edges: edges,
-      startAt: 'start_node', // 此处根据你的需求动态确定
+      startAt: startAt ?? 'start_node',
     );
 
-    controller.text =
-        const JsonEncoder.withIndent('  ').convert(workflowDsl.toJson());
+    setState(() {
+      controller.text =
+          const JsonEncoder.withIndent('  ').convert(workflowDsl.toJson());
+    });
+
+    debugPrint('🔄 DSL已刷新: $workflowDsl');
   }
 
+  /// 根据 DSL JSON 更新画布状态
   void updateCanvas() {
     try {
       final jsonData = jsonDecode(controller.text);
@@ -178,17 +202,14 @@ class _DslEditorWidgetState extends ConsumerState<DslEditorWidget> {
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
         content: Text('🎉 画布已根据DSL更新'),
       ));
-    } catch (e) {
+
+      loadDsl(); // 🚩 画布更新后自动刷新DSL
+    } catch (e, stack) {
+      debugPrint('⚠️ 解析出错: $e\n$stack');
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         content: Text('⚠️ 解析出错: $e'),
       ));
     }
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    loadDsl();
   }
 
   @override
@@ -213,15 +234,15 @@ class _DslEditorWidgetState extends ConsumerState<DslEditorWidget> {
           mainAxisAlignment: MainAxisAlignment.end,
           children: [
             ElevatedButton.icon(
-              onPressed: updateCanvas,
+              onPressed: loadDsl,
               icon: const Icon(Icons.refresh),
-              label: const Text("更新画布"),
+              label: const Text("刷新DSL"),
             ),
             const SizedBox(width: 8),
             ElevatedButton.icon(
-              onPressed: loadDsl,
-              icon: const Icon(Icons.download),
-              label: const Text("刷新DSL"),
+              onPressed: updateCanvas,
+              icon: const Icon(Icons.upload),
+              label: const Text("更新画布"),
             ),
           ],
         ),
