@@ -25,13 +25,13 @@ class LayoutCommand implements ICommand {
   Future<void> execute() async {
     final st = ctx.getState();
 
-    // 保存布局前状态，用于undo
-    _beforeNodes = List.of(st.nodeState.nodes);
-    _beforeEdges = List.of(st.edgeState.edges);
+    // ✅ 使用深拷贝保存布局前状态，用于undo
+    _beforeNodes = st.nodeState.nodes.map((n) => n.copyWith()).toList();
+    _beforeEdges = st.edgeState.edges.map((e) => e.copyWith()).toList();
 
     // 对当前节点和边执行布局
-    final nodes = List<NodeModel>.of(_beforeNodes);
-    final edges = List<EdgeModel>.of(_beforeEdges);
+    final nodes = st.nodeState.nodes.map((n) => n.copyWith()).toList();
+    final edges = st.edgeState.edges.map((e) => e.copyWith()).toList();
 
     layoutStrategy.performLayout(nodes, edges);
     for (final edge in edges) {

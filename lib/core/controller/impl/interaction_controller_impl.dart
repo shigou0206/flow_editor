@@ -200,6 +200,8 @@ class InteractionControllerImpl implements IInteractionController {
           highlightedEdgeId: highlightedEdgeId,
         ),
       );
+    } else {
+      debugPrint('🚨 Interaction 状态异常: 当前并非Group插入预览状态');
     }
   }
 
