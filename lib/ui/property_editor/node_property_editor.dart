@@ -125,6 +125,7 @@ class NodePropertyEditor extends ConsumerWidget {
               } else {
                 final nextNodeId = ref.read(singleNextNodeProvider);
                 if (nextNodeId == null) {
+                  // ignore: use_build_context_synchronously
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(content: Text('请选择下一个节点')),
                   );

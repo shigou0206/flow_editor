@@ -1,5 +1,3 @@
-// implementations/viewport_controller_impl.dart
-
 import 'dart:ui';
 import 'package:flow_editor/core/controller/interfaces/viewport_controller.dart';
 import 'package:flow_editor/core/command/command_context.dart';
@@ -28,8 +26,8 @@ class ViewportControllerImpl implements IViewportController {
   @override
   void zoomAt(Offset focalPoint, double scaleDelta) {
     final currentScale = _ctx.getState().canvasState.scale;
-    double newScale = (currentScale * scaleDelta).clamp(0.1, 10.0);
-    double adjustedScaleDelta = newScale / currentScale;
+    final newScale = (currentScale * scaleDelta).clamp(0.1, 10.0);
+    final adjustedScaleDelta = newScale / currentScale;
 
     _cmdMgr.executeCommand(
       ZoomCanvasCommand(_ctx, focalPoint, adjustedScaleDelta),
@@ -38,15 +36,21 @@ class ViewportControllerImpl implements IViewportController {
 
   @override
   void zoomTo(double scale) {
-    double safeScale = scale.clamp(0.1, 10.0);
+    final safeScale = scale.clamp(0.1, 10.0);
     final currentScale = _ctx.getState().canvasState.scale;
     final scaleDelta = safeScale / currentScale;
 
-    zoomAt(Offset.zero, scaleDelta);
+    // 以当前视图中心作为缩放焦点，而非Offset.zero
+    final canvasSize = _ctx.getState().canvasState.viewportSize;
+    final focalPoint = Offset(canvasSize!.width / 2, canvasSize.height / 2);
+
+    zoomAt(focalPoint, scaleDelta);
   }
 
   @override
   void focusOnPosition(Offset position) {
-    panTo(position);
+    final canvasSize = _ctx.getState().canvasState.viewportSize;
+    final viewportCenter = Offset(canvasSize!.width / 2, canvasSize.height / 2);
+    panTo(viewportCenter - position);
   }
 }
