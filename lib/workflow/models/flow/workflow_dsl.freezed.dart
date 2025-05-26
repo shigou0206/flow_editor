@@ -25,7 +25,7 @@ mixin _$WorkflowDSL {
   String get startAt => throw _privateConstructorUsedError;
   Map<String, dynamic>? get globalConfig => throw _privateConstructorUsedError;
   Map<String, dynamic>? get errorHandling => throw _privateConstructorUsedError;
-  Map<String, dynamic> get states => throw _privateConstructorUsedError;
+  Map<String, WorkflowState> get states => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
   @JsonKey(ignore: true)
@@ -45,7 +45,7 @@ abstract class $WorkflowDSLCopyWith<$Res> {
       String startAt,
       Map<String, dynamic>? globalConfig,
       Map<String, dynamic>? errorHandling,
-      Map<String, dynamic> states});
+      Map<String, WorkflowState> states});
 }
 
 /// @nodoc
@@ -92,7 +92,7 @@ class _$WorkflowDSLCopyWithImpl<$Res, $Val extends WorkflowDSL>
       states: null == states
           ? _value.states
           : states // ignore: cast_nullable_to_non_nullable
-              as Map<String, dynamic>,
+              as Map<String, WorkflowState>,
     ) as $Val);
   }
 }
@@ -111,7 +111,7 @@ abstract class _$$WorkflowDSLImplCopyWith<$Res>
       String startAt,
       Map<String, dynamic>? globalConfig,
       Map<String, dynamic>? errorHandling,
-      Map<String, dynamic> states});
+      Map<String, WorkflowState> states});
 }
 
 /// @nodoc
@@ -156,7 +156,7 @@ class __$$WorkflowDSLImplCopyWithImpl<$Res>
       states: null == states
           ? _value._states
           : states // ignore: cast_nullable_to_non_nullable
-              as Map<String, dynamic>,
+              as Map<String, WorkflowState>,
     ));
   }
 }
@@ -170,7 +170,7 @@ class _$WorkflowDSLImpl implements _WorkflowDSL {
       required this.startAt,
       final Map<String, dynamic>? globalConfig,
       final Map<String, dynamic>? errorHandling,
-      required final Map<String, dynamic> states})
+      required final Map<String, WorkflowState> states})
       : _globalConfig = globalConfig,
         _errorHandling = errorHandling,
         _states = states;
@@ -205,9 +205,9 @@ class _$WorkflowDSLImpl implements _WorkflowDSL {
     return EqualUnmodifiableMapView(value);
   }
 
-  final Map<String, dynamic> _states;
+  final Map<String, WorkflowState> _states;
   @override
-  Map<String, dynamic> get states {
+  Map<String, WorkflowState> get states {
     if (_states is EqualUnmodifiableMapView) return _states;
     // ignore: implicit_dynamic_type
     return EqualUnmodifiableMapView(_states);
@@ -265,7 +265,7 @@ abstract class _WorkflowDSL implements WorkflowDSL {
       required final String startAt,
       final Map<String, dynamic>? globalConfig,
       final Map<String, dynamic>? errorHandling,
-      required final Map<String, dynamic> states}) = _$WorkflowDSLImpl;
+      required final Map<String, WorkflowState> states}) = _$WorkflowDSLImpl;
 
   factory _WorkflowDSL.fromJson(Map<String, dynamic> json) =
       _$WorkflowDSLImpl.fromJson;
@@ -281,7 +281,7 @@ abstract class _WorkflowDSL implements WorkflowDSL {
   @override
   Map<String, dynamic>? get errorHandling;
   @override
-  Map<String, dynamic> get states;
+  Map<String, WorkflowState> get states;
   @override
   @JsonKey(ignore: true)
   _$$WorkflowDSLImplCopyWith<_$WorkflowDSLImpl> get copyWith =>

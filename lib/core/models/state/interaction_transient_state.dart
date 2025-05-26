@@ -197,8 +197,9 @@ extension InteractionStateX on InteractionState {
         orElse: () => null,
       );
 
-  String? get insertingHighlightedEdgeId => maybeWhen(
+  String? get currentHighlightedEdgeId => maybeWhen(
         insertingNodePreview: (_, __, edgeId) => edgeId,
+        insertingGroupPreview: (_, __, edgeId) => edgeId,
         orElse: () => null,
       );
 
@@ -252,12 +253,6 @@ extension InteractionStateX on InteractionState {
   // 新增：获取拖拽中的Group节点尺寸
   Size? get insertingGroupPreviewSize => maybeWhen(
         insertingGroupPreview: (groupElement, _, __) => groupElement.size,
-        orElse: () => null,
-      );
-
-  // 新增：获取Group节点拖拽时高亮的边ID
-  String? get insertingGroupHighlightedEdgeId => maybeWhen(
-        insertingGroupPreview: (_, __, edgeId) => edgeId,
         orElse: () => null,
       );
 

@@ -285,7 +285,7 @@ class _DslEditorPageState extends ConsumerState<DslEditorPage> {
     }
 
     // 🚩 写死的DSL数据 (替换为API调用即可)
-    final workflowDsl = WorkflowDSL.fromJson({
+    final workflowDsl = WorkflowDSLFlatten.fromFlatJson({
       'startAt': 'EvaluateScore',
       'states': {
         'EvaluateScore': {

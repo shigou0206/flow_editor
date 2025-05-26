@@ -29,12 +29,7 @@ class NodePropertyEditor extends ConsumerWidget {
     }
 
     final availableNextNodes = editorState.nodeState.nodes
-        .where(
-          (node) =>
-              node.id != selectedNodeId &&
-              node.type != 'start' &&
-              !node.isGroup,
-        )
+        .where((node) => node.id != selectedNodeId && node.type != 'start')
         .toList();
 
     final isChoiceNode = selectedNode.type == 'Choice';

@@ -5,7 +5,7 @@ import 'package:flow_editor/core/models/anchor_model.dart';
 import 'package:flow_editor/core/models/styles/node_style.dart';
 import 'package:flow_editor/core/utils/anchor_position_utils.dart';
 import 'package:flow_editor/core/models/converters/offset_size_converter.dart';
-
+import 'package:flow_editor/core/utils/id_generator.dart';
 part 'node_model.freezed.dart';
 part 'node_model.g.dart';
 
@@ -57,8 +57,21 @@ class NodeModel with _$NodeModel {
 
   AnchorPadding get anchorPadding => computeAnchorPadding(anchors, size);
 
-  void doLayout() {
-    // placeholder
+  factory NodeModel.create({
+    required String type,
+    Offset position = Offset.zero,
+    Size size = const Size(200, 40),
+    String? title,
+    bool isGroup = false,
+  }) {
+    return NodeModel(
+      id: isGroup ? IdGenerator.nextGroupId() : IdGenerator.nextNodeId(),
+      type: type,
+      position: position,
+      size: size,
+      title: title,
+      isGroup: isGroup,
+    );
   }
 }
 

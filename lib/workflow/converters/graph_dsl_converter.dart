@@ -1,6 +1,16 @@
 import 'package:flow_editor/workflow/models/flow/workflow_dsl.dart';
+import 'package:flow_editor/workflow/models/flow/workflow_state.dart';
 import 'package:flow_editor/core/models/node_model.dart';
 import 'package:flow_editor/core/models/edge_model.dart';
+import 'package:flow_editor/workflow/models/states/task_state.dart';
+import 'package:flow_editor/workflow/models/states/pass_state.dart';
+import 'package:flow_editor/workflow/models/states/choice_state.dart';
+import 'package:flow_editor/workflow/models/states/succeed_state.dart';
+import 'package:flow_editor/workflow/models/states/fail_state.dart';
+import 'package:flow_editor/workflow/models/states/wait_state.dart';
+import 'package:flow_editor/workflow/models/logic/choice_rule.dart';
+import 'package:flow_editor/workflow/models/logic/choice_logic.dart';
+import 'package:collection/collection.dart';
 
 class GraphDslConverter {
   static WorkflowDSL toDsl({
@@ -10,67 +20,69 @@ class GraphDslConverter {
     String? comment,
     String version = '1.0.0',
   }) {
-    final states = <String, dynamic>{};
+    final states = <String, WorkflowState>{};
 
-    // 🚩 定义特殊节点ID集合，明确排除
     const specialNodeIds = {'start_node', 'end_node', 'group_root'};
 
-    for (var node in nodes) {
-      if (specialNodeIds.contains(node.id)) continue; // 🚩 跳过特殊节点
+    for (final node in nodes) {
+      if (specialNodeIds.contains(node.id)) continue;
 
-      final stateData = Map<String, dynamic>.from(node.data);
-      stateData.remove('id');
-
-      // 🚩 排除所有连接到特殊节点的边
       final outgoingEdges = edges
-          .where(
-            (e) =>
-                e.sourceNodeId == node.id &&
-                !specialNodeIds.contains(e.targetNodeId),
-          )
+          .where((e) =>
+              e.sourceNodeId == node.id &&
+              !specialNodeIds.contains(e.targetNodeId))
           .toList();
 
-      if (node.type == 'Choice') {
-        final choices = <Map<String, dynamic>>[];
-        String? defaultNext;
-
-        for (var edge in outgoingEdges) {
-          if (edge.data['isDefault'] == true) {
-            defaultNext = edge.targetNodeId;
-          } else if (edge.data['condition'] != null) {
-            choices.add({
-              'condition': edge.data['condition'],
-              'next': edge.targetNodeId,
-            });
-          }
-        }
-
-        stateData['choices'] = choices;
-        if (defaultNext != null) {
-          stateData['defaultNext'] = defaultNext;
-        }
-      } else {
-        if (outgoingEdges.isNotEmpty) {
-          stateData['next'] = outgoingEdges.first.targetNodeId;
-          stateData.remove('end');
-        } else {
-          stateData['end'] = true;
-          stateData.remove('next');
-        }
+      final stateId = node.data['stateId'] as String?;
+      if (stateId == null) {
+        throw Exception('Node ${node.id} missing "stateId".');
       }
 
-      states[node.id] = stateData;
+      final workflowState = switch (node.type) {
+        'Task' => WorkflowState.task(TaskState(
+            resource: node.data['resource'] ?? 'defaultResource', // 🚩改用实际数据
+            next: outgoingEdges.firstOrNull?.targetNodeId,
+            end: outgoingEdges.isEmpty,
+          )),
+        'Pass' => WorkflowState.pass(PassState(
+            next: outgoingEdges.firstOrNull?.targetNodeId,
+            end: outgoingEdges.isEmpty,
+          )),
+        'Choice' => WorkflowState.choice(ChoiceState(
+            choices: outgoingEdges
+                .where((e) => e.data['condition'] != null)
+                .map((e) => ChoiceRule(
+                      condition: ChoiceLogic.fromJson(e.data['condition']),
+                      next: e.targetNodeId!,
+                    ))
+                .toList(),
+            defaultNext: outgoingEdges
+                .firstWhereOrNull((e) => e.data['isDefault'] == true)
+                ?.targetNodeId,
+          )),
+        'Succeed' => const WorkflowState.succeed(SucceedState()),
+        'Fail' => const WorkflowState.fail(FailState()),
+        'Wait' => WorkflowState.wait(WaitState(
+            next: outgoingEdges.firstOrNull?.targetNodeId,
+            end: outgoingEdges.isEmpty,
+            seconds: node.data['seconds'],
+            timestamp: node.data['timestamp'],
+          )),
+        _ => throw Exception('Unsupported node type: ${node.type}'),
+      };
+
+      states[stateId] = workflowState;
     }
 
-    // 🚩 修正 startAt（如果传入的startAt特殊节点，自动修正）
-    String correctedStartAt = startAt;
-    if (startAt == 'start_node') {
-      final startEdge = edges.firstWhere(
-        (e) => e.sourceNodeId == 'start_node',
-        orElse: () =>
-            throw Exception('Start node is missing an outgoing edge.'),
-      );
-      correctedStartAt = startEdge.targetNodeId ?? '';
+    final correctedStartAt = startAt == 'start_node'
+        ? edges
+            .firstWhereOrNull((e) => e.sourceNodeId == 'start_node')
+            ?.targetNodeId
+        : startAt;
+
+    if (correctedStartAt == null || correctedStartAt.isEmpty) {
+      throw Exception(
+          'Start node is missing an outgoing edge or targetNodeId.');
     }
 
     return WorkflowDSL(

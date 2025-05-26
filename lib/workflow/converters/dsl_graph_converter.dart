@@ -5,91 +5,145 @@ import 'package:flutter/material.dart';
 
 class DslGraphConverter {
   static Map<String, dynamic> toGraph(WorkflowDSL workflow) {
-    const String groupId = 'group_root';
+    const groupId = 'group_root';
 
-    // 🚩 创建统一的 Group 节点
-    const NodeModel groupNode = NodeModel(
-      id: groupId,
-      type: 'group',
-      title: 'Workflow Group',
-      position: Offset.zero,
-      size: Size.zero,
-      isGroup: true,
-    );
-
-    final List<NodeModel> nodes = [groupNode]; // 加入group节点
-    final List<EdgeModel> edges = [];
-
-    // 🚩 添加 Start 节点并放入 group
-    const NodeModel startNode = NodeModel(
-      id: 'start_node',
-      type: 'start',
-      title: 'Start',
-      position: Offset.zero,
-      size: Size(60, 30),
-      parentId: groupId,
-    );
-    nodes.add(startNode);
-
-    // 🚩 转换 DSL 状态节点，并全部放入 group
-    workflow.states.forEach((id, state) {
-      final type = state['type'] as String;
-      nodes.add(NodeModel(
-        id: id,
-        type: type,
-        data: state,
+    final nodes = <NodeModel>[
+      const NodeModel(
+        id: groupId,
+        type: 'group',
+        title: 'Workflow Group',
+        position: Offset.zero,
+        size: Size.zero,
+        isGroup: true,
+      ),
+      const NodeModel(
+        id: 'start_node',
+        type: 'start',
+        title: 'Start',
+        position: Offset.zero,
+        size: Size(60, 30),
         parentId: groupId,
-      ));
+      ),
+    ];
 
-      if (type == 'Choice') {
-        final choices = state['choices'] as List<dynamic>? ?? [];
+    final edges = <EdgeModel>[];
 
-        for (var choice in choices) {
-          edges.add(EdgeModel.generated(
-            sourceNodeId: id,
-            targetNodeId: choice['next'],
-            extra: {
-              'condition': choice['condition'], // 条件信息
-            },
+    workflow.states.forEach((id, state) {
+      state.when(
+        task: (task) {
+          nodes.add(NodeModel(
+            id: id,
+            type: 'Task',
+            data: {'stateId': id},
+            parentId: groupId,
           ));
-        }
-
-        if (state.containsKey('defaultNext')) {
-          edges.add(EdgeModel.generated(
-            sourceNodeId: id,
-            targetNodeId: state['defaultNext'],
-            extra: {'isDefault': true}, // 默认路径
+          if (task.next != null) {
+            edges.add(EdgeModel.generated(
+              sourceNodeId: id,
+              targetNodeId: task.next!,
+            ));
+          }
+        },
+        pass: (pass) {
+          nodes.add(NodeModel(
+            id: id,
+            type: 'Pass',
+            data: {'stateId': id},
+            parentId: groupId,
           ));
-        }
-      } else if (state.containsKey('next')) {
-        edges.add(EdgeModel.generated(
-          sourceNodeId: id,
-          targetNodeId: state['next'],
-        ));
-      }
+          if (pass.next != null) {
+            edges.add(EdgeModel.generated(
+              sourceNodeId: id,
+              targetNodeId: pass.next!,
+            ));
+          }
+        },
+        choice: (choice) {
+          nodes.add(NodeModel(
+            id: id,
+            type: 'Choice',
+            data: {'stateId': id},
+            parentId: groupId,
+          ));
+          for (final c in choice.choices) {
+            edges.add(EdgeModel.generated(
+              sourceNodeId: id,
+              targetNodeId: c.next,
+              extra: {'condition': c.condition.toJson()},
+            ));
+          }
+          if (choice.defaultNext != null) {
+            edges.add(EdgeModel.generated(
+              sourceNodeId: id,
+              targetNodeId: choice.defaultNext!,
+              extra: {'isDefault': true},
+            ));
+          }
+        },
+        succeed: (succeed) {
+          nodes.add(NodeModel(
+            id: id,
+            type: 'Succeed',
+            data: {'stateId': id},
+            parentId: groupId,
+          ));
+        },
+        fail: (fail) {
+          nodes.add(NodeModel(
+            id: id,
+            type: 'Fail',
+            data: {'stateId': id},
+            parentId: groupId,
+          ));
+        },
+        wait: (wait) {
+          nodes.add(NodeModel(
+            id: id,
+            type: 'Wait',
+            data: {'stateId': id},
+            parentId: groupId,
+          ));
+          if (wait.next != null) {
+            edges.add(EdgeModel.generated(
+              sourceNodeId: id,
+              targetNodeId: wait.next!,
+            ));
+          }
+        },
+      );
     });
 
-    // 🚩 从 Start 节点连接到第一个状态节点 (startAt)
     edges.add(EdgeModel.generated(
       sourceNodeId: 'start_node',
       targetNodeId: workflow.startAt,
     ));
 
-    // 🚩 添加统一 End 节点并放入 group
-    const NodeModel endNode = NodeModel(
+    nodes.add(const NodeModel(
       id: 'end_node',
       type: 'end',
       title: 'End',
       position: Offset.zero,
       size: Size(60, 30),
       parentId: groupId,
-    );
-    nodes.add(endNode);
+    ));
 
-    // 🚩 所有终止状态 (end=true) 连接到统一的 End 节点
     workflow.states.forEach((id, state) {
-      final hasNext = state.containsKey('next');
-      final isEnd = state['end'] == true;
+      final hasNext = state.maybeWhen(
+        task: (s) => s.next != null,
+        pass: (s) => s.next != null,
+        choice: (_) => true,
+        wait: (s) => s.next != null,
+        orElse: () => false,
+      );
+
+      final isEnd = state.maybeWhen(
+        succeed: (_) => true,
+        fail: (_) => true,
+        task: (s) => s.end == true,
+        pass: (s) => s.end == true,
+        wait: (s) => s.end == true,
+        orElse: () => false,
+      );
 
       if (!hasNext && isEnd) {
         edges.add(EdgeModel.generated(

@@ -13,7 +13,10 @@ _$WorkflowDSLImpl _$$WorkflowDSLImplFromJson(Map<String, dynamic> json) =>
       startAt: json['startAt'] as String,
       globalConfig: json['globalConfig'] as Map<String, dynamic>?,
       errorHandling: json['errorHandling'] as Map<String, dynamic>?,
-      states: json['states'] as Map<String, dynamic>,
+      states: (json['states'] as Map<String, dynamic>).map(
+        (k, e) =>
+            MapEntry(k, WorkflowState.fromJson(e as Map<String, dynamic>)),
+      ),
     );
 
 Map<String, dynamic> _$$WorkflowDSLImplToJson(_$WorkflowDSLImpl instance) =>

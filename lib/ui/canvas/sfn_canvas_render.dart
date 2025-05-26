@@ -87,8 +87,7 @@ class SfnCanvasRenderer extends StatelessWidget {
                     nodes: renderedNodes,
                     edges: renderedEdges,
                     pathGenerator: pathGen,
-                    hoveredEdgeId: interaction.insertingHighlightedEdgeId ??
-                        interaction.insertingGroupHighlightedEdgeId ??
+                    hoveredEdgeId: interaction.currentHighlightedEdgeId ??
                         interaction.hoveringTargetId,
                     draggingEdgeId: interaction.draggingTargetId,
                     draggingEnd: interaction.mapOrNull(

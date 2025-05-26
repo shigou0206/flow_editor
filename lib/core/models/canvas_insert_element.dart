@@ -44,7 +44,7 @@ extension CanvasInsertElementX on CanvasInsertElement {
 
   List<NodeModel> get allNodes => map(
         node: (data) => [data.node],
-        group: (data) => [data.groupNode, ...data.children],
+        group: (data) => [...data.children],
       );
 
   List<EdgeModel> get allEdges => map(

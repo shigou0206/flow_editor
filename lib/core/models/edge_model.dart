@@ -1,11 +1,10 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:flutter/material.dart';
-import 'package:flow_editor/core/models/utils.dart';
 import 'package:flow_editor/core/models/styles/edge_line_style.dart';
 import 'package:flow_editor/core/models/styles/edge_animation_config.dart';
 import 'package:flow_editor/core/models/converters/offset_size_converter.dart';
 import 'package:flow_editor/core/models/edge_overlay_element.dart';
-
+import 'package:flow_editor/core/utils/id_generator.dart';
 part 'edge_model.freezed.dart';
 part 'edge_model.g.dart';
 
@@ -66,7 +65,7 @@ class EdgeModel with _$EdgeModel {
     bool isDirected = true,
     Map<String, dynamic>? extra,
   }) {
-    final id = EdgeModel.generateEdgeId(
+    final id = IdGenerator.generateEdgeId(
       sourceNodeId,
       targetNodeId,
       sourceAnchorId,
@@ -83,34 +82,5 @@ class EdgeModel with _$EdgeModel {
       isDirected: isDirected,
       data: extra ?? const {},
     );
-  }
-
-  static String generateEdgeId(
-    String? sourceNodeId,
-    String? targetNodeId,
-    String? sourceAnchorId,
-    String? targetAnchorId,
-    String? name, {
-    bool isDirected = true,
-  }) {
-    final sourceAnchor = sourceAnchorId ?? "";
-    final targetAnchor = targetAnchorId ?? "";
-    final source = sourceNodeId ?? "";
-    final target = targetNodeId ?? "";
-
-    String? anchorName;
-    if (sourceAnchorId != null && targetAnchorId != null) {
-      if (sourceAnchorId.compareTo(targetAnchorId) <= 0) {
-        anchorName = "$sourceAnchor\u0001$targetAnchor";
-      } else {
-        anchorName = "$targetAnchor\u0001$sourceAnchor";
-      }
-    }
-
-    if (anchorName != null && name != null) {
-      name = "$anchorName\u0001$name";
-    }
-
-    return createEdgeId(source, target, name, isDirected);
   }
 }

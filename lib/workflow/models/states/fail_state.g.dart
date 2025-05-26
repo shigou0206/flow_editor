@@ -15,11 +15,13 @@ _$FailStateImpl _$$FailStateImplFromJson(Map<String, dynamic> json) =>
       next: json['next'] as String? ?? null,
       end: json['end'] as bool? ?? true,
       retry: (json['retry'] as List<dynamic>?)
-          ?.map((e) => RetryPolicy.fromJson(e as Map<String, dynamic>))
-          .toList(),
+              ?.map((e) => RetryPolicy.fromJson(e as Map<String, dynamic>))
+              .toList() ??
+          null,
       catchPolicy: (json['catchPolicy'] as List<dynamic>?)
-          ?.map((e) => CatchPolicy.fromJson(e as Map<String, dynamic>))
-          .toList(),
+              ?.map((e) => CatchPolicy.fromJson(e as Map<String, dynamic>))
+              .toList() ??
+          null,
     );
 
 Map<String, dynamic> _$$FailStateImplToJson(_$FailStateImpl instance) =>

@@ -3,7 +3,7 @@ import 'package:flow_editor/core/command/command_context.dart';
 import 'package:flow_editor/core/command/command_manager.dart';
 import 'package:flow_editor/core/models/node_model.dart';
 import 'package:flow_editor/core/models/edge_model.dart';
-
+import 'package:flow_editor/core/utils/id_generator.dart';
 // 导入所有相关的 Command
 import 'package:flow_editor/core/command/edit/add_node_command.dart';
 import 'package:flow_editor/core/command/edit/delete_node_command.dart';
@@ -140,7 +140,10 @@ class GraphControllerImpl implements IGraphController {
     debugPrint('[🔴 Edge Deleted]: id=$edgeId');
 
     // 新节点带上 parentId 信息
-    final nodeWithParent = node.copyWith(parentId: parentId);
+    final nodeWithParent = node.copyWith(
+      parentId: parentId,
+      id: IdGenerator.nextNodeId(),
+    );
 
     // 添加新的节点
     await _cmdMgr.executeCommand(AddNodeCommand(_ctx, nodeWithParent));
@@ -179,6 +182,8 @@ class GraphControllerImpl implements IGraphController {
     List<EdgeModel> edges,
     String edgeId,
   ) async {
+    debugPrint(
+        '[🔍 InsertNodeGroupIntoEdge]:children size =${children.length}');
     final state = _ctx.getState();
 
     // 获取要拆分的原始边
@@ -199,11 +204,44 @@ class GraphControllerImpl implements IGraphController {
         state.nodeState.nodes.firstWhere((node) => node.id == sourceNodeId);
     final parentId = sourceNode.parentId;
 
-    // 新的节点列表：包含现有节点 + 新增的group节点和子节点（parentId需更新）
+    // 重新生成唯一的groupNode id
+    final newGroupNodeId = IdGenerator.nextGroupId();
+
+    // 重新生成group节点
+    final updatedGroupNode = groupNode.copyWith(
+      id: newGroupNodeId,
+      parentId: parentId,
+    );
+
+    // 重新生成所有子节点，并更新 parentId 为新group节点id
+    final updatedChildren = children.map((child) {
+      final newChildId = IdGenerator.nextNodeId();
+      return child.copyWith(
+        id: newChildId,
+        parentId: newGroupNodeId,
+      );
+    }).toList();
+
+    // 建立旧id到新id的映射，用于边的连接关系修复
+    final idMapping = <String, String>{
+      groupNode.id: newGroupNodeId,
+      for (int i = 0; i < children.length; i++)
+        children[i].id: updatedChildren[i].id,
+    };
+
+    // 重新生成所有group内部边，更新边的节点连接关系（确保连接新id）
+    final updatedGroupEdges = edges.map((edge) {
+      return EdgeModel.generated(
+        sourceNodeId: idMapping[edge.sourceNodeId]!,
+        targetNodeId: idMapping[edge.targetNodeId]!,
+      );
+    }).toList();
+
+    // 新的节点列表：现有节点 + 新增的group节点和子节点
     final updatedNodes = [
       ...state.nodeState.nodes,
-      groupNode.copyWith(parentId: parentId),
-      ...children.map((child) => child.copyWith(parentId: groupNode.id)),
+      updatedGroupNode,
+      ...updatedChildren,
     ];
 
     // 新的边列表：移除原边，添加group内部边和外部连接边
@@ -211,19 +249,19 @@ class GraphControllerImpl implements IGraphController {
       for (final edge in state.edgeState.edges)
         if (edge.id != edgeId) edge,
 
-      // 新增 group 内部的 edges
-      ...edges,
+      // 新增 group 内部的 edges（已修正id和节点引用）
+      ...updatedGroupEdges,
 
-      // 连接原 source 节点到 groupNode
+      // 连接原 source 节点到新 group 节点
       EdgeModel.generated(
         sourceNodeId: sourceNodeId,
         sourceAnchorId: originalEdge.sourceAnchorId,
-        targetNodeId: groupNode.id,
+        targetNodeId: newGroupNodeId,
       ),
 
-      // 连接 groupNode 到原 target 节点
+      // 连接新 group 节点到原 target 节点
       EdgeModel.generated(
-        sourceNodeId: groupNode.id,
+        sourceNodeId: newGroupNodeId,
         targetNodeId: targetNodeId,
         targetAnchorId: originalEdge.targetAnchorId,
       ),
@@ -231,13 +269,13 @@ class GraphControllerImpl implements IGraphController {
 
     // 执行一次性整体更新
     _ctx.updateState(
-      _ctx.getState().copyWith(
-            nodeState: _ctx.getState().nodeState.copyWith(nodes: updatedNodes),
-            edgeState: _ctx.getState().edgeState.copyWith(edges: updatedEdges),
-          ),
+      state.copyWith(
+        nodeState: state.nodeState.copyWith(nodes: updatedNodes),
+        edgeState: state.edgeState.copyWith(edges: updatedEdges),
+      ),
     );
 
-// 执行布局命令 (不带参数)
+    // 执行布局命令 (不带参数)
     await _cmdMgr.executeCommand(LayoutCommand(_ctx));
 
     debugPrint('[✅ Group inserted successfully]');

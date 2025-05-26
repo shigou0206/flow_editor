@@ -2,7 +2,6 @@ import 'package:flow_editor/core/models/state/editor_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flow_editor/core/state_management/providers.dart';
-// import 'package:flow_editor/core/state_management/canvas_controller_provider.dart';
 import 'package:flow_editor/core/input/wrapper/canvas_input_wrapper.dart';
 import 'package:flow_editor/core/input/behavior_core/behavior_context.dart';
 import 'package:flow_editor/core/hit_test/default_canvas_hit_tester.dart';
@@ -62,9 +61,6 @@ class SfnEditorCanvas extends ConsumerWidget {
           ),
         );
 
-        debugPrint(
-            'onWillAcceptWithDetails highlightedEdgeId: $highlightedEdgeId');
-
         if (details.data.isNode) {
           ctrl.interaction
               .startInsertingNodePreview(details.data.singleNode!, localPos);
@@ -73,7 +69,7 @@ class SfnEditorCanvas extends ConsumerWidget {
         } else if (details.data.isGroup) {
           ctrl.interaction.startInsertingGroupPreview(
             details.data.rootGroupNode!,
-            details.data.allNodes.sublist(1),
+            details.data.allNodes,
             details.data.allEdges,
             localPos,
           );
@@ -100,8 +96,6 @@ class SfnEditorCanvas extends ConsumerWidget {
           ),
         );
 
-        debugPrint('onMove highlightedEdgeId: $highlightedEdgeId');
-
         if (details.data.isNode) {
           ctrl.interaction
               .updateInsertingNodePreview(localPos, highlightedEdgeId);
@@ -126,35 +120,23 @@ class SfnEditorCanvas extends ConsumerWidget {
 
         final interaction = behaviorCtx.interaction;
 
-        debugPrint(
-            'onAcceptWithDetails interaction.insertingHighlightedEdgeId: ${interaction.insertingHighlightedEdgeId}');
-
         if (details.data.isNode) {
           final node = details.data.singleNode!.copyWith(
             id: 'node_${DateTime.now().millisecondsSinceEpoch}',
             position: localPos,
           );
 
-          if (interaction.insertingHighlightedEdgeId != null) {
-            debugPrint(
-                "🔥 Inserting node into edge: ${interaction.insertingHighlightedEdgeId}");
+          if (interaction.currentHighlightedEdgeId != null) {
             ctrl.graph.insertNodeIntoEdge(
-                node, interaction.insertingHighlightedEdgeId!);
+                node, interaction.currentHighlightedEdgeId!);
           }
-          //  else {
-          //   ctrl.graph.addNode(node);
-          // }
         } else if (details.data.isGroup) {
-          debugPrint(
-              "🔥 Inserting group into edge11111: ${interaction.insertingHighlightedEdgeId}");
-          if (interaction.insertingHighlightedEdgeId != null) {
-            debugPrint(
-                "🔥 Inserting group into edge: ${interaction.insertingHighlightedEdgeId}");
+          if (interaction.currentHighlightedEdgeId != null) {
             ctrl.graph.insertNodeGroupIntoEdge(
               details.data.rootGroupNode!,
               details.data.allNodes,
               details.data.allEdges,
-              interaction.insertingHighlightedEdgeId!,
+              interaction.currentHighlightedEdgeId!,
             );
           }
         }

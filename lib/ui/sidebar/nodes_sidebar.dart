@@ -84,17 +84,17 @@ class FlowNodeSidebar extends StatelessWidget {
       children: [
         const NodeModel(
           id: 'group_inner_node1',
-          type: 'middle',
+          type: 'start',
           position: Offset(10, 40),
-          size: Size(200, 40),
+          size: Size(60, 30),
           parentId: 'group_template',
           title: 'Inner Node 1',
         ),
         const NodeModel(
           id: 'group_inner_node2',
-          type: 'middle',
+          type: 'end',
           position: Offset(120, 40),
-          size: Size(200, 40),
+          size: Size(60, 30),
           parentId: 'group_template',
           title: 'Inner Node 2',
         ),
@@ -187,7 +187,8 @@ class FlowNodeSidebar extends StatelessWidget {
       child: Center(
         child: Text(
           groupData.rootGroupNode?.title ?? '',
-          style: const TextStyle(fontWeight: FontWeight.bold),
+          style:
+              const TextStyle(fontWeight: FontWeight.bold, color: Colors.black),
         ),
       ),
     );

@@ -14,14 +14,16 @@ _$ChoiceStateImpl _$$ChoiceStateImplFromJson(Map<String, dynamic> json) =>
           .map((e) => ChoiceRule.fromJson(e as Map<String, dynamic>))
           .toList(),
       defaultNext: json['defaultNext'] as String?,
-      next: json['next'] as String?,
-      end: json['end'] as bool?,
+      next: json['next'] as String? ?? null,
+      end: json['end'] as bool? ?? null,
       retry: (json['retry'] as List<dynamic>?)
-          ?.map((e) => RetryPolicy.fromJson(e as Map<String, dynamic>))
-          .toList(),
+              ?.map((e) => RetryPolicy.fromJson(e as Map<String, dynamic>))
+              .toList() ??
+          null,
       catchPolicy: (json['catchPolicy'] as List<dynamic>?)
-          ?.map((e) => CatchPolicy.fromJson(e as Map<String, dynamic>))
-          .toList(),
+              ?.map((e) => CatchPolicy.fromJson(e as Map<String, dynamic>))
+              .toList() ??
+          null,
     );
 
 Map<String, dynamic> _$$ChoiceStateImplToJson(_$ChoiceStateImpl instance) =>
