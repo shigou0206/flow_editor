@@ -50,6 +50,7 @@ dependencies:
   #   path: ../stepflow_flutter_client
 
   uuid: ^4.5.1
+  dio: ^5.4.3
 
 dev_dependencies:
   flutter_test:
