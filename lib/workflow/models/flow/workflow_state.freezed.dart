@@ -14,27 +14,6 @@ T _$identity<T>(T value) => value;
 final _privateConstructorUsedError = UnsupportedError(
     'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models');
 
-WorkflowState _$WorkflowStateFromJson(Map<String, dynamic> json) {
-  switch (json['type']) {
-    case 'Task':
-      return TaskWorkflowState.fromJson(json);
-    case 'Pass':
-      return PassWorkflowState.fromJson(json);
-    case 'Choice':
-      return ChoiceWorkflowState.fromJson(json);
-    case 'Succeed':
-      return SucceedWorkflowState.fromJson(json);
-    case 'Fail':
-      return FailWorkflowState.fromJson(json);
-    case 'Wait':
-      return WaitWorkflowState.fromJson(json);
-
-    default:
-      throw CheckedFromJsonException(json, 'type', 'WorkflowState',
-          'Invalid union type "${json['type']}"!');
-  }
-}
-
 /// @nodoc
 mixin _$WorkflowState {
   @optionalTypeArgs
@@ -99,7 +78,6 @@ mixin _$WorkflowState {
     required TResult orElse(),
   }) =>
       throw _privateConstructorUsedError;
-  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
 }
 
 /// @nodoc
@@ -162,19 +140,12 @@ class __$$TaskWorkflowStateImplCopyWithImpl<$Res>
 }
 
 /// @nodoc
-@JsonSerializable()
-class _$TaskWorkflowStateImpl implements TaskWorkflowState {
-  const _$TaskWorkflowStateImpl(this.task, {final String? $type})
-      : $type = $type ?? 'Task';
 
-  factory _$TaskWorkflowStateImpl.fromJson(Map<String, dynamic> json) =>
-      _$$TaskWorkflowStateImplFromJson(json);
+class _$TaskWorkflowStateImpl extends TaskWorkflowState {
+  const _$TaskWorkflowStateImpl(this.task) : super._();
 
   @override
   final TaskState task;
-
-  @JsonKey(name: 'type')
-  final String $type;
 
   @override
   String toString() {
@@ -189,7 +160,6 @@ class _$TaskWorkflowStateImpl implements TaskWorkflowState {
             (identical(other.task, task) || other.task == task));
   }
 
-  @JsonKey(ignore: true)
   @override
   int get hashCode => Object.hash(runtimeType, task);
 
@@ -285,21 +255,12 @@ class _$TaskWorkflowStateImpl implements TaskWorkflowState {
     }
     return orElse();
   }
-
-  @override
-  Map<String, dynamic> toJson() {
-    return _$$TaskWorkflowStateImplToJson(
-      this,
-    );
-  }
 }
 
-abstract class TaskWorkflowState implements WorkflowState {
+abstract class TaskWorkflowState extends WorkflowState {
   const factory TaskWorkflowState(final TaskState task) =
       _$TaskWorkflowStateImpl;
-
-  factory TaskWorkflowState.fromJson(Map<String, dynamic> json) =
-      _$TaskWorkflowStateImpl.fromJson;
+  const TaskWorkflowState._() : super._();
 
   TaskState get task;
   @JsonKey(ignore: true)
@@ -349,19 +310,12 @@ class __$$PassWorkflowStateImplCopyWithImpl<$Res>
 }
 
 /// @nodoc
-@JsonSerializable()
-class _$PassWorkflowStateImpl implements PassWorkflowState {
-  const _$PassWorkflowStateImpl(this.pass, {final String? $type})
-      : $type = $type ?? 'Pass';
 
-  factory _$PassWorkflowStateImpl.fromJson(Map<String, dynamic> json) =>
-      _$$PassWorkflowStateImplFromJson(json);
+class _$PassWorkflowStateImpl extends PassWorkflowState {
+  const _$PassWorkflowStateImpl(this.pass) : super._();
 
   @override
   final PassState pass;
-
-  @JsonKey(name: 'type')
-  final String $type;
 
   @override
   String toString() {
@@ -376,7 +330,6 @@ class _$PassWorkflowStateImpl implements PassWorkflowState {
             (identical(other.pass, pass) || other.pass == pass));
   }
 
-  @JsonKey(ignore: true)
   @override
   int get hashCode => Object.hash(runtimeType, pass);
 
@@ -472,21 +425,12 @@ class _$PassWorkflowStateImpl implements PassWorkflowState {
     }
     return orElse();
   }
-
-  @override
-  Map<String, dynamic> toJson() {
-    return _$$PassWorkflowStateImplToJson(
-      this,
-    );
-  }
 }
 
-abstract class PassWorkflowState implements WorkflowState {
+abstract class PassWorkflowState extends WorkflowState {
   const factory PassWorkflowState(final PassState pass) =
       _$PassWorkflowStateImpl;
-
-  factory PassWorkflowState.fromJson(Map<String, dynamic> json) =
-      _$PassWorkflowStateImpl.fromJson;
+  const PassWorkflowState._() : super._();
 
   PassState get pass;
   @JsonKey(ignore: true)
@@ -536,19 +480,12 @@ class __$$ChoiceWorkflowStateImplCopyWithImpl<$Res>
 }
 
 /// @nodoc
-@JsonSerializable()
-class _$ChoiceWorkflowStateImpl implements ChoiceWorkflowState {
-  const _$ChoiceWorkflowStateImpl(this.choice, {final String? $type})
-      : $type = $type ?? 'Choice';
 
-  factory _$ChoiceWorkflowStateImpl.fromJson(Map<String, dynamic> json) =>
-      _$$ChoiceWorkflowStateImplFromJson(json);
+class _$ChoiceWorkflowStateImpl extends ChoiceWorkflowState {
+  const _$ChoiceWorkflowStateImpl(this.choice) : super._();
 
   @override
   final ChoiceState choice;
-
-  @JsonKey(name: 'type')
-  final String $type;
 
   @override
   String toString() {
@@ -563,7 +500,6 @@ class _$ChoiceWorkflowStateImpl implements ChoiceWorkflowState {
             (identical(other.choice, choice) || other.choice == choice));
   }
 
-  @JsonKey(ignore: true)
   @override
   int get hashCode => Object.hash(runtimeType, choice);
 
@@ -659,21 +595,12 @@ class _$ChoiceWorkflowStateImpl implements ChoiceWorkflowState {
     }
     return orElse();
   }
-
-  @override
-  Map<String, dynamic> toJson() {
-    return _$$ChoiceWorkflowStateImplToJson(
-      this,
-    );
-  }
 }
 
-abstract class ChoiceWorkflowState implements WorkflowState {
+abstract class ChoiceWorkflowState extends WorkflowState {
   const factory ChoiceWorkflowState(final ChoiceState choice) =
       _$ChoiceWorkflowStateImpl;
-
-  factory ChoiceWorkflowState.fromJson(Map<String, dynamic> json) =
-      _$ChoiceWorkflowStateImpl.fromJson;
+  const ChoiceWorkflowState._() : super._();
 
   ChoiceState get choice;
   @JsonKey(ignore: true)
@@ -723,19 +650,12 @@ class __$$SucceedWorkflowStateImplCopyWithImpl<$Res>
 }
 
 /// @nodoc
-@JsonSerializable()
-class _$SucceedWorkflowStateImpl implements SucceedWorkflowState {
-  const _$SucceedWorkflowStateImpl(this.succeed, {final String? $type})
-      : $type = $type ?? 'Succeed';
 
-  factory _$SucceedWorkflowStateImpl.fromJson(Map<String, dynamic> json) =>
-      _$$SucceedWorkflowStateImplFromJson(json);
+class _$SucceedWorkflowStateImpl extends SucceedWorkflowState {
+  const _$SucceedWorkflowStateImpl(this.succeed) : super._();
 
   @override
   final SucceedState succeed;
-
-  @JsonKey(name: 'type')
-  final String $type;
 
   @override
   String toString() {
@@ -750,7 +670,6 @@ class _$SucceedWorkflowStateImpl implements SucceedWorkflowState {
             (identical(other.succeed, succeed) || other.succeed == succeed));
   }
 
-  @JsonKey(ignore: true)
   @override
   int get hashCode => Object.hash(runtimeType, succeed);
 
@@ -847,21 +766,12 @@ class _$SucceedWorkflowStateImpl implements SucceedWorkflowState {
     }
     return orElse();
   }
-
-  @override
-  Map<String, dynamic> toJson() {
-    return _$$SucceedWorkflowStateImplToJson(
-      this,
-    );
-  }
 }
 
-abstract class SucceedWorkflowState implements WorkflowState {
+abstract class SucceedWorkflowState extends WorkflowState {
   const factory SucceedWorkflowState(final SucceedState succeed) =
       _$SucceedWorkflowStateImpl;
-
-  factory SucceedWorkflowState.fromJson(Map<String, dynamic> json) =
-      _$SucceedWorkflowStateImpl.fromJson;
+  const SucceedWorkflowState._() : super._();
 
   SucceedState get succeed;
   @JsonKey(ignore: true)
@@ -911,19 +821,12 @@ class __$$FailWorkflowStateImplCopyWithImpl<$Res>
 }
 
 /// @nodoc
-@JsonSerializable()
-class _$FailWorkflowStateImpl implements FailWorkflowState {
-  const _$FailWorkflowStateImpl(this.fail, {final String? $type})
-      : $type = $type ?? 'Fail';
 
-  factory _$FailWorkflowStateImpl.fromJson(Map<String, dynamic> json) =>
-      _$$FailWorkflowStateImplFromJson(json);
+class _$FailWorkflowStateImpl extends FailWorkflowState {
+  const _$FailWorkflowStateImpl(this.fail) : super._();
 
   @override
   final FailState fail;
-
-  @JsonKey(name: 'type')
-  final String $type;
 
   @override
   String toString() {
@@ -938,7 +841,6 @@ class _$FailWorkflowStateImpl implements FailWorkflowState {
             (identical(other.fail, fail) || other.fail == fail));
   }
 
-  @JsonKey(ignore: true)
   @override
   int get hashCode => Object.hash(runtimeType, fail);
 
@@ -1034,21 +936,12 @@ class _$FailWorkflowStateImpl implements FailWorkflowState {
     }
     return orElse();
   }
-
-  @override
-  Map<String, dynamic> toJson() {
-    return _$$FailWorkflowStateImplToJson(
-      this,
-    );
-  }
 }
 
-abstract class FailWorkflowState implements WorkflowState {
+abstract class FailWorkflowState extends WorkflowState {
   const factory FailWorkflowState(final FailState fail) =
       _$FailWorkflowStateImpl;
-
-  factory FailWorkflowState.fromJson(Map<String, dynamic> json) =
-      _$FailWorkflowStateImpl.fromJson;
+  const FailWorkflowState._() : super._();
 
   FailState get fail;
   @JsonKey(ignore: true)
@@ -1098,19 +991,12 @@ class __$$WaitWorkflowStateImplCopyWithImpl<$Res>
 }
 
 /// @nodoc
-@JsonSerializable()
-class _$WaitWorkflowStateImpl implements WaitWorkflowState {
-  const _$WaitWorkflowStateImpl(this.wait, {final String? $type})
-      : $type = $type ?? 'Wait';
 
-  factory _$WaitWorkflowStateImpl.fromJson(Map<String, dynamic> json) =>
-      _$$WaitWorkflowStateImplFromJson(json);
+class _$WaitWorkflowStateImpl extends WaitWorkflowState {
+  const _$WaitWorkflowStateImpl(this.wait) : super._();
 
   @override
   final WaitState wait;
-
-  @JsonKey(name: 'type')
-  final String $type;
 
   @override
   String toString() {
@@ -1125,7 +1011,6 @@ class _$WaitWorkflowStateImpl implements WaitWorkflowState {
             (identical(other.wait, wait) || other.wait == wait));
   }
 
-  @JsonKey(ignore: true)
   @override
   int get hashCode => Object.hash(runtimeType, wait);
 
@@ -1221,21 +1106,12 @@ class _$WaitWorkflowStateImpl implements WaitWorkflowState {
     }
     return orElse();
   }
-
-  @override
-  Map<String, dynamic> toJson() {
-    return _$$WaitWorkflowStateImplToJson(
-      this,
-    );
-  }
 }
 
-abstract class WaitWorkflowState implements WorkflowState {
+abstract class WaitWorkflowState extends WorkflowState {
   const factory WaitWorkflowState(final WaitState wait) =
       _$WaitWorkflowStateImpl;
-
-  factory WaitWorkflowState.fromJson(Map<String, dynamic> json) =
-      _$WaitWorkflowStateImpl.fromJson;
+  const WaitWorkflowState._() : super._();
 
   WaitState get wait;
   @JsonKey(ignore: true)

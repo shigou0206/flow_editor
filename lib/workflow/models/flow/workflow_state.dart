@@ -7,9 +7,12 @@ import 'package:flow_editor/workflow/models/states/fail_state.dart';
 import 'package:flow_editor/workflow/models/states/wait_state.dart';
 
 part 'workflow_state.freezed.dart';
-part 'workflow_state.g.dart';
 
-@Freezed(unionKey: 'type', unionValueCase: FreezedUnionCase.pascal)
+@Freezed(
+    unionKey: 'type',
+    unionValueCase: FreezedUnionCase.pascal,
+    fromJson: false,
+    toJson: false)
 class WorkflowState with _$WorkflowState {
   const factory WorkflowState.task(TaskState task) = TaskWorkflowState;
   const factory WorkflowState.pass(PassState pass) = PassWorkflowState;
@@ -19,41 +22,7 @@ class WorkflowState with _$WorkflowState {
   const factory WorkflowState.fail(FailState fail) = FailWorkflowState;
   const factory WorkflowState.wait(WaitState wait) = WaitWorkflowState;
 
-  factory WorkflowState.fromJson(Map<String, dynamic> json) =>
-      _$WorkflowStateFromJson(json);
-}
-
-extension WorkflowStateFlatten on WorkflowState {
-  Map<String, dynamic> toFlatJson() {
-    return map(
-      task: (task) => {
-        'type': 'Task',
-        ...task.task.toJson(),
-      },
-      pass: (pass) => {
-        'type': 'Pass',
-        ...pass.pass.toJson(),
-      },
-      choice: (choice) => {
-        'type': 'Choice',
-        ...choice.choice.toJson(),
-      },
-      succeed: (succeed) => {
-        'type': 'Succeed',
-        ...succeed.succeed.toJson(),
-      },
-      fail: (fail) => {
-        'type': 'Fail',
-        ...fail.fail.toJson(),
-      },
-      wait: (wait) => {
-        'type': 'Wait',
-        ...wait.wait.toJson(),
-      },
-    );
-  }
-
-  static WorkflowState fromFlatJson(Map<String, dynamic> json) {
+  factory WorkflowState.fromJson(Map<String, dynamic> json) {
     final type = json['type'] as String;
     final content = Map<String, dynamic>.from(json)..remove('type');
 
@@ -73,5 +42,18 @@ extension WorkflowStateFlatten on WorkflowState {
       default:
         throw UnsupportedError('Unsupported type: $type');
     }
+  }
+
+  const WorkflowState._();
+
+  Map<String, dynamic> toJson() {
+    return map(
+      task: (task) => {'type': 'Task', ...task.task.toJson()},
+      pass: (pass) => {'type': 'Pass', ...pass.pass.toJson()},
+      choice: (choice) => {'type': 'Choice', ...choice.choice.toJson()},
+      succeed: (succeed) => {'type': 'Succeed', ...succeed.succeed.toJson()},
+      fail: (fail) => {'type': 'Fail', ...fail.fail.toJson()},
+      wait: (wait) => {'type': 'Wait', ...wait.wait.toJson()},
+    );
   }
 }

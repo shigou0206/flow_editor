@@ -56,8 +56,8 @@ class SfnEditorCanvas extends ConsumerWidget {
         final highlightedEdgeId = behaviorCtx.hitTester.hitTestEdgeWithRect(
           Rect.fromCenter(
             center: localPos,
-            width: elementSize.width,
-            height: elementSize.height,
+            width: elementSize.width / canvas.scale,
+            height: elementSize.height / canvas.scale,
           ),
         );
 
@@ -91,8 +91,8 @@ class SfnEditorCanvas extends ConsumerWidget {
         final highlightedEdgeId = behaviorCtx.hitTester.hitTestEdgeWithRect(
           Rect.fromCenter(
             center: localPos,
-            width: elementSize.width,
-            height: elementSize.height,
+            width: elementSize.width / canvas.scale,
+            height: elementSize.height / canvas.scale,
           ),
         );
 

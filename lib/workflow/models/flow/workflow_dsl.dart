@@ -17,17 +17,3 @@ class WorkflowDSL with _$WorkflowDSL {
   factory WorkflowDSL.fromJson(Map<String, dynamic> json) =>
       _$WorkflowDSLFromJson(json);
 }
-
-extension WorkflowDSLFlatten on WorkflowDSL {
-  Map<String, dynamic> toFlatJson() => {
-        'startAt': startAt,
-        'states': states.map((k, v) => MapEntry(k, v.toFlatJson())),
-      };
-
-  static WorkflowDSL fromFlatJson(Map<String, dynamic> json) => WorkflowDSL(
-        startAt: json['startAt'],
-        states: (json['states'] as Map<String, dynamic>).map(
-          (k, v) => MapEntry(k, WorkflowStateFlatten.fromFlatJson(v)),
-        ),
-      );
-}
