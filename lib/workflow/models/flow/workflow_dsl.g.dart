@@ -19,12 +19,21 @@ _$WorkflowDSLImpl _$$WorkflowDSLImplFromJson(Map<String, dynamic> json) =>
       ),
     );
 
-Map<String, dynamic> _$$WorkflowDSLImplToJson(_$WorkflowDSLImpl instance) =>
-    <String, dynamic>{
-      'comment': instance.comment,
-      'version': instance.version,
-      'startAt': instance.startAt,
-      'globalConfig': instance.globalConfig,
-      'errorHandling': instance.errorHandling,
-      'states': instance.states,
-    };
+Map<String, dynamic> _$$WorkflowDSLImplToJson(_$WorkflowDSLImpl instance) {
+  final val = <String, dynamic>{
+    'comment': instance.comment,
+    'version': instance.version,
+    'startAt': instance.startAt,
+  };
+
+  void writeNotNull(String key, dynamic value) {
+    if (value != null) {
+      val[key] = value;
+    }
+  }
+
+  writeNotNull('globalConfig', instance.globalConfig);
+  writeNotNull('errorHandling', instance.errorHandling);
+  val['states'] = instance.states;
+  return val;
+}

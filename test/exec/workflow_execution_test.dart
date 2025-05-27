@@ -21,8 +21,6 @@ void main() {
         "comment": null,
         "version": "1.0.0",
         "startAt": "task1",
-        "globalConfig": null,
-        "errorHandling": null,
         "states": {
           "task1": {
             "type": "Task",

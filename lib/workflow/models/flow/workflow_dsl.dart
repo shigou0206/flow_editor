@@ -9,8 +9,8 @@ class WorkflowDSL with _$WorkflowDSL {
     String? comment,
     @Default('1.0.0') String version,
     required String startAt,
-    Map<String, dynamic>? globalConfig,
-    Map<String, dynamic>? errorHandling,
+    @JsonKey(includeIfNull: false) Map<String, dynamic>? globalConfig,
+    @JsonKey(includeIfNull: false) Map<String, dynamic>? errorHandling,
     required Map<String, WorkflowState> states,
   }) = _WorkflowDSL;
 

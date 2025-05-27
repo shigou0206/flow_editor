@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'dart:convert';
 import '../models/execution/workflow_execution.dart';
 import '../models/execution/workflow_execution_state.dart';
 import '../models/flow/workflow_dsl.dart';
@@ -8,21 +9,26 @@ class WorkflowExecutionService {
 
   static Future<WorkflowExecution> getExecution(String runId) async {
     final resp = await client.get('/workflow_executions/$runId');
-    final workflowId = resp.data['workflow_id'] as String;
-    final workflowTemplate = await getTemplate(workflowId);
+
+    final data = resp.data['data'] as Map<String, dynamic>;
+
+    final workflowTemplate = await getTemplate(data['template_id'] as String);
 
     final execution = WorkflowExecution(
-      runId: resp.data['run_id'],
-      status: resp.data['status'],
+      runId: data['run_id'] as String,
+      status: data['status'] as String,
       workflowTemplate: workflowTemplate,
-      states: {}, // initially empty, filled by getTasks
-      startedAt: DateTime.parse(resp.data['started_at']),
-      finishedAt: resp.data['finished_at'] != null
-          ? DateTime.parse(resp.data['finished_at'])
+      states: {},
+      startedAt: data['start_time'] != null
+          ? DateTime.parse(data['start_time'])
           : null,
-      inputs: resp.data['input'],
-      outputs: resp.data['output'],
+      finishedAt: data['close_time'] != null
+          ? DateTime.parse(data['close_time'])
+          : null,
+      inputs: null,
+      outputs: null,
     );
+
     return execution;
   }
 
@@ -35,10 +41,75 @@ class WorkflowExecutionService {
 
   static Future<WorkflowDSL> getTemplate(String templateId) async {
     final resp = await client.get('/workflow_templates/$templateId');
-    return WorkflowDSL.fromJson(resp.data);
+    final data = resp.data['data'] as Map<String, dynamic>;
+
+    final dslDefinitionStr = data['dsl_definition'] as String;
+    final dslDefinition = jsonDecode(dslDefinitionStr);
+
+    final formattedDsl = {
+      'startAt': dslDefinition['StartAt'],
+      'states': dslDefinition['States'],
+      'comment': null,
+      'version': '1.0.0',
+      'globalConfig': null,
+      'errorHandling': null,
+    };
+
+    final template = WorkflowDSL.fromJson(normalizeJson(formattedDsl));
+    return template;
   }
 
   static Future<void> cancelExecution(String runId) async {
     await client.delete('/workflow_executions/$runId');
+  }
+}
+
+dynamic convertJson(dynamic item) {
+  if (item is Map) {
+    return item
+        .map((key, value) => MapEntry(key as String, convertJson(value)));
+  } else if (item is List) {
+    return item.map(convertJson).toList();
+  } else {
+    return item;
+  }
+}
+
+dynamic normalizeJson(dynamic item) {
+  if (item is Map) {
+    final map =
+        item.map((key, value) => MapEntry(key as String, normalizeJson(value)));
+
+    const mappings = {
+      'Type': 'type',
+      'Next': 'next',
+      'End': 'end',
+      'Resource': 'resource',
+      'Parameters': 'parameters',
+      'Choices': 'choices',
+      'Seconds': 'seconds',
+      'Condition': 'condition',
+      'Variable': 'variable',
+      'Operator': 'operator',
+      'Value': 'value',
+      'Default': 'defaultNext',
+      'Result': 'result',
+      'ResultPath': 'resultPath',
+      'ResultExpr': 'resultExpr',
+      'Error': 'error',
+      'Cause': 'cause',
+    };
+
+    mappings.forEach((original, newKey) {
+      if (map.containsKey(original)) {
+        map[newKey] = map.remove(original);
+      }
+    });
+
+    return map;
+  } else if (item is List) {
+    return item.map(normalizeJson).toList();
+  } else {
+    return item;
   }
 }

@@ -23,7 +23,9 @@ mixin _$WorkflowDSL {
   String? get comment => throw _privateConstructorUsedError;
   String get version => throw _privateConstructorUsedError;
   String get startAt => throw _privateConstructorUsedError;
+  @JsonKey(includeIfNull: false)
   Map<String, dynamic>? get globalConfig => throw _privateConstructorUsedError;
+  @JsonKey(includeIfNull: false)
   Map<String, dynamic>? get errorHandling => throw _privateConstructorUsedError;
   Map<String, WorkflowState> get states => throw _privateConstructorUsedError;
 
@@ -43,8 +45,8 @@ abstract class $WorkflowDSLCopyWith<$Res> {
       {String? comment,
       String version,
       String startAt,
-      Map<String, dynamic>? globalConfig,
-      Map<String, dynamic>? errorHandling,
+      @JsonKey(includeIfNull: false) Map<String, dynamic>? globalConfig,
+      @JsonKey(includeIfNull: false) Map<String, dynamic>? errorHandling,
       Map<String, WorkflowState> states});
 }
 
@@ -109,8 +111,8 @@ abstract class _$$WorkflowDSLImplCopyWith<$Res>
       {String? comment,
       String version,
       String startAt,
-      Map<String, dynamic>? globalConfig,
-      Map<String, dynamic>? errorHandling,
+      @JsonKey(includeIfNull: false) Map<String, dynamic>? globalConfig,
+      @JsonKey(includeIfNull: false) Map<String, dynamic>? errorHandling,
       Map<String, WorkflowState> states});
 }
 
@@ -168,8 +170,8 @@ class _$WorkflowDSLImpl implements _WorkflowDSL {
       {this.comment,
       this.version = '1.0.0',
       required this.startAt,
-      final Map<String, dynamic>? globalConfig,
-      final Map<String, dynamic>? errorHandling,
+      @JsonKey(includeIfNull: false) final Map<String, dynamic>? globalConfig,
+      @JsonKey(includeIfNull: false) final Map<String, dynamic>? errorHandling,
       required final Map<String, WorkflowState> states})
       : _globalConfig = globalConfig,
         _errorHandling = errorHandling,
@@ -187,6 +189,7 @@ class _$WorkflowDSLImpl implements _WorkflowDSL {
   final String startAt;
   final Map<String, dynamic>? _globalConfig;
   @override
+  @JsonKey(includeIfNull: false)
   Map<String, dynamic>? get globalConfig {
     final value = _globalConfig;
     if (value == null) return null;
@@ -197,6 +200,7 @@ class _$WorkflowDSLImpl implements _WorkflowDSL {
 
   final Map<String, dynamic>? _errorHandling;
   @override
+  @JsonKey(includeIfNull: false)
   Map<String, dynamic>? get errorHandling {
     final value = _errorHandling;
     if (value == null) return null;
@@ -263,8 +267,8 @@ abstract class _WorkflowDSL implements WorkflowDSL {
       {final String? comment,
       final String version,
       required final String startAt,
-      final Map<String, dynamic>? globalConfig,
-      final Map<String, dynamic>? errorHandling,
+      @JsonKey(includeIfNull: false) final Map<String, dynamic>? globalConfig,
+      @JsonKey(includeIfNull: false) final Map<String, dynamic>? errorHandling,
       required final Map<String, WorkflowState> states}) = _$WorkflowDSLImpl;
 
   factory _WorkflowDSL.fromJson(Map<String, dynamic> json) =
@@ -277,8 +281,10 @@ abstract class _WorkflowDSL implements WorkflowDSL {
   @override
   String get startAt;
   @override
+  @JsonKey(includeIfNull: false)
   Map<String, dynamic>? get globalConfig;
   @override
+  @JsonKey(includeIfNull: false)
   Map<String, dynamic>? get errorHandling;
   @override
   Map<String, WorkflowState> get states;
