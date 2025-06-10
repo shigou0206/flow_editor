@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flow_editor/core/models/node_model.dart';
 import 'package:flow_editor/core/models/edge_model.dart';
+import 'package:flow_editor/core/models/anchor_model.dart';
+import 'package:flow_editor/core/models/enums/position_enum.dart';
 import 'package:flow_editor/core/models/canvas_insert_element.dart';
 import 'package:flow_editor/ui/node/node_widget_registry_initializer.dart';
 
@@ -18,6 +20,16 @@ class FlowNodeSidebar extends StatelessWidget {
         position: Offset.zero,
         size: Size(200, 40),
         title: 'Task',
+        anchors: [
+          AnchorModel(
+            id: 'top',
+            position: Position.top,
+          ),
+          AnchorModel(
+            id: 'bottom',
+            position: Position.bottom,
+          ),
+        ],
       ),
       const NodeModel(
         id: 'pass_template',

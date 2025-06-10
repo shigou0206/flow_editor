@@ -2,27 +2,23 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flow_editor/core/state_management/providers.dart';
 import 'package:flow_editor/core/state_management/theme_provider.dart';
-import 'package:flow_editor/core/models/node_model.dart';
-import 'package:flow_editor/core/models/edge_model.dart';
-import 'package:flow_editor/layout/sugiyama_layout.dart';
-import 'package:flow_editor/ui/canvas/sfn_editor_canvas.dart';
+import 'package:flow_editor/ui/canvas/common_editor_canvas.dart';
 import 'package:flow_editor/ui/sidebar/nodes_sidebar.dart';
 import 'package:flow_editor/ui/property_editor/node_property_editor.dart';
 import 'package:flow_editor/ui/property_editor/dsl_editor_widget.dart';
-import 'package:flow_editor/workflow/models/flow/workflow_dsl.dart';
-import 'package:flow_editor/workflow/converters/dsl_graph_converter.dart';
 import 'package:flow_editor/core/models/state/canvas_state.dart';
+import 'package:flow_editor/core/models/config/input_config.dart';
 
 final selectedNodeIdProvider = StateProvider<String?>((_) => null);
 
-class DslEditorPage extends ConsumerStatefulWidget {
-  const DslEditorPage({super.key});
+class CommonEditorPage extends ConsumerStatefulWidget {
+  const CommonEditorPage({super.key});
 
   @override
-  ConsumerState<DslEditorPage> createState() => _DslEditorPageState();
+  ConsumerState<CommonEditorPage> createState() => _CommonEditorPageState();
 }
 
-class _DslEditorPageState extends ConsumerState<DslEditorPage>
+class _CommonEditorPageState extends ConsumerState<CommonEditorPage>
     with SingleTickerProviderStateMixin {
   final GlobalKey canvasKey = GlobalKey();
   late final TabController _tabController;
@@ -39,41 +35,16 @@ class _DslEditorPageState extends ConsumerState<DslEditorPage>
   }
 
   void _initAndLayoutNodes() {
-    final workflowDsl = WorkflowDSL.fromJson({
-      'startAt': 'EvaluateScore',
-      'states': {
-        'EvaluateScore': {
-          'type': 'Choice',
-          'choices': [
-            {
-              'condition': {
-                'variable': r'$.score',
-                'operator': 'GreaterThan',
-                'value': 90,
-              },
-              'next': 'HighScore',
-            },
-          ],
-          'defaultNext': 'LowScore',
-        },
-        'HighScore': {'type': 'Succeed', 'end': true},
-        'LowScore': {'type': 'Fail', 'end': true},
-      },
-    });
-
-    final graphData = DslGraphConverter.toGraph(workflowDsl);
-    final nodes = graphData['nodes'] as List<NodeModel>;
-    final edges = graphData['edges'] as List<EdgeModel>;
-
-    SugiyamaLayoutStrategy().performLayout(nodes, edges);
-
     final editorNotifier = ref.read(activeEditorNotifierProvider);
     final currentState = ref.read(activeEditorStateProvider);
 
     editorNotifier.replaceState(
       currentState.copyWith(
-        nodeState: currentState.nodeState.copyWith(nodes: nodes),
-        edgeState: currentState.edgeState.copyWith(edges: edges),
+        inputConfig: const InputConfig(
+          enableNodeDrag: true,
+          enableNodeHover: true,
+          enableInsertNodeToEdge: false,
+        ),
       ),
     );
   }
@@ -115,7 +86,7 @@ class _DslEditorPageState extends ConsumerState<DslEditorPage>
                 Container(
                   key: canvasKey,
                   color: Theme.of(context).canvasColor,
-                  child: const SfnEditorCanvas(),
+                  child: const CommonEditorCanvas(),
                 ),
                 Positioned(
                   right: 16,

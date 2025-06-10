@@ -91,6 +91,10 @@ class DefaultCanvasHitTester implements CanvasHitTester {
       final absNode = node.copyWith(position: absPos);
       for (final anchor in node.anchors) {
         final center = computeAnchorWorldPosition(absNode, anchor, nodes);
+        debugPrint('hitTestAnchorResult: ${anchor.id}');
+        debugPrint('pos: $pos');
+        debugPrint('center: $center');
+        debugPrint('distance: ${(pos - center).distance}');
         if ((pos - center).distance < tolerance.anchor) {
           return AnchorHitResult(nodeId: node.id, anchor: anchor);
         }
