@@ -44,7 +44,7 @@ dependencies:
   cupertino_icons: ^1.0.6
 
   flow_layout:
-    path: ../flow_layout
+    path: ../../flow_layout
 
   # openapi:
   #   path: ../stepflow_flutter_client

@@ -52,19 +52,9 @@ class CommonEditorCanvas extends ConsumerWidget {
         final localPos =
             (centerLocalOffset - canvas.offset - panDelta) / canvas.scale;
 
-        final highlightedEdgeId = behaviorCtx.hitTester.hitTestEdgeWithRect(
-          Rect.fromCenter(
-            center: localPos,
-            width: elementSize.width / canvas.scale,
-            height: elementSize.height / canvas.scale,
-          ),
-        );
-
         if (details.data.isNode) {
           ctrl.interaction
               .startInsertingNodePreview(details.data.singleNode!, localPos);
-          ctrl.interaction
-              .updateInsertingNodePreview(localPos, highlightedEdgeId);
         } else if (details.data.isGroup) {
           ctrl.interaction.startInsertingGroupPreview(
             details.data.rootGroupNode!,
@@ -72,8 +62,6 @@ class CommonEditorCanvas extends ConsumerWidget {
             details.data.allEdges,
             localPos,
           );
-          ctrl.interaction
-              .updateInsertingGroupPreview(localPos, highlightedEdgeId);
         }
         return true;
       },
@@ -87,20 +75,10 @@ class CommonEditorCanvas extends ConsumerWidget {
         final localPos =
             (centerLocalOffset - canvas.offset - panDelta) / canvas.scale;
 
-        final highlightedEdgeId = behaviorCtx.hitTester.hitTestEdgeWithRect(
-          Rect.fromCenter(
-            center: localPos,
-            width: elementSize.width / canvas.scale,
-            height: elementSize.height / canvas.scale,
-          ),
-        );
-
         if (details.data.isNode) {
-          ctrl.interaction
-              .updateInsertingNodePreview(localPos, highlightedEdgeId);
+          ctrl.interaction.updateInsertingNodePreview(localPos, null);
         } else if (details.data.isGroup) {
-          ctrl.interaction
-              .updateInsertingGroupPreview(localPos, highlightedEdgeId);
+          ctrl.interaction.updateInsertingGroupPreview(localPos, null);
         }
       },
       onLeave: (_) {
