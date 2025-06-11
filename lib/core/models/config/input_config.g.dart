@@ -18,7 +18,7 @@ _$InputConfigImpl _$$InputConfigImplFromJson(Map<String, dynamic> json) =>
       enableNodeContextMenu: json['enableNodeContextMenu'] as bool? ?? true,
       enableNodeSelect: json['enableNodeSelect'] as bool? ?? true,
       enableEdgeDraw: json['enableEdgeDraw'] as bool? ?? true,
-      enableEdgeHover: json['enableEdgeHover'] as bool? ?? false,
+      enableEdgeHover: json['enableEdgeHover'] as bool? ?? true,
       enableEdgeWaypointDrag: json['enableEdgeWaypointDrag'] as bool? ?? true,
       enableEdgeWaypointHover: json['enableEdgeWaypointHover'] as bool? ?? true,
       enableAnchorHover: json['enableAnchorHover'] as bool? ?? true,

@@ -18,7 +18,7 @@ class FlowNodeSidebar extends StatelessWidget {
         id: 'task_template',
         type: 'Task',
         position: Offset.zero,
-        size: Size(200, 40),
+        size: Size(200, 100),
         title: 'Task',
         anchors: [
           AnchorModel(

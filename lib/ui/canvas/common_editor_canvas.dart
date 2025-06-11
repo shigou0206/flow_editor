@@ -45,12 +45,9 @@ class CommonEditorCanvas extends ConsumerWidget {
       onWillAcceptWithDetails: (details) {
         final renderBox = context.findRenderObject() as RenderBox;
         final localOffset = renderBox.globalToLocal(details.offset);
-        final elementSize = details.data.size;
 
-        final centerLocalOffset =
-            localOffset + Offset(elementSize.width / 2, elementSize.height / 2);
         final localPos =
-            (centerLocalOffset - canvas.offset - panDelta) / canvas.scale;
+            (localOffset - canvas.offset - panDelta) / canvas.scale;
 
         if (details.data.isNode) {
           ctrl.interaction
@@ -68,12 +65,9 @@ class CommonEditorCanvas extends ConsumerWidget {
       onMove: (details) {
         final renderBox = context.findRenderObject() as RenderBox;
         final localOffset = renderBox.globalToLocal(details.offset);
-        final elementSize = details.data.size;
 
-        final centerLocalOffset =
-            localOffset + Offset(elementSize.width / 2, elementSize.height / 2);
         final localPos =
-            (centerLocalOffset - canvas.offset - panDelta) / canvas.scale;
+            (localOffset - canvas.offset - panDelta) / canvas.scale;
 
         if (details.data.isNode) {
           ctrl.interaction.updateInsertingNodePreview(localPos, null);
@@ -88,12 +82,9 @@ class CommonEditorCanvas extends ConsumerWidget {
       onAcceptWithDetails: (details) {
         final renderBox = context.findRenderObject() as RenderBox;
         final localOffset = renderBox.globalToLocal(details.offset);
-        final elementSize = details.data.size;
 
-        final centerLocalOffset =
-            localOffset + Offset(elementSize.width / 2, elementSize.height / 2);
         final localPos =
-            (centerLocalOffset - canvas.offset - panDelta) / canvas.scale;
+            (localOffset - canvas.offset - panDelta) / canvas.scale;
 
         if (details.data.isNode) {
           final node = details.data.singleNode!.copyWith(

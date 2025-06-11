@@ -21,7 +21,7 @@ class InputConfig with _$InputConfig {
 
     // Edge interactions
     @Default(true) bool enableEdgeDraw,
-    @Default(false) bool enableEdgeHover,
+    @Default(true) bool enableEdgeHover,
     @Default(true) bool enableEdgeWaypointDrag,
     @Default(true) bool enableEdgeWaypointHover,
 

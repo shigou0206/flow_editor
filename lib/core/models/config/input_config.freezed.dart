@@ -364,7 +364,7 @@ class _$InputConfigImpl implements _InputConfig {
       this.enableNodeContextMenu = true,
       this.enableNodeSelect = true,
       this.enableEdgeDraw = true,
-      this.enableEdgeHover = false,
+      this.enableEdgeHover = true,
       this.enableEdgeWaypointDrag = true,
       this.enableEdgeWaypointHover = true,
       this.enableAnchorHover = true,
