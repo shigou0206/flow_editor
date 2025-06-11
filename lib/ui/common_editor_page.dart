@@ -8,6 +8,9 @@ import 'package:flow_editor/ui/property_editor/node_property_editor.dart';
 import 'package:flow_editor/ui/property_editor/dsl_editor_widget.dart';
 import 'package:flow_editor/core/models/state/canvas_state.dart';
 import 'package:flow_editor/core/models/config/input_config.dart';
+import 'package:flow_editor/core/state_management/mouse_behavior_conf_provider.dart';
+import 'package:flow_editor/core/state_management/providers.dart';
+import 'package:flow_editor/core/utils/mouse_utils.dart';
 
 final selectedNodeIdProvider = StateProvider<String?>((_) => null);
 

@@ -9,6 +9,7 @@ import 'package:flow_editor/core/models/edge_model.dart';
 import 'package:flow_editor/core/models/state/selection_state.dart';
 import 'package:flow_editor/core/models/state/interaction_transient_state.dart';
 import 'package:flow_editor/core/models/config/input_config.dart';
+import 'package:flow_editor/core/models/config/cursor_behavior_config.dart';
 import 'package:flow_editor/core/models/state/clipboard_state.dart';
 import 'package:flow_editor/core/input/behavior_core/behavior_priority.dart';
 part 'editor_state.freezed.dart';
@@ -27,6 +28,11 @@ class EditorState with _$EditorState {
     @Default(InputConfig()) InputConfig inputConfig,
     @Default(BehaviorPriority()) BehaviorPriority behaviorPriority,
     @Default(ClipboardState()) ClipboardState clipboard,
+
+    // ignore: invalid_annotation_target
+    @JsonKey(includeFromJson: false)
+    @Default(CursorBehaviorConfig())
+    CursorBehaviorConfig cursorBehaviorConfig,
   }) = _EditorState;
 
   factory EditorState.fromJson(Map<String, dynamic> json) =>

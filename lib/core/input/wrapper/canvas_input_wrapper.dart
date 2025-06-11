@@ -7,6 +7,7 @@ import 'package:flow_editor/core/input/behavior_core/behavior_context.dart';
 import 'package:flow_editor/core/input/event/input_event.dart';
 import 'package:flow_editor/core/input/event/input_event_type.dart';
 import 'package:flow_editor/core/models/config/input_config.dart';
+import 'package:flow_editor/core/utils/mouse_utils.dart';
 
 typedef CoordinateFn = Offset Function(Offset local);
 typedef PointerEventListener = void Function(PointerEvent);
@@ -47,35 +48,41 @@ class _CanvasInputWrapperState extends State<CanvasInputWrapper> {
 
   @override
   Widget build(BuildContext context) {
-    return Focus(
-      focusNode: _focusNode,
-      autofocus: true,
-      onKeyEvent: _handleKeyEvent,
-      child: Listener(
-        behavior: HitTestBehavior.translucent,
-        onPointerDown: _onPointerDown,
-        onPointerMove: _onPointer(InputEventType.pointerMove),
-        onPointerUp: _onPointer(InputEventType.pointerUp),
-        onPointerHover: _onPointer(InputEventType.pointerHover),
-        onPointerCancel: _onPointer(InputEventType.pointerCancel),
-        onPointerSignal: widget.config.enableZoom
-            ? (e) {
-                if (e is PointerScrollEvent) {
-                  _onPointer(InputEventType.pointerSignal)(e);
-                }
-              }
-            : null,
-        child: GestureDetector(
+    return MouseRegion(
+      cursor: resolveCursor(
+        widget.context.getState().interaction,
+        widget.context.getState().cursorBehaviorConfig,
+      ),
+      child: Focus(
+        focusNode: _focusNode,
+        autofocus: true,
+        onKeyEvent: _handleKeyEvent,
+        child: Listener(
           behavior: HitTestBehavior.translucent,
-          onDoubleTap: () => _dispatch(InputEvent.pointer(
-            type: InputEventType.doubleTap,
-            pointerEvent: null,
-            canvasPos: null,
-          )),
-          onLongPressStart: (details) => _onLongPress(details),
-          child: Container(
-            key: _childKey,
-            child: widget.child,
+          onPointerDown: _onPointerDown,
+          onPointerMove: _onPointer(InputEventType.pointerMove),
+          onPointerUp: _onPointer(InputEventType.pointerUp),
+          onPointerHover: _onPointer(InputEventType.pointerHover),
+          onPointerCancel: _onPointer(InputEventType.pointerCancel),
+          onPointerSignal: widget.config.enableZoom
+              ? (e) {
+                  if (e is PointerScrollEvent) {
+                    _onPointer(InputEventType.pointerSignal)(e);
+                  }
+                }
+              : null,
+          child: GestureDetector(
+            behavior: HitTestBehavior.translucent,
+            onDoubleTap: () => _dispatch(InputEvent.pointer(
+              type: InputEventType.doubleTap,
+              pointerEvent: null,
+              canvasPos: null,
+            )),
+            onLongPressStart: (details) => _onLongPress(details),
+            child: Container(
+              key: _childKey,
+              child: widget.child,
+            ),
           ),
         ),
       ),

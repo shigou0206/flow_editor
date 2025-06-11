@@ -27,7 +27,11 @@ mixin _$EditorState {
   InteractionState get interaction => throw _privateConstructorUsedError;
   InputConfig get inputConfig => throw _privateConstructorUsedError;
   BehaviorPriority get behaviorPriority => throw _privateConstructorUsedError;
-  ClipboardState get clipboard => throw _privateConstructorUsedError;
+  ClipboardState get clipboard =>
+      throw _privateConstructorUsedError; // ignore: invalid_annotation_target
+  @JsonKey(includeFromJson: false)
+  CursorBehaviorConfig get cursorBehaviorConfig =>
+      throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
   @JsonKey(ignore: true)
@@ -49,7 +53,9 @@ abstract class $EditorStateCopyWith<$Res> {
       InteractionState interaction,
       InputConfig inputConfig,
       BehaviorPriority behaviorPriority,
-      ClipboardState clipboard});
+      ClipboardState clipboard,
+      @JsonKey(includeFromJson: false)
+      CursorBehaviorConfig cursorBehaviorConfig});
 
   $CanvasStateCopyWith<$Res> get canvasState;
   $NodeStateCopyWith<$Res> get nodeState;
@@ -58,6 +64,7 @@ abstract class $EditorStateCopyWith<$Res> {
   $InputConfigCopyWith<$Res> get inputConfig;
   $BehaviorPriorityCopyWith<$Res> get behaviorPriority;
   $ClipboardStateCopyWith<$Res> get clipboard;
+  $CursorBehaviorConfigCopyWith<$Res> get cursorBehaviorConfig;
 }
 
 /// @nodoc
@@ -81,6 +88,7 @@ class _$EditorStateCopyWithImpl<$Res, $Val extends EditorState>
     Object? inputConfig = null,
     Object? behaviorPriority = null,
     Object? clipboard = null,
+    Object? cursorBehaviorConfig = null,
   }) {
     return _then(_value.copyWith(
       canvasState: null == canvasState
@@ -115,6 +123,10 @@ class _$EditorStateCopyWithImpl<$Res, $Val extends EditorState>
           ? _value.clipboard
           : clipboard // ignore: cast_nullable_to_non_nullable
               as ClipboardState,
+      cursorBehaviorConfig: null == cursorBehaviorConfig
+          ? _value.cursorBehaviorConfig
+          : cursorBehaviorConfig // ignore: cast_nullable_to_non_nullable
+              as CursorBehaviorConfig,
     ) as $Val);
   }
 
@@ -173,6 +185,15 @@ class _$EditorStateCopyWithImpl<$Res, $Val extends EditorState>
       return _then(_value.copyWith(clipboard: value) as $Val);
     });
   }
+
+  @override
+  @pragma('vm:prefer-inline')
+  $CursorBehaviorConfigCopyWith<$Res> get cursorBehaviorConfig {
+    return $CursorBehaviorConfigCopyWith<$Res>(_value.cursorBehaviorConfig,
+        (value) {
+      return _then(_value.copyWith(cursorBehaviorConfig: value) as $Val);
+    });
+  }
 }
 
 /// @nodoc
@@ -191,7 +212,9 @@ abstract class _$$EditorStateImplCopyWith<$Res>
       InteractionState interaction,
       InputConfig inputConfig,
       BehaviorPriority behaviorPriority,
-      ClipboardState clipboard});
+      ClipboardState clipboard,
+      @JsonKey(includeFromJson: false)
+      CursorBehaviorConfig cursorBehaviorConfig});
 
   @override
   $CanvasStateCopyWith<$Res> get canvasState;
@@ -207,6 +230,8 @@ abstract class _$$EditorStateImplCopyWith<$Res>
   $BehaviorPriorityCopyWith<$Res> get behaviorPriority;
   @override
   $ClipboardStateCopyWith<$Res> get clipboard;
+  @override
+  $CursorBehaviorConfigCopyWith<$Res> get cursorBehaviorConfig;
 }
 
 /// @nodoc
@@ -228,6 +253,7 @@ class __$$EditorStateImplCopyWithImpl<$Res>
     Object? inputConfig = null,
     Object? behaviorPriority = null,
     Object? clipboard = null,
+    Object? cursorBehaviorConfig = null,
   }) {
     return _then(_$EditorStateImpl(
       canvasState: null == canvasState
@@ -262,6 +288,10 @@ class __$$EditorStateImplCopyWithImpl<$Res>
           ? _value.clipboard
           : clipboard // ignore: cast_nullable_to_non_nullable
               as ClipboardState,
+      cursorBehaviorConfig: null == cursorBehaviorConfig
+          ? _value.cursorBehaviorConfig
+          : cursorBehaviorConfig // ignore: cast_nullable_to_non_nullable
+              as CursorBehaviorConfig,
     ));
   }
 }
@@ -277,7 +307,9 @@ class _$EditorStateImpl extends _EditorState {
       this.interaction = const InteractionState.idle(),
       this.inputConfig = const InputConfig(),
       this.behaviorPriority = const BehaviorPriority(),
-      this.clipboard = const ClipboardState()})
+      this.clipboard = const ClipboardState(),
+      @JsonKey(includeFromJson: false)
+      this.cursorBehaviorConfig = const CursorBehaviorConfig()})
       : super._();
 
   factory _$EditorStateImpl.fromJson(Map<String, dynamic> json) =>
@@ -304,10 +336,14 @@ class _$EditorStateImpl extends _EditorState {
   @override
   @JsonKey()
   final ClipboardState clipboard;
+// ignore: invalid_annotation_target
+  @override
+  @JsonKey(includeFromJson: false)
+  final CursorBehaviorConfig cursorBehaviorConfig;
 
   @override
   String toString() {
-    return 'EditorState(canvasState: $canvasState, nodeState: $nodeState, edgeState: $edgeState, selection: $selection, interaction: $interaction, inputConfig: $inputConfig, behaviorPriority: $behaviorPriority, clipboard: $clipboard)';
+    return 'EditorState(canvasState: $canvasState, nodeState: $nodeState, edgeState: $edgeState, selection: $selection, interaction: $interaction, inputConfig: $inputConfig, behaviorPriority: $behaviorPriority, clipboard: $clipboard, cursorBehaviorConfig: $cursorBehaviorConfig)';
   }
 
   @override
@@ -330,7 +366,9 @@ class _$EditorStateImpl extends _EditorState {
             (identical(other.behaviorPriority, behaviorPriority) ||
                 other.behaviorPriority == behaviorPriority) &&
             (identical(other.clipboard, clipboard) ||
-                other.clipboard == clipboard));
+                other.clipboard == clipboard) &&
+            (identical(other.cursorBehaviorConfig, cursorBehaviorConfig) ||
+                other.cursorBehaviorConfig == cursorBehaviorConfig));
   }
 
   @JsonKey(ignore: true)
@@ -344,7 +382,8 @@ class _$EditorStateImpl extends _EditorState {
       interaction,
       inputConfig,
       behaviorPriority,
-      clipboard);
+      clipboard,
+      cursorBehaviorConfig);
 
   @JsonKey(ignore: true)
   @override
@@ -369,7 +408,9 @@ abstract class _EditorState extends EditorState {
       final InteractionState interaction,
       final InputConfig inputConfig,
       final BehaviorPriority behaviorPriority,
-      final ClipboardState clipboard}) = _$EditorStateImpl;
+      final ClipboardState clipboard,
+      @JsonKey(includeFromJson: false)
+      final CursorBehaviorConfig cursorBehaviorConfig}) = _$EditorStateImpl;
   const _EditorState._() : super._();
 
   factory _EditorState.fromJson(Map<String, dynamic> json) =
@@ -391,6 +432,9 @@ abstract class _EditorState extends EditorState {
   BehaviorPriority get behaviorPriority;
   @override
   ClipboardState get clipboard;
+  @override // ignore: invalid_annotation_target
+  @JsonKey(includeFromJson: false)
+  CursorBehaviorConfig get cursorBehaviorConfig;
   @override
   @JsonKey(ignore: true)
   _$$EditorStateImplCopyWith<_$EditorStateImpl> get copyWith =>
