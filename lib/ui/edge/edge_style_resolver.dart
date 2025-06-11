@@ -152,6 +152,41 @@ class EdgeStyleResolver {
 
   /// 根据PathMetric绘制箭头
 // 修正后的 _drawArrowByMetric 方法
+  // void _drawArrowByMetric({
+  //   required Canvas canvas,
+  //   required PathMetric metric,
+  //   required bool isStart,
+  //   required EdgeLineStyle style,
+  //   required Paint paint,
+  // }) {
+  //   final offset = isStart ? 0.0 : metric.length;
+  //   final tangent = metric.getTangentForOffset(offset);
+  //   if (tangent == null) return;
+
+  //   double angle = tangent.angle;
+
+  //   if (isStart) {
+  //     angle += pi;
+  //   }
+  //   final arrowAngle = radians(style.arrowAngleDeg);
+
+  //   debugPrint('🚩 Arrow drawn at ${tangent.position} with angle: $angle');
+
+  //   final path = Path()
+  //     ..moveTo(tangent.position.dx, tangent.position.dy)
+  //     ..lineTo(
+  //       tangent.position.dx - style.arrowSize * cos(angle - arrowAngle),
+  //       tangent.position.dy - style.arrowSize * sin(angle - arrowAngle),
+  //     )
+  //     ..moveTo(tangent.position.dx, tangent.position.dy)
+  //     ..lineTo(
+  //       tangent.position.dx - style.arrowSize * cos(angle + arrowAngle),
+  //       tangent.position.dy - style.arrowSize * sin(angle + arrowAngle),
+  //     );
+
+  //   canvas.drawPath(path, paint);
+  // }
+
   void _drawArrowByMetric({
     required Canvas canvas,
     required PathMetric metric,
@@ -163,22 +198,26 @@ class EdgeStyleResolver {
     final tangent = metric.getTangentForOffset(offset);
     if (tangent == null) return;
 
-    // ✅ 关键修正：始终加上 π，以确保箭头指向路径终点
-    final angle = tangent.angle + pi;
+    // 🧠 使用 vector 方向判断角度（始终朝向目标）
+    final direction = isStart ? -tangent.vector : tangent.vector;
+    final angle = atan2(direction.dy, direction.dx);
     final arrowAngle = radians(style.arrowAngleDeg);
 
-    debugPrint('🚩 Arrow drawn at ${tangent.position} with angle: $angle');
+    final pos = tangent.position;
+    final size = style.arrowSize;
+
+    debugPrint('🚩 Arrow drawn at $pos with angle: $angle');
 
     final path = Path()
-      ..moveTo(tangent.position.dx, tangent.position.dy)
+      ..moveTo(pos.dx, pos.dy)
       ..lineTo(
-        tangent.position.dx - style.arrowSize * cos(angle - arrowAngle),
-        tangent.position.dy - style.arrowSize * sin(angle - arrowAngle),
+        pos.dx - size * cos(angle - arrowAngle),
+        pos.dy - size * sin(angle - arrowAngle),
       )
-      ..moveTo(tangent.position.dx, tangent.position.dy)
+      ..moveTo(pos.dx, pos.dy)
       ..lineTo(
-        tangent.position.dx - style.arrowSize * cos(angle + arrowAngle),
-        tangent.position.dy - style.arrowSize * sin(angle + arrowAngle),
+        pos.dx - size * cos(angle + arrowAngle),
+        pos.dy - size * sin(angle + arrowAngle),
       );
 
     canvas.drawPath(path, paint);

@@ -85,6 +85,7 @@ void drawArrowHead(
   final arrowAngle = lineStyle.arrowAngleDeg;
 
   final dir = atStart ? -direction : direction;
+
   final dirNorm = dir / dir.distance;
 
   final halfRad = (arrowAngle * 0.5) * math.pi / 180.0;
