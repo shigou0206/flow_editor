@@ -20,7 +20,7 @@ HitTestTolerance _$HitTestToleranceFromJson(Map<String, dynamic> json) {
 
 /// @nodoc
 mixin _$HitTestTolerance {
-  /// 命中 Anchor 的半径阈值（默认 20 像素）
+  /// 命中 Anchor 的半径阈值（默认 10 像素）
   double get anchor => throw _privateConstructorUsedError;
 
   /// 命中 Edge 的路径距离容差（默认 6 像素）
@@ -138,7 +138,7 @@ class __$$HitTestToleranceImplCopyWithImpl<$Res>
 @JsonSerializable()
 class _$HitTestToleranceImpl implements _HitTestTolerance {
   const _$HitTestToleranceImpl(
-      {this.anchor = 20.0,
+      {this.anchor = 10.0,
       this.edge = 6.0,
       this.waypoint = 8.0,
       this.resizeHandle = 10.0});
@@ -146,7 +146,7 @@ class _$HitTestToleranceImpl implements _HitTestTolerance {
   factory _$HitTestToleranceImpl.fromJson(Map<String, dynamic> json) =>
       _$$HitTestToleranceImplFromJson(json);
 
-  /// 命中 Anchor 的半径阈值（默认 20 像素）
+  /// 命中 Anchor 的半径阈值（默认 10 像素）
   @override
   @JsonKey()
   final double anchor;
@@ -216,7 +216,7 @@ abstract class _HitTestTolerance implements HitTestTolerance {
 
   @override
 
-  /// 命中 Anchor 的半径阈值（默认 20 像素）
+  /// 命中 Anchor 的半径阈值（默认 10 像素）
   double get anchor;
   @override
 

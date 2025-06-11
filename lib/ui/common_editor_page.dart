@@ -41,9 +41,11 @@ class _CommonEditorPageState extends ConsumerState<CommonEditorPage>
     editorNotifier.replaceState(
       currentState.copyWith(
         inputConfig: const InputConfig(
+          enableEdgeHover: true,
           enableNodeDrag: true,
           enableNodeHover: true,
           enableInsertNodeToEdge: false,
+          enableNodeSelect: false,
         ),
       ),
     );

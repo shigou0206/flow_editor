@@ -99,11 +99,12 @@ class SfnCanvasRenderer extends StatelessWidget {
 
               // ✅ 普通节点在最上层
               ...regularNodes.map((node) {
+                final padding = node.anchorPadding;
                 final absPos = node.absolutePosition(renderedNodes);
                 return Positioned(
                   key: ValueKey(node.id),
-                  left: absPos.dx,
-                  top: absPos.dy,
+                  left: absPos.dx - padding.left,
+                  top: absPos.dy - padding.top,
                   child: nodeWidgetFactory.createNodeWidget(node),
                 );
               }),

@@ -24,10 +24,26 @@ class FlowNodeSidebar extends StatelessWidget {
           AnchorModel(
             id: 'top',
             position: Position.top,
+            size: Size(10, 10),
+            offset: Offset(-5, -5),
           ),
           AnchorModel(
             id: 'bottom',
             position: Position.bottom,
+            size: Size(10, 10),
+            offset: Offset(-5, -5),
+          ),
+          AnchorModel(
+            id: 'left',
+            position: Position.left,
+            size: Size(10, 10),
+            offset: Offset(-5, -5),
+          ),
+          AnchorModel(
+            id: 'right',
+            position: Position.right,
+            size: Size(10, 10),
+            offset: Offset(-5, -5),
           ),
         ],
       ),

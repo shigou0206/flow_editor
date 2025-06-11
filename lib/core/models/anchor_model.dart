@@ -19,7 +19,6 @@ class AnchorModel with _$AnchorModel {
 
     // 0.0 <= ratio <= 1.0
     @Default(0.5) double ratio,
-    @Default(AnchorDirection.inout) AnchorDirection direction,
     int? maxConnections,
     List<String>? acceptedEdgeTypes,
     @Default(AnchorShape.circle) AnchorShape shape,
@@ -31,8 +30,8 @@ class AnchorModel with _$AnchorModel {
     double? plusButtonSize,
     String? iconName,
     @Default({}) Map<String, dynamic> data,
-    @Default(AnchorPlacement.border) AnchorPlacement placement,
-    @Default(0.0) double offsetDistance,
+    @OffsetConverter() @Default(Offset.zero) Offset offset,
+    @OffsetConverter() @Default(Offset.zero) Offset edgeOffset,
     @Default(0.0) double angle,
   }) = _AnchorModel;
 
@@ -40,8 +39,5 @@ class AnchorModel with _$AnchorModel {
       _$AnchorModelFromJson(json);
 
   /// 保证合法范围（如 ratio 约束 0-1，offsetDistance >= 0）
-  AnchorModel validated() => copyWith(
-        ratio: ratio.clamp(0.0, 1.0),
-        offsetDistance: offsetDistance < 0 ? 0.0 : offsetDistance,
-      );
+  AnchorModel validated() => copyWith(ratio: ratio.clamp(0.0, 1.0));
 }

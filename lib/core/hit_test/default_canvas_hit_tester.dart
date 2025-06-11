@@ -40,10 +40,8 @@ class DefaultCanvasHitTester implements CanvasHitTester {
   String? hitTestAnchor(Offset pos) {
     final nodes = getNodes();
     for (final node in nodes) {
-      final absPos = node.absolutePosition(nodes);
-      final absNode = node.copyWith(position: absPos);
       for (final anchor in node.anchors) {
-        final center = computeAnchorWorldPosition(absNode, anchor, nodes);
+        final center = computeAnchorWorldPosition(node, anchor, nodes);
         if ((pos - center).distance < tolerance.anchor) {
           return anchor.id;
         }
@@ -87,10 +85,9 @@ class DefaultCanvasHitTester implements CanvasHitTester {
   AnchorHitResult? hitTestAnchorResult(Offset pos) {
     final nodes = getNodes();
     for (final node in nodes) {
-      final absPos = node.absolutePosition(nodes);
-      final absNode = node.copyWith(position: absPos);
       for (final anchor in node.anchors) {
-        final center = computeAnchorWorldPosition(absNode, anchor, nodes);
+        final center = computeAnchorWorldPosition(node, anchor, nodes) +
+            Offset(anchor.size.width / 2, anchor.size.height / 2);
         debugPrint('hitTestAnchorResult: ${anchor.id}');
         debugPrint('pos: $pos');
         debugPrint('center: $center');

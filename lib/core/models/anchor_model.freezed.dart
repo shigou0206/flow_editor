@@ -26,7 +26,6 @@ mixin _$AnchorModel {
   Position get position =>
       throw _privateConstructorUsedError; // 0.0 <= ratio <= 1.0
   double get ratio => throw _privateConstructorUsedError;
-  AnchorDirection get direction => throw _privateConstructorUsedError;
   int? get maxConnections => throw _privateConstructorUsedError;
   List<String>? get acceptedEdgeTypes => throw _privateConstructorUsedError;
   AnchorShape get shape => throw _privateConstructorUsedError;
@@ -38,8 +37,10 @@ mixin _$AnchorModel {
   double? get plusButtonSize => throw _privateConstructorUsedError;
   String? get iconName => throw _privateConstructorUsedError;
   Map<String, dynamic> get data => throw _privateConstructorUsedError;
-  AnchorPlacement get placement => throw _privateConstructorUsedError;
-  double get offsetDistance => throw _privateConstructorUsedError;
+  @OffsetConverter()
+  Offset get offset => throw _privateConstructorUsedError;
+  @OffsetConverter()
+  Offset get edgeOffset => throw _privateConstructorUsedError;
   double get angle => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -59,7 +60,6 @@ abstract class $AnchorModelCopyWith<$Res> {
       @SizeConverter() Size size,
       Position position,
       double ratio,
-      AnchorDirection direction,
       int? maxConnections,
       List<String>? acceptedEdgeTypes,
       AnchorShape shape,
@@ -71,8 +71,8 @@ abstract class $AnchorModelCopyWith<$Res> {
       double? plusButtonSize,
       String? iconName,
       Map<String, dynamic> data,
-      AnchorPlacement placement,
-      double offsetDistance,
+      @OffsetConverter() Offset offset,
+      @OffsetConverter() Offset edgeOffset,
       double angle});
 }
 
@@ -93,7 +93,6 @@ class _$AnchorModelCopyWithImpl<$Res, $Val extends AnchorModel>
     Object? size = null,
     Object? position = null,
     Object? ratio = null,
-    Object? direction = null,
     Object? maxConnections = freezed,
     Object? acceptedEdgeTypes = freezed,
     Object? shape = null,
@@ -105,8 +104,8 @@ class _$AnchorModelCopyWithImpl<$Res, $Val extends AnchorModel>
     Object? plusButtonSize = freezed,
     Object? iconName = freezed,
     Object? data = null,
-    Object? placement = null,
-    Object? offsetDistance = null,
+    Object? offset = null,
+    Object? edgeOffset = null,
     Object? angle = null,
   }) {
     return _then(_value.copyWith(
@@ -126,10 +125,6 @@ class _$AnchorModelCopyWithImpl<$Res, $Val extends AnchorModel>
           ? _value.ratio
           : ratio // ignore: cast_nullable_to_non_nullable
               as double,
-      direction: null == direction
-          ? _value.direction
-          : direction // ignore: cast_nullable_to_non_nullable
-              as AnchorDirection,
       maxConnections: freezed == maxConnections
           ? _value.maxConnections
           : maxConnections // ignore: cast_nullable_to_non_nullable
@@ -174,14 +169,14 @@ class _$AnchorModelCopyWithImpl<$Res, $Val extends AnchorModel>
           ? _value.data
           : data // ignore: cast_nullable_to_non_nullable
               as Map<String, dynamic>,
-      placement: null == placement
-          ? _value.placement
-          : placement // ignore: cast_nullable_to_non_nullable
-              as AnchorPlacement,
-      offsetDistance: null == offsetDistance
-          ? _value.offsetDistance
-          : offsetDistance // ignore: cast_nullable_to_non_nullable
-              as double,
+      offset: null == offset
+          ? _value.offset
+          : offset // ignore: cast_nullable_to_non_nullable
+              as Offset,
+      edgeOffset: null == edgeOffset
+          ? _value.edgeOffset
+          : edgeOffset // ignore: cast_nullable_to_non_nullable
+              as Offset,
       angle: null == angle
           ? _value.angle
           : angle // ignore: cast_nullable_to_non_nullable
@@ -203,7 +198,6 @@ abstract class _$$AnchorModelImplCopyWith<$Res>
       @SizeConverter() Size size,
       Position position,
       double ratio,
-      AnchorDirection direction,
       int? maxConnections,
       List<String>? acceptedEdgeTypes,
       AnchorShape shape,
@@ -215,8 +209,8 @@ abstract class _$$AnchorModelImplCopyWith<$Res>
       double? plusButtonSize,
       String? iconName,
       Map<String, dynamic> data,
-      AnchorPlacement placement,
-      double offsetDistance,
+      @OffsetConverter() Offset offset,
+      @OffsetConverter() Offset edgeOffset,
       double angle});
 }
 
@@ -235,7 +229,6 @@ class __$$AnchorModelImplCopyWithImpl<$Res>
     Object? size = null,
     Object? position = null,
     Object? ratio = null,
-    Object? direction = null,
     Object? maxConnections = freezed,
     Object? acceptedEdgeTypes = freezed,
     Object? shape = null,
@@ -247,8 +240,8 @@ class __$$AnchorModelImplCopyWithImpl<$Res>
     Object? plusButtonSize = freezed,
     Object? iconName = freezed,
     Object? data = null,
-    Object? placement = null,
-    Object? offsetDistance = null,
+    Object? offset = null,
+    Object? edgeOffset = null,
     Object? angle = null,
   }) {
     return _then(_$AnchorModelImpl(
@@ -268,10 +261,6 @@ class __$$AnchorModelImplCopyWithImpl<$Res>
           ? _value.ratio
           : ratio // ignore: cast_nullable_to_non_nullable
               as double,
-      direction: null == direction
-          ? _value.direction
-          : direction // ignore: cast_nullable_to_non_nullable
-              as AnchorDirection,
       maxConnections: freezed == maxConnections
           ? _value.maxConnections
           : maxConnections // ignore: cast_nullable_to_non_nullable
@@ -316,14 +305,14 @@ class __$$AnchorModelImplCopyWithImpl<$Res>
           ? _value._data
           : data // ignore: cast_nullable_to_non_nullable
               as Map<String, dynamic>,
-      placement: null == placement
-          ? _value.placement
-          : placement // ignore: cast_nullable_to_non_nullable
-              as AnchorPlacement,
-      offsetDistance: null == offsetDistance
-          ? _value.offsetDistance
-          : offsetDistance // ignore: cast_nullable_to_non_nullable
-              as double,
+      offset: null == offset
+          ? _value.offset
+          : offset // ignore: cast_nullable_to_non_nullable
+              as Offset,
+      edgeOffset: null == edgeOffset
+          ? _value.edgeOffset
+          : edgeOffset // ignore: cast_nullable_to_non_nullable
+              as Offset,
       angle: null == angle
           ? _value.angle
           : angle // ignore: cast_nullable_to_non_nullable
@@ -340,7 +329,6 @@ class _$AnchorModelImpl extends _AnchorModel {
       @SizeConverter() this.size = const Size(24, 24),
       this.position = Position.left,
       this.ratio = 0.5,
-      this.direction = AnchorDirection.inout,
       this.maxConnections,
       final List<String>? acceptedEdgeTypes,
       this.shape = AnchorShape.circle,
@@ -352,8 +340,8 @@ class _$AnchorModelImpl extends _AnchorModel {
       this.plusButtonSize,
       this.iconName,
       final Map<String, dynamic> data = const {},
-      this.placement = AnchorPlacement.border,
-      this.offsetDistance = 0.0,
+      @OffsetConverter() this.offset = Offset.zero,
+      @OffsetConverter() this.edgeOffset = Offset.zero,
       this.angle = 0.0})
       : _acceptedEdgeTypes = acceptedEdgeTypes,
         _data = data,
@@ -375,9 +363,6 @@ class _$AnchorModelImpl extends _AnchorModel {
   @override
   @JsonKey()
   final double ratio;
-  @override
-  @JsonKey()
-  final AnchorDirection direction;
   @override
   final int? maxConnections;
   final List<String>? _acceptedEdgeTypes;
@@ -422,17 +407,19 @@ class _$AnchorModelImpl extends _AnchorModel {
 
   @override
   @JsonKey()
-  final AnchorPlacement placement;
+  @OffsetConverter()
+  final Offset offset;
   @override
   @JsonKey()
-  final double offsetDistance;
+  @OffsetConverter()
+  final Offset edgeOffset;
   @override
   @JsonKey()
   final double angle;
 
   @override
   String toString() {
-    return 'AnchorModel(id: $id, size: $size, position: $position, ratio: $ratio, direction: $direction, maxConnections: $maxConnections, acceptedEdgeTypes: $acceptedEdgeTypes, shape: $shape, arrowDirection: $arrowDirection, locked: $locked, version: $version, lockedByUser: $lockedByUser, plusButtonColorHex: $plusButtonColorHex, plusButtonSize: $plusButtonSize, iconName: $iconName, data: $data, placement: $placement, offsetDistance: $offsetDistance, angle: $angle)';
+    return 'AnchorModel(id: $id, size: $size, position: $position, ratio: $ratio, maxConnections: $maxConnections, acceptedEdgeTypes: $acceptedEdgeTypes, shape: $shape, arrowDirection: $arrowDirection, locked: $locked, version: $version, lockedByUser: $lockedByUser, plusButtonColorHex: $plusButtonColorHex, plusButtonSize: $plusButtonSize, iconName: $iconName, data: $data, offset: $offset, edgeOffset: $edgeOffset, angle: $angle)';
   }
 
   @override
@@ -445,8 +432,6 @@ class _$AnchorModelImpl extends _AnchorModel {
             (identical(other.position, position) ||
                 other.position == position) &&
             (identical(other.ratio, ratio) || other.ratio == ratio) &&
-            (identical(other.direction, direction) ||
-                other.direction == direction) &&
             (identical(other.maxConnections, maxConnections) ||
                 other.maxConnections == maxConnections) &&
             const DeepCollectionEquality()
@@ -465,37 +450,34 @@ class _$AnchorModelImpl extends _AnchorModel {
             (identical(other.iconName, iconName) ||
                 other.iconName == iconName) &&
             const DeepCollectionEquality().equals(other._data, _data) &&
-            (identical(other.placement, placement) ||
-                other.placement == placement) &&
-            (identical(other.offsetDistance, offsetDistance) ||
-                other.offsetDistance == offsetDistance) &&
+            (identical(other.offset, offset) || other.offset == offset) &&
+            (identical(other.edgeOffset, edgeOffset) ||
+                other.edgeOffset == edgeOffset) &&
             (identical(other.angle, angle) || other.angle == angle));
   }
 
   @JsonKey(ignore: true)
   @override
-  int get hashCode => Object.hashAll([
-        runtimeType,
-        id,
-        size,
-        position,
-        ratio,
-        direction,
-        maxConnections,
-        const DeepCollectionEquality().hash(_acceptedEdgeTypes),
-        shape,
-        arrowDirection,
-        locked,
-        version,
-        lockedByUser,
-        plusButtonColorHex,
-        plusButtonSize,
-        iconName,
-        const DeepCollectionEquality().hash(_data),
-        placement,
-        offsetDistance,
-        angle
-      ]);
+  int get hashCode => Object.hash(
+      runtimeType,
+      id,
+      size,
+      position,
+      ratio,
+      maxConnections,
+      const DeepCollectionEquality().hash(_acceptedEdgeTypes),
+      shape,
+      arrowDirection,
+      locked,
+      version,
+      lockedByUser,
+      plusButtonColorHex,
+      plusButtonSize,
+      iconName,
+      const DeepCollectionEquality().hash(_data),
+      offset,
+      edgeOffset,
+      angle);
 
   @JsonKey(ignore: true)
   @override
@@ -517,7 +499,6 @@ abstract class _AnchorModel extends AnchorModel {
       @SizeConverter() final Size size,
       final Position position,
       final double ratio,
-      final AnchorDirection direction,
       final int? maxConnections,
       final List<String>? acceptedEdgeTypes,
       final AnchorShape shape,
@@ -529,8 +510,8 @@ abstract class _AnchorModel extends AnchorModel {
       final double? plusButtonSize,
       final String? iconName,
       final Map<String, dynamic> data,
-      final AnchorPlacement placement,
-      final double offsetDistance,
+      @OffsetConverter() final Offset offset,
+      @OffsetConverter() final Offset edgeOffset,
       final double angle}) = _$AnchorModelImpl;
   const _AnchorModel._() : super._();
 
@@ -546,8 +527,6 @@ abstract class _AnchorModel extends AnchorModel {
   Position get position;
   @override // 0.0 <= ratio <= 1.0
   double get ratio;
-  @override
-  AnchorDirection get direction;
   @override
   int? get maxConnections;
   @override
@@ -571,9 +550,11 @@ abstract class _AnchorModel extends AnchorModel {
   @override
   Map<String, dynamic> get data;
   @override
-  AnchorPlacement get placement;
+  @OffsetConverter()
+  Offset get offset;
   @override
-  double get offsetDistance;
+  @OffsetConverter()
+  Offset get edgeOffset;
   @override
   double get angle;
   @override

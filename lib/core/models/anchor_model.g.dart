@@ -16,9 +16,6 @@ _$AnchorModelImpl _$$AnchorModelImplFromJson(Map<String, dynamic> json) =>
       position: $enumDecodeNullable(_$PositionEnumMap, json['position']) ??
           Position.left,
       ratio: (json['ratio'] as num?)?.toDouble() ?? 0.5,
-      direction:
-          $enumDecodeNullable(_$AnchorDirectionEnumMap, json['direction']) ??
-              AnchorDirection.inout,
       maxConnections: (json['maxConnections'] as num?)?.toInt(),
       acceptedEdgeTypes: (json['acceptedEdgeTypes'] as List<dynamic>?)
           ?.map((e) => e as String)
@@ -35,10 +32,14 @@ _$AnchorModelImpl _$$AnchorModelImplFromJson(Map<String, dynamic> json) =>
       plusButtonSize: (json['plusButtonSize'] as num?)?.toDouble(),
       iconName: json['iconName'] as String?,
       data: json['data'] as Map<String, dynamic>? ?? const {},
-      placement:
-          $enumDecodeNullable(_$AnchorPlacementEnumMap, json['placement']) ??
-              AnchorPlacement.border,
-      offsetDistance: (json['offsetDistance'] as num?)?.toDouble() ?? 0.0,
+      offset: json['offset'] == null
+          ? Offset.zero
+          : const OffsetConverter()
+              .fromJson(json['offset'] as Map<String, dynamic>),
+      edgeOffset: json['edgeOffset'] == null
+          ? Offset.zero
+          : const OffsetConverter()
+              .fromJson(json['edgeOffset'] as Map<String, dynamic>),
       angle: (json['angle'] as num?)?.toDouble() ?? 0.0,
     );
 
@@ -48,7 +49,6 @@ Map<String, dynamic> _$$AnchorModelImplToJson(_$AnchorModelImpl instance) =>
       'size': const SizeConverter().toJson(instance.size),
       'position': _$PositionEnumMap[instance.position]!,
       'ratio': instance.ratio,
-      'direction': _$AnchorDirectionEnumMap[instance.direction]!,
       'maxConnections': instance.maxConnections,
       'acceptedEdgeTypes': instance.acceptedEdgeTypes,
       'shape': _$AnchorShapeEnumMap[instance.shape]!,
@@ -60,8 +60,8 @@ Map<String, dynamic> _$$AnchorModelImplToJson(_$AnchorModelImpl instance) =>
       'plusButtonSize': instance.plusButtonSize,
       'iconName': instance.iconName,
       'data': instance.data,
-      'placement': _$AnchorPlacementEnumMap[instance.placement]!,
-      'offsetDistance': instance.offsetDistance,
+      'offset': const OffsetConverter().toJson(instance.offset),
+      'edgeOffset': const OffsetConverter().toJson(instance.edgeOffset),
       'angle': instance.angle,
     };
 
@@ -70,12 +70,6 @@ const _$PositionEnumMap = {
   Position.right: 'right',
   Position.top: 'top',
   Position.bottom: 'bottom',
-};
-
-const _$AnchorDirectionEnumMap = {
-  AnchorDirection.inOnly: 'inOnly',
-  AnchorDirection.outOnly: 'outOnly',
-  AnchorDirection.inout: 'inout',
 };
 
 const _$AnchorShapeEnumMap = {
@@ -89,10 +83,4 @@ const _$ArrowDirectionEnumMap = {
   ArrowDirection.inward: 'inward',
   ArrowDirection.outward: 'outward',
   ArrowDirection.none: 'none',
-};
-
-const _$AnchorPlacementEnumMap = {
-  AnchorPlacement.inside: 'inside',
-  AnchorPlacement.border: 'border',
-  AnchorPlacement.outside: 'outside',
 };
