@@ -236,7 +236,7 @@ packages:
   flow_layout:
     dependency: "direct main"
     description:
-      path: "../../flow_layout"
+      path: "../flow_layout"
       relative: true
     source: path
     version: "1.0.0+1"

@@ -19,7 +19,7 @@ class BehaviorManager {
       final enabled = b.enabled(state.inputConfig);
       if (can && enabled) {
         b.handle(ev, context);
-        break;
+        // break;
       }
     }
   }

@@ -25,8 +25,8 @@ mixin _$BehaviorPriority {
   int get nodeHover => throw _privateConstructorUsedError;
   int get edgeHover => throw _privateConstructorUsedError;
   int get nodeSelect => throw _privateConstructorUsedError;
-  int get edgeDraw => throw _privateConstructorUsedError;
   int get nodeDrag => throw _privateConstructorUsedError;
+  int get edgeDraw => throw _privateConstructorUsedError;
   int get nodeInsertPreview => throw _privateConstructorUsedError;
   int get marqueeSelect => throw _privateConstructorUsedError;
   int get resizeNode => throw _privateConstructorUsedError;
@@ -54,8 +54,8 @@ abstract class $BehaviorPriorityCopyWith<$Res> {
       int nodeHover,
       int edgeHover,
       int nodeSelect,
-      int edgeDraw,
       int nodeDrag,
+      int edgeDraw,
       int nodeInsertPreview,
       int marqueeSelect,
       int resizeNode,
@@ -84,8 +84,8 @@ class _$BehaviorPriorityCopyWithImpl<$Res, $Val extends BehaviorPriority>
     Object? nodeHover = null,
     Object? edgeHover = null,
     Object? nodeSelect = null,
-    Object? edgeDraw = null,
     Object? nodeDrag = null,
+    Object? edgeDraw = null,
     Object? nodeInsertPreview = null,
     Object? marqueeSelect = null,
     Object? resizeNode = null,
@@ -116,13 +116,13 @@ class _$BehaviorPriorityCopyWithImpl<$Res, $Val extends BehaviorPriority>
           ? _value.nodeSelect
           : nodeSelect // ignore: cast_nullable_to_non_nullable
               as int,
-      edgeDraw: null == edgeDraw
-          ? _value.edgeDraw
-          : edgeDraw // ignore: cast_nullable_to_non_nullable
-              as int,
       nodeDrag: null == nodeDrag
           ? _value.nodeDrag
           : nodeDrag // ignore: cast_nullable_to_non_nullable
+              as int,
+      edgeDraw: null == edgeDraw
+          ? _value.edgeDraw
+          : edgeDraw // ignore: cast_nullable_to_non_nullable
               as int,
       nodeInsertPreview: null == nodeInsertPreview
           ? _value.nodeInsertPreview
@@ -174,8 +174,8 @@ abstract class _$$BehaviorPriorityImplCopyWith<$Res>
       int nodeHover,
       int edgeHover,
       int nodeSelect,
-      int edgeDraw,
       int nodeDrag,
+      int edgeDraw,
       int nodeInsertPreview,
       int marqueeSelect,
       int resizeNode,
@@ -202,8 +202,8 @@ class __$$BehaviorPriorityImplCopyWithImpl<$Res>
     Object? nodeHover = null,
     Object? edgeHover = null,
     Object? nodeSelect = null,
-    Object? edgeDraw = null,
     Object? nodeDrag = null,
+    Object? edgeDraw = null,
     Object? nodeInsertPreview = null,
     Object? marqueeSelect = null,
     Object? resizeNode = null,
@@ -234,13 +234,13 @@ class __$$BehaviorPriorityImplCopyWithImpl<$Res>
           ? _value.nodeSelect
           : nodeSelect // ignore: cast_nullable_to_non_nullable
               as int,
-      edgeDraw: null == edgeDraw
-          ? _value.edgeDraw
-          : edgeDraw // ignore: cast_nullable_to_non_nullable
-              as int,
       nodeDrag: null == nodeDrag
           ? _value.nodeDrag
           : nodeDrag // ignore: cast_nullable_to_non_nullable
+              as int,
+      edgeDraw: null == edgeDraw
+          ? _value.edgeDraw
+          : edgeDraw // ignore: cast_nullable_to_non_nullable
               as int,
       nodeInsertPreview: null == nodeInsertPreview
           ? _value.nodeInsertPreview
@@ -287,8 +287,8 @@ class _$BehaviorPriorityImpl implements _BehaviorPriority {
       this.nodeHover = 6,
       this.edgeHover = 7,
       this.nodeSelect = 8,
-      this.edgeDraw = 10,
-      this.nodeDrag = 20,
+      this.nodeDrag = 10,
+      this.edgeDraw = 20,
       this.nodeInsertPreview = 25,
       this.marqueeSelect = 30,
       this.resizeNode = 40,
@@ -318,10 +318,10 @@ class _$BehaviorPriorityImpl implements _BehaviorPriority {
   final int nodeSelect;
   @override
   @JsonKey()
-  final int edgeDraw;
+  final int nodeDrag;
   @override
   @JsonKey()
-  final int nodeDrag;
+  final int edgeDraw;
   @override
   @JsonKey()
   final int nodeInsertPreview;
@@ -349,7 +349,7 @@ class _$BehaviorPriorityImpl implements _BehaviorPriority {
 
   @override
   String toString() {
-    return 'BehaviorPriority(nodeContextMenu: $nodeContextMenu, anchorHover: $anchorHover, nodeHover: $nodeHover, edgeHover: $edgeHover, nodeSelect: $nodeSelect, edgeDraw: $edgeDraw, nodeDrag: $nodeDrag, nodeInsertPreview: $nodeInsertPreview, marqueeSelect: $marqueeSelect, resizeNode: $resizeNode, canvasPan: $canvasPan, canvasZoom: $canvasZoom, deleteKey: $deleteKey, copyPasteKey: $copyPasteKey, undoRedoKey: $undoRedoKey)';
+    return 'BehaviorPriority(nodeContextMenu: $nodeContextMenu, anchorHover: $anchorHover, nodeHover: $nodeHover, edgeHover: $edgeHover, nodeSelect: $nodeSelect, nodeDrag: $nodeDrag, edgeDraw: $edgeDraw, nodeInsertPreview: $nodeInsertPreview, marqueeSelect: $marqueeSelect, resizeNode: $resizeNode, canvasPan: $canvasPan, canvasZoom: $canvasZoom, deleteKey: $deleteKey, copyPasteKey: $copyPasteKey, undoRedoKey: $undoRedoKey)';
   }
 
   @override
@@ -367,10 +367,10 @@ class _$BehaviorPriorityImpl implements _BehaviorPriority {
                 other.edgeHover == edgeHover) &&
             (identical(other.nodeSelect, nodeSelect) ||
                 other.nodeSelect == nodeSelect) &&
-            (identical(other.edgeDraw, edgeDraw) ||
-                other.edgeDraw == edgeDraw) &&
             (identical(other.nodeDrag, nodeDrag) ||
                 other.nodeDrag == nodeDrag) &&
+            (identical(other.edgeDraw, edgeDraw) ||
+                other.edgeDraw == edgeDraw) &&
             (identical(other.nodeInsertPreview, nodeInsertPreview) ||
                 other.nodeInsertPreview == nodeInsertPreview) &&
             (identical(other.marqueeSelect, marqueeSelect) ||
@@ -398,8 +398,8 @@ class _$BehaviorPriorityImpl implements _BehaviorPriority {
       nodeHover,
       edgeHover,
       nodeSelect,
-      edgeDraw,
       nodeDrag,
+      edgeDraw,
       nodeInsertPreview,
       marqueeSelect,
       resizeNode,
@@ -431,8 +431,8 @@ abstract class _BehaviorPriority implements BehaviorPriority {
       final int nodeHover,
       final int edgeHover,
       final int nodeSelect,
-      final int edgeDraw,
       final int nodeDrag,
+      final int edgeDraw,
       final int nodeInsertPreview,
       final int marqueeSelect,
       final int resizeNode,
@@ -456,9 +456,9 @@ abstract class _BehaviorPriority implements BehaviorPriority {
   @override
   int get nodeSelect;
   @override
-  int get edgeDraw;
-  @override
   int get nodeDrag;
+  @override
+  int get edgeDraw;
   @override
   int get nodeInsertPreview;
   @override
