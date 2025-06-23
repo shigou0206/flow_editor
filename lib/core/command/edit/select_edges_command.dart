@@ -2,7 +2,7 @@
 
 import 'package:flow_editor/core/command/i_command.dart';
 import 'package:flow_editor/core/command/command_context.dart';
-import 'package:flow_editor/core/models/state/selection_state.dart';
+import 'package:flow_editor/core/models/ui_state/selection_state.dart';
 
 /// 选中一组边，替换当前的选区为仅包含这些边
 class SelectEdgesCommand implements ICommand {

@@ -1,7 +1,7 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:flutter/material.dart';
-import 'package:flow_editor/core/models/node_model.dart';
-import 'package:flow_editor/core/models/edge_model.dart';
+import 'package:flow_editor/core/models/ui/node_model.dart';
+import 'package:flow_editor/core/models/ui/edge_model.dart';
 import 'package:flow_editor/core/models/converters/offset_size_converter.dart';
 
 part 'canvas_insert_element.freezed.dart';

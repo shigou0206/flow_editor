@@ -1,7 +1,7 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:flutter/material.dart';
 import 'package:flow_editor/core/models/enums/node_enums.dart';
-import 'package:flow_editor/core/models/anchor_model.dart';
+import 'package:flow_editor/core/models/ui/anchor_model.dart';
 import 'package:flow_editor/core/models/styles/node_style.dart';
 import 'package:flow_editor/core/utils/anchor_position_utils.dart';
 import 'package:flow_editor/core/models/converters/offset_size_converter.dart';

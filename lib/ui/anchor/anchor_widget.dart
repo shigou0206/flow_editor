@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flow_editor/core/models/anchor_model.dart';
+import 'package:flow_editor/core/models/ui/anchor_model.dart';
 import 'package:flow_editor/core/painters/anchor_painter.dart';
 
 /// AnchorWidget：展示单个锚点的 UI 和 hover 效果

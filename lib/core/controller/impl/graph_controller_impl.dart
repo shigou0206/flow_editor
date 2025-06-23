@@ -1,8 +1,8 @@
 import 'package:flow_editor/core/controller/interfaces/graph_controller.dart';
 import 'package:flow_editor/core/command/command_context.dart';
 import 'package:flow_editor/core/command/command_manager.dart';
-import 'package:flow_editor/core/models/node_model.dart';
-import 'package:flow_editor/core/models/edge_model.dart';
+import 'package:flow_editor/core/models/ui/node_model.dart';
+import 'package:flow_editor/core/models/ui/edge_model.dart';
 import 'package:flow_editor/core/utils/id_generator.dart';
 // 导入所有相关的 Command
 import 'package:flow_editor/core/command/edit/add_node_command.dart';

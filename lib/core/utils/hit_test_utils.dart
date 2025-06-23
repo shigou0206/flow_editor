@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flow_editor/core/models/edge_model.dart';
-import 'package:flow_editor/core/models/hit_test_result.dart';
+import 'package:flow_editor/core/models/ui/edge_model.dart';
+import 'package:flow_editor/core/models/ui/hit_test_result.dart';
 
 double distanceToPath(Path path, Offset pointer, {int sampleCount = 80}) {
   double minDist = double.infinity;

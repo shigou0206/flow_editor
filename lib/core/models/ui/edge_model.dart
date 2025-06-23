@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flow_editor/core/models/styles/edge_line_style.dart';
 import 'package:flow_editor/core/models/styles/edge_animation_config.dart';
 import 'package:flow_editor/core/models/converters/offset_size_converter.dart';
-import 'package:flow_editor/core/models/edge_overlay_element.dart';
+import 'package:flow_editor/core/models/ui/edge_overlay_element.dart';
 import 'package:flow_editor/core/utils/id_generator.dart';
 part 'edge_model.freezed.dart';
 part 'edge_model.g.dart';

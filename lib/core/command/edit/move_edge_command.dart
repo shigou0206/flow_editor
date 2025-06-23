@@ -2,7 +2,7 @@ import 'dart:ui';
 
 import 'package:flow_editor/core/command/i_command.dart';
 import 'package:flow_editor/core/command/command_context.dart';
-import 'package:flow_editor/core/models/edge_model.dart';
+import 'package:flow_editor/core/models/ui/edge_model.dart';
 
 /// 将指定边的所有控制点（waypoints）平移一个偏移量
 class MoveEdgeCommand implements ICommand {

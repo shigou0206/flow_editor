@@ -1,7 +1,7 @@
 import 'package:flow_editor/workflow/models/flow/workflow_dsl.dart';
 import 'package:flow_editor/workflow/models/flow/workflow_state.dart';
-import 'package:flow_editor/core/models/node_model.dart';
-import 'package:flow_editor/core/models/edge_model.dart';
+import 'package:flow_editor/core/models/ui/node_model.dart';
+import 'package:flow_editor/core/models/ui/edge_model.dart';
 import 'package:flow_editor/workflow/models/states/task_state.dart';
 import 'package:flow_editor/workflow/models/states/pass_state.dart';
 import 'package:flow_editor/workflow/models/states/choice_state.dart';

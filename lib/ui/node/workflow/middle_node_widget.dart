@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flow_editor/core/models/node_model.dart';
+import 'package:flow_editor/core/models/ui/node_model.dart';
 import 'package:flow_editor/core/models/enums/node_enums.dart';
 import 'package:flow_editor/ui/node/workflow/base/node_widget.dart';
 

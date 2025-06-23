@@ -6,7 +6,7 @@ import 'package:flow_editor/ui/canvas/common_editor_canvas.dart';
 import 'package:flow_editor/ui/sidebar/nodes_sidebar.dart';
 import 'package:flow_editor/ui/property_editor/node_property_editor.dart';
 import 'package:flow_editor/ui/property_editor/dsl_editor_widget.dart';
-import 'package:flow_editor/core/models/state/canvas_state.dart';
+import 'package:flow_editor/core/models/ui_state/canvas_state.dart';
 import 'package:flow_editor/core/models/config/input_config.dart';
 
 final selectedNodeIdProvider = StateProvider<String?>((_) => null);

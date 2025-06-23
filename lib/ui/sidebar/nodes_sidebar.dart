@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:flow_editor/core/models/node_model.dart';
-import 'package:flow_editor/core/models/edge_model.dart';
-import 'package:flow_editor/core/models/anchor_model.dart';
+import 'package:flow_editor/core/models/ui/node_model.dart';
+import 'package:flow_editor/core/models/ui/edge_model.dart';
+import 'package:flow_editor/core/models/ui/anchor_model.dart';
 import 'package:flow_editor/core/models/enums/position_enum.dart';
-import 'package:flow_editor/core/models/canvas_insert_element.dart';
+import 'package:flow_editor/core/models/ui/canvas_insert_element.dart';
 import 'package:flow_editor/ui/node/node_widget_registry_initializer.dart';
 
 class FlowNodeSidebar extends StatelessWidget {

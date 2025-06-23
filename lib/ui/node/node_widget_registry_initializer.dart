@@ -1,7 +1,7 @@
 // node_widget_registry_initializer.dart
 
 import 'package:flow_editor/ui/node/node_widget_registry.dart';
-import 'package:flow_editor/core/models/node_model.dart';
+import 'package:flow_editor/core/models/ui/node_model.dart';
 
 // 已存在的Widget
 import 'package:flow_editor/ui/node/workflow/start_node_widget.dart';

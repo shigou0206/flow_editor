@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flow_editor/core/models/config/cursor_behavior_config.dart';
-import 'package:flow_editor/core/models/state/interaction_transient_state.dart';
+import 'package:flow_editor/core/models/ui_state/interaction_transient_state.dart';
 
 MouseCursor resolveCursor(
   InteractionState state,

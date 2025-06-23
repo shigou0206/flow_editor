@@ -1,11 +1,11 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flow_editor/core/controller/impl/canvas_controller_impl.dart';
-import 'package:flow_editor/core/models/state/editor_state.dart';
-import 'package:flow_editor/core/models/state/selection_state.dart';
-import 'package:flow_editor/core/models/state/interaction_transient_state.dart';
-import 'package:flow_editor/core/models/state/canvas_state.dart';
-import 'package:flow_editor/core/models/state/node_state.dart';
-import 'package:flow_editor/core/models/state/edge_state.dart';
+import 'package:flow_editor/core/models/ui_state/editor_state.dart';
+import 'package:flow_editor/core/models/ui_state/selection_state.dart';
+import 'package:flow_editor/core/models/ui_state/interaction_transient_state.dart';
+import 'package:flow_editor/core/models/ui_state/canvas_state.dart';
+import 'package:flow_editor/core/models/ui_state/node_state.dart';
+import 'package:flow_editor/core/models/ui_state/edge_state.dart';
 import 'package:flow_editor/core/state_management/editor_store_notifier.dart';
 
 // 当前活跃 workflowId

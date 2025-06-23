@@ -1,7 +1,7 @@
 // lib/ui/node/factories/default_node_factory.dart
 
 import 'package:flutter/material.dart';
-import 'package:flow_editor/core/models/node_model.dart';
+import 'package:flow_editor/core/models/ui/node_model.dart';
 import 'package:flow_editor/ui/node/factories/node_widget_factory.dart';
 import 'package:flow_editor/core/models/styles/node_style.dart';
 

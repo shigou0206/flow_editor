@@ -1,7 +1,7 @@
 import 'package:flow_editor/core/hit_test/canvas_hit_tester.dart';
 import 'package:flow_editor/core/controller/interfaces/canvas_controller.dart';
-import 'package:flow_editor/core/models/state/editor_state.dart';
-import 'package:flow_editor/core/models/state/interaction_transient_state.dart';
+import 'package:flow_editor/core/models/ui_state/editor_state.dart';
+import 'package:flow_editor/core/models/ui_state/interaction_transient_state.dart';
 import 'package:flutter/widgets.dart';
 
 class BehaviorContext {

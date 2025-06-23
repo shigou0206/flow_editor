@@ -1,5 +1,5 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:flow_editor/core/models/edge_model.dart';
+import 'package:flow_editor/core/models/ui/edge_model.dart';
 import 'package:collection/collection.dart';
 
 part 'edge_state.freezed.dart';

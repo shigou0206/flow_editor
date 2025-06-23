@@ -1,7 +1,7 @@
 import 'dart:ui';
-import 'package:flow_editor/core/models/node_model.dart';
-import 'package:flow_editor/core/models/edge_model.dart';
-import 'package:flow_editor/core/models/hit_test_result.dart';
+import 'package:flow_editor/core/models/ui/node_model.dart';
+import 'package:flow_editor/core/models/ui/edge_model.dart';
+import 'package:flow_editor/core/models/ui/hit_test_result.dart';
 
 /// 命中测试器的统一抽象接口。
 abstract class CanvasHitTester {

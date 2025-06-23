@@ -2,7 +2,7 @@
 
 import 'package:flow_editor/core/command/i_command.dart';
 import 'package:flow_editor/core/command/command_context.dart';
-import 'package:flow_editor/core/models/edge_model.dart';
+import 'package:flow_editor/core/models/ui/edge_model.dart';
 import 'package:flow_editor/core/command/edit/delete_edge_command.dart';
 import 'package:flow_editor/core/command/edit/delete_node_command.dart';
 import 'package:flow_editor/core/command/edit/add_edge_command.dart';

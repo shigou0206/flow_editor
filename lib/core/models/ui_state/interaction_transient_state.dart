@@ -1,9 +1,9 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:flutter/material.dart';
-import 'package:flow_editor/core/models/node_model.dart';
+import 'package:flow_editor/core/models/ui/node_model.dart';
 import 'package:flow_editor/core/models/converters/offset_size_converter.dart';
 import 'package:flow_editor/core/models/converters/rect_converter.dart';
-import 'package:flow_editor/core/models/canvas_insert_element.dart';
+import 'package:flow_editor/core/models/ui/canvas_insert_element.dart';
 part 'interaction_transient_state.freezed.dart';
 part 'interaction_transient_state.g.dart';
 

@@ -1,7 +1,7 @@
 import 'package:flow_editor/core/command/i_command.dart';
 import 'package:flow_editor/core/command/command_context.dart';
-import 'package:flow_editor/core/models/state/selection_state.dart';
-import 'package:flow_editor/core/models/node_model.dart';
+import 'package:flow_editor/core/models/ui_state/selection_state.dart';
+import 'package:flow_editor/core/models/ui/node_model.dart';
 
 /// 取消对某个分组节点（group root）的分组操作
 class UngroupNodesCommand implements ICommand {

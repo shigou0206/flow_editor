@@ -1,6 +1,6 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:flutter/material.dart';
-import 'package:flow_editor/core/models/anchor_model.dart';
+import 'package:flow_editor/core/models/ui/anchor_model.dart';
 import 'package:flow_editor/core/models/converters/offset_size_converter.dart';
 import 'package:flow_editor/core/models/converters/rect_converter.dart';
 

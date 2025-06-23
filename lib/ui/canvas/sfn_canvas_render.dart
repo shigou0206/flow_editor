@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:flow_editor/core/models/state/node_state.dart';
-import 'package:flow_editor/core/models/state/edge_state.dart';
-import 'package:flow_editor/core/models/state/interaction_transient_state.dart';
+import 'package:flow_editor/core/models/ui_state/node_state.dart';
+import 'package:flow_editor/core/models/ui_state/edge_state.dart';
+import 'package:flow_editor/core/models/ui_state/interaction_transient_state.dart';
 import 'package:flow_editor/core/models/styles/canvas_visual_config.dart';
 import 'package:flow_editor/core/painters/dotted_grid_painter.dart';
 import 'package:flow_editor/core/painters/path_generators/flexible_path_generator.dart';
 import 'package:flow_editor/ui/edge/edge_renderer.dart';
 import 'package:flow_editor/ui/node/factories/node_widget_factory.dart';
-import 'package:flow_editor/core/models/node_model.dart';
-import 'package:flow_editor/core/models/edge_model.dart';
+import 'package:flow_editor/core/models/ui/node_model.dart';
+import 'package:flow_editor/core/models/ui/edge_model.dart';
 
 class SfnCanvasRenderer extends StatelessWidget {
   const SfnCanvasRenderer({

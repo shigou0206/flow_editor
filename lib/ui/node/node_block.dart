@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flow_editor/core/models/node_model.dart';
+import 'package:flow_editor/core/models/ui/node_model.dart';
 
 /// NodeBlock：节点主体 (可带删除按钮, 可双击/右键等交互)
 class NodeBlock extends StatefulWidget {

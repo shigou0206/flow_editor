@@ -2,7 +2,7 @@
 
 import 'package:flow_editor/core/command/i_command.dart';
 import 'package:flow_editor/core/command/command_context.dart';
-import 'package:flow_editor/core/models/state/selection_state.dart';
+import 'package:flow_editor/core/models/ui_state/selection_state.dart';
 
 /// 清空当前工作流下所有节点和边的选中状态
 class ClearSelectionCommand implements ICommand {

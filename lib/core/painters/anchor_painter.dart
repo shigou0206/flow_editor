@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flow_editor/core/models/anchor_model.dart';
+import 'package:flow_editor/core/models/ui/anchor_model.dart';
 import 'package:flow_editor/core/models/enums/anchor_enums.dart';
 import 'dart:math' as math;
 

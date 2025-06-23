@@ -4,8 +4,8 @@ import 'package:flow_editor/core/input/behavior_core/behavior_context.dart';
 import 'package:flow_editor/core/input/event/input_event.dart';
 import 'package:flow_editor/core/input/event/input_event_type.dart';
 import 'package:flow_editor/core/models/config/input_config.dart';
-import 'package:flow_editor/core/models/state/editor_state.dart';
-import 'package:flow_editor/core/models/state/interaction_transient_state.dart';
+import 'package:flow_editor/core/models/ui_state/editor_state.dart';
+import 'package:flow_editor/core/models/ui_state/interaction_transient_state.dart';
 
 class MarqueeSelectBehavior implements CanvasBehavior {
   final BehaviorContext context;

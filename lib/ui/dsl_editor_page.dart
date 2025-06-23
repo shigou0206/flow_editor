@@ -247,8 +247,8 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flow_editor/core/models/node_model.dart';
-import 'package:flow_editor/core/models/edge_model.dart';
+import 'package:flow_editor/core/models/ui/node_model.dart';
+import 'package:flow_editor/core/models/ui/edge_model.dart';
 import 'package:flow_editor/core/state_management/providers.dart';
 import 'package:flow_editor/ui/canvas/sfn_editor_canvas.dart';
 import 'package:flow_editor/ui/sidebar/nodes_sidebar.dart';

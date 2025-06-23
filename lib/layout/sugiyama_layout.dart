@@ -3,8 +3,8 @@ import 'package:flutter/widgets.dart';
 import 'package:flow_layout/graph/graph.dart';
 import 'package:flow_layout/layout.dart';
 import 'package:collection/collection.dart';
-import 'package:flow_editor/core/models/edge_model.dart';
-import 'package:flow_editor/core/models/node_model.dart';
+import 'package:flow_editor/core/models/ui/edge_model.dart';
+import 'package:flow_editor/core/models/ui/node_model.dart';
 import 'package:flow_editor/layout/layout_strategy.dart';
 import 'package:flow_editor/core/models/config/sugiyama_layout_config.dart';
 

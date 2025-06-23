@@ -1,10 +1,10 @@
 import 'package:flow_editor/core/controller/interfaces/interaction_controller.dart';
 import 'package:flow_editor/core/command/command_context.dart';
-import 'package:flow_editor/core/models/state/editor_state.dart';
-import 'package:flow_editor/core/models/state/interaction_transient_state.dart';
-import 'package:flow_editor/core/models/node_model.dart';
-import 'package:flow_editor/core/models/edge_model.dart';
-import 'package:flow_editor/core/models/canvas_insert_element.dart';
+import 'package:flow_editor/core/models/ui_state/editor_state.dart';
+import 'package:flow_editor/core/models/ui_state/interaction_transient_state.dart';
+import 'package:flow_editor/core/models/ui/node_model.dart';
+import 'package:flow_editor/core/models/ui/edge_model.dart';
+import 'package:flow_editor/core/models/ui/canvas_insert_element.dart';
 import 'package:flutter/material.dart';
 
 class InteractionControllerImpl implements IInteractionController {

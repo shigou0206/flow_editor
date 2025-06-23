@@ -1,4 +1,4 @@
-import 'package:flow_editor/core/models/state/editor_state.dart';
+import 'package:flow_editor/core/models/ui_state/editor_state.dart';
 
 /// Provides commands with everything they need to read & mutate
 /// the global EditorState, as well as issue canvas‐level actions.

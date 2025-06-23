@@ -1,8 +1,8 @@
 // lib/core/controller/interfaces/graph_controller.dart
 
 import 'dart:ui';
-import 'package:flow_editor/core/models/node_model.dart';
-import 'package:flow_editor/core/models/edge_model.dart';
+import 'package:flow_editor/core/models/ui/node_model.dart';
+import 'package:flow_editor/core/models/ui/edge_model.dart';
 
 /// 业务层：负责持久化数据操作
 abstract class IGraphController {

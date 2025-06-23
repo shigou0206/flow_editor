@@ -1,7 +1,7 @@
 import 'package:flow_editor/core/command/i_command.dart';
 import 'package:flow_editor/core/command/command_context.dart';
-import 'package:flow_editor/core/models/node_model.dart';
-import 'package:flow_editor/core/models/edge_model.dart';
+import 'package:flow_editor/core/models/ui/node_model.dart';
+import 'package:flow_editor/core/models/ui/edge_model.dart';
 
 /// 在一条边上插入一个节点，将原边拆分为两段
 class InsertNodeOnEdgeCommand implements ICommand {

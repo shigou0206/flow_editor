@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flow_editor/core/models/node_model.dart';
+import 'package:flow_editor/core/models/ui/node_model.dart';
 import 'package:flow_editor/ui/anchor/anchor_widget.dart';
 import 'package:flow_editor/core/utils/anchor_position_utils.dart';
 

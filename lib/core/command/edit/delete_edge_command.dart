@@ -1,6 +1,6 @@
 import 'package:flow_editor/core/command/i_command.dart';
 import 'package:flow_editor/core/command/command_context.dart';
-import 'package:flow_editor/core/models/edge_model.dart';
+import 'package:flow_editor/core/models/ui/edge_model.dart';
 
 /// 从当前工作流中删除指定 edgeId 的边
 class DeleteEdgeCommand implements ICommand {

@@ -1,5 +1,5 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:flow_editor/core/models/node_model.dart';
+import 'package:flow_editor/core/models/ui/node_model.dart';
 import 'package:collection/collection.dart';
 part 'node_state.freezed.dart';
 part 'node_state.g.dart';

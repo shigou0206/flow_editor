@@ -1,4 +1,4 @@
-import 'package:flow_editor/core/models/state/editor_state.dart';
+import 'package:flow_editor/core/models/ui_state/editor_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flow_editor/core/state_management/providers.dart';
@@ -9,7 +9,7 @@ import 'package:flow_editor/core/utils/anchor_position_utils.dart';
 import 'package:flow_editor/ui/canvas/sfn_canvas_render.dart';
 import 'package:flow_editor/ui/node/factories/node_widget_factory_impl.dart';
 import 'package:flow_editor/ui/node/node_widget_registry_initializer.dart';
-import 'package:flow_editor/core/models/canvas_insert_element.dart';
+import 'package:flow_editor/core/models/ui/canvas_insert_element.dart';
 
 class CommonEditorCanvas extends ConsumerWidget {
   const CommonEditorCanvas({super.key});
