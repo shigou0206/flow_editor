@@ -41,23 +41,20 @@ class DslGraphConverter {
 
     final edges = <EdgeModel>[];
 
-    // 添加各个状态节点和连接边
+    // 添加每个 DSL 状态作为节点
     workflow.states.forEach((stateId, state) {
       final stateJson = state.toJson();
       final type = stateJson['type'] as String;
-      final data = {
-        'stateId': stateId,
-        'type': type,
-        ...Map.of(stateJson)..remove('type'),
-      };
 
+      // ✅ 构造节点（无 data，title 为 stateId）
       nodes.add(NodeModel(
-        id: stateId,
+        id: _generateNodeId(stateId),
         type: type,
-        data: data,
+        title: stateId,
         parentId: groupId,
       ));
 
+      // ✅ 添加状态间的连线逻辑
       state.when(
         task: (t) => _addEdgeIfNextExists(edges, stateId, t.next),
         pass: (p) => _addEdgeIfNextExists(edges, stateId, p.next),
@@ -83,13 +80,13 @@ class DslGraphConverter {
       );
     });
 
-    // 添加 Start → startAt 连线
+    // 起点连线
     edges.add(EdgeModel.generated(
       sourceNodeId: startNodeId,
       targetNodeId: workflow.startAt,
     ));
 
-    // 将所有终止状态连至 end_node
+    // 自动补连 end_node
     workflow.states.forEach((stateId, state) {
       final hasNext = state.maybeWhen(
         task: (t) => t.next != null,
@@ -133,4 +130,7 @@ class DslGraphConverter {
       ));
     }
   }
+
+  /// 可选：如需为 UI 生成唯一 ID，可用这个函数（目前直接用 stateId）
+  static String _generateNodeId(String stateId) => stateId;
 }

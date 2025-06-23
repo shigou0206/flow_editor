@@ -27,8 +27,11 @@ class GraphDslConverter {
     for (final node in nodes) {
       if (special.contains(node.id)) continue;
 
-      final stateId = node.data['stateId'] as String;
-      final origState = original.states[stateId]!;
+      final stateId = node.title?.trim() ?? '';
+      if (stateId.isEmpty) continue;
+
+      final origState = original.states[stateId];
+      if (origState == null) continue;
 
       final outgoing = edges
           .where((e) =>
