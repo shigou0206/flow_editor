@@ -1,12 +1,17 @@
+// lib/workflow/converters/dsl_graph_converter.dart
+
+import 'package:flutter/material.dart';
 import 'package:flow_editor/workflow/models/flow/workflow_dsl.dart';
 import 'package:flow_editor/core/models/ui/node_model.dart';
 import 'package:flow_editor/core/models/ui/edge_model.dart';
-import 'package:flutter/material.dart';
 
 class DslGraphConverter {
-  static Map<String, dynamic> toGraph(WorkflowDSL workflow) {
-    const groupId = 'group_root';
+  static const groupId = 'group_root';
+  static const startNodeId = 'start_node';
+  static const endNodeId = 'end_node';
 
+  /// 将 DSL 转为节点和边，用于前端渲染
+  static Map<String, dynamic> toGraph(WorkflowDSL workflow) {
     final nodes = <NodeModel>[
       const NodeModel(
         id: groupId,
@@ -17,9 +22,17 @@ class DslGraphConverter {
         isGroup: true,
       ),
       const NodeModel(
-        id: 'start_node',
+        id: startNodeId,
         type: 'start',
         title: 'Start',
+        position: Offset.zero,
+        size: Size(60, 30),
+        parentId: groupId,
+      ),
+      const NodeModel(
+        id: endNodeId,
+        type: 'end',
+        title: 'End',
         position: Offset.zero,
         size: Size(60, 30),
         parentId: groupId,
@@ -28,127 +41,75 @@ class DslGraphConverter {
 
     final edges = <EdgeModel>[];
 
-    workflow.states.forEach((id, state) {
+    // 添加各个状态节点和连接边
+    workflow.states.forEach((stateId, state) {
+      final stateJson = state.toJson();
+      final type = stateJson['type'] as String;
+      final data = {
+        'stateId': stateId,
+        'type': type,
+        ...Map.of(stateJson)..remove('type'),
+      };
+
+      nodes.add(NodeModel(
+        id: stateId,
+        type: type,
+        data: data,
+        parentId: groupId,
+      ));
+
       state.when(
-        task: (task) {
-          nodes.add(NodeModel(
-            id: id,
-            type: 'Task',
-            data: {'stateId': id},
-            parentId: groupId,
-          ));
-          if (task.next != null) {
+        task: (t) => _addEdgeIfNextExists(edges, stateId, t.next),
+        pass: (p) => _addEdgeIfNextExists(edges, stateId, p.next),
+        wait: (w) => _addEdgeIfNextExists(edges, stateId, w.next),
+        choice: (c) {
+          for (final rule in c.choices) {
             edges.add(EdgeModel.generated(
-              sourceNodeId: id,
-              targetNodeId: task.next!,
+              sourceNodeId: stateId,
+              targetNodeId: rule.next,
+              extra: {'condition': rule.condition.toJson()},
             ));
           }
-        },
-        pass: (pass) {
-          nodes.add(NodeModel(
-            id: id,
-            type: 'Pass',
-            data: {'stateId': id},
-            parentId: groupId,
-          ));
-          if (pass.next != null) {
+          if (c.defaultNext != null) {
             edges.add(EdgeModel.generated(
-              sourceNodeId: id,
-              targetNodeId: pass.next!,
-            ));
-          }
-        },
-        choice: (choice) {
-          nodes.add(NodeModel(
-            id: id,
-            type: 'Choice',
-            data: {'stateId': id},
-            parentId: groupId,
-          ));
-          for (final c in choice.choices) {
-            edges.add(EdgeModel.generated(
-              sourceNodeId: id,
-              targetNodeId: c.next,
-              extra: {'condition': c.condition.toJson()},
-            ));
-          }
-          if (choice.defaultNext != null) {
-            edges.add(EdgeModel.generated(
-              sourceNodeId: id,
-              targetNodeId: choice.defaultNext!,
+              sourceNodeId: stateId,
+              targetNodeId: c.defaultNext!,
               extra: {'isDefault': true},
             ));
           }
         },
-        succeed: (succeed) {
-          nodes.add(NodeModel(
-            id: id,
-            type: 'Succeed',
-            data: {'stateId': id},
-            parentId: groupId,
-          ));
-        },
-        fail: (fail) {
-          nodes.add(NodeModel(
-            id: id,
-            type: 'Fail',
-            data: {'stateId': id},
-            parentId: groupId,
-          ));
-        },
-        wait: (wait) {
-          nodes.add(NodeModel(
-            id: id,
-            type: 'Wait',
-            data: {'stateId': id},
-            parentId: groupId,
-          ));
-          if (wait.next != null) {
-            edges.add(EdgeModel.generated(
-              sourceNodeId: id,
-              targetNodeId: wait.next!,
-            ));
-          }
-        },
+        succeed: (_) {},
+        fail: (_) {},
       );
     });
 
+    // 添加 Start → startAt 连线
     edges.add(EdgeModel.generated(
-      sourceNodeId: 'start_node',
+      sourceNodeId: startNodeId,
       targetNodeId: workflow.startAt,
     ));
 
-    nodes.add(const NodeModel(
-      id: 'end_node',
-      type: 'end',
-      title: 'End',
-      position: Offset.zero,
-      size: Size(60, 30),
-      parentId: groupId,
-    ));
-
-    workflow.states.forEach((id, state) {
+    // 将所有终止状态连至 end_node
+    workflow.states.forEach((stateId, state) {
       final hasNext = state.maybeWhen(
-        task: (s) => s.next != null,
-        pass: (s) => s.next != null,
+        task: (t) => t.next != null,
+        pass: (p) => p.next != null,
+        wait: (w) => w.next != null,
         choice: (_) => true,
-        wait: (s) => s.next != null,
         orElse: () => false,
       );
-
       final isEnd = state.maybeWhen(
         succeed: (_) => true,
         fail: (_) => true,
-        task: (s) => s.end == true,
-        pass: (s) => s.end == true,
-        wait: (s) => s.end == true,
+        task: (t) => t.end == true,
+        pass: (p) => p.end == true,
+        wait: (w) => w.end == true,
         orElse: () => false,
       );
-
-      if (!hasNext && isEnd) {
+      if (isEnd && !hasNext) {
         edges.add(EdgeModel.generated(
-          sourceNodeId: id,
-          targetNodeId: 'end_node',
+          sourceNodeId: stateId,
+          targetNodeId: endNodeId,
         ));
       }
     });
@@ -158,5 +119,18 @@ class DslGraphConverter {
       'nodes': nodes,
       'edges': edges,
     };
+  }
+
+  static void _addEdgeIfNextExists(
+    List<EdgeModel> edges,
+    String from,
+    String? next,
+  ) {
+    if (next != null && next.isNotEmpty) {
+      edges.add(EdgeModel.generated(
+        sourceNodeId: from,
+        targetNodeId: next,
+      ));
+    }
   }
 }
