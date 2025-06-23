@@ -139,6 +139,8 @@ class DslEditorWidget extends ConsumerStatefulWidget {
 class _DslEditorWidgetState extends ConsumerState<DslEditorWidget> {
   final controller = TextEditingController();
 
+  WorkflowDSL? _originalDsl;
+
   @override
   void initState() {
     super.initState();
@@ -163,7 +165,15 @@ class _DslEditorWidgetState extends ConsumerState<DslEditorWidget> {
             ? startEdge.targetNodeId
             : nodes.firstWhere((node) => node.id != 'start_node').id;
 
+    _originalDsl ??= WorkflowDSL(
+      comment: '',
+      version: '1.0',
+      startAt: startAt ?? 'start_node',
+      states: {}, // 暂时空集合
+    );
+
     final workflowDsl = GraphDslConverter.toDsl(
+      original: _originalDsl!,
       nodes: nodes,
       edges: edges,
       startAt: startAt ?? 'start_node',
