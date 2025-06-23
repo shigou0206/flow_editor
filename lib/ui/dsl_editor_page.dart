@@ -289,7 +289,7 @@ class _DslEditorPageState extends ConsumerState<DslEditorPage> {
       'startAt': 'EvaluateScore',
       'states': {
         'EvaluateScore': {
-          'type': 'Choice',
+          'type': 'choice',
           'choices': [
             {
               'condition': {
@@ -302,8 +302,8 @@ class _DslEditorPageState extends ConsumerState<DslEditorPage> {
           ],
           'defaultNext': 'LowScore',
         },
-        'HighScore': {'type': 'Succeed', 'end': true},
-        'LowScore': {'type': 'Fail', 'end': true},
+        'HighScore': {'type': 'succeed', 'end': true},
+        'LowScore': {'type': 'fail', 'end': true},
       },
     });
 
