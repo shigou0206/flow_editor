@@ -47,7 +47,7 @@ class DeleteNodeWithAutoReconnectCommand implements ICommand {
     final deletedNode = nodes.firstWhere((n) => n.id == nodeId);
 
     final allowReconnect =
-        !['Choice', 'Parallel', 'Map'].contains(deletedNode.type);
+        !['choice', 'parallel', 'map'].contains(deletedNode.type);
 
     // 标记当前被删除节点是否为startAt节点 (start_node指向的节点)
     final isStartAtNode =

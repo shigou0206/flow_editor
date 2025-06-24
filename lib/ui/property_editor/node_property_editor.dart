@@ -32,7 +32,7 @@ class NodePropertyEditor extends ConsumerWidget {
         .where((node) => node.id != selectedNodeId && node.type != 'start')
         .toList();
 
-    final isChoiceNode = selectedNode.type == 'Choice';
+    final isChoiceNode = selectedNode.type == 'choice';
 
     if (isChoiceNode) {
       final initialSelectedNodes = editorState.edgeState.edges

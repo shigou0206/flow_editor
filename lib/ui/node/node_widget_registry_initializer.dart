@@ -58,63 +58,63 @@ NodeWidgetRegistry initNodeWidgetRegistry() {
 
   // Task 节点
   registry.register<NodeModel>(
-    type: 'Task',
+    type: 'task',
     builder: (node) => MiddleNodeWidget(node: node),
     useDefaultContainer: false,
   );
 
   // Pass 节点
   registry.register<NodeModel>(
-    type: 'Pass',
+    type: 'pass',
     builder: (node) => MiddleNodeWidget(node: node),
     useDefaultContainer: false,
   );
 
   // Choice 节点
   registry.register<NodeModel>(
-    type: 'Choice',
+    type: 'choice',
     builder: (node) => MiddleNodeWidget(node: node),
     useDefaultContainer: false,
   );
 
   // Succeed 节点
   registry.register<NodeModel>(
-    type: 'Succeed',
+    type: 'succeed',
     builder: (node) => MiddleNodeWidget(node: node),
     useDefaultContainer: false,
   );
 
   // Fail 节点
   registry.register<NodeModel>(
-    type: 'Fail',
+    type: 'fail',
     builder: (node) => MiddleNodeWidget(node: node),
     useDefaultContainer: false,
   );
 
   // Wait 节点
   registry.register<NodeModel>(
-    type: 'Wait',
+    type: 'wait',
     builder: (node) => MiddleNodeWidget(node: node),
     useDefaultContainer: false,
   );
 
   // Parallel 节点
   registry.register<NodeModel>(
-    type: 'Parallel',
+    type: 'parallel',
     builder: (node) => MiddleNodeWidget(node: node),
     useDefaultContainer: false,
   );
 
   // Map 节点
   registry.register<NodeModel>(
-    type: 'Map',
+    type: 'map',
     builder: (node) => MiddleNodeWidget(node: node),
     useDefaultContainer: false,
   );
 
   // Custom 节点
   registry.register<NodeModel>(
-    type: 'Custom',
+    type: 'custom',
     builder: (node) => MiddleNodeWidget(node: node),
     useDefaultContainer: false,
   );
