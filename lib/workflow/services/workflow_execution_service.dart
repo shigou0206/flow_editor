@@ -1,8 +1,8 @@
 import 'package:dio/dio.dart';
 import 'dart:convert';
-import '../models/execution/workflow_execution.dart';
-import '../models/execution/workflow_execution_state.dart';
-import '../models/flow/workflow_dsl.dart';
+import 'package:flow_editor/workflow/models/execution/workflow_execution.dart';
+import 'package:flow_editor/workflow/models/execution/workflow_execution_state.dart';
+import 'package:flow_editor/workflow/models/dsl/flow/workflow_dsl.dart';
 
 class WorkflowExecutionService {
   static final Dio client = Dio(BaseOptions(baseUrl: 'http://localhost:8000'));

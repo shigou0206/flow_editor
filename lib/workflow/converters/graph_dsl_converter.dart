@@ -1,12 +1,12 @@
 // lib/workflow/converters/graph_dsl_converter.dart
 
 import 'package:collection/collection.dart';
-import 'package:flow_editor/workflow/models/flow/workflow_dsl.dart';
-import 'package:flow_editor/workflow/models/flow/workflow_state.dart';
+import 'package:flow_editor/workflow/models/dsl/flow/workflow_dsl.dart';
+import 'package:flow_editor/workflow/models/dsl/flow/workflow_state.dart';
 import 'package:flow_editor/core/models/ui/node_model.dart';
 import 'package:flow_editor/core/models/ui/edge_model.dart';
-import 'package:flow_editor/workflow/models/logic/choice_rule.dart';
-import 'package:flow_editor/workflow/models/logic/choice_logic.dart';
+import 'package:flow_editor/workflow/models/dsl/logic/choice_rule.dart';
+import 'package:flow_editor/workflow/models/dsl/logic/choice_logic.dart';
 
 class GraphDslConverter {
   static WorkflowDSL toDsl({

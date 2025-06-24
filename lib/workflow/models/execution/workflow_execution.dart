@@ -1,5 +1,5 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:flow_editor/workflow/models/flow/workflow_dsl.dart';
+import 'package:flow_editor/workflow/models/dsl/flow/workflow_dsl.dart';
 import 'package:flow_editor/workflow/models/execution/workflow_execution_state.dart';
 part 'workflow_execution.freezed.dart';
 part 'workflow_execution.g.dart';

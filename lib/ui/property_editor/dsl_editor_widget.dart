@@ -125,7 +125,7 @@ import 'package:flow_editor/core/state_management/providers.dart';
 import 'package:flow_editor/core/models/ui/node_model.dart';
 import 'package:flow_editor/core/models/ui/edge_model.dart';
 import 'package:flow_editor/layout/sugiyama_layout.dart';
-import 'package:flow_editor/workflow/models/flow/workflow_dsl.dart';
+import 'package:flow_editor/workflow/models/dsl/flow/workflow_dsl.dart';
 import 'package:flow_editor/workflow/converters/graph_dsl_converter.dart';
 import 'package:flow_editor/workflow/converters/dsl_graph_converter.dart';
 

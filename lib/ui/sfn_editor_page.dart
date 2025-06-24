@@ -9,7 +9,7 @@ import 'package:flow_editor/ui/canvas/sfn_editor_canvas.dart';
 import 'package:flow_editor/ui/sidebar/nodes_sidebar.dart';
 import 'package:flow_editor/ui/property_editor/node_property_editor.dart';
 import 'package:flow_editor/ui/property_editor/dsl_editor_widget.dart';
-import 'package:flow_editor/workflow/models/flow/workflow_dsl.dart';
+import 'package:flow_editor/workflow/models/dsl/flow/workflow_dsl.dart';
 import 'package:flow_editor/workflow/converters/dsl_graph_converter.dart';
 import 'package:flow_editor/core/models/ui_state/canvas_state.dart';
 
